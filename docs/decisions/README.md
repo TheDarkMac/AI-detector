@@ -22,3 +22,22 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0005](ADR-0005-nommage-branches-et-commits.md) | Nommage des branches et messages de commit | Accepté | 2026-10-26 |
 | [ADR-0006](ADR-0006-ci-documentaire.md) | Intégration continue documentaire | Accepté | 2026-10-26 |
 | [ADR-0007](ADR-0007-adresse-des-commits-de-merge.md) | Adresse e-mail des commits de merge créés par GitHub | Accepté | 2026-10-26 |
+| [ADR-0008](ADR-0008-objectif-principal.md) | Objectif principal : provenance et intégrité, accent sur l'origine IA | Accepté | 2026-10-26 |
+| [ADR-0009](ADR-0009-public-cible.md) | Public cible prioritaire : journalistes et vérificateurs de faits | Accepté | 2026-10-26 |
+| [ADR-0010](ADR-0010-distribution-et-traitement-local.md) | Distribution en ligne de commande et bibliothèque, traitement local hors ligne | Accepté | 2026-10-26 |
+| [ADR-0011](ADR-0011-licence-apache-2.md) | Logiciel libre et gratuit sous licence Apache-2.0 | Accepté | 2026-10-26 |
+| [ADR-0012](ADR-0012-perimetre-v1.md) | Périmètre de la première version | Accepté | 2026-10-26 |
+| [ADR-0013](ADR-0013-module-texte.md) | Module texte réduit aux contrôles déterministes | Accepté | 2026-10-26 |
+| [ADR-0014](ADR-0014-controle-avant-publication.md) | Contrôle avant publication limité aux métadonnées en V1 | Accepté | 2026-10-26 |
+| [ADR-0015](ADR-0015-lots-flux-et-anteriorite.md) | Analyse par lots, flux, analyse groupée et recherche d'antériorité | Accepté | 2026-10-26 |
+| [ADR-0016](ADR-0016-frontiere-sans-ia.md) | Frontière du « sans IA » : seuils calibrés admis, apprentissage exclu | Accepté | 2026-10-26 |
+| [ADR-0017](ADR-0017-services-tiers-et-ocr.md) | Services tiers à base d'IA optionnels, lecture des documents numérisés exclue | Accepté | 2026-10-26 |
+| [ADR-0018](ADR-0018-synthese-et-graduation.md) | Synthèse sans verdict et graduation fixe des indices | Accepté | 2026-10-26 |
+| [ADR-0019](ADR-0019-publicite-des-regles.md) | Règles, seuils et limites entièrement publics | Accepté | 2026-10-26 |
+| [ADR-0020](ADR-0020-langue-et-cadre-legal.md) | Français en V1, cadre légal de l'Union européenne | Accepté | 2026-10-26 |
+| [ADR-0021](ADR-0021-definition-de-la-preuve.md) | Définition de la preuve | Accepté | 2026-10-26 |
+| [ADR-0022](ADR-0022-hypotheses-distinguees.md) | Hypothèses distinguées : rubrique obligatoire de chaque fiche technique | Accepté | 2026-10-26 |
+| [ADR-0023](ADR-0023-reproductibilite.md) | Reproductibilité à entrées égales et analyse non interrompue | Accepté | 2026-10-26 |
+| [ADR-0024](ADR-0024-methode-de-verification.md) | Une méthode de vérification par exigence | Accepté | 2026-10-26 |
+| [ADR-0025](ADR-0025-exports-et-accessibilite.md) | Exports HTML et JSON, accessibilité WCAG 2.2 AA | Accepté | 2026-10-26 |
+| [ADR-0026](ADR-0026-validation-du-besoin.md) | Validation du besoin sur prototype, étude d'usage hors V1 | Accepté | 2026-10-26 |
