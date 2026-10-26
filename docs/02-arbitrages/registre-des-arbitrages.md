@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.0, proposée à TheDarkMac dans la PR de T02**. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.1** ; v1.0 mergée avec T02, v1.1 proposée dans la PR de T03. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -60,7 +60,7 @@ Statuts : **Tranché** (ADR cité), **Reporté** (tâche citée), **Non tranché
 | --- | --- | --- | --- |
 | Traitement local ou serveur | Tranché | Local | ADR-0010 |
 | Hors ligne ou connexion requise | Tranché | Hors ligne par défaut ; requêtes sortantes optionnelles | ADR-0010 |
-| Conservation, compte | Tranché | Aucun compte ; l'outil ne conserve aucun fichier. Portée de NF-17 (journal, horodatage) en local : reportée à T03 puis T91. | ADR-0010 |
+| Conservation, compte | Tranché | Aucun compte ; l'outil ne conserve aucun fichier. Portée de NF-17 en local : journal et horodatage optionnels, aucune trace par défaut (T03) ; réalisation en T91. | ADR-0010, ADR-0030 |
 | Pays visés | Tranché | Union européenne, RGPD | ADR-0020 |
 | Responsabilité en cas de faux positif, mentions | Reporté | Question juridique hors du ressort de l'assistant ; l'outil ne délivre aucun verdict (ADR-0018) et ne vise pas l'enseignement (ADR-0009). Mentions rédigées en T103. | T103 |
 | Anonymisation des marques (F-90) | Tranché | Hors périmètre | ADR-0014 |
@@ -69,7 +69,7 @@ Statuts : **Tranché** (ADR cité), **Reporté** (tâche citée), **Non tranché
 
 | Point | Statut | Décision ou raison du report | Référence |
 | --- | --- | --- | --- |
-| Limites de taille, de durée, temps d'analyse | Reporté | Dépend de l'isolation (T03, T04) et de mesures sur le socle | T14 |
+| Limites de taille, de durée, temps d'analyse | Reporté | Isolation tranchée en T03 (ADR-0028) ; valeurs dépendant de mesures sur le socle | T14 |
 | Seuils d'acceptation | Reporté en partie | Principe tranché : taux par technique et taux par fichier, publiés avec effectif et intervalle (A-54). Valeurs fixées avant l'acceptation de la première technique. | ADR-0018, T17 |
 | Constitution du corpus | Reporté en partie | Séparation calibrage / évaluation tranchée ; sources, volume et droits en T100 | ADR-0016, T100 |
 | Références des modules comparatifs | Tranché | F-35 et F-64 hors V1 (références fournies par l'utilisateur, comme le prévoit le cahier) ; F-42 hors V1 faute de base de référence | ADR-0012 |
@@ -87,9 +87,9 @@ Statuts : **Tranché** (ADR cité), **Reporté** (tâche citée), **Non tranché
 | 5 | NF-19 contre explicabilité et licence | Tranché | ADR-0019 |
 | 6 | Taux de faux positifs par fichier, combinaison | Tranché | ADR-0018 |
 | 7 | Séparation calibrage / évaluation | Tranché | ADR-0016 |
-| 8 | Double usage des techniques d'identification de source | Tranché pour la V1, à approfondir | ADR-0014, T03 |
-| 9 | Contenu du catalogue et authentification de ses mises à jour | Reporté : surface d'attaque à traiter dans le modèle de menace, format en T15 ; ADR-0019 implique que les seuils sont publics, donc peuvent y figurer. Question 5 à l'auteur en attente. | T03, T15 |
-| 10 | Niveau d'isolation de l'analyse | Reporté : c'est l'objet du modèle de menace, puis de l'architecture | T03, T04 |
+| 8 | Double usage des techniques d'identification de source | Tranché : hors V1 (ADR-0014), admises en V2 avec garde-fous (ADR-0032) | ADR-0014, ADR-0032 |
+| 9 | Contenu du catalogue et authentification de ses mises à jour | Intégrité tranchée en T03 : livré avec l'outil, version et empreinte au rapport (ADR-0029). Contenu et format en T15 ; ADR-0019 implique que les seuils sont publics, donc peuvent y figurer. Question 5 à l'auteur en attente. | ADR-0029, T15 |
+| 10 | Niveau d'isolation de l'analyse | Tranché en T03 : processus restreint par fichier ; mécanismes en T04 | ADR-0028, T04 |
 | 11 | Recherche d'antériorité | Tranché : hors périmètre | ADR-0015 |
 | 12 | Faisabilité de l'étude d'usage | Tranché : hors V1 | ADR-0026 |
 
@@ -111,7 +111,10 @@ Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent 
 | --- | --- | --- | --- |
 | NF-06 | Même fichier, même version de l'outil et du catalogue : mêmes constats | Même fichier ; mêmes versions de l'outil, du catalogue et des dépendances ; mêmes données externes ; analyse non interrompue : mêmes constats | ADR-0023 |
 | NF-13 | Réglementation des pays où l'outil est proposé | Réglementation de l'Union européenne, dont le RGPD | ADR-0020 |
-| NF-16 | Aucune requête sortante n'emporte le fichier | Idem, sauf service tiers activé explicitement par l'utilisateur, avec son consentement pour ce fichier | ADR-0017 |
+| NF-16 | Aucune requête sortante n'emporte le fichier | Aucune n'emporte le fichier, **son contenu** ni ses données identifiantes, sauf service tiers activé explicitement par l'utilisateur, avec son consentement pour ce fichier | ADR-0017, ADR-0033 (proposé) |
+| NF-17 | Journal « qui, quand » de chaque soumission, consultation, export ; horodatage fiable | Heure du poste, non certifiée, toujours au rapport ; journal (« qui » déclaratif) et horodatage RFC 3161 sur activation explicite | ADR-0030 |
+| NF-01 | Analyse « de façon isolée » | Un processus restreint par fichier, sans réseau ; isolation réduite signalée au rapport | ADR-0028 |
+| F-05 | Empreinte inscrite au rapport | Inscrite, mais masquée par défaut comme donnée identifiante | ADR-0031 |
 | NF-19 | Accès au détail des règles selon une politique | Le détail des règles et des seuils est public ; la robustesse repose sur la combinaison des techniques et la publication de leurs limites | ADR-0019 |
 | F-24 | Rechercher les filigranes à lecteur public | Point d'extension ; catalogue V1 limité aux schémas lisibles sans réseau de neurones, éventuellement vide | ADR-0012 |
 | F-51 | Appliquer F-30 à F-34 aux images clés vidéo | À réécrire avant T71 : seules les analyses applicables à une image vidéo décodée | ADR-0012 |
@@ -139,9 +142,11 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 
 - [Découpage](../00-plan/decoupage-taches.md) v0.6 : statut V1, V2 ou hors V1 de chaque tâche ; T105 ajoutée ; T31, T90, T95 redéfinies.
 - [Analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md) : renvoi vers ce registre.
+- [Modèle de menace](../modele-de-menace/modele-de-menace.md) (T03) : points 8, 9 et 10 du §3, portée de NF-17 ; reformulations de NF-01, NF-16, NF-17 et F-05 au §4 ; découpage v0.7.
 
 ## 7. Historique
 
 | Date | Version | Modification | Origine |
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T02 |
+| 2026-10-26 | 1.1 | Arbitrages de T03 : conservation et limites (§2), points 8 à 10 (§3), reformulations de NF-01, NF-16, NF-17, F-05 (§4), effets (§6) | T03 |
