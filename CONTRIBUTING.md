@@ -50,7 +50,7 @@ La CI (job `fichiers-interdits`) refuse de toute façon une PR qui en contiendra
    - l'historique des documents vivants modifiés.
 4. Vérifier qu'aucun fichier interdit n'est suivi : `git ls-files | grep -E '(^|/)(CLAUDE(\.local)?\.md$|\.claude/)'` ne doit rien afficher.
 5. Pousser la branche et ouvrir une PR vers `detector` (titre `TNN — titre`), en remplissant le modèle.
-6. Merger par **commit de merge** quand toutes les vérifications sont vertes. Squash et rebase sont désactivés.
+6. Merger par **commit de merge** quand toutes les vérifications sont vertes, avec un titre au format `Merge: TNN — titre (#N)` (ADR-0044) : `gh pr merge N --merge --subject "Merge: TNN — titre (#N)"`. Squash et rebase sont désactivés.
 7. Consigner le résultat de la CI et du merge dans la section « État initial » du journal de la tâche suivante.
 
 ## 4. Messages de commit — ADR-0005

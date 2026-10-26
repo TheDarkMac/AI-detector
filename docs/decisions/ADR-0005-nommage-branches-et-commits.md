@@ -58,3 +58,4 @@ Format : `type(portée optionnelle): description`
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : titre des commits de merge fixé par ADR-0044 (T04) |

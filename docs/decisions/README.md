@@ -48,3 +48,14 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0031](ADR-0031-empreinte-donnee-identifiante.md) | L'empreinte du fichier est une donnée identifiante | Accepté | 2026-10-26 |
 | [ADR-0032](ADR-0032-double-usage.md) | Fonctions à double usage admises en V2 avec garde-fous | Accepté | 2026-10-26 |
 | [ADR-0033](ADR-0033-politique-des-requetes-sortantes.md) | Politique des requêtes sortantes : aucune URL du fichier résolue sans confirmation | Accepté | 2026-10-26 |
+| [ADR-0034](ADR-0034-langage-python.md) | Langage : Python 3.12 ou ultérieur | Accepté | 2026-10-26 |
+| [ADR-0035](ADR-0035-systemes-et-mecanismes-d-isolation.md) | Systèmes de la V1 et mécanismes d'isolation : Linux en référence, macOS et Windows | Accepté | 2026-10-26 |
+| [ADR-0036](ADR-0036-processus-de-travail-et-protocole.md) | Processus de travail : un interpréteur neuf par fichier, échange en JSON | Accepté | 2026-10-26 |
+| [ADR-0037](ADR-0037-gestion-des-dependances.md) | Gestion des dépendances : uv et verrou à empreintes | Accepté | 2026-10-26 |
+| [ADR-0038](ADR-0038-format-du-catalogue.md) | Format du catalogue : TOML validé par JSON Schema | Accepté | 2026-10-26 |
+| [ADR-0039](ADR-0039-expressions-regulieres-re2.md) | Expressions régulières du catalogue : RE2 | Accepté | 2026-10-26 |
+| [ADR-0040](ADR-0040-empreinte-sha-256.md) | Empreinte cryptographique : SHA-256 | Accepté | 2026-10-26 |
+| [ADR-0041](ADR-0041-canal-de-distribution.md) | Canal de distribution : PyPI avec attestations de provenance | Accepté | 2026-10-26 |
+| [ADR-0042](ADR-0042-modules-et-extension.md) | Modules d'analyse : découverte interne, manifeste déclaratif | Accepté | 2026-10-26 |
+| [ADR-0043](ADR-0043-politique-des-bibliotheques.md) | Politique des bibliothèques : Python pur d'abord | Accepté | 2026-10-26 |
+| [ADR-0044](ADR-0044-titre-des-commits-de-merge.md) | Titre des commits de merge : toujours fixé à la main | Accepté | 2026-10-26 |
