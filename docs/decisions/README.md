@@ -78,6 +78,6 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0061](ADR-0061-interface-d-un-module.md) | Interface d'un module : une fonction et un contexte | Accepté | 2026-10-26 |
 | [ADR-0062](ADR-0062-message-de-fin-de-module.md) | Message « module » : fin de chaque module dans le protocole | Accepté | 2026-10-26 |
 | [ADR-0063](ADR-0063-desactivation-et-liste-des-modules.md) | Désactivation des modules et liste en ligne de commande | Accepté | 2026-10-26 |
-| [ADR-0064](ADR-0064-manifeste-des-modules.md) | Manifeste des modules : contenu, validation, ordre d'exécution | Proposé | 2026-10-26 |
-| [ADR-0065](ADR-0065-lancement-et-reception.md) | Lancement du processus de travail et réception de ses messages | Proposé | 2026-10-26 |
+| [ADR-0064](ADR-0064-manifeste-des-modules.md) | Manifeste des modules : contenu, validation, ordre d'exécution | Accepté | 2026-10-26 |
+| [ADR-0065](ADR-0065-lancement-et-reception.md) | Lancement du processus de travail et réception de ses messages | Accepté | 2026-10-26 |
 | [ADR-0066](ADR-0066-licence-mit-abandonnee.md) | Passage à la licence MIT | Abandonné | 2026-10-26 |

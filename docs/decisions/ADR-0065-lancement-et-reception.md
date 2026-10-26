@@ -1,8 +1,8 @@
 # ADR-0065 — Lancement du processus de travail et réception de ses messages
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-26
-- **Décideur** : l'assistant, sans question posée pendant T12 ; soumis à TheDarkMac dans la PR de T12
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T12, validée pendant la revue de la PR de T12
 - **Tâche** : T12
 - **Exigences liées** : NF-03, NF-08 ; ES-01, ES-04, ES-15, ES-17 ; M-10 ; ADR-0035, ADR-0036, ADR-0056, ADR-0060, ADR-0062
 
@@ -36,7 +36,7 @@ Option A, avec les règles suivantes.
 ### Lancement
 
 - Commande : `python -I -B -m voight_kampff._travail --descripteur <n>`. **`-B` est ajouté à ADR-0036** : sans lui, Python écrirait des fichiers `.pyc` dans l'installation au premier import, ce que le processus de travail ne doit pas faire (ES-15).
-- Environnement vidé ; sous Windows, seul `SYSTEMROOT` est gardé : sans lui, des fonctions de Windows employées par Python au démarrage peuvent échouer. La CI Windows le confirme ou l'infirme.
+- Environnement vidé ; sous Windows, seul `SYSTEMROOT` est gardé : sans lui, des fonctions de Windows employées par Python au démarrage peuvent échouer. La CI Windows de T12 a validé ce lancement, avec la transmission du handle et la lecture sans `pread` ; un lancement sans `SYSTEMROOT` n'a pas été essayé.
 - Fichier : sous Linux et macOS, le descripteur est le seul hérité en plus des flux standard (`pass_fds`). Sous Windows, le handle est rendu héritable le temps du lancement, et l'héritage est limité à ce handle et aux flux standard (`handle_list`) ; le processus de travail le convertit en descripteur. Windows n'a pas de lecture à position explicite : le processus de travail y déplace la position puis lit, ce qui est sans risque, puisque le principal ne lit plus le descripteur pendant l'analyse.
 - **Sortie d'erreur : envoyée vers le néant, pas lue.** ADR-0036 prévoyait de la lire, bornée, sans jamais la recopier. Elle ne sert à rien d'autre : ne pas la lire supprime un fil et un tampon, et rien de ce qu'elle contient n'atteint la mémoire du processus principal (ES-15).
 - Dans le processus de travail, la sortie standard est réservée au protocole : un module qui affiche du texte écrit sur la sortie d'erreur et ne peut pas glisser une ligne dans l'échange.
@@ -74,7 +74,7 @@ Ligne : 1 Mio ; sortie totale : 64 Mio ; configuration : 16 Mio ; lecture du fic
 
 ## Raisons
 
-- Option A proposée : seule des trois à borner la mémoire, appliquer un délai et refuser au premier écart sur les trois systèmes.
+- Option A retenue, proposée par l'assistant et validée par TheDarkMac : seule des trois à borner la mémoire, appliquer un délai et refuser au premier écart sur les trois systèmes.
 - Option B écartée : indisponible sous Windows.
 - Option C écartée : mémoire non bornée, aucun contrôle au fil de l'eau.
 - Résultats des modules terminés gardés : un processus de travail compromis peut de toute façon forger des résultats valides puis se terminer normalement (RR-01) ; les écarter n'ajouterait aucune protection, et ferait perdre, pour une simple lenteur, des résultats corrects. Le rapport dit qu'il est interrompu.
@@ -91,4 +91,5 @@ Ligne : 1 Mio ; sortie totale : 64 Mio ; configuration : 16 Mio ; lecture du fic
 
 | Date | Modification |
 | --- | --- |
-| 2026-10-26 | Création |
+| 2026-10-26 | Création, statut « Proposé » |
+| 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T12 : statut « Accepté » |

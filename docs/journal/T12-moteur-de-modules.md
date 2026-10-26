@@ -1,7 +1,7 @@
 # T12 — Moteur de modules
 
 - **Branche** : `tache/T12-moteur-de-modules`
-- **Dates** : 2026-10-26 → 2026-10-26
+- **Dates** : 2026-10-26 → 2026-10-27
 - **Exigences couvertes** : modularité (§2), NF-03, NF-10 ; ES-01 (lancement), ES-04, ES-17 (garde) ; F-25 et F-82 pour la couverture
 - **Décisions** : ADR-0060 à ADR-0065 ; ADR-0066 (licence MIT, abandonnée)
 - **Errata** : aucun
@@ -39,6 +39,9 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : moteur de modules, avec
 13. 384 tests verts ; trois passages successifs des tests d'orchestration, identiques (environ 23 s, dont 9 s pour trois délais de 3 s).
 14. Construction faite deux fois : fichiers identiques ; le wheel contient `_protocole.py`, `_orchestration/`, `_travail/`, `modules/` et le schéma des manifestes. Installé dans un environnement neuf : le processus de travail se lance depuis le wheel, rend l'empreinte attendue, et n'écrit aucun fichier `.pyc` (`_travail/` sans `__pycache__`, alors que les paquets importés par le processus principal en ont un) ; `vk --modules` répond. Étape correspondante ajoutée au job `paquet` de la CI.
 15. Documentation : ADR-0060 à ADR-0066 ; renvois dans ADR-0011, ADR-0036, ADR-0042, ADR-0056, ADR-0059 ; architecture v1.3, modèle de données v1.1, glossaire v1.1, découpage v0.11 ; index des ADR et du journal.
+16. Lint Markdown en local, vérification des fichiers interdits, commits ; branche poussée et PR [#10](https://github.com/TheDarkMac/AI-detector/pull/10) ouverte vers `detector`.
+17. CI (lancement 40398924617, tête `eedc50e`) : Linux et macOS verts ; Windows en échec sur les trois versions de Python, 9 tests sur 384, tous dans `test_travail.py` (`OSError: [Errno 9] Bad file descriptor`). Les tests qui lancent un vrai processus de travail passent sous Windows : transmission du handle, lecture sans `pread` et environnement réduit à `SYSTEMROOT` fonctionnent. Défaut des tests : ils passaient à `--descripteur` un descripteur, alors que sous Windows le processus de travail attend un handle, ce que le principal envoie. Corrigé dans les tests.
+18. Pendant la revue, TheDarkMac a validé ADR-0064 et ADR-0065 : statut « Accepté ». Il a demandé le merge de la PR une fois la CI verte.
 
 ## Problèmes rencontrés
 
@@ -49,6 +52,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : moteur de modules, avec
 | Fichiers de mesure corrompus encore présents au passage suivant | `rm .coverage.*` sous zsh : un motif sans correspondance annule toute la commande | `find . -maxdepth 1 -name '.coverage*' -delete` |
 | Collision de nom dans un utilitaire de test (`identifiant` en position et en mot-clé) | Paramètre et champ du manifeste de même nom | Paramètre renommé |
 | `RUF001` sur un séparateur de ligne Unicode littéral dans un test | Caractère ambigu dans le source | Écrit `chr(0x2028)` |
+| 9 tests en échec sous Windows seulement (`Bad file descriptor`) | Les tests du processus de travail dans le processus des tests passaient un descripteur là où Windows attend un handle | Fonction `transmis` dans `test_travail.py`, qui passe le handle sous Windows comme le principal |
 
 Aucun de ces problèmes n'est une erreur d'une analyse ou d'une décision antérieure : pas d'erratum. Les écarts avec ADR-0036 (`-B`, sortie d'erreur, Job Object) sont des décisions nouvelles, consignées dans ADR-0065 et signalées dans l'historique d'ADR-0036.
 

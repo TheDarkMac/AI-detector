@@ -1,8 +1,8 @@
 # ADR-0064 — Manifeste des modules : contenu, validation, ordre d'exécution
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-26
-- **Décideur** : l'assistant, sans question posée pendant T12 ; soumis à TheDarkMac dans la PR de T12
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T12, validée pendant la revue de la PR de T12
 - **Tâche** : T12
 - **Exigences liées** : NF-09, NF-10, F-25 ; M-31 ; ADR-0022, ADR-0038, ADR-0042, ADR-0063
 
@@ -45,7 +45,7 @@ Option A. Champs de `manifeste.toml`, validés par `schemas/manifeste.schema.jso
 
 ## Raisons
 
-- Option A proposée : elle vérifie ADR-0022 dès T12, et un manifeste ne peut pas dire autre chose que ce que le schéma admet.
+- Option A retenue, proposée par l'assistant et validée par TheDarkMac : elle vérifie ADR-0022 dès T12, et un manifeste ne peut pas dire autre chose que ce que le schéma admet.
 - Option B écartée : elle repousse à T15 une vérification possible maintenant, et laisse passer les champs mal nommés.
 - Identifiant en minuscules et chiffres : il sert de nom d'import Python et de préfixe des identifiants d'observation, dont la forme (ADR-0054) n'admet pas le tiret bas.
 - Arrêt sur manifeste invalide plutôt que module ignoré : ignorer un module en silence fausserait la couverture (F-25).
@@ -60,4 +60,5 @@ Option A. Champs de `manifeste.toml`, validés par `schemas/manifeste.schema.jso
 
 | Date | Modification |
 | --- | --- |
-| 2026-10-26 | Création |
+| 2026-10-26 | Création, statut « Proposé » |
+| 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T12 : statut « Accepté » |
