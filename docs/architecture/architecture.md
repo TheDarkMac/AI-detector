@@ -1,0 +1,257 @@
+# Architecture
+
+> Statut : **v1.0, proposée à TheDarkMac dans la PR de T04**. Document vivant : toute modification est inscrite à l'historique (§13).
+> Exigences : NF-01, NF-06, NF-10 ; exigences de sécurité ES-01, ES-02, ES-05, ES-10, ES-17, ES-18 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-05, A-16, A-30, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
+> Tâche : T04. Date de rédaction : 2026-10-26.
+
+## 1. Objet
+
+Ce document décrit comment l'outil est construit : ses composants, le déroulé d'une analyse, l'isolation sur chaque système, les données échangées, les dépendances et la distribution. Il applique les décisions de T02 et les exigences de sécurité de T03 ; il ne décide rien par lui-même, chaque choix renvoie à un ADR.
+
+Il fixe les **frontières et les contrats**, pas le détail : le modèle de données (T11), le moteur de modules (T12), les limites chiffrées (T14), le schéma du catalogue (T15) et le rapport (T16) restent à leurs tâches (§12).
+
+### Décisions de T04
+
+| ADR | Décision |
+| --- | --- |
+| [ADR-0034](../decisions/ADR-0034-langage-python.md) | Python 3.12 ou ultérieur |
+| [ADR-0035](../decisions/ADR-0035-systemes-et-mecanismes-d-isolation.md) | Linux, macOS et Windows en V1 ; Linux en référence ; mécanismes d'isolation par système |
+| [ADR-0036](../decisions/ADR-0036-processus-de-travail-et-protocole.md) | Un interpréteur neuf par fichier, fichier transmis par descripteur, résultats en lignes JSON validées |
+| [ADR-0037](../decisions/ADR-0037-gestion-des-dependances.md) | uv, verrou à empreintes, fichier d'installation verrouillé publié |
+| [ADR-0038](../decisions/ADR-0038-format-du-catalogue.md) | Catalogue en TOML, validé par JSON Schema |
+| [ADR-0039](../decisions/ADR-0039-expressions-regulieres-re2.md) | Expressions régulières du catalogue exécutées par RE2 |
+| [ADR-0040](../decisions/ADR-0040-empreinte-sha-256.md) | Empreinte SHA-256 du fichier entier |
+| [ADR-0041](../decisions/ADR-0041-canal-de-distribution.md) | Canal unique PyPI, Trusted Publishing et attestations |
+| [ADR-0042](../decisions/ADR-0042-modules-et-extension.md) | Modules découverts dans le paquet, manifeste déclaratif, aucune extension tierce en V1 |
+| [ADR-0043](../decisions/ADR-0043-politique-des-bibliotheques.md) | Analyseurs de structure en Python pur ; bibliothèques tierces choisies par critères |
+| [ADR-0044](../decisions/ADR-0044-titre-des-commits-de-merge.md) | Titre des commits de merge fixé à la main (méthode) |
+
+## 2. Vue d'ensemble
+
+```mermaid
+flowchart TB
+  U([Utilisateur]) -->|commande| CLI
+  L([Programme appelant]) -->|appel| API
+  subgraph P1["P1 Processus principal (non isolé, ne lit jamais le fichier pour l'interpréter)"]
+    CLI[Ligne de commande]
+    API[Interface de bibliothèque]
+    ORC[Orchestrateur]
+    SOU[Soumission et empreinte]
+    CAT[Chargeur du catalogue et des manifestes]
+    VAL[Validation des messages]
+    RAP[P3 Générateur de rapport]
+    CLI --> ORC
+    API --> ORC
+    ORC --> SOU
+    ORC --> CAT
+    ORC --> VAL
+    VAL --> RAP
+  end
+  subgraph P2["P2 Processus de travail (un par fichier, isolé)"]
+    VER[Verrouillage]
+    IDF[Identification du format]
+    MOD[Modules d'analyse]
+    REG[Évaluation des règles]
+    VER --> IDF --> MOD --> REG
+  end
+  D1[(D1 Fichier soumis)]
+  D2[(D2 Catalogue, liste de confiance, manifestes)]
+  D3[(D3 Rapports HTML et JSON)]
+  SOU -->|descripteur ouvert en lecture| D1
+  CAT --> D2
+  ORC -->|lance, transmet le descripteur et la configuration| P2
+  P2 -->|lignes JSON bornées| VAL
+  RAP --> D3
+```
+
+Description textuelle (accessibilité, ADR-0025) :
+
+- L'utilisateur passe par la **ligne de commande**, un programme par l'**interface de bibliothèque** ; les deux mènent à l'**orchestrateur**, dans le processus principal P1.
+- P1 ouvre le fichier, vérifie que c'est un fichier régulier, calcule son empreinte, charge et valide le catalogue et les manifestes des modules. Il n'interprète jamais le contenu du fichier.
+- Pour chaque fichier, P1 lance un **processus de travail** P2. P2 se verrouille, identifie le format, exécute les modules qui le traitent, évalue les règles du catalogue, et renvoie ses résultats en lignes JSON.
+- P1 valide chaque message par schéma, puis le **générateur de rapport** produit les exports HTML et JSON.
+
+Ce découpage reprend le diagramme de flux du modèle de menace (§5) : P1, P2, P3 et les frontières FC1 (fichier vers P2) et FC2 (P2 vers P1) y gardent le même sens.
+
+## 3. Déroulé d'une analyse
+
+```mermaid
+sequenceDiagram
+  participant P1 as Processus principal
+  participant P2 as Processus de travail
+  P1->>P1: ouvrir le fichier, vérifier fichier régulier, empreinte SHA-256
+  P1->>P1: charger et valider catalogue et manifestes
+  P1->>P2: lancer python -I, environnement vide, descripteur hérité
+  Note over P1,P2: Windows : Job Object posé avant tout envoi
+  P2->>P2: importer les modules, appliquer les restrictions
+  P2-->>P1: message 1 : état de l'isolation (aucun octet du fichier lu)
+  P1->>P2: configuration : catalogue, limites, modules actifs
+  P2->>P2: lire le fichier, recalculer l'empreinte, identifier, analyser
+  P2-->>P1: messages : observations, constats, analyses non menées, versions
+  P2-->>P1: message final : empreinte recalculée, fin
+  P1->>P1: valider, comparer les empreintes, produire le rapport
+```
+
+Description textuelle :
+
+1. P1 ouvre le fichier en lecture seule et sans blocage, vérifie sur le descripteur que c'est un fichier régulier (ES-08), calcule l'empreinte SHA-256 (ADR-0040).
+2. P1 charge le catalogue et la liste de confiance, les valide par schéma (ES-09), lit les manifestes des modules (ADR-0042).
+3. P1 lance P2 : `python -I -m <paquet>._travail`, environnement vidé, seul le descripteur du fichier et les tubes hérités (ADR-0036). Sous Windows, P2 est placé dans un Job Object avant tout envoi.
+4. P2 importe ses modules, applique ses restrictions (§5), puis envoie l'**état de l'isolation**. À ce moment, il n'a lu aucun octet du fichier : ce message est fiable.
+5. P1 envoie la configuration : catalogue validé, limites, modules actifs.
+6. P2 lit le fichier par lectures à position explicite, recalcule l'empreinte, identifie le format (T13), exécute les modules concernés, évalue les règles, et envoie ses résultats.
+7. P1 valide chaque message ; une empreinte différente invalide le rapport (ES-08) ; un message invalide, un délai dépassé ou un arrêt anormal donnent des analyses non menées (ES-04, NF-03). P3 produit le rapport.
+
+Dans un lot (ADR-0015), ces étapes se répètent pour chaque fichier, avec un nouveau P2, sans état partagé (ES-04).
+
+## 4. Composants et organisation du code
+
+Le nom du paquet dépend du nom du projet, non tranché (§12) ; il est noté `<paquet>`.
+
+```text
+src/<paquet>/
+  __init__.py        interface publique de la bibliothèque : analyse par P2 seulement (ES-17)
+  cli.py             ligne de commande (argparse)
+  _orchestration/    P1 : soumission, empreinte, lancement de P2, délais, validation des messages
+  _isolation/        restrictions par système : linux, macos, windows (ADR-0035)
+  _travail/          point d'entrée de P2 : verrouillage, protocole, acheminement vers les modules
+  _regles/           évaluation des règles du catalogue (RE2, ADR-0039)
+  modules/           une technique par sous-paquet, avec son manifeste (ADR-0042)
+  rapport/           modèle du rapport (T11), exports HTML et JSON (T16)
+  schemas/           JSON Schema : messages de P2, catalogue, manifestes, rapport
+  donnees/           catalogue TOML, liste de confiance C2PA (ADR-0029, ADR-0038)
+```
+
+| Composant | Processus | Rôle | Tâches |
+| --- | --- | --- | --- |
+| Ligne de commande, interface de bibliothèque | P1 | Entrées ; aucune fonction d'analyse dans le processus appelant | T10, T12, T90 |
+| Orchestration | P1 | Ouverture, empreinte, lancement, délais, validation, lot | T12, T13, T14 |
+| Isolation | P2 | Restrictions du système, état de l'isolation | T14 |
+| Travail | P2 | Verrouillage, protocole, acheminement, isolation des erreurs par module | T12 |
+| Règles | P2 | Application du catalogue aux observations | T15 |
+| Modules | P2 | Une technique chacun | T13, T20 et suivantes |
+| Rapport | P1 | Résumé sans verdict, rubriques, masquage, exports | T11, T16 |
+| Schémas, données | P1 et P2 | Contrats et catalogue livrés avec l'outil | T11, T15, T30 |
+
+Les dossiers préfixés `_` sont internes ; les analyseurs vérifient qu'ils s'exécutent dans un P2 verrouillé et refusent sinon (ES-17).
+
+## 5. Isolation par système
+
+Restrictions appliquées par P2 à lui-même, avant de lire le fichier ([ADR-0035](../decisions/ADR-0035-systemes-et-mecanismes-d-isolation.md)) :
+
+| Restriction (ES-02, ES-03, ES-15) | Linux (référence) | macOS | Windows |
+| --- | --- | --- | --- |
+| Réseau | Landlock (TCP) et seccomp (création de socket refusée) | Seatbelt : refusé | Non bloqué : « isolation réduite » |
+| Système de fichiers | Landlock : aucun accès ; fichier par descripteur | Seatbelt : aucune écriture ; lecture limitée à Python | Intégrité « basse » : écriture refusée presque partout ; lecture non restreinte |
+| Nouveaux programmes | seccomp : `execve` refusé ; `no_new_privs` | Seatbelt : refusé | Job Object : un seul processus |
+| Mémoire | `RLIMIT_AS` | Surveillance par P1, à confirmer | Job Object |
+| Temps | `RLIMIT_CPU` et délai de P1 | Délai de P1 | Job Object et délai de P1 |
+| Vidages mémoire | `RLIMIT_CORE` nul, non vidable | `RLIMIT_CORE` nul | Rapport d'erreur désactivé, à confirmer |
+| Ce qui peut manquer | Landlock absent (noyau ancien) ou réseau Landlock absent (avant 6.7) : seccomp couvre le réseau | Interface Seatbelt retirée par Apple | Réseau, lecture |
+
+Le rapport porte l'état de l'isolation : complète, ou réduite avec la liste de ce qui manque. Un conteneur reste l'option documentée pour les profils exposés (ADR-0028).
+
+Ce qui ne passe par aucun de ces mécanismes, sur tous les systèmes :
+
+- le XML est lu sans DTD ni entité externe (`defusedxml`), les archives en mémoire, jamais extraites (ES-05) ;
+- aucune URL issue du fichier n'est résolue (ES-06, ADR-0033) ;
+- P2 n'écrit rien sur disque ; ES-02 autorise un répertoire temporaire privé, la V1 n'en prévoit pas.
+
+## 6. Contrats de données
+
+| Échange | Forme | Validation |
+| --- | --- | --- |
+| P1 → P2, configuration | Un objet JSON sur l'entrée standard : catalogue validé, limites, modules actifs, options | Données produites par P1 |
+| P2 → P1, résultats | Lignes JSON sur la sortie standard, de types : `isolation`, `observation`, `constat`, `non_menee`, `versions`, `fin` | Taille bornée par message et au total ; JSON Schema par type (ES-04) |
+| P2 → P1, erreurs | Sortie d'erreur | Lue et bornée, jamais affichée ni recopiée (ES-15) |
+| Catalogue, manifestes | TOML | JSON Schema au chargement (ES-09, ADR-0038) |
+| Rapport exporté | JSON et HTML autonome | Schéma publié (ADR-0025) ; HTML échappé, politique de sécurité du contenu (ES-12) |
+
+Une **observation** est une donnée relevée par un module (valeur d'un champ, mesure). Un **constat** est ce qu'une règle du catalogue en tire : phrase, donnée observée, règle, catégorie, direction, niveau (§6 du cahier, ADR-0018, ADR-0021). Cette séparation garde les règles hors du moteur (F-26) ; un module peut aussi produire un constat directement quand la vérification est déterministe (signature C2PA). La forme exacte relève de T11.
+
+Les règles sont évaluées dans P2 : une donnée hostile n'est jamais confrontée à une expression régulière dans P1. Conséquence acceptée : un P2 compromis peut forger les constats de son propre fichier (RR-01).
+
+## 7. Modules et extension (NF-10)
+
+- Un module est un sous-paquet de `modules/`, avec un manifeste TOML : identifiant, version, formats, exigences, règles employées, fiche technique, dépendances envers d'autres modules ([ADR-0042](../decisions/ADR-0042-modules-et-extension.md)).
+- P1 lit les manifestes sans importer le code, et en tire la couverture du rapport (F-25, F-82). P2 importe le code.
+- Ajouter une technique ou un format, c'est ajouter un sous-paquet, ses règles au catalogue et sa fiche : aucun autre module n'est modifié.
+- Une exception dans un module rend ses analyses « non menées » ; un arrêt de P2 rend non menées toutes les analyses restantes du fichier, avec la raison.
+- Le contenu extrait d'un fichier (images et texte d'un PDF, T53) est acheminé vers les modules concernés dans le même P2.
+- Point d'extension des services tiers (ADR-0017) : interface documentée, aucune implémentation en V1 ; un tel service ne peut pas s'exécuter dans P2, qui n'a pas de réseau. Son mode d'exécution sera fixé par un nouvel ADR, avec révision du modèle de menace.
+
+## 8. Catalogue et règles
+
+- Fichiers TOML livrés dans le paquet, validés par JSON Schema au chargement ; version et empreinte SHA-256 au rapport ; catalogue fourni par l'utilisateur accepté et signalé (ADR-0029, ADR-0038, ADR-0040).
+- Expressions régulières exécutées par RE2, compilées par P1 au chargement pour valider le catalogue, appliquées par P2 (ADR-0039).
+- Seuils, procédure de calibrage, niveau et taux de chaque règle dans le catalogue (ADR-0016, ADR-0018) ; schéma en T15.
+
+## 9. Dépendances
+
+Politique : [ADR-0043](../decisions/ADR-0043-politique-des-bibliotheques.md) ; gestion : [ADR-0037](../decisions/ADR-0037-gestion-des-dependances.md).
+
+| Dépendance | Licence | Où elle s'exécute | Pourquoi |
+| --- | --- | --- | --- |
+| Bibliothèque standard Python | PSF-2.0 | P1 et P2 | `hashlib`, `tomllib`, `json`, `zipfile`, `struct`, `argparse`, `ctypes` |
+| `c2pa-python` | Apache-2.0 ou MIT | P2 | C2PA (T30) |
+| `defusedxml` | PSF-2.0 | P2 | XMP, DOCX, ODT (ES-05) |
+| `pypdf` | BSD-3-Clause | P2 | Objets PDF (T50 à T53) |
+| `google-re2` | BSD-3-Clause | P1 (compilation), P2 | Expressions du catalogue (ES-09) |
+| `jsonschema` | MIT | P1 | Validation des messages, du catalogue, des manifestes |
+| `numpy` | BSD-3-Clause | P2 | Analyses JPEG (T40, T41) |
+| uv | Apache-2.0 ou MIT | Développement, CI | Verrou à empreintes |
+| exiftool | Perl (Artistic ou GPL) | Tests seulement | Oracle de test des métadonnées (T20, T21) |
+
+Cette liste est une liste de candidates : chaque tâche confirme ou remplace la sienne selon les critères d'ADR-0043. Exclues : GPL et AGPL, lecteurs qui résolvent des entités externes ou suivent des liens.
+
+## 10. Reproductibilité (NF-06)
+
+Reformulée par ADR-0023 : mêmes fichier, versions de l'outil, du catalogue et des dépendances, mêmes données externes, analyse non interrompue.
+
+| Condition | Moyen |
+| --- | --- |
+| Mêmes versions de l'outil et des dépendances | Verrou `uv.lock` ; fichier d'installation verrouillé publié avec chaque version (ADR-0037) ; versions réelles au rapport |
+| Même catalogue | Livré avec l'outil, version et empreinte au rapport (ADR-0029) |
+| Mêmes données externes | Hors ligne par défaut (ADR-0010) ; toute réponse réseau inscrite au rapport (ADR-0033) |
+| Analyse non interrompue | Analyse interrompue signalée et hors garantie ; budget de travail déterministe ou non, à trancher en T14 (ADR-0023) |
+| Aucun état partagé | Un interpréteur neuf par fichier (ADR-0036) |
+
+## 11. Distribution et chaîne d'approvisionnement
+
+- Canal officiel unique : PyPI, publication par Trusted Publishing avec attestations de provenance ; release GitHub avec empreintes des paquets, fichier d'installation verrouillé, version et empreinte du catalogue ([ADR-0041](../decisions/ADR-0041-canal-de-distribution.md)).
+- Installation documentée par `pipx` ou `uv tool` ; installation reproductible par le fichier verrouillé.
+- Actions d'intégration continue épinglées par empreinte de commit (ADR-0006) ; dépendances figées avec empreintes (ADR-0037) ; peu de dépendances (ADR-0043).
+- La première publication attend le nom du projet.
+
+### Réalisation des exigences de sécurité rattachées à T04
+
+| ES | Ce que l'architecture prévoit | Réalisée en |
+| --- | --- | --- |
+| ES-01 | Un P2 par fichier ; P1 ne lit le fichier que pour l'empreinte (§3) | T12 |
+| ES-02 | Restrictions par système, état de l'isolation au rapport (§5) | T14 |
+| ES-05 | `defusedxml` ; archives en mémoire ; aucune écriture de P2 (§5) | T20, T21 |
+| ES-10 | P2 sans réseau ; toute requête sortante part de P1, désactivée par défaut, selon ADR-0033 ; inventaire du modèle de menace inchangé | T30 |
+| ES-17 | Interface publique limitée à l'analyse par P2 ; garde dans les analyseurs (§4) | T12 |
+| ES-18 | Verrou à empreintes, canal unique, attestations, peu de dépendances, Python pur d'abord (§9, §11) | T10 |
+
+Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-22) sont réalisées par les tâches que le modèle de menace leur attribue ; l'architecture leur donne leur place : limites dans P2 (ES-03), messages validés (ES-04), empreinte recalculée (ES-08), catalogue validé (ES-09), rapport dans P1 (ES-12 à ES-14), aucune écriture (ES-15).
+
+## 12. Ce que l'architecture ne fixe pas
+
+| Point | Tâche |
+| --- | --- |
+| Nom du projet, donc du paquet ; à trancher avant T10 (nom d'import) et avant toute publication | Registre des arbitrages |
+| Valeurs des limites, délai, budget de travail ; mesure du coût de démarrage de P2 | T14 |
+| Points « à confirmer » de l'isolation sous macOS et Windows | T14 |
+| Forme des observations, des constats et des messages | T11 |
+| Schéma et découpage du catalogue ; syntaxe RE2 admise | T15 |
+| Gabarit HTML et moyen d'échappement | T16 |
+| Disponibilité des paquets binaires de `google-re2` et `c2pa-python` sur les trois systèmes ; examen des dépendances transitives ; surveillance des failles connues | T10 |
+| Moyen de lire les coefficients DCT | T41 |
+| Mode d'exécution d'un service tiers | Nouvel ADR, avec le premier service |
+
+## 13. Historique
+
+| Date | Version | Modification | Origine |
+| --- | --- | --- | --- |
+| 2026-10-26 | 1.0 | Création | T04 |

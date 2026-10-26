@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.1** ; v1.0 mergée avec T02, v1.1 proposée dans la PR de T03. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.2** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 proposée dans la PR de T04. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -24,7 +24,7 @@ Statuts : **Tranché** (ADR cité), **Reporté** (tâche citée), **Non tranché
 
 | Point | Statut | Décision ou raison du report | Référence |
 | --- | --- | --- | --- |
-| Nom du projet | Non tranché | Ne conditionne aucune tâche avant une publication. Le nom de travail « AI-detector » promet une détection que l'outil ne fait pas seul (ADR-0008, NF-14) : à revoir avant toute version publiée. | — |
+| Nom du projet | Non tranché | Ne conditionne aucune tâche avant une publication. Le nom de travail « AI-detector » promet une détection que l'outil ne fait pas seul (ADR-0008, NF-14) : à revoir avant toute version publiée. Depuis T04, il est aussi nécessaire avant T10 (nom d'import du paquet) et avant la première publication sur PyPI, où il faudra le réserver (ADR-0041). | — |
 | Public cible prioritaire | Tranché | Journalistes et vérificateurs ; juristes en second | ADR-0009 |
 | Mode de distribution | Tranché | Ligne de commande et bibliothèque | ADR-0010 |
 | Modèle économique et licence | Tranché | Libre et gratuit, Apache-2.0 | ADR-0011 |
@@ -88,8 +88,8 @@ Statuts : **Tranché** (ADR cité), **Reporté** (tâche citée), **Non tranché
 | 6 | Taux de faux positifs par fichier, combinaison | Tranché | ADR-0018 |
 | 7 | Séparation calibrage / évaluation | Tranché | ADR-0016 |
 | 8 | Double usage des techniques d'identification de source | Tranché : hors V1 (ADR-0014), admises en V2 avec garde-fous (ADR-0032) | ADR-0014, ADR-0032 |
-| 9 | Contenu du catalogue et authentification de ses mises à jour | Intégrité tranchée en T03 : livré avec l'outil, version et empreinte au rapport (ADR-0029). Contenu et format en T15 ; ADR-0019 implique que les seuils sont publics, donc peuvent y figurer. Question 5 à l'auteur en attente. | ADR-0029, T15 |
-| 10 | Niveau d'isolation de l'analyse | Tranché en T03 : processus restreint par fichier ; mécanismes en T04 | ADR-0028, T04 |
+| 9 | Contenu du catalogue et authentification de ses mises à jour | Intégrité tranchée en T03 : livré avec l'outil, version et empreinte au rapport (ADR-0029). Format d'écriture tranché en T04 : TOML validé par JSON Schema (ADR-0038), expressions RE2 (ADR-0039). Contenu et schéma en T15 ; ADR-0019 implique que les seuils sont publics, donc peuvent y figurer. Question 5 à l'auteur en attente. | ADR-0029, T15 |
+| 10 | Niveau d'isolation de l'analyse | Tranché en T03 : processus restreint par fichier ; mécanismes par système tranchés en T04 | ADR-0028, ADR-0035, ADR-0036 |
 | 11 | Recherche d'antériorité | Tranché : hors périmètre | ADR-0015 |
 | 12 | Faisabilité de l'étude d'usage | Tranché : hors V1 | ADR-0026 |
 
@@ -102,6 +102,15 @@ Autres constats de l'analyse adressés à T02 :
 | A-24 DOCX/ODT comme conteneurs | Examiné en T81 (ADR-0013) ; non tranché |
 | A-35, A-38, A-40, A-41 | ADR-0012, ADR-0013 |
 | A-45, A-51 | ADR-0014, ADR-0020 |
+
+Constats de l'analyse adressés à T04 :
+
+| Constat | Traitement |
+| --- | --- |
+| A-05 Reproductibilité : versions figées | ADR-0037 ; conditions récapitulées dans l'[architecture](../architecture/architecture.md) §10 |
+| A-16 Bibliothèque exécutée dans le processus appelant | ADR-0036 (analyse par le processus de travail seulement) |
+| A-30 Algorithme d'empreinte | ADR-0040 : SHA-256 du fichier entier |
+| A-53 Niveau d'isolation | ADR-0035 : mécanismes par système |
 
 ## 4. Exigences du cahier reformulées pour le projet
 
@@ -143,6 +152,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 - [Découpage](../00-plan/decoupage-taches.md) v0.6 : statut V1, V2 ou hors V1 de chaque tâche ; T105 ajoutée ; T31, T90, T95 redéfinies.
 - [Analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md) : renvoi vers ce registre.
 - [Modèle de menace](../modele-de-menace/modele-de-menace.md) (T03) : points 8, 9 et 10 du §3, portée de NF-17 ; reformulations de NF-01, NF-16, NF-17 et F-05 au §4 ; découpage v0.7.
+- [Architecture](../architecture/architecture.md) (T04) : points 9 et 10 du §3, nom du projet (§2), constats adressés à T04 (§3) ; découpage v0.8.
 
 ## 7. Historique
 
@@ -150,3 +160,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T02 |
 | 2026-10-26 | 1.1 | Arbitrages de T03 : conservation et limites (§2), points 8 à 10 (§3), reformulations de NF-01, NF-16, NF-17, F-05 (§4), effets (§6) | T03 |
+| 2026-10-26 | 1.2 | Choix de T04 : nom du projet désormais nécessaire avant T10 (§2), points 9 et 10, constats adressés à T04 (§3), effets (§6) | T04 |

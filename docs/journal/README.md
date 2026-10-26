@@ -16,4 +16,5 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T00](T00-initialisation-depot.md) | Initialisation du dépôt | `tache/T00-init-depot` | [#1](https://github.com/TheDarkMac/AI-detector/pull/1) |
 | [T01](T01-analyse-critique.md) | Analyse critique du cahier des charges | `tache/T01-analyse-critique` | [#2](https://github.com/TheDarkMac/AI-detector/pull/2) |
 | [T02](T02-arbitrages.md) | Arbitrage des points ouverts | `tache/T02-arbitrages` | [#3](https://github.com/TheDarkMac/AI-detector/pull/3) |
-| [T03](T03-modele-de-menace.md) | Modèle de menace | `tache/T03-modele-de-menace` | à venir |
+| [T03](T03-modele-de-menace.md) | Modèle de menace | `tache/T03-modele-de-menace` | [#4](https://github.com/TheDarkMac/AI-detector/pull/4) |
+| [T04](T04-architecture.md) | Architecture et choix techniques | `tache/T04-architecture` | à venir |

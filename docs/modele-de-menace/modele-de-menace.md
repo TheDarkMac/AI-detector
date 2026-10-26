@@ -1,6 +1,6 @@
 # Modèle de menace
 
-> Statut : **v1.0, proposée à TheDarkMac dans la PR de T03**. Document vivant : toute modification est inscrite à l'historique (§12).
+> Statut : **v1.1** ; v1.0 mergée avec T03, v1.1 proposée dans la PR de T04. Document vivant : toute modification est inscrite à l'historique (§12).
 > Exigences : NF-15 (livrable 7 du §9), NF-01, NF-16, NF-18 ; constats A-14, A-16, A-31, A-37, A-42, A-48, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T03. Date de rédaction : 2026-10-26.
 
@@ -85,7 +85,7 @@ L'**utilisateur négligent** n'est pas un adversaire, mais ses erreurs (sur-inte
 | ID | Hypothèse | Conséquence si elle tombe |
 | --- | --- | --- |
 | H1 | Le poste n'est pas compromis avant l'installation, et son système est maintenu à jour. | Aucune mesure de l'outil ne tient sur un poste compromis (RR-05). |
-| H2 | L'utilisateur obtient l'outil par le canal officiel documenté (T04). | Une version d'un autre canal peut être piégée (M-32). |
+| H2 | L'utilisateur obtient l'outil par le canal officiel documenté : PyPI ([ADR-0041](../decisions/ADR-0041-canal-de-distribution.md)). | Une version d'un autre canal peut être piégée (M-32). |
 | H3 | L'utilisateur ne cherche pas à nuire à ses propres sources ; l'outil le protège de ses erreurs par des réglages sûrs par défaut, pas de ses choix délibérés. | Voir le cas d'abus C-03 pour un utilisateur hostile aux sources. |
 | H4 | La protection du fichier avant et après l'analyse (canal de réception, stockage chiffré, effacement) relève de l'utilisateur. | Hors de portée de l'outil ; rappelé dans la documentation (T103). |
 | H5 | Une session d'analyse sert un seul utilisateur. | Un usage multi-utilisateur (serveur) impose de réviser ce modèle. |
@@ -196,7 +196,7 @@ C'est l'inventaire initial exigé par NF-16 ; il est tenu à jour à chaque tâc
 | RS-01 | Révocation des certificats C2PA (CRL de préférence, OCSP sinon) | CRL : rien de propre au fichier. OCSP : émetteur et numéro de série du certificat | Autorité de certification du signataire | OCSP : qu'un certificat donné est vérifié, et quand | Désactivée | T30 |
 | RS-02 | Manifeste C2PA distant | L'URL écrite dans le fichier | Hôte choisi par l'auteur du fichier | Adresse, heure, et l'exemplaire si l'URL lui est propre | Désactivée ; confirmation par fichier | T30 |
 | RS-03 | Horodatage RFC 3161 du rapport | Empreinte du rapport | Autorité d'horodatage choisie par l'utilisateur | Adresse et heure | Désactivée | T91 |
-| RS-04 | Service tiers à base d'IA | En général le fichier | Fournisseur du service | Contenu du fichier | Aucun en V1 ; consentement par fichier | Point d'extension (T04) |
+| RS-04 | Service tiers à base d'IA | En général le fichier | Fournisseur du service | Contenu du fichier | Aucun en V1 ; consentement par fichier | Point d'extension ([ADR-0042](../decisions/ADR-0042-modules-et-extension.md)) |
 | RS-05 | Références bibliographiques (F-72) | Références citées | Bases publiques | Contenu du travail (A-42) | Hors V1 (ADR-0013) | T83 |
 
 La mise à jour de l'outil, de son catalogue et de sa liste de confiance n'est pas une requête de l'outil : elle passe par le gestionnaire de paquets de l'utilisateur ([ADR-0029](../decisions/ADR-0029-integrite-du-catalogue.md)).
@@ -253,15 +253,15 @@ Chaque exigence dérive des menaces citées ; T04 choisit les moyens, les tâche
 
 | ID | Exigence | Menaces | Décision | Tâches |
 | --- | --- | --- | --- | --- |
-| ES-01 | Chaque fichier est analysé dans **un processus de travail qui lui est propre**. Le processus principal ne fait que lire les octets pour l'empreinte, sans les interpréter. | M-01, M-09 | ADR-0028 | T04, T12, T14 |
-| ES-02 | Le processus de travail n'a **aucun accès réseau**, lit le fichier en lecture seule, n'écrit nulle part ailleurs qu'un éventuel répertoire temporaire privé, et tourne avec les privilèges les plus réduits que le système permet. Si le système ne permet pas tout, le rapport porte « isolation réduite » et dit ce qui manque. | M-01, M-04, M-05, M-19 | ADR-0028 | T04, T14 |
+| ES-01 | Chaque fichier est analysé dans **un processus de travail qui lui est propre**. Le processus principal ne fait que lire les octets pour l'empreinte, sans les interpréter. | M-01, M-09 | ADR-0028, ADR-0036 | T04, T12, T14 |
+| ES-02 | Le processus de travail n'a **aucun accès réseau**, lit le fichier en lecture seule, n'écrit nulle part ailleurs qu'un éventuel répertoire temporaire privé, et tourne avec les privilèges les plus réduits que le système permet. Si le système ne permet pas tout, le rapport porte « isolation réduite » et dit ce qui manque. | M-01, M-04, M-05, M-19 | ADR-0028, ADR-0035 | T04, T14 |
 | ES-03 | Limites de ressources : taille d'entrée, taille décompressée cumulée et rapport de compression, dimensions déclarées, profondeur d'imbrication, nombre d'objets, mémoire, temps ou budget de travail (ADR-0023). Dépassement : analyse interrompue, signalée au rapport (NF-02, NF-08). Valeurs fixées en T14. | M-02, M-03 | ADR-0028 | T14 |
-| ES-04 | Le processus de travail renvoie des données simples (pas d'objets sérialisés), de taille bornée, **validées par un schéma** dans le processus principal ; un résultat invalide devient une analyse non menée. Aucun état partagé entre les fichiers d'un lot. | M-09, M-10 | ADR-0028 | T11, T12 |
-| ES-05 | XML lu sans DTD, sans entités externes ni résolution réseau. Archives lues en mémoire, jamais extraites sur disque, avec les limites d'ES-03. | M-04, M-05 | — | T04, T20, T21 |
+| ES-04 | Le processus de travail renvoie des données simples (pas d'objets sérialisés), de taille bornée, **validées par un schéma** dans le processus principal ; un résultat invalide devient une analyse non menée. Aucun état partagé entre les fichiers d'un lot. | M-09, M-10 | ADR-0028, ADR-0036 | T11, T12 |
+| ES-05 | XML lu sans DTD, sans entités externes ni résolution réseau. Archives lues en mémoire, jamais extraites sur disque, avec les limites d'ES-03. | M-04, M-05 | ADR-0043 | T04, T20, T21 |
 | ES-06 | Aucun contenu actif exécuté, aucune page rendue, **aucune URL issue du fichier résolue automatiquement** (RS-02 excepté, sur confirmation, ES-10). | M-07, M-14 | ADR-0033 | T21, T30, T52 |
 | ES-07 | Identification du format par le contenu (F-02) ; un fichier reconnu dans plusieurs formats, ou qui contient des données après sa fin logique, est signalé comme tel ; chaque format reconnu est analysé, ou déclaré non analysé avec la raison. | M-08 | — | T13 |
 | ES-08 | Seuls les fichiers réguliers sont acceptés ; le processus de travail recalcule l'empreinte de ce qu'il a analysé, et un écart avec celle de P1 invalide le rapport. | M-06, M-30 | — | T13 |
-| ES-09 | Catalogue et liste de confiance livrés avec l'outil, **validés par schéma au chargement**, version et empreinte inscrites au rapport ; un catalogue fourni par l'utilisateur est signalé comme tel. Les expressions régulières du catalogue sont à temps linéaire. | M-03, M-11, M-12, M-13 | ADR-0029 | T15, T30 |
+| ES-09 | Catalogue et liste de confiance livrés avec l'outil, **validés par schéma au chargement**, version et empreinte inscrites au rapport ; un catalogue fourni par l'utilisateur est signalé comme tel. Les expressions régulières du catalogue sont à temps linéaire. | M-03, M-11, M-12, M-13 | ADR-0029, ADR-0038, ADR-0039 | T15, T30 |
 | ES-10 | Requêtes sortantes : inventaire du §6.3 tenu à jour ; toutes désactivées par défaut ; état de chacune au rapport ; aucune n'emporte le fichier, son contenu ni ses données identifiantes, sauf service tiers consenti pour ce fichier ; manifeste distant sur confirmation par fichier, hôte affiché ; CRL préférées à OCSP ; TLS vérifié ; réponses vérifiées puis inscrites au rapport. Sans vérification de révocation, le rapport le dit. | M-13 à M-16, M-18 | ADR-0010, ADR-0017, ADR-0033 | T04, T30 |
 | ES-11 | Le banc d'évaluation exécute l'analyse **sans réseau** et échoue à toute tentative de connexion (A-52). | M-19 | — | T17 |
 | ES-12 | Rapport HTML : tout texte issu du fichier est échappé ; politique de sécurité du contenu interdisant toute ressource externe et tout script non prévu par l'outil ; aucune ressource externe (ADR-0025). Toute sortie (HTML, JSON, terminal) neutralise les caractères de contrôle et bidirectionnels, en les montrant sous forme visible. | M-20, M-21 | — | T16, T90 |
@@ -269,14 +269,14 @@ Chaque exigence dérive des menaces citées ; T04 choisit les moyens, les tâche
 | ES-14 | Le rapport n'inscrit ni chemin, ni nom de machine, ni utilisateur du système ; les heures sont en UTC. | M-23 | — | T16 |
 | ES-15 | **Aucune trace par défaut** : ni cache, ni journal, ni télémétrie ; fichiers temporaires dans un répertoire privé effacé en fin d'analyse, ou en mémoire ; messages d'erreur sans contenu du fichier ni chemin ; vidages mémoire désactivés pour le processus de travail. | M-26 | ADR-0030 | T14, T91 |
 | ES-16 | NF-17 en local : journal optionnel, chaîné, sans noms de fichier, avec avertissement à l'activation ; « qui » déclaratif ; horodatage RFC 3161 optionnel de l'empreinte du rapport ; heure du poste toujours inscrite, marquée « non certifiée ». | M-17, M-24, M-25, M-27, M-28 | ADR-0030 | T91 |
-| ES-17 | La bibliothèque n'expose **aucune fonction qui analyse dans le processus appelant** ; toute analyse passe par ES-01. | M-29 | ADR-0028 | T04, T12 |
-| ES-18 | Chaîne d'approvisionnement : dépendances en nombre minimal, versions figées avec empreintes (ADR-0023) ; préférence, à fonction égale, pour les analyseurs écrits dans un langage sûr pour la mémoire ; actions d'intégration continue épinglées par empreinte de commit (déjà le cas, ADR-0006) ; canal de distribution unique documenté, empreintes des versions publiées. | M-01, M-11, M-19, M-31, M-32 | — | T04, T10 |
+| ES-17 | La bibliothèque n'expose **aucune fonction qui analyse dans le processus appelant** ; toute analyse passe par ES-01. | M-29 | ADR-0028, ADR-0036 | T04, T12 |
+| ES-18 | Chaîne d'approvisionnement : dépendances en nombre minimal, versions figées avec empreintes (ADR-0023) ; préférence, à fonction égale, pour les analyseurs écrits dans un langage sûr pour la mémoire ; actions d'intégration continue épinglées par empreinte de commit (déjà le cas, ADR-0006) ; canal de distribution unique documenté, empreintes des versions publiées. | M-01, M-11, M-19, M-31, M-32 | ADR-0037, ADR-0041, ADR-0043 | T04, T10 |
 | ES-19 | Fuzzing des analyseurs de chaque format de la V1 ; catégorie « malformés » du corpus (§8 du cahier). | M-01 à M-05 | — | T14, T100, T102 |
 | ES-20 | Une déclaration non signée est restituée comme ce que le fichier déclare ; seule une vérification cryptographique ou déterministe produit une preuve (ADR-0021). | C-02 | ADR-0021 | T11, T22, T30 |
 | ES-21 | Fonctions à double usage (T45, T93, T94) soumises aux garde-fous d'ADR-0032. | C-03 | ADR-0032 | T45, T93, T94 |
 | ES-22 | Provenance documentée de chaque fichier du corpus ; corpus versionné ; calibrage reproductible. | M-33 | ADR-0016 | T100 |
 
-Les exigences sans ADR découlent directement d'une exigence du cahier (NF-01, NF-02, NF-16, NF-18, F-02) ou d'une décision déjà prise ; elles ne choisissent pas entre des options.
+Comment l'architecture réalise ces exigences : [architecture](../architecture/architecture.md), §5 et §11. Les exigences sans ADR découlent directement d'une exigence du cahier (NF-01, NF-02, NF-16, NF-18, F-02) ou d'une décision déjà prise ; elles ne choisissent pas entre des options.
 
 ## 9. Risques résiduels
 
@@ -323,3 +323,4 @@ Chaque tâche qui touche une surface du §5 vérifie, dans sa PR, que ses menace
 | Date | Version | Modification | Origine |
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T03 |
+| 2026-10-26 | 1.1 | Choix de T04 : canal officiel (H2), point d'extension (RS-04), ADR de T04 dans la colonne « Décision » du §8 ; aucune menace ni surface nouvelle | T04 |

@@ -48,3 +48,4 @@ NF-06 est reformulée pour le projet : « Même fichier ; mêmes versions de l'o
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : versions des dépendances figées par ADR-0037 (T04) |

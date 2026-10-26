@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.7** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 proposée dans la PR de T03. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.8** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 proposée dans la PR de T04. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -46,18 +46,18 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 | T01 | Analyse critique du cahier : ambiguïtés, incohérences, dépendances cachées (voir §5) | Toutes | `docs/01-analyse/` |
 | T02 | Arbitrage des points ouverts (section 10) : un ADR par décision, avec options écartées et raisons | Section 10 | `docs/decisions/ADR-xxxx`, `docs/02-arbitrages/` |
 | T03 | Modèle de menace : adversaires, biens à protéger, surfaces d'attaque (fichiers hostiles, requêtes sortantes, fuite de sources) | NF-15, NF-01, NF-16, NF-18 | Livrable 7 : [`modele-de-menace/`](../modele-de-menace/modele-de-menace.md) |
-| T04 | Architecture et choix techniques (langage, bibliothèques, format du catalogue, mécanismes d'isolation par système, ADR-0028), canal de distribution (ADR-0029), justifiés par T02 et T03 ; réalise les exigences de sécurité ES-xx qui lui sont rattachées | NF-10, NF-01, NF-06 | ADR + schéma |
+| T04 | Architecture et choix techniques (langage, bibliothèques, format du catalogue, mécanismes d'isolation par système, ADR-0028), canal de distribution (ADR-0029), justifiés par T02 et T03 ; réalise les exigences de sécurité ES-xx qui lui sont rattachées | NF-10, NF-01, NF-06 | [`architecture/`](../architecture/architecture.md), ADR-0034 à ADR-0044 |
 
 ### P1 — Socle
 
 | ID | Tâche | Exigences |
 | --- | --- | --- |
-| T10 | Squelette du projet, outillage (formatage, analyse statique, tests), intégration continue | NF-09 (outillage) |
+| T10 | Squelette du projet Python (ADR-0034), outillage (formatage, analyse statique, tests), uv et verrou à empreintes (ADR-0037), intégration continue sur Linux, macOS et Windows (ADR-0035), workflow de publication PyPI avec attestations (ADR-0041), examen des dépendances transitives et disponibilité des paquets binaires (ADR-0039, ADR-0043) ; nom d'import à trancher avant | NF-09 (outillage), ES-18 |
 | T11 | Modèle de données : **Constat** (phrase, donnée observée, règle, catégorie, direction), **Rapport**, analyse non menée, couverture | F-80, F-81, F-82, §6 |
-| T12 | Moteur de modules : enregistrement, activation/désactivation, isolation des erreurs par module | Modularité, NF-10, NF-03 |
-| T13 | Soumission et identification : format réel par signature binaire, discordance d'extension, refus hors périmètre, empreinte (algorithme fixé en T04, A-30) vérifiée en fin d'analyse, fichiers polyglottes signalés (ES-07, ES-08) ; plusieurs fichiers par commande, analysés indépendamment (ADR-0015) | F-01 à F-05 |
-| T14 | Sécurité d'exécution : limites taille/temps/mémoire, bombes de décompression, processus restreint par fichier (ADR-0028), aucune trace sur le poste (ES-15), fuzzing des analyseurs (ES-19), rapport partiel en cas d'échec | NF-01, NF-02, NF-03, NF-08 |
-| T15 | Catalogue de règles versionné et daté, séparé du moteur, avec schéma de validation, livré avec l'outil, version et empreinte au rapport (ADR-0029) | F-26, NF-06, NF-07 |
+| T12 | Moteur de modules : découverte et manifestes (ADR-0042), activation/désactivation, isolation des erreurs par module ; lancement du processus de travail et protocole (ADR-0036) | Modularité, NF-10, NF-03 |
+| T13 | Soumission et identification : format réel par signature binaire, discordance d'extension, refus hors périmètre, empreinte SHA-256 (ADR-0040) vérifiée en fin d'analyse, fichiers polyglottes signalés (ES-07, ES-08) ; plusieurs fichiers par commande, analysés indépendamment (ADR-0015) | F-01 à F-05 |
+| T14 | Sécurité d'exécution : limites taille/temps/mémoire, bombes de décompression, processus restreint par fichier (ADR-0028), mécanismes par système (ADR-0035), aucune trace sur le poste (ES-15), fuzzing des analyseurs (ES-19), rapport partiel en cas d'échec | NF-01, NF-02, NF-03, NF-08 |
+| T15 | Catalogue de règles versionné et daté, séparé du moteur, avec schéma de validation, livré avec l'outil, version et empreinte au rapport (ADR-0029) ; fichiers TOML et JSON Schema (ADR-0038), expressions RE2 (ADR-0039) | F-26, NF-06, NF-07 |
 | T16 | Génération du rapport : résumé sans verdict (ADR-0018), rubriques §6, exports HTML autonome et JSON avec schéma (ADR-0025), masquage par défaut des données identifiantes, empreinte comprise (ADR-0031), protection du HTML contre l'injection (ES-12), avertissement | F-83, §6, NF-11, NF-12, NF-14, NF-18 |
 | T17 | Banc d'évaluation : corpus séparé calibrage / évaluation (ADR-0016), calcul FP / FN / non analysables par technique et catégorie, taux de FP par fichier et bornes des niveaux d'indice (ADR-0018) ; matrice exigence → méthode de vérification → résultat (ADR-0024), exigences ES-xx comprises ; analyse exécutée sans réseau (ES-11) | §8, NF-09 |
 | T18 | Test de reproductibilité : deux analyses identiques donnent des constats identiques | NF-06, critère §8 |
@@ -187,3 +187,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-10-26 | 0.5 | Remarque 6 corrigée : seule F-63 touche l'OCR (§5, ERR-0004) ; renvoi vers l'analyse critique | T01 |
 | 2026-10-26 | 0.6 | Arbitrages de T02 : §4 remplacé par le périmètre V1 (ADR-0012) ; T13, T16, T17, T31, T90, T91, T95, T104 précisées ; T105 ajoutée (ADR-0026) ; remarques 3 à 6 du §5 renvoient aux ADR | T02 |
 | 2026-10-26 | 0.7 | Modèle de menace de T03 : T03 renvoie à son livrable ; T04, T13 à T17, T30, T45, T91, T93, T94 précisées (ADR-0028 à ADR-0033) ; §4, conditions de T93 et T94 en V2 | T03 |
+| 2026-10-26 | 0.8 | Architecture de T04 : T04 renvoie à son livrable ; T10, T12, T13, T14, T15 précisées (ADR-0034 à ADR-0043) | T04 |
