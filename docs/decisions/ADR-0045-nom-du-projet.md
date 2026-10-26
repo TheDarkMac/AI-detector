@@ -71,3 +71,4 @@ TheDarkMac a proposé deux références de cinéma : le test de **Voight-Kampff*
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Renvoi : fichier `LICENSE` ajouté (ADR-0067) ; éditeur de confiance « en attente » constaté sur PyPI ; nom toujours libre, la première publication reste à faire |

@@ -242,7 +242,7 @@ Reformulée par ADR-0023 : mêmes fichier, versions de l'outil, du catalogue et 
 - Installation documentée par `pipx` ou `uv tool` ; installation reproductible par le fichier verrouillé.
 - Actions d'intégration continue épinglées par empreinte de commit (ADR-0006) ; dépendances figées avec empreintes (ADR-0037) ; peu de dépendances (ADR-0043).
 - Workflow de publication (T10) : déclenché par une étiquette `vX.Y.Z` égale à la version du paquet (ADR-0050) ; construction épinglée (ADR-0049) ; publication depuis l'environnement protégé « pypi », relecture de TheDarkMac obligatoire ; release GitHub avec paquets, empreintes et fichier d'installation verrouillé. La version et l'empreinte du catalogue s'ajouteront à la release avec T15.
-- La première publication attend le fichier `LICENSE` (ADR-0011) et l'éditeur de confiance déclaré sur PyPI par TheDarkMac ; c'est elle qui réservera le nom.
+- Fichier `LICENSE` (Apache-2.0, tout le dépôt) livré dans les deux paquets, licence déclarée par expression SPDX ([ADR-0067](../decisions/ADR-0067-fichier-licence-et-declaration.md)) ; éditeur de confiance « en attente » déclaré sur PyPI. Prérequis réunis : la première publication, par une étiquette de version, réservera le nom.
 
 ### Réalisation des exigences de sécurité rattachées à T04
 
@@ -285,3 +285,4 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | 2026-10-26 | 1.1 | Nom du paquet `voight_kampff` (§3, §4, ADR-0045) ; examen des dépendances candidates (§9) ; workflow de publication (§11) ; points transmis à T20, T30 (§12) | T10 |
 | 2026-10-26 | 1.2 | Modèle de données : `rapport/modele.py` et `schemas/` (§4), renvoi et précision sur les expressions dans P1 (§6), `jsonschema` ajouté (§9), point de T11 fixé (§12) | T11 |
 | 2026-10-26 | 1.3 | Moteur de modules : commande `-I -B` et message « module » (§3), fichiers créés (§4), configuration, messages et sortie d'erreur (§6), interface et règles des modules (§7), ES-01 et ES-17 (§11), points transmis à T13, T14, T15, T53 (§12) | T12 |
+| 2026-10-27 | 1.4 | Licence livrée dans les paquets et éditeur de confiance PyPI déclaré (§11, ADR-0067) | T10 (complément) |
