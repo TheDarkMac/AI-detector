@@ -91,3 +91,4 @@ Chemin critique T00 → T04, puis socle T10 → T18, puis métadonnées (P2), C2
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : portée de T91 fixée par ADR-0030, garde-fous de T45, T93, T94 par ADR-0032 (T03) |

@@ -53,3 +53,4 @@ Le §10 laisse ouverts le mode de distribution, le lieu du traitement (local ou 
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : niveau d'isolation fixé par ADR-0028, portée de NF-17 par ADR-0030, politique des requêtes sortantes fixée par ADR-0033 (T03) |

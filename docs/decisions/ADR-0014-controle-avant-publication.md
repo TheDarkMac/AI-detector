@@ -50,3 +50,4 @@ Le §5.6 sert la protection des sources, un autre besoin que la détection (ADR-
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : double usage de F-35, F-90, F-91 traité par ADR-0032 (T03) |
