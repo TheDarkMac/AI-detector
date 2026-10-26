@@ -74,3 +74,4 @@ ADR-0037 demande de prévoir en T10 la surveillance des failles connues des dép
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : Dependabot et l'audit hebdomadaire étaient inactifs tant que `main` était la branche par défaut (ERR-0005, ADR-0053) |

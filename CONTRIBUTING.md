@@ -58,12 +58,12 @@ uv run --locked coverage run -m pytest
 
 Ajouter ou mettre à jour une dépendance : `uv add` ou `uv lock --upgrade-package <nom>`, puis commiter `uv.lock` avec `pyproject.toml`. Les critères d'admission d'une bibliothèque (ADR-0043) sont consignés dans la PR.
 
-## 2. Branches — ADR-0001, ADR-0005
+## 2. Branches — ADR-0001, ADR-0005, ADR-0053
 
 | Branche | Rôle | Règle |
 | --- | --- | --- |
 | `main` | Commit initial | Jamais supprimée ni réécrite |
-| `detector` | Intégration du travail | **Aucun push direct** : uniquement des PR, CI verte obligatoire |
+| `detector` | Intégration du travail, **branche par défaut** (ADR-0053) | **Aucun push direct** : uniquement des PR, CI verte obligatoire |
 | `tache/TNN-slug` | Une tâche du [découpage](docs/00-plan/decoupage-taches.md) | Créée depuis `detector` à jour, conservée après merge |
 | `correctif/ERR-NNNN-slug` | Correction d'une erreur constatée après merge | Idem |
 
