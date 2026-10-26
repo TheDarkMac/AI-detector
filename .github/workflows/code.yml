@@ -14,8 +14,10 @@ on:
 permissions:
   contents: read
 
+# Une PR n'a besoin que du résultat de son dernier commit : les lancements précédents sont annulés.
+# Ailleurs (push sur detector, lundi, à la demande), chaque lancement a son propre groupe et va au bout (ERR-0006).
 concurrency:
-  group: code-${{ github.ref }}
+  group: code-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
   cancel-in-progress: true
 
 env:
