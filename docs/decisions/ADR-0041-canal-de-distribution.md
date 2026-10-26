@@ -51,3 +51,5 @@ Le modèle de menace suppose que l'utilisateur obtient l'outil par le canal offi
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : nom du projet et du paquet tranchés par ADR-0045 (`voight-kampff-forensics`) (T10) |
+| 2026-10-26 | Renvoi : workflow de publication et environnement protégé « pypi » créés (T10) |

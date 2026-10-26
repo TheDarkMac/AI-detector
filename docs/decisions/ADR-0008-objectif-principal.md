@@ -49,3 +49,4 @@ L'outil analyse la **provenance et l'intégrité** d'un fichier (génération pa
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : nom du projet tranché par ADR-0045 (Voight-Kampff), qui remplace le nom de travail « AI-detector » (T10) |

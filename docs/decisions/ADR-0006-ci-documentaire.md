@@ -59,3 +59,4 @@ Permissions du workflow réduites à la lecture du contenu.
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : CI du code ajoutée à côté de la CI documentaire (ADR-0051) (T10) |

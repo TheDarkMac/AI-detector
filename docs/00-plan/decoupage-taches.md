@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.8** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 proposée dans la PR de T04. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.9** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 proposée dans la PR de T10. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -52,7 +52,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 
 | ID | Tâche | Exigences |
 | --- | --- | --- |
-| T10 | Squelette du projet Python (ADR-0034), outillage (formatage, analyse statique, tests), uv et verrou à empreintes (ADR-0037), intégration continue sur Linux, macOS et Windows (ADR-0035), workflow de publication PyPI avec attestations (ADR-0041), examen des dépendances transitives et disponibilité des paquets binaires (ADR-0039, ADR-0043) ; nom d'import à trancher avant | NF-09 (outillage), ES-18 |
+| T10 | Squelette du projet Python (ADR-0034), outillage (formatage, analyse statique, tests), uv et verrou à empreintes (ADR-0037), intégration continue sur Linux, macOS et Windows (ADR-0035), workflow de publication PyPI avec attestations (ADR-0041), examen des dépendances transitives et disponibilité des paquets binaires (ADR-0039, ADR-0043) ; nom du projet (ADR-0045) ; outillage, CI et surveillance des failles (ADR-0046 à ADR-0052) | NF-09 (outillage), ES-18 |
 | T11 | Modèle de données : **Constat** (phrase, donnée observée, règle, catégorie, direction), **Rapport**, analyse non menée, couverture | F-80, F-81, F-82, §6 |
 | T12 | Moteur de modules : découverte et manifestes (ADR-0042), activation/désactivation, isolation des erreurs par module ; lancement du processus de travail et protocole (ADR-0036) | Modularité, NF-10, NF-03 |
 | T13 | Soumission et identification : format réel par signature binaire, discordance d'extension, refus hors périmètre, empreinte SHA-256 (ADR-0040) vérifiée en fin d'analyse, fichiers polyglottes signalés (ES-07, ES-08) ; plusieurs fichiers par commande, analysés indépendamment (ADR-0015) | F-01 à F-05 |
@@ -188,3 +188,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-10-26 | 0.6 | Arbitrages de T02 : §4 remplacé par le périmètre V1 (ADR-0012) ; T13, T16, T17, T31, T90, T91, T95, T104 précisées ; T105 ajoutée (ADR-0026) ; remarques 3 à 6 du §5 renvoient aux ADR | T02 |
 | 2026-10-26 | 0.7 | Modèle de menace de T03 : T03 renvoie à son livrable ; T04, T13 à T17, T30, T45, T91, T93, T94 précisées (ADR-0028 à ADR-0033) ; §4, conditions de T93 et T94 en V2 | T03 |
 | 2026-10-26 | 0.8 | Architecture de T04 : T04 renvoie à son livrable ; T10, T12, T13, T14, T15 précisées (ADR-0034 à ADR-0043) | T04 |
+| 2026-10-26 | 0.9 | T10 précisée : nom du projet, outillage, CI et surveillance des failles (ADR-0045 à ADR-0052) | T10 |

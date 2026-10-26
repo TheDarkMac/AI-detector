@@ -59,3 +59,4 @@ Format : `type(portée optionnelle): description`
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : titre des commits de merge fixé par ADR-0044 (T04) |
+| 2026-10-26 | Renvoi : exception pour les branches et messages de Dependabot (ADR-0052) (T10) |

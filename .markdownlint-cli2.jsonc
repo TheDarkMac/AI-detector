@@ -9,6 +9,8 @@
   "ignores": [
     // Cahier des charges reçu : document source, jamais modifié
     "docs/00-cahier-des-charges/**",
-    "node_modules/**"
+    "node_modules/**",
+    // Environnement Python local (uv sync) : fichiers de paquets tiers
+    ".venv/**"
   ]
 }
