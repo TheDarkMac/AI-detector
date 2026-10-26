@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.5** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 proposée dans la PR de T01. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.6** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 proposée dans la PR de T02. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -34,7 +34,7 @@
 | P9 — Restitution avancée | Visualisations, interface, journal de conservation, comparaison d'exemplaires | P1 + modules concernés |
 | P10 — Qualité & livrables | Corpus, évaluation, équipe rouge, documentation utilisateur, mentions | Toutes |
 
-L'ordre P4 → P8 est une **proposition** ; il dépend de l'arbitrage « périmètre de la V1 » (tâche T02).
+Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../decisions/ADR-0012-perimetre-v1.md) : voir §4. Les phases P6 et P7 n'ont aucune tâche en V1.
 
 ## 3. Détail des tâches
 
@@ -44,7 +44,7 @@ L'ordre P4 → P8 est une **proposition** ; il dépend de l'arbitrage « périm�
 | --- | --- | --- | --- |
 | T00 | Initialisation du dépôt : `main`, `detector`, protection de `detector`, conventions (branches, commits, PR), exclusion locale de `CLAUDE.md` et `.claude/` via `.git/info/exclude` (voir §1), arborescence de la documentation, gabarits ADR / journal / erratum | Méthode de travail | `CONTRIBUTING.md` (dont procédure d'exclusion), `docs/` structuré, protection active |
 | T01 | Analyse critique du cahier : ambiguïtés, incohérences, dépendances cachées (voir §5) | Toutes | `docs/01-analyse/` |
-| T02 | Arbitrage des points ouverts (section 10) : un ADR par décision, avec options écartées et raisons | Section 10 | `docs/decisions/ADR-xxxx` |
+| T02 | Arbitrage des points ouverts (section 10) : un ADR par décision, avec options écartées et raisons | Section 10 | `docs/decisions/ADR-xxxx`, `docs/02-arbitrages/` |
 | T03 | Modèle de menace : adversaires, biens à protéger, surfaces d'attaque (fichiers hostiles, requêtes sortantes, fuite de sources) | NF-15, NF-01, NF-16, NF-18 | Livrable 7 |
 | T04 | Architecture et choix techniques (langage, bibliothèques, format du catalogue, isolation), justifiés par T02 et T03 | NF-10, NF-01, NF-06 | ADR + schéma |
 
@@ -55,11 +55,11 @@ L'ordre P4 → P8 est une **proposition** ; il dépend de l'arbitrage « périm�
 | T10 | Squelette du projet, outillage (formatage, analyse statique, tests), intégration continue | NF-09 (outillage) |
 | T11 | Modèle de données : **Constat** (phrase, donnée observée, règle, catégorie, direction), **Rapport**, analyse non menée, couverture | F-80, F-81, F-82, §6 |
 | T12 | Moteur de modules : enregistrement, activation/désactivation, isolation des erreurs par module | Modularité, NF-10, NF-03 |
-| T13 | Soumission et identification : format réel par signature binaire, discordance d'extension, refus hors périmètre, empreinte SHA-256 | F-01 à F-05 |
+| T13 | Soumission et identification : format réel par signature binaire, discordance d'extension, refus hors périmètre, empreinte (algorithme fixé en T04, A-30) ; plusieurs fichiers par commande, analysés indépendamment (ADR-0015) | F-01 à F-05 |
 | T14 | Sécurité d'exécution : limites taille/temps/mémoire, bombes de décompression, isolation du processus d'analyse, rapport partiel en cas d'échec | NF-01, NF-02, NF-03, NF-08 |
 | T15 | Catalogue de règles versionné et daté, séparé du moteur, avec schéma de validation | F-26, NF-06, NF-07 |
-| T16 | Génération du rapport : rubriques §6, export humain + machine, masquage par défaut des données identifiantes, avertissement | F-83, §6, NF-11, NF-14, NF-18 |
-| T17 | Banc d'évaluation : exécution sur corpus, calcul FP / FN / non analysables par technique et catégorie ; matrice exigence → test | §8, NF-09 |
+| T16 | Génération du rapport : résumé sans verdict (ADR-0018), rubriques §6, exports HTML autonome et JSON avec schéma (ADR-0025), masquage par défaut des données identifiantes, avertissement | F-83, §6, NF-11, NF-12, NF-14, NF-18 |
+| T17 | Banc d'évaluation : corpus séparé calibrage / évaluation (ADR-0016), calcul FP / FN / non analysables par technique et catégorie, taux de FP par fichier et bornes des niveaux d'indice (ADR-0018) ; matrice exigence → méthode de vérification → résultat (ADR-0024) | §8, NF-09 |
 | T18 | Test de reproductibilité : deux analyses identiques donnent des constats identiques | NF-06, critère §8 |
 
 ### P2 — Métadonnées
@@ -78,7 +78,7 @@ L'ordre P4 → P8 est une **proposition** ; il dépend de l'arbitrage « périm�
 | ID | Tâche | Exigences |
 | --- | --- | --- |
 | T30 | C2PA : détection du manifeste, vérification signature / intégrité / chaîne, états (absent, valide, hors liste de confiance, invalide, non vérifiable), restitution des déclarations | F-20 à F-23 |
-| T31 | Filigranes invisibles à algorithme public : catalogue, lecture, liste des marquages recherchés | F-24, F-25 |
+| T31 | Filigranes invisibles : inventaire des schémas lisibles sans réseau de neurones, point d'extension du catalogue, liste des marquages recherchés (ADR-0012) | F-24, F-25 |
 
 ### P4 — Image (signal)
 
@@ -132,12 +132,12 @@ L'ordre P4 → P8 est une **proposition** ; il dépend de l'arbitrage « périm�
 
 | ID | Tâche | Exigences |
 | --- | --- | --- |
-| T90 | Interface selon le mode de distribution retenu (CU-1, CU-2), accessibilité | NF-11, NF-12 |
-| T91 | Journal de chaîne de conservation, horodatage fiable des rapports | NF-17 |
+| T90 | Interface : en V1, ligne de commande et rapport HTML (ADR-0010, ADR-0025) ; interface web locale ensuite | NF-11, NF-12 |
+| T91 | Journal de chaîne de conservation, horodatage fiable des rapports, dans la portée fixée par T03 pour un outil local (ADR-0010) | NF-17 |
 | T92 | Affichage de la conservation des données (durée, lieu) | NF-04, NF-05, NF-13 |
 | T93 | Comparaison de plusieurs exemplaires d'un document | F-91 |
 | T94 | Points de traçage d'imprimante | F-90 (partie image) |
-| T95 | Politique d'accès au détail des règles et seuils | NF-19 |
+| T95 | Publication du catalogue et des fiches : tout est public (ADR-0019), plus de politique d'accès à développer | NF-19 |
 
 ### P10 — Qualité et livrables
 
@@ -147,24 +147,33 @@ L'ordre P4 → P8 est une **proposition** ; il dépend de l'arbitrage « périm�
 | T101 | Rapport d'évaluation : taux par technique et catégorie | Livrables 4, 5 |
 | T102 | Équipe rouge : fichiers qui trompent les contrôles → limites connues | §8 |
 | T103 | Documentation utilisateur et mentions d'avertissement | Livrables 3, 6 |
-| T104 | Étude d'usage (biais d'automatisation) — protocole | §8 |
+| T104 | Étude d'usage (biais d'automatisation) — protocole ; hors V1 (ADR-0026) | §8 |
+| T105 | Recueil d'avis de vérificateurs sur un prototype, après T30 (ADR-0026) | §10 (validation du besoin) |
 
 > Les fiches techniques (livrable 4) ne sont **pas** une tâche à part : chacune est livrée avec sa technique.
 
-## 4. Chemin critique minimal (proposition de V1)
+## 4. Périmètre de la V1
 
-`T00 → T01 → T02 → T03 → T04 → T10 → T11 → T12 → T13 → T14 → T15 → T16 → T17`, puis métadonnées (P2) et C2PA (T30) : ce sont les seules analyses qui produisent des **preuves** ou des indices peu contestables, et elles couvrent tous les médias d'un coup.
+Fixé par [ADR-0012](../decisions/ADR-0012-perimetre-v1.md), provisoire jusqu'au recueil d'avis (T105, ADR-0026).
+
+| Statut | Tâches |
+| --- | --- |
+| **V1**, dans l'ordre | T00 → T04 ; T10 → T18 ; T20 → T25 (T25 limitée aux métadonnées, ADR-0014) ; T30 ; T105 ; T31 ; T40, T41 ; T50 → T53 ; T80, T81 ; T90 → T92, T95 ; T100 → T103 |
+| **Candidates V2** (ordre non fixé) | T42, T43, T44, T45, T54, T60, T61, T63, T70 → T73, T93, T94 (après T03, ADR-0014), analyse groupée (ADR-0015) |
+| **Hors V1, sans engagement** | T62 (ENF), T82 (stylométrie), T83 (références), T104 (étude d'usage) |
+
+T91 reste en V1 parce que NF-17 s'applique à la V1, mais sa portée pour un outil local est fixée par T03. Pour chaque tâche hors V1, les analyses concernées figurent au rapport comme non menées (F-82).
 
 ## 5. Remarques issues de l'analyse du cahier
 
 Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md) (T01).
 
 1. **Ligne 96** : un contenu intégré (schéma « chaîne d'analyse ») est absent du fichier ; seul son libellé subsiste.
-2. **F-51** applique F-30/F-31 (tables de quantification et double compression **JPEG**) aux images clés vidéo, qui sont encodées en H.264/H.265/VP9/AV1, pas en JPEG. Ces deux analyses ne se transposent pas telles quelles.
-3. **F-24** (filigranes publics) : peu de filigranes ont un lecteur public *et* non neuronal. Plusieurs lecteurs récents (audio, vidéo) sont eux-mêmes des réseaux de neurones, ce qui heurte le principe « aucune IA embarquée ». Le catalogue V1 risque d'être très court.
-4. **F-72** et la vérification C2PA (F-21) nécessitent des requêtes réseau : tension avec NF-16 et avec un éventuel fonctionnement hors ligne.
-5. **F-90 / F-91** (contrôle avant publication) servent un autre besoin que la détection d'IA (protection des sources) : à prioriser séparément.
-6. **F-63** (lecture des documents numérisés) touche la frontière « sans IA » (OCR). *(Corrigé : ERR-0001, puis ERR-0004 : les points de traçage de F-90 relèvent du traitement d'image, pas de l'OCR.)*
+2. **F-51** applique F-30/F-31 (tables de quantification et double compression **JPEG**) aux images clés vidéo, qui sont encodées en H.264/H.265/VP9/AV1, pas en JPEG. Ces deux analyses ne se transposent pas telles quelles. *(Tranché : ADR-0012, F-51 à réécrire avant T71.)*
+3. **F-24** (filigranes publics) : peu de filigranes ont un lecteur public *et* non neuronal. Plusieurs lecteurs récents (audio, vidéo) sont eux-mêmes des réseaux de neurones, ce qui heurte le principe « aucune IA embarquée ». Le catalogue V1 risque d'être très court. *(Tranché : ADR-0012, T31 réduite à un inventaire et un point d'extension.)*
+4. **F-72** et la vérification C2PA (F-21) nécessitent des requêtes réseau : tension avec NF-16 et avec un éventuel fonctionnement hors ligne. *(Tranché : ADR-0010, hors ligne par défaut ; ADR-0013, F-72 hors V1.)*
+5. **F-90 / F-91** (contrôle avant publication) servent un autre besoin que la détection d'IA (protection des sources) : à prioriser séparément. *(Tranché : ADR-0014.)*
+6. **F-63** (lecture des documents numérisés) touche la frontière « sans IA » (OCR). *(Corrigé : ERR-0001, puis ERR-0004 : les points de traçage de F-90 relèvent du traitement d'image, pas de l'OCR. Tranché : ADR-0017, lecture des documents numérisés exclue.)*
 7. **Section 8** : un taux d'erreur publié par technique est un critère d'acceptation ; sans corpus (T100), aucune technique ne peut être formellement acceptée. Le banc d'évaluation (T17) est donc avancé dans le socle.
 
 ## 6. Historique des modifications
@@ -176,3 +185,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-10-26 | 0.3 | L'exclusion passe de `.gitignore` à `.git/info/exclude` (§1, T00) ; ajout de la procédure de configuration par poste dans `CONTRIBUTING.md` | Demande de TheDarkMac ; la v0.2 versionnait l'exclusion dans le dépôt |
 | 2026-10-26 | 0.4 | Validation par TheDarkMac ; correction de « F-94 » en F-90 (§5, ERR-0001) ; correction de la justification de `.git/info/exclude` (§1, ERR-0002) ; ajout du garde-fou CI (§1) ; lien vers le cahier des charges déplacé dans `docs/` | T00 |
 | 2026-10-26 | 0.5 | Remarque 6 corrigée : seule F-63 touche l'OCR (§5, ERR-0004) ; renvoi vers l'analyse critique | T01 |
+| 2026-10-26 | 0.6 | Arbitrages de T02 : §4 remplacé par le périmètre V1 (ADR-0012) ; T13, T16, T17, T31, T90, T91, T95, T104 précisées ; T105 ajoutée (ADR-0026) ; remarques 3 à 6 du §5 renvoient aux ADR | T02 |

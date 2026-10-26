@@ -1,6 +1,6 @@
 # Analyse critique du cahier des charges v0.1
 
-> Statut : **v1.0, proposée à TheDarkMac dans la PR de T01**. Document vivant : toute modification est inscrite à l'historique (§9).
+> Statut : **v1.1** ; v1.0 mergée avec T01. Document vivant : toute modification est inscrite à l'historique (§9).
 > Source analysée : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, brouillon, 24 oct. 2026, auteur @Jean), SHA-256 `702b468ff57099b401f9042dcc38f85951e7b224659874b86ccb519ebfc7dafc`.
 > Tâche : T01. Date de rédaction : 2026-10-26.
 
@@ -403,6 +403,10 @@ Recherche faite le 2026-10-26. Les sources secondaires sont des cabinets et des 
 | Modules (T22 à T83) | A-33, A-34, A-36, A-38 à A-43 |
 | P10 — Qualité | A-12, A-13, A-54 à A-57 |
 
+### Arbitrages
+
+Les points adressés à T02 ont été tranchés ou reportés : voir le [registre des arbitrages](../02-arbitrages/registre-des-arbitrages.md). Le contenu de cette analyse n'est pas modifié.
+
 ### Effet sur le découpage
 
 - Remarque 6 du découpage corrigée ([ERR-0004](../errata/ERR-0004-points-de-tracage-rattaches-a-l-ocr.md)).
@@ -413,3 +417,4 @@ Recherche faite le 2026-10-26. Les sources secondaires sont des cabinets et des 
 | Date | Version | Modification | Origine |
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T01 |
+| 2026-10-26 | 1.1 | Renvoi vers le registre des arbitrages (§8) | T02 |

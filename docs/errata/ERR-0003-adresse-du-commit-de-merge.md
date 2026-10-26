@@ -24,7 +24,7 @@ L'ADR a supposé que le commit de merge reprendrait l'identité configurée en l
 ## Correction appliquée
 
 - ADR-0003 : précision ajoutée dans son historique, avec renvoi à cet erratum. La décision n'est pas modifiée sur le fond.
-- Proposition à TheDarkMac, à valider dans la PR de T01 : **accepter l'écart**. Le nom est correct, il n'y a aucun co-auteur, et l'adresse noreply est rattachée au même compte. Les autres options sont :
+- Proposition à TheDarkMac, à valider dans la PR de T01 : **accepter l'écart**. **Acceptée par TheDarkMac le 2026-10-26**, consignée dans [ADR-0007](../decisions/ADR-0007-adresse-des-commits-de-merge.md) (T02). Le nom est correct, il n'y a aucun co-auteur, et l'adresse noreply est rattachée au même compte. Les autres options sont :
   - faire les merges en local puis pousser `detector` : impossible, la protection de `detector` interdit le push direct (ADR-0001) ;
   - changer le réglage de confidentialité du compte : il rendrait l'adresse personnelle publique aussi dans les commits faits depuis l'interface web, et n'est pas du ressort de l'assistant.
 

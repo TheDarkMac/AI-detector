@@ -45,3 +45,4 @@ Consigne de TheDarkMac : tout commit est au nom de TheDarkMac et ne comporte auc
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Précision (sans changement de décision) : les commits de merge créés par GitHub portent l'adresse noreply du compte, et non `hei.ando14@gmail.com` (ERR-0003) |
+| 2026-10-26 | Complété par [ADR-0007](ADR-0007-adresse-des-commits-de-merge.md) : l'adresse noreply des commits de merge créés par GitHub est acceptée (T02) |
