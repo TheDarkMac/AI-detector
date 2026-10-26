@@ -10,6 +10,7 @@ import importlib
 import io
 import json
 import os
+import sys
 from collections.abc import Iterator, Mapping
 from pathlib import Path
 from typing import Any
@@ -49,6 +50,15 @@ def descripteur(tmp_path: Path) -> Iterator[int]:
     os.close(ouvert)
 
 
+def transmis(descripteur: int) -> str:
+    """Valeur de ``--descripteur`` : un handle sous Windows, comme l'envoie le principal."""
+    if sys.platform == "win32":  # pragma: no cover - exécuté par la CI Windows
+        import msvcrt
+
+        return str(msvcrt.get_osfhandle(descripteur))
+    return str(descripteur)
+
+
 def configuration(*identifiants: str, formats: tuple[str, ...] = ("test",)) -> io.BytesIO:
     modules_actifs = [
         {"identifiant": i, "formats": list(formats), "directions": ["rien_de_particulier"]}
@@ -66,7 +76,7 @@ def derouler(
 ) -> list[dict[str, Any]]:
     sortie = io.BytesIO()
     code = principal.principal(
-        ["--descripteur", str(descripteur)],
+        ["--descripteur", transmis(descripteur)],
         configuration(*identifiants),
         sortie,
         analyseurs=analyseurs,
@@ -106,7 +116,7 @@ def test_garde_posee_avant_l_isolation(descripteur: int) -> None:
 
 def test_identification_par_defaut_aucun_format(descripteur: int) -> None:
     sortie = io.BytesIO()
-    principal.principal(["--descripteur", str(descripteur)], configuration("alpha"), sortie)
+    principal.principal(["--descripteur", transmis(descripteur)], configuration("alpha"), sortie)
     module = json.loads(sortie.getvalue().splitlines()[1])
     assert module == {"type": "module", "module": "alpha", "applicable": False}
 
