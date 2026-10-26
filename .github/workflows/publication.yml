@@ -1,0 +1,108 @@
+# Publication sur PyPI — voir docs/decisions/ADR-0041-canal-de-distribution.md
+#
+# Déclenchée par une étiquette vX.Y.Z poussée sur le dépôt. Prérequis, à la charge de TheDarkMac :
+# - éditeur de confiance déclaré sur PyPI pour ce dépôt, ce workflow et l'environnement « pypi » ;
+# - environnement GitHub « pypi » protégé (relecteur obligatoire) ;
+# - fichier LICENSE présent (ADR-0011) : la construction le vérifie.
+name: publication
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+env:
+  UV_VERSION: "0.13.5"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  construction:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: L'étiquette correspond à la version du paquet
+        run: |
+          version="$(uv version --short)"
+          if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
+            echo "::error::Étiquette ${GITHUB_REF_NAME}, version du paquet ${version}"
+            exit 1
+          fi
+      - name: Le fichier LICENSE est présent (ADR-0011)
+        run: |
+          if [ ! -f LICENSE ]; then
+            echo "::error::Aucun fichier LICENSE : publication refusée"
+            exit 1
+          fi
+      - name: Construction (outil épinglé avec empreintes)
+        run: uv build --build-constraint contraintes-construction.txt --require-hashes --out-dir dist
+      - name: Empreintes et fichier d'installation verrouillé (ADR-0037, ADR-0040)
+        run: |
+          version="$(uv version --short)"
+          mkdir publication
+          (cd dist && sha256sum -- *) > publication/SHA256SUMS
+          # Dépendances exactes avec empreintes, puis le paquet lui-même avec les empreintes de ses deux fichiers.
+          uv export --locked --no-dev --no-emit-project --format requirements-txt --no-header > publication/installation-verrouillee.txt
+          {
+            printf 'voight-kampff-forensics==%s' "$version"
+            for fichier in dist/*; do
+              printf ' \\\n    --hash=sha256:%s' "$(sha256sum "$fichier" | cut -d' ' -f1)"
+            done
+            printf '\n'
+          } >> publication/installation-verrouillee.txt
+          cat publication/SHA256SUMS publication/installation-verrouillee.txt
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: paquets
+          path: dist/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: publication
+          path: publication/
+          if-no-files-found: error
+
+  pypi:
+    needs: construction
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/voight-kampff-forensics/
+    permissions:
+      # Jeton OIDC pour Trusted Publishing et la signature des attestations
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: paquets
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          attestations: true
+          print-hash: true
+
+  release-github:
+    needs: pypi
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: artefacts/
+      - name: Release avec paquets, empreintes et fichier d'installation verrouillé
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes "Paquets publiés sur PyPI (voight-kampff-forensics), avec attestations de provenance. Empreintes SHA-256 et fichier d'installation verrouillé joints." \
+            artefacts/paquets/* artefacts/publication/*

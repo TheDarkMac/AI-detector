@@ -1,0 +1,119 @@
+# CI du code — voir docs/decisions/ADR-0051-integration-continue-du-code.md
+name: code
+
+on:
+  pull_request:
+    branches: [detector]
+  push:
+    branches: [detector]
+  schedule:
+    # Chaque lundi : nouvelles failles connues (ADR-0052), changements des images des runners
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: code-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_VERSION: "0.13.5"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  qualite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Verrou à jour (ADR-0037)
+        run: uv lock --check
+      - name: Installation depuis le verrou, sans résolution
+        run: uv sync --locked
+      - name: Formatage (Ruff)
+        run: uv run --locked ruff format --check .
+      - name: Analyse statique (Ruff)
+        run: uv run --locked ruff check .
+      - name: Types (mypy strict)
+        run: uv run --locked mypy
+
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.12", "3.13", "3.14"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ matrix.python }}
+      - name: Installation depuis le verrou
+        run: uv sync --locked
+      - name: Tests et couverture
+        run: |
+          uv run --locked coverage run -m pytest
+          uv run --locked coverage combine
+          uv run --locked coverage report
+
+  audit-dependances:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Failles connues de toutes les dépendances verrouillées (ADR-0052)
+        run: |
+          uv export --locked --all-groups --no-emit-project --format requirements-txt --output-file "$RUNNER_TEMP/exigences.txt"
+          uv run --locked pip-audit --requirement "$RUNNER_TEMP/exigences.txt" --disable-pip --strict --progress-spinner off
+
+  paquet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Construction reproductible (deux constructions identiques)
+        run: |
+          uv build --build-constraint contraintes-construction.txt --require-hashes --out-dir "$RUNNER_TEMP/a"
+          uv build --build-constraint contraintes-construction.txt --require-hashes --out-dir "$RUNNER_TEMP/b"
+          (cd "$RUNNER_TEMP/a" && sha256sum -- *) > "$RUNNER_TEMP/a.sha256"
+          (cd "$RUNNER_TEMP/b" && sha256sum -- *) > "$RUNNER_TEMP/b.sha256"
+          diff "$RUNNER_TEMP/a.sha256" "$RUNNER_TEMP/b.sha256"
+          cat "$RUNNER_TEMP/a.sha256"
+      - name: Le paquet source ne contient ni docs/ ni .github/
+        run: |
+          if tar tzf "$RUNNER_TEMP"/a/*.tar.gz | grep -E '/(docs|\.github)/'; then
+            echo "::error::Fichiers de dépôt dans le paquet source"
+            exit 1
+          fi
+      - name: Installation du wheel dans un environnement neuf
+        run: |
+          uv venv "$RUNNER_TEMP/essai"
+          VIRTUAL_ENV="$RUNNER_TEMP/essai" uv pip install "$RUNNER_TEMP"/a/*.whl
+          "$RUNNER_TEMP/essai/bin/voight-kampff" --version
+          "$RUNNER_TEMP/essai/bin/vk" --version
+
+  # Seule vérification à rendre obligatoire sur detector : elle résume toutes les autres.
+  code-ok:
+    if: always()
+    needs: [qualite, tests, audit-dependances, paquet]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Toutes les vérifications du code ont réussi
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" = "true" ]; then
+            echo "::error::Au moins une vérification du code a échoué ou n'a pas tourné"
+            exit 1
+          fi
