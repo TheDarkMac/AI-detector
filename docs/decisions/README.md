@@ -60,3 +60,10 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0043](ADR-0043-politique-des-bibliotheques.md) | Politique des bibliothèques : Python pur d'abord | Accepté | 2026-10-26 |
 | [ADR-0044](ADR-0044-titre-des-commits-de-merge.md) | Titre des commits de merge : toujours fixé à la main | Accepté | 2026-10-26 |
 | [ADR-0045](ADR-0045-nom-du-projet.md) | Nom du projet : Voight-Kampff | Accepté | 2026-10-26 |
+| [ADR-0046](ADR-0046-visibilite-du-depot.md) | Visibilité du dépôt : public | Accepté | 2026-10-26 |
+| [ADR-0047](ADR-0047-formatage-et-analyse-statique.md) | Formatage et analyse statique : Ruff et mypy strict | Accepté | 2026-10-26 |
+| [ADR-0048](ADR-0048-cadre-de-tests.md) | Tests : pytest et coverage.py | Accepté | 2026-10-26 |
+| [ADR-0049](ADR-0049-construction-du-paquet.md) | Construction du paquet : uv_build, épinglé avec empreintes | Accepté | 2026-10-26 |
+| [ADR-0050](ADR-0050-numero-de-version.md) | Numéro de version écrit dans `pyproject.toml` | Accepté | 2026-10-26 |
+| [ADR-0051](ADR-0051-integration-continue-du-code.md) | Intégration continue du code : trois systèmes, Python 3.12 à 3.14 | Accepté | 2026-10-26 |
+| [ADR-0052](ADR-0052-surveillance-des-failles.md) | Surveillance des failles : pip-audit et Dependabot | Accepté | 2026-10-26 |

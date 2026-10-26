@@ -66,3 +66,4 @@ Chaque bibliothèque qui lit le fichier est une surface d'attaque (M-01), une so
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : dépendances candidates examinées en T10 (architecture §9) (T10) |

@@ -50,3 +50,4 @@ Les signatures de générateurs (F-12) se lisent souvent dans des chaînes libre
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : paquets binaires de `google-re2` vérifiés en T10 : Python 3.10 à 3.14 sur les trois systèmes, pas encore 3.15 (ADR-0051) (T10) |

@@ -58,3 +58,4 @@ ADR-0023 demande à T04 de figer les versions des dépendances ; ES-18 demande d
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : mis en place en T10 ; construction épinglée (ADR-0049), surveillance des failles (ADR-0052), fichier d'installation verrouillé produit par le workflow de publication (T10) |
