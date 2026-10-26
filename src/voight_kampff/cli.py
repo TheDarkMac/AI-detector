@@ -4,6 +4,7 @@ import argparse
 from collections.abc import Sequence
 
 from voight_kampff import __version__
+from voight_kampff._orchestration import manifestes
 
 _DESCRIPTION = (
     "Analyse la provenance et l'intégrité d'un fichier : preuves et indices de "
@@ -19,13 +20,29 @@ def construire_analyseur() -> argparse.ArgumentParser:
         action="version",
         version=f"%(prog)s {__version__}",
     )
+    analyseur.add_argument(
+        "--modules",
+        action="store_true",
+        help="liste les modules d'analyse livrés, avec leur version",
+    )
     return analyseur
+
+
+def _lister_modules() -> None:
+    livres = manifestes.decouvrir()
+    if not livres:
+        print("Aucun module d'analyse livré dans cette version.")
+    for manifeste in livres:
+        print(f"{manifeste.identifiant} {manifeste.version}")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     """Point d'entrée ; renvoie le code de sortie du processus."""
     analyseur = construire_analyseur()
-    analyseur.parse_args(argv)
-    # Aucune commande d'analyse avant T12 : sans argument, l'aide est affichée.
+    arguments = analyseur.parse_args(argv)
+    if arguments.modules:
+        _lister_modules()
+        return 0
+    # Aucune commande d'analyse avant T13 : sans option, l'aide est affichée.
     analyseur.print_help()
     return 0

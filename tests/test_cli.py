@@ -1,4 +1,4 @@
-"""Tests de la ligne de commande du squelette (T10)."""
+"""Tests de la ligne de commande (T10, T12)."""
 
 import subprocess
 import sys
@@ -6,6 +6,8 @@ import sys
 import pytest
 
 from voight_kampff import __version__
+from voight_kampff._orchestration import manifestes
+from voight_kampff._orchestration.manifestes import Manifeste
 from voight_kampff.cli import main
 
 
@@ -19,6 +21,20 @@ def test_version_affichee(capsys: pytest.CaptureFixture[str]) -> None:
 def test_sans_argument_affiche_l_aide(capsys: pytest.CaptureFixture[str]) -> None:
     assert main([]) == 0
     assert "usage: voight-kampff" in capsys.readouterr().out
+
+
+def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["--modules"]) == 0
+    assert capsys.readouterr().out == "Aucun module d'analyse livré dans cette version.\n"
+
+
+def test_liste_des_modules_livres(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    livre = Manifeste("exif", "1.2.0", ("jpeg",), ("F-10",), (), "exif", ())
+    monkeypatch.setattr(manifestes, "decouvrir", lambda: (livre,))
+    assert main(["--modules"]) == 0
+    assert capsys.readouterr().out == "exif 1.2.0\n"
 
 
 def test_option_inconnue_refusee(capsys: pytest.CaptureFixture[str]) -> None:
