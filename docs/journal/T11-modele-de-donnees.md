@@ -29,7 +29,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : modèle de données, av
 2. Quatre questions à TheDarkMac, en un lot, chacune avec une recommandation : représentation dans le code, directions de F-81, raisons des analyses non menées, marquage des données identifiantes. Recommandation suivie pour les quatre, sans raison supplémentaire : les ADR reprennent les raisons présentées avec les options (ADR-0054 à ADR-0057).
 3. Branche `tache/T11-modele-de-donnees` créée depuis `detector` à jour (`51c4d48`).
 4. `uv add 'jsonschema>=4.26'` : cinq paquets ajoutés au verrou (`jsonschema`, `referencing`, `jsonschema-specifications`, `attrs`, `rpds-py`, plus `typing-extensions` sous Python 3.12). Examen sur PyPI selon ADR-0043 (licences, paquets précompilés, dépendances) : consigné dans ADR-0054. mypy strict demandant les annotations de `jsonschema`, absentes du paquet : `types-jsonschema` ajouté au groupe `dev`.
-5. Modèle `src/voight_kampff/rapport/modele.py` : énumérations, dataclasses figées, invariants à la construction, `vers_dict` et `depuis_dict`. Choix de structure (observation séparée du constat, fondement, phrase dont les paramètres renvoient à des observations, état « partielle » de la couverture, technique hors V1 sans version) : ADR-0058 et ADR-0059, au statut « Proposé », soumis dans la PR.
+5. Modèle `src/voight_kampff/rapport/modele.py` : énumérations, dataclasses figées, invariants à la construction, `vers_dict` et `depuis_dict`. Choix de structure (observation séparée du constat, fondement, phrase dont les paramètres renvoient à des observations, état « partielle » de la couverture, technique hors V1 sans version) : ADR-0058 et ADR-0059, soumis dans la PR au statut « Proposé » (étape 14).
 6. Schémas `rapport.schema.json` et `messages.schema.json` (Draft 2020-12), chargement et validation dans `schemas/__init__.py`. Essai manuel : rapport complet et six types de message valides ; nom de fichier avec chemin refusé.
 7. Ruff et mypy : deux lignes trop longues, un type d'itération à préciser ; corrigés.
 8. Tests : `tests/conftest.py` (un rapport qui emploie chaque élément du modèle), `tests/test_modele.py`, `tests/test_schemas.py`. Premier passage : une altération attendue « refusée par le schéma et le modèle » (champ inconnu) n'était refusée que par le schéma. Le modèle lit un document déjà validé : le cas a été déplacé dans un test propre, et la répartition des vérifications documentée (modèle de données, §7).
@@ -37,7 +37,8 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : modèle de données, av
 10. L'environnement temporaire de uv ayant disparu avec la session, uv 0.13.5 a été réinstallé dans un nouvel environnement temporaire. Construction faite deux fois : fichiers identiques ; le wheel contient `rapport/` et les deux schémas ; installé dans un environnement neuf, les schémas s'y chargent en mode isolé (`python -I`). pip-audit : aucune faille connue.
 11. CI : étape ajoutée au job `paquet` pour charger les schémas depuis le wheel installé (ADR-0054).
 12. Documentation : ADR-0054 à ADR-0059, [modèle de données](../modele-de-donnees/modele-de-donnees.md), [glossaire du projet](../glossaire.md), renvois dans ADR-0018, ADR-0020, ADR-0021, ADR-0022, ADR-0036, ADR-0042, ADR-0043 ; architecture v1.2, découpage v0.10, registre v1.4 ; index des ADR et du journal ; `docs/README.md`.
-13. Lint Markdown en local, vérification des fichiers interdits, commits ; branche poussée et PR ouverte vers `detector`.
+13. Lint Markdown en local, vérification des fichiers interdits, commits ; branche poussée et PR [#9](https://github.com/TheDarkMac/AI-detector/pull/9) ouverte vers `detector`.
+14. Pendant la revue, TheDarkMac a validé ADR-0058 et ADR-0059 : statut « Accepté », mentions « proposé » retirées du modèle de données et de l'index des ADR. Il a demandé le merge de la PR une fois la CI verte.
 
 ## Problèmes rencontrés
 
@@ -63,12 +64,11 @@ Aucun de ces problèmes n'est une erreur d'une analyse ou d'une décision antér
 
 - Modèle `voight_kampff.rapport.modele` : observation, constat, analyse non menée, couverture, identification, versions, isolation, rapport ; aucune dépendance hors bibliothèque standard (testé).
 - Schémas du rapport et des messages, version `0.1.0`, validés sans accès réseau ; `jsonschema` première dépendance d'exécution du projet.
-- Six ADR (dont deux proposés), modèle de données v1.0, glossaire v1.0, architecture v1.2, découpage v0.10, registre v1.4.
+- Six ADR acceptés, modèle de données v1.0, glossaire v1.0, architecture v1.2, découpage v0.10, registre v1.4.
 - Vérification locale : les commandes de `CONTRIBUTING.md` §1 passent (266 tests, couverture 100 %) ; construction reproductible ; `npx --yes markdownlint-cli2@0.23.2` sans erreur ; aucun fichier interdit suivi.
 
 ## Reste à faire
 
-- TheDarkMac : valider ou modifier ADR-0058 et ADR-0059 (statut « Proposé ») dans la PR.
 - T12 : décodage JSON strict, puis schéma, puis `depuis_dict` pour chaque message ; conversion des échecs en analyses non menées ; couverture tirée des manifestes ; directions permises par règle (ADR-0022).
 - T15 : forme des identifiants de règle ; fondement, catégorie, directions, niveau, taux et limites de chaque règle ; liste des techniques hors V1 par format (ou T12).
 - T16 : gabarits des constats et des raisons ; masquage par catégorie ; numérotation de la version du schéma à sa première publication.

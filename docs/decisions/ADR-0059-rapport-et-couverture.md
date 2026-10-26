@@ -1,14 +1,14 @@
 # ADR-0059 — Structure du rapport et de la couverture
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-26
-- **Décideur** : proposition de l'assistant, soumise à TheDarkMac dans la PR de T11
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T11, validée pendant la revue de la PR de T11
 - **Tâche** : T11
 - **Exigences liées** : §6 du cahier, F-25, F-82 ; NF-06, NF-08 ; ES-14 ; ADR-0012, ADR-0015, ADR-0018, ADR-0023, ADR-0028, ADR-0029, ADR-0036
 
 ## Contexte
 
-Le §6 du cahier énumère les rubriques du rapport. Plusieurs ADR y ajoutent des éléments : versions des dépendances (ADR-0023), état de l'isolation (ADR-0028), catalogue fourni par l'utilisateur (ADR-0029), analyse interrompue (ADR-0023), techniques hors V1 inscrites comme non menées (ADR-0012). T11 fixe ce que le modèle du rapport contient ; la mise en forme, le résumé et le masquage restent à T16. Ces choix n'ont pas fait l'objet d'une question pendant T11 et sont soumis dans la PR.
+Le §6 du cahier énumère les rubriques du rapport. Plusieurs ADR y ajoutent des éléments : versions des dépendances (ADR-0023), état de l'isolation (ADR-0028), catalogue fourni par l'utilisateur (ADR-0029), analyse interrompue (ADR-0023), techniques hors V1 inscrites comme non menées (ADR-0012). T11 fixe ce que le modèle du rapport contient ; la mise en forme, le résumé et le masquage restent à T16. Ces choix n'ont pas fait l'objet d'une question pendant T11 ; ils ont été soumis dans la PR et validés par TheDarkMac.
 
 ## Options envisagées
 
@@ -71,4 +71,5 @@ Hors du modèle de T11 :
 
 | Date | Modification |
 | --- | --- |
-| 2026-10-26 | Création |
+| 2026-10-26 | Création, statut « Proposé » |
+| 2026-10-26 | Validé par TheDarkMac pendant la revue de la PR de T11 : statut « Accepté » |

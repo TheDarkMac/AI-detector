@@ -1,14 +1,14 @@
 # ADR-0058 — Structure de l'observation et du constat
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-26
-- **Décideur** : proposition de l'assistant, soumise à TheDarkMac dans la PR de T11
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T11, validée pendant la revue de la PR de T11
 - **Tâche** : T11
 - **Exigences liées** : §6 du cahier, F-80, F-81 ; constats A-02, A-03, A-46, A-47 ; ES-13, ES-20 ; ADR-0018, ADR-0020, ADR-0021, ADR-0022, ADR-0042
 
 ## Contexte
 
-Le §6 fixe cinq éléments par constat : phrase, donnée observée, règle, catégorie, direction. A-46 relève qu'il manque la version de la règle, la technique, les limites connues, la source d'une preuve et la localisation ; ADR-0018 ajoute le niveau. L'architecture (§6) sépare l'observation (donnée relevée par un module) du constat (ce qu'une règle en tire) ; ADR-0042 laisse à T11 la forme de l'observation. Ces choix n'ont pas fait l'objet d'une question pendant T11 : ils découlent des ADR cités et sont soumis dans la PR.
+Le §6 fixe cinq éléments par constat : phrase, donnée observée, règle, catégorie, direction. A-46 relève qu'il manque la version de la règle, la technique, les limites connues, la source d'une preuve et la localisation ; ADR-0018 ajoute le niveau. L'architecture (§6) sépare l'observation (donnée relevée par un module) du constat (ce qu'une règle en tire) ; ADR-0042 laisse à T11 la forme de l'observation. Ces choix n'ont pas fait l'objet d'une question pendant T11 : ils découlent des ADR cités, ont été soumis dans la PR et validés par TheDarkMac.
 
 ## Options envisagées
 
@@ -72,4 +72,5 @@ Ce qui n'est pas dans le constat :
 
 | Date | Modification |
 | --- | --- |
-| 2026-10-26 | Création |
+| 2026-10-26 | Création, statut « Proposé » |
+| 2026-10-26 | Validé par TheDarkMac pendant la revue de la PR de T11 : statut « Accepté » |

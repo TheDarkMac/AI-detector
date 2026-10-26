@@ -16,8 +16,8 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0055](../decisions/ADR-0055-cinq-directions.md) | Cinq directions : « transformation » ajoutée à F-81 |
 | [ADR-0056](../decisions/ADR-0056-raisons-des-analyses-non-menees.md) | Raisons des analyses non menées en liste fermée, phrase par gabarit |
 | [ADR-0057](../decisions/ADR-0057-marquage-des-donnees-identifiantes.md) | Données identifiantes marquées par l'observation |
-| [ADR-0058](../decisions/ADR-0058-observation-et-constat.md) | Structure de l'observation et du constat (proposé) |
-| [ADR-0059](../decisions/ADR-0059-rapport-et-couverture.md) | Structure du rapport et de la couverture (proposé) |
+| [ADR-0058](../decisions/ADR-0058-observation-et-constat.md) | Structure de l'observation et du constat |
+| [ADR-0059](../decisions/ADR-0059-rapport-et-couverture.md) | Structure du rapport et de la couverture |
 
 ### Où se trouve le code
 
