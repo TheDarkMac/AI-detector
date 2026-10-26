@@ -21,3 +21,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0004](ADR-0004-conventions-de-documentation.md) | Conventions de documentation | Accepté | 2026-10-26 |
 | [ADR-0005](ADR-0005-nommage-branches-et-commits.md) | Nommage des branches et messages de commit | Accepté | 2026-10-26 |
 | [ADR-0006](ADR-0006-ci-documentaire.md) | Intégration continue documentaire | Accepté | 2026-10-26 |
+| [ADR-0007](ADR-0007-adresse-des-commits-de-merge.md) | Adresse e-mail des commits de merge créés par GitHub | Accepté | 2026-10-26 |

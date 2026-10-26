@@ -14,4 +14,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | Tâche | Titre | Branche | PR |
 | --- | --- | --- | --- |
 | [T00](T00-initialisation-depot.md) | Initialisation du dépôt | `tache/T00-init-depot` | [#1](https://github.com/TheDarkMac/AI-detector/pull/1) |
-| [T01](T01-analyse-critique.md) | Analyse critique du cahier des charges | `tache/T01-analyse-critique` | à venir |
+| [T01](T01-analyse-critique.md) | Analyse critique du cahier des charges | `tache/T01-analyse-critique` | [#2](https://github.com/TheDarkMac/AI-detector/pull/2) |
