@@ -109,6 +109,17 @@ jobs:
       - name: Schémas livrés dans le wheel et chargeables (T11)
         run: |
           "$RUNNER_TEMP/essai/bin/python" -I -c "from voight_kampff import schemas; [schemas.valideur(n) for n in schemas.NOMS]"
+      - name: Processus de travail lancé depuis le wheel (T12)
+        run: |
+          printf 'essai' > "$RUNNER_TEMP/essai.bin"
+          "$RUNNER_TEMP/essai/bin/python" -I -c '
+          import hashlib, os, sys
+          from voight_kampff._orchestration import manifestes, travail
+          resultat = travail.executer(os.open(sys.argv[1], os.O_RDONLY), manifestes.decouvrir())
+          if resultat.interrompue or resultat.empreinte != hashlib.sha256(b"essai").hexdigest():
+              sys.exit("processus de travail en échec depuis le wheel")
+          ' "$RUNNER_TEMP/essai.bin"
+          "$RUNNER_TEMP/essai/bin/vk" --modules
 
   # Seule vérification à rendre obligatoire sur detector : elle résume toutes les autres.
   code-ok:
