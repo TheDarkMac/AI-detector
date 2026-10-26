@@ -70,8 +70,8 @@ Types : `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`, `build`, `perf
 | `lint-markdown` | Forme du Markdown (markdownlint-cli2, configuration `.markdownlint-cli2.jsonc`) |
 | `fichiers-interdits` | Aucun `CLAUDE.md`, `CLAUDE.local.md` ni `.claude/` suivi par git |
 
-Lancer le lint en local :
+Lancer le lint en local, avec la version embarquée par l'action CI (v24.2.0) :
 
 ```bash
-npx markdownlint-cli2
+npx --yes markdownlint-cli2@0.23.2
 ```

@@ -1,0 +1,30 @@
+# CI documentaire — voir docs/decisions/ADR-0006-ci-documentaire.md
+name: docs
+
+on:
+  pull_request:
+    branches: [detector]
+  push:
+    branches: [detector]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
+
+  fichiers-interdits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Refuser CLAUDE.md, CLAUDE.local.md et .claude/ (ADR-0002)
+        run: |
+          if git ls-files | grep -E '(^|/)(CLAUDE(\.local)?\.md$|\.claude/)'; then
+            echo "::error::Fichiers interdits suivis par git (voir ADR-0002)"
+            exit 1
+          fi
+          echo "Aucun fichier interdit."
