@@ -50,4 +50,4 @@ Le §10 demande si des services tiers de vérification fondés sur l'IA (par exe
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
-| 2026-10-26 | Renvoi : flux vers les services tiers analysé au modèle de menace (M-15, RS-04), politique proposée par ADR-0033 (T03) |
+| 2026-10-26 | Renvoi : flux vers les services tiers analysé au modèle de menace (M-15, RS-04), politique fixée par ADR-0033 (T03) |

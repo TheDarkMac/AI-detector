@@ -1,8 +1,8 @@
 # ADR-0033 — Politique des requêtes sortantes : aucune URL du fichier résolue sans confirmation
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-26
-- **Décideur** : proposition de l'assistant, non posée en question pendant T03, soumise à TheDarkMac dans la PR de T03
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T03, validée dans la conversation pendant la revue de la PR de T03
 - **Tâche** : T03
 - **Exigences liées** : F-21, NF-04, NF-16 ; constats A-36, A-42 ; ADR-0010, ADR-0017 ; menaces M-14 à M-16, M-18
 
@@ -39,7 +39,7 @@ Ce point n'a pas été posé en question : il a été identifié en rédigeant l
 
 ## Raisons
 
-- Option A proposée : elle ferme la menace la plus grave du §6.3 du modèle (M-14, cote haute) sans supprimer une vérification utile.
+- Option A retenue : elle ferme la menace la plus grave du §6.3 du modèle (M-14, cote haute) sans supprimer une vérification utile.
 - Option B écartée : le consentement donné pour la révocation ne vaut pas consentement à contacter un hôte choisi par l'adversaire.
 - Option C écartée : plus restrictive que nécessaire, dès lors que l'utilisateur voit l'hôte avant d'accepter.
 - Extension de NF-16 au contenu : aucune requête de la V1 n'emporte de contenu, la contrainte ne coûte rien maintenant ; elle protège les futures requêtes du type F-72 (A-42).
@@ -49,10 +49,10 @@ Ce point n'a pas été posé en question : il a été identifié en rédigeant l
 - T30 réalise les points 2 à 4 ; T21 et T52 garantissent que les liens et références distantes des DOCX, ODT et PDF ne sont jamais suivis.
 - L'inventaire des requêtes sortantes du [modèle de menace](../modele-de-menace/modele-de-menace.md) (§6.3) applique cette politique.
 - La reformulation de NF-16 complète celle d'ADR-0017 au registre des arbitrages, à faire valider par l'auteur du cahier.
-- Si TheDarkMac ne valide pas cette proposition, un nouvel ADR fixera l'option retenue et le modèle de menace sera révisé.
 
 ## Historique
 
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création, statut « Proposé » |
+| 2026-10-26 | Validé par TheDarkMac pendant la revue de la PR de T03 : statut « Accepté » |

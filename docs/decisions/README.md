@@ -47,4 +47,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0030](ADR-0030-portee-de-nf-17-en-local.md) | Portée de NF-17 en local : journal et horodatage optionnels, aucune trace par défaut | Accepté | 2026-10-26 |
 | [ADR-0031](ADR-0031-empreinte-donnee-identifiante.md) | L'empreinte du fichier est une donnée identifiante | Accepté | 2026-10-26 |
 | [ADR-0032](ADR-0032-double-usage.md) | Fonctions à double usage admises en V2 avec garde-fous | Accepté | 2026-10-26 |
-| [ADR-0033](ADR-0033-politique-des-requetes-sortantes.md) | Politique des requêtes sortantes : aucune URL du fichier résolue sans confirmation | Proposé | 2026-10-26 |
+| [ADR-0033](ADR-0033-politique-des-requetes-sortantes.md) | Politique des requêtes sortantes : aucune URL du fichier résolue sans confirmation | Accepté | 2026-10-26 |

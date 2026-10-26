@@ -189,7 +189,7 @@ Colonnes : élément du §5 ; catégorie STRIDE ; adversaire (§3) ; biens (§2)
 
 #### Inventaire des requêtes sortantes (NF-16)
 
-C'est l'inventaire initial exigé par NF-16 ; il est tenu à jour à chaque tâche qui ajoute une requête, et vérifié par ES-11. Politique : [ADR-0033](../decisions/ADR-0033-politique-des-requetes-sortantes.md) (proposé).
+C'est l'inventaire initial exigé par NF-16 ; il est tenu à jour à chaque tâche qui ajoute une requête, et vérifié par ES-11. Politique : [ADR-0033](../decisions/ADR-0033-politique-des-requetes-sortantes.md).
 
 | ID | Requête | Données envoyées | Destinataire | Ce qu'elle révèle | Par défaut | Tâche |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -302,7 +302,7 @@ Ce qui reste après les mesures, et pourquoi c'est accepté.
 | A-16, ADR-0010 | NF-01 et NF-17 en mode local | [ADR-0028](../decisions/ADR-0028-niveau-d-isolation.md), [ADR-0030](../decisions/ADR-0030-portee-de-nf-17-en-local.md) |
 | A-31 | Fichiers polyglottes | M-08, ES-07 |
 | A-37, registre §3 point 9 | Authentification du catalogue | [ADR-0029](../decisions/ADR-0029-integrite-du-catalogue.md) ; format en T15 |
-| A-42 | Requêtes emportant le contenu | NF-16 étendue au contenu ([ADR-0033](../decisions/ADR-0033-politique-des-requetes-sortantes.md), proposé) ; F-72 hors V1 (ADR-0013) |
+| A-42 | Requêtes emportant le contenu | NF-16 étendue au contenu ([ADR-0033](../decisions/ADR-0033-politique-des-requetes-sortantes.md)) ; F-72 hors V1 (ADR-0013) |
 | A-48 | Nom et empreinte dans le rapport | [ADR-0031](../decisions/ADR-0031-empreinte-donnee-identifiante.md) |
 | A-53, registre §3 point 10 | Niveau d'isolation | ADR-0028 ; mécanismes en T04 |
 | ADR-0017 | Flux vers les services tiers | M-15, RS-04, ES-10 |

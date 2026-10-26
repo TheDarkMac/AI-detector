@@ -111,7 +111,7 @@ Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent 
 | --- | --- | --- | --- |
 | NF-06 | Même fichier, même version de l'outil et du catalogue : mêmes constats | Même fichier ; mêmes versions de l'outil, du catalogue et des dépendances ; mêmes données externes ; analyse non interrompue : mêmes constats | ADR-0023 |
 | NF-13 | Réglementation des pays où l'outil est proposé | Réglementation de l'Union européenne, dont le RGPD | ADR-0020 |
-| NF-16 | Aucune requête sortante n'emporte le fichier | Aucune n'emporte le fichier, **son contenu** ni ses données identifiantes, sauf service tiers activé explicitement par l'utilisateur, avec son consentement pour ce fichier | ADR-0017, ADR-0033 (proposé) |
+| NF-16 | Aucune requête sortante n'emporte le fichier | Aucune n'emporte le fichier, **son contenu** ni ses données identifiantes, sauf service tiers activé explicitement par l'utilisateur, avec son consentement pour ce fichier | ADR-0017, ADR-0033 |
 | NF-17 | Journal « qui, quand » de chaque soumission, consultation, export ; horodatage fiable | Heure du poste, non certifiée, toujours au rapport ; journal (« qui » déclaratif) et horodatage RFC 3161 sur activation explicite | ADR-0030 |
 | NF-01 | Analyse « de façon isolée » | Un processus restreint par fichier, sans réseau ; isolation réduite signalée au rapport | ADR-0028 |
 | F-05 | Empreinte inscrite au rapport | Inscrite, mais masquée par défaut comme donnée identifiante | ADR-0031 |
