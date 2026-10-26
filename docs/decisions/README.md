@@ -74,3 +74,10 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0057](ADR-0057-marquage-des-donnees-identifiantes.md) | Données identifiantes marquées par l'observation, au module qui la produit | Accepté | 2026-10-26 |
 | [ADR-0058](ADR-0058-observation-et-constat.md) | Structure de l'observation et du constat | Accepté | 2026-10-26 |
 | [ADR-0059](ADR-0059-rapport-et-couverture.md) | Structure du rapport et de la couverture | Accepté | 2026-10-26 |
+| [ADR-0060](ADR-0060-resultats-d-un-module-en-erreur.md) | Résultats d'un module en erreur : écartés | Accepté | 2026-10-26 |
+| [ADR-0061](ADR-0061-interface-d-un-module.md) | Interface d'un module : une fonction et un contexte | Accepté | 2026-10-26 |
+| [ADR-0062](ADR-0062-message-de-fin-de-module.md) | Message « module » : fin de chaque module dans le protocole | Accepté | 2026-10-26 |
+| [ADR-0063](ADR-0063-desactivation-et-liste-des-modules.md) | Désactivation des modules et liste en ligne de commande | Accepté | 2026-10-26 |
+| [ADR-0064](ADR-0064-manifeste-des-modules.md) | Manifeste des modules : contenu, validation, ordre d'exécution | Proposé | 2026-10-26 |
+| [ADR-0065](ADR-0065-lancement-et-reception.md) | Lancement du processus de travail et réception de ses messages | Proposé | 2026-10-26 |
+| [ADR-0066](ADR-0066-licence-mit-abandonnee.md) | Passage à la licence MIT | Abandonné | 2026-10-26 |

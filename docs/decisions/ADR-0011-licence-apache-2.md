@@ -54,3 +54,4 @@ L'outil est un **logiciel libre et gratuit**, publié sous **licence Apache-2.0*
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : licence MIT envisagée puis abandonnée avant T12, décision inchangée (ADR-0066) |
