@@ -1,0 +1,371 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:voight-kampff:schema:rapport",
+  "title": "Rapport d'analyse Voight-Kampff",
+  "description": "Données du rapport d'un fichier (T11, ADR-0054 à ADR-0059). Les renvois entre objets (paramètres de phrase, observations citées, couverture) sont vérifiés par le code, pas par ce schéma.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version_schema",
+    "identification",
+    "versions",
+    "isolation",
+    "couverture",
+    "observations",
+    "constats",
+    "non_menees",
+    "interrompue"
+  ],
+  "properties": {
+    "version_schema": { "const": "0.1.0" },
+    "identification": { "$ref": "#/$defs/identification" },
+    "versions": { "$ref": "#/$defs/versions" },
+    "isolation": { "$ref": "#/$defs/isolation" },
+    "couverture": { "$ref": "#/$defs/couverture" },
+    "observations": { "type": "array", "items": { "$ref": "#/$defs/observation" } },
+    "constats": { "type": "array", "items": { "$ref": "#/$defs/constat" } },
+    "non_menees": { "type": "array", "items": { "$ref": "#/$defs/non_menee" } },
+    "interrompue": { "type": "boolean" }
+  },
+  "$defs": {
+    "identifiant": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$(?!\\n)"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9.+!_-]*$(?!\\n)"
+    },
+    "empreinte": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "texte": { "type": "string", "maxLength": 4096 },
+    "nombre": {
+      "type": "number",
+      "minimum": -9223372036854775808,
+      "maximum": 9223372036854775807
+    },
+    "entier_positif": { "type": "integer", "minimum": 0, "maximum": 9223372036854775807 },
+    "entier_strictement_positif": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9223372036854775807
+    },
+
+    "categorie": { "enum": ["preuve", "indice", "information_neutre"] },
+    "direction": {
+      "enum": ["origine_ia", "retouche", "transformation", "authenticite", "rien_de_particulier"]
+    },
+    "niveau": { "enum": ["faible", "modere", "fort"] },
+    "fondement": {
+      "enum": ["verification_cryptographique", "verification_deterministe", "declaration", "mesure"]
+    },
+    "categorie_identifiante": {
+      "enum": ["metadonnee_nominative", "numero_de_serie", "gps", "nom_de_fichier", "empreinte"]
+    },
+    "raison_non_menee": {
+      "enum": [
+        "hors_v1",
+        "module_desactive",
+        "format_partiel",
+        "fichier_tronque",
+        "reference_manquante",
+        "reseau_desactive",
+        "erreur_module",
+        "limite_depassee",
+        "delai_depasse",
+        "arret_processus",
+        "message_invalide"
+      ]
+    },
+    "etat_technique": { "enum": ["appliquee", "partielle", "non_menee", "non_applicable"] },
+    "niveau_isolation": { "enum": ["complete", "reduite"] },
+    "manque_isolation": {
+      "enum": [
+        "reseau",
+        "ecriture",
+        "lecture",
+        "nouveaux_programmes",
+        "memoire",
+        "temps",
+        "vidage_memoire"
+      ]
+    },
+
+    "plage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["debut", "longueur"],
+      "properties": {
+        "debut": { "$ref": "#/$defs/entier_positif" },
+        "longueur": { "$ref": "#/$defs/entier_strictement_positif" }
+      }
+    },
+    "zone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "largeur", "hauteur"],
+      "properties": {
+        "x": { "$ref": "#/$defs/entier_positif" },
+        "y": { "$ref": "#/$defs/entier_positif" },
+        "largeur": { "$ref": "#/$defs/entier_strictement_positif" },
+        "hauteur": { "$ref": "#/$defs/entier_strictement_positif" }
+      }
+    },
+    "intervalle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["debut", "fin"],
+      "properties": {
+        "debut": { "$ref": "#/$defs/nombre", "minimum": 0 },
+        "fin": { "$ref": "#/$defs/nombre", "minimum": 0 }
+      }
+    },
+    "localisation": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "chemin": { "$ref": "#/$defs/texte", "minLength": 1 },
+        "octets": { "$ref": "#/$defs/plage" },
+        "page": { "$ref": "#/$defs/entier_strictement_positif" },
+        "zone": { "$ref": "#/$defs/zone" },
+        "intervalle": { "$ref": "#/$defs/intervalle" }
+      }
+    },
+
+    "scalaire": {
+      "anyOf": [{ "$ref": "#/$defs/texte" }, { "type": "boolean" }, { "$ref": "#/$defs/nombre" }]
+    },
+    "valeur": {
+      "anyOf": [
+        { "$ref": "#/$defs/scalaire" },
+        { "type": "array", "maxItems": 4096, "items": { "$ref": "#/$defs/scalaire" } }
+      ]
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identifiant", "module", "nom", "valeur"],
+      "properties": {
+        "identifiant": { "$ref": "#/$defs/identifiant" },
+        "module": { "$ref": "#/$defs/identifiant" },
+        "nom": { "$ref": "#/$defs/identifiant" },
+        "valeur": { "$ref": "#/$defs/valeur" },
+        "unite": { "type": "string", "minLength": 1, "maxLength": 32 },
+        "localisation": { "$ref": "#/$defs/localisation" },
+        "identifiante": { "$ref": "#/$defs/categorie_identifiante" }
+      }
+    },
+
+    "reference_regle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identifiant", "version"],
+      "properties": {
+        "identifiant": { "$ref": "#/$defs/identifiant" },
+        "version": { "$ref": "#/$defs/version" }
+      }
+    },
+    "phrase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gabarit", "parametres"],
+      "properties": {
+        "gabarit": { "$ref": "#/$defs/identifiant" },
+        "parametres": {
+          "type": "object",
+          "maxProperties": 32,
+          "propertyNames": { "$ref": "#/$defs/identifiant" },
+          "additionalProperties": { "$ref": "#/$defs/identifiant" }
+        }
+      }
+    },
+    "graduation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["niveau", "evaluee"],
+      "properties": {
+        "niveau": { "$ref": "#/$defs/niveau" },
+        "evaluee": { "type": "boolean" }
+      },
+      "if": { "properties": { "evaluee": { "const": false } } },
+      "then": { "properties": { "niveau": { "const": "faible" } } }
+    },
+    "constat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["phrase", "donnees", "regle", "module", "fondement", "categorie", "direction"],
+      "properties": {
+        "phrase": { "$ref": "#/$defs/phrase" },
+        "donnees": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifiant" }
+        },
+        "regle": { "$ref": "#/$defs/reference_regle" },
+        "module": { "$ref": "#/$defs/identifiant" },
+        "fondement": { "$ref": "#/$defs/fondement" },
+        "categorie": { "$ref": "#/$defs/categorie" },
+        "direction": { "$ref": "#/$defs/direction" },
+        "graduation": { "$ref": "#/$defs/graduation" },
+        "localisation": { "$ref": "#/$defs/localisation" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "categorie": { "const": "preuve" } } },
+          "then": {
+            "not": { "required": ["graduation"] },
+            "properties": {
+              "fondement": {
+                "enum": ["verification_cryptographique", "verification_deterministe"]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "categorie": { "const": "indice" } } },
+          "then": {
+            "required": ["graduation"],
+            "properties": { "direction": { "not": { "const": "rien_de_particulier" } } }
+          }
+        },
+        {
+          "if": { "properties": { "categorie": { "const": "information_neutre" } } },
+          "then": {
+            "not": { "required": ["graduation"] },
+            "properties": { "direction": { "const": "rien_de_particulier" } }
+          }
+        }
+      ]
+    },
+
+    "non_menee": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raison"],
+      "properties": {
+        "raison": { "$ref": "#/$defs/raison_non_menee" },
+        "module": { "$ref": "#/$defs/identifiant" },
+        "localisation": { "$ref": "#/$defs/localisation" }
+      },
+      "if": {
+        "properties": {
+          "raison": {
+            "enum": [
+              "hors_v1",
+              "module_desactive",
+              "reference_manquante",
+              "reseau_desactive",
+              "erreur_module"
+            ]
+          }
+        }
+      },
+      "then": { "required": ["module"] }
+    },
+    "technique_couverte": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "etat"],
+      "properties": {
+        "module": { "$ref": "#/$defs/identifiant" },
+        "etat": { "$ref": "#/$defs/etat_technique" },
+        "version": { "$ref": "#/$defs/version" }
+      },
+      "if": { "not": { "required": ["version"] } },
+      "then": { "properties": { "etat": { "const": "non_menee" } } }
+    },
+    "couverture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["techniques", "marquages_recherches"],
+      "properties": {
+        "techniques": { "type": "array", "items": { "$ref": "#/$defs/technique_couverte" } },
+        "marquages_recherches": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifiant" }
+        }
+      }
+    },
+
+    "identification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nom", "format_reel", "taille", "empreinte", "date_analyse"],
+      "properties": {
+        "nom": { "$ref": "#/$defs/texte", "minLength": 1, "pattern": "^[^/\\\\\u0000]+$" },
+        "format_reel": { "$ref": "#/$defs/identifiant" },
+        "taille": { "$ref": "#/$defs/entier_positif" },
+        "empreinte": { "$ref": "#/$defs/empreinte" },
+        "date_analyse": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 20,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        }
+      }
+    },
+    "dependance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nom", "version"],
+      "properties": {
+        "nom": { "$ref": "#/$defs/identifiant" },
+        "version": { "$ref": "#/$defs/version" }
+      }
+    },
+    "version_catalogue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "date", "empreinte", "fourni_par_utilisateur"],
+      "properties": {
+        "version": { "$ref": "#/$defs/version" },
+        "date": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 10,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "empreinte": { "$ref": "#/$defs/empreinte" },
+        "fourni_par_utilisateur": { "type": "boolean" }
+      }
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outil", "catalogue", "dependances"],
+      "properties": {
+        "outil": { "$ref": "#/$defs/version" },
+        "catalogue": { "$ref": "#/$defs/version_catalogue" },
+        "dependances": { "type": "array", "items": { "$ref": "#/$defs/dependance" } }
+      }
+    },
+    "isolation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["niveau", "manques"],
+      "properties": {
+        "niveau": { "$ref": "#/$defs/niveau_isolation" },
+        "manques": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/manque_isolation" }
+        }
+      },
+      "if": { "properties": { "niveau": { "const": "complete" } } },
+      "then": { "properties": { "manques": { "maxItems": 0 } } },
+      "else": { "properties": { "manques": { "minItems": 1 } } }
+    }
+  }
+}

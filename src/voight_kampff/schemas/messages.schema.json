@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:voight-kampff:schema:messages",
+  "title": "Messages du processus de travail Voight-Kampff",
+  "description": "Une ligne JSON envoyée par le processus de travail au processus principal (ADR-0036, ES-04). Le premier message est l'état de l'isolation, le dernier la fin. Les objets transportés sont ceux du schéma du rapport, de même version.",
+  "oneOf": [
+    { "$ref": "#/$defs/isolation" },
+    { "$ref": "#/$defs/observation" },
+    { "$ref": "#/$defs/constat" },
+    { "$ref": "#/$defs/non_menee" },
+    { "$ref": "#/$defs/versions" },
+    { "$ref": "#/$defs/fin" }
+  ],
+  "$defs": {
+    "isolation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "version_schema", "isolation"],
+      "properties": {
+        "type": { "const": "isolation" },
+        "version_schema": { "const": "0.1.0" },
+        "isolation": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/isolation" }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "observation"],
+      "properties": {
+        "type": { "const": "observation" },
+        "observation": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/observation" }
+      }
+    },
+    "constat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "constat"],
+      "properties": {
+        "type": { "const": "constat" },
+        "constat": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/constat" }
+      }
+    },
+    "non_menee": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "non_menee"],
+      "properties": {
+        "type": { "const": "non_menee" },
+        "non_menee": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/non_menee" }
+      }
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "dependances"],
+      "properties": {
+        "type": { "const": "versions" },
+        "dependances": {
+          "type": "array",
+          "items": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/dependance" }
+        }
+      }
+    },
+    "fin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "empreinte"],
+      "properties": {
+        "type": { "const": "fin" },
+        "empreinte": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/empreinte" }
+      }
+    }
+  }
+}

@@ -67,3 +67,4 @@ Chaque bibliothèque qui lit le fichier est une surface d'attaque (M-01), une so
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : dépendances candidates examinées en T10 (architecture §9) (T10) |
+| 2026-10-26 | Renvoi : `jsonschema` ajouté en T11, critères vérifiés dans ADR-0054 (T11) |

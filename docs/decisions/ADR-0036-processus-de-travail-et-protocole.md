@@ -57,3 +57,4 @@ ADR-0028 impose un processus de travail par fichier et des résultats validés p
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : schéma des messages et version commune avec le rapport (ADR-0054, modèle de données §8) (T11) |

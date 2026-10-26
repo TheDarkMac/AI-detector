@@ -53,3 +53,4 @@ Le principe de modularité et NF-10 demandent qu'une technique ou un format s'aj
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : forme de l'observation (ADR-0058) ; états des techniques dans la couverture (ADR-0059) (T11) |

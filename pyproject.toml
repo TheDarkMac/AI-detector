@@ -24,8 +24,10 @@ classifiers = [
     "Topic :: Security",
     "Typing :: Typed",
 ]
-# Aucune dépendance en T10 : chaque bibliothèque est ajoutée par la tâche qui l'utilise (ADR-0043).
-dependencies = []
+# Chaque bibliothèque est ajoutée par la tâche qui l'utilise (ADR-0043) : jsonschema en T11 (ADR-0054).
+dependencies = [
+    "jsonschema>=4.26",
+]
 
 [project.scripts]
 voight-kampff = "voight_kampff.cli:main"
@@ -42,6 +44,7 @@ dev = [
     "pip-audit>=2.9",
     "pytest>=8.4",
     "ruff>=0.14",
+    "types-jsonschema>=4.26",
 ]
 
 [build-system]

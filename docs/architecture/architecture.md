@@ -1,6 +1,6 @@
 # Architecture
 
-> Statut : **v1.1** ; v1.0 mergée avec T04, v1.1 proposée dans la PR de T10. Document vivant : toute modification est inscrite à l'historique (§13).
+> Statut : **v1.2** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 proposée dans la PR de T11. Document vivant : toute modification est inscrite à l'historique (§13).
 > Exigences : NF-01, NF-06, NF-10 ; exigences de sécurité ES-01, ES-02, ES-05, ES-10, ES-17, ES-18 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-05, A-16, A-30, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T04. Date de rédaction : 2026-10-26.
 
@@ -106,7 +106,7 @@ Dans un lot (ADR-0015), ces étapes se répètent pour chaque fichier, avec un n
 
 ## 4. Composants et organisation du code
 
-Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; les autres éléments arrivent avec leurs tâches.
+Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; T11 a créé `rapport/modele.py` et `schemas/` (schémas du rapport et des messages) ; les autres éléments arrivent avec leurs tâches.
 
 ```text
 src/voight_kampff/
@@ -168,9 +168,9 @@ Ce qui ne passe par aucun de ces mécanismes, sur tous les systèmes :
 | Catalogue, manifestes | TOML | JSON Schema au chargement (ES-09, ADR-0038) |
 | Rapport exporté | JSON et HTML autonome | Schéma publié (ADR-0025) ; HTML échappé, politique de sécurité du contenu (ES-12) |
 
-Une **observation** est une donnée relevée par un module (valeur d'un champ, mesure). Un **constat** est ce qu'une règle du catalogue en tire : phrase, donnée observée, règle, catégorie, direction, niveau (§6 du cahier, ADR-0018, ADR-0021). Cette séparation garde les règles hors du moteur (F-26) ; un module peut aussi produire un constat directement quand la vérification est déterministe (signature C2PA). La forme exacte relève de T11.
+Une **observation** est une donnée relevée par un module (valeur d'un champ, mesure). Un **constat** est ce qu'une règle du catalogue en tire : phrase, donnée observée, règle, catégorie, direction, niveau (§6 du cahier, ADR-0018, ADR-0021). Cette séparation garde les règles hors du moteur (F-26) ; un module peut aussi produire un constat directement quand la vérification est déterministe (signature C2PA). La forme exacte est fixée par le [modèle de données](../modele-de-donnees/modele-de-donnees.md) (T11, ADR-0058).
 
-Les règles sont évaluées dans P2 : une donnée hostile n'est jamais confrontée à une expression régulière dans P1. Conséquence acceptée : un P2 compromis peut forger les constats de son propre fichier (RR-01).
+Les règles sont évaluées dans P2 : une donnée hostile n'est jamais confrontée à une expression régulière **du catalogue** dans P1. Les schémas des messages emploient seulement des expressions fixes, ancrées et linéaires, bornées en longueur (ADR-0054). Conséquence acceptée : un P2 compromis peut forger les constats de son propre fichier (RR-01).
 
 ## 7. Modules et extension (NF-10)
 
@@ -198,7 +198,7 @@ Politique : [ADR-0043](../decisions/ADR-0043-politique-des-bibliotheques.md) ; g
 | `defusedxml` | PSF-2.0 | P2 | XMP, DOCX, ODT (ES-05) |
 | `pypdf` | BSD-3-Clause | P2 | Objets PDF (T50 à T53) |
 | `google-re2` | BSD-3-Clause | P1 (compilation), P2 | Expressions du catalogue (ES-09) |
-| `jsonschema` | MIT | P1 | Validation des messages, du catalogue, des manifestes |
+| `jsonschema` | MIT | P1 | Validation des messages, du catalogue, des manifestes ; dépendance depuis T11 (ADR-0054) |
 | `numpy` | BSD-3-Clause | P2 | Analyses JPEG (T40, T41) |
 | uv | Apache-2.0 ou MIT | Développement, CI | Verrou à empreintes |
 | exiftool | Perl (Artistic ou GPL) | Tests seulement | Oracle de test des métadonnées (T20, T21) |
@@ -207,7 +207,7 @@ Cette liste est une liste de candidates : chaque tâche confirme ou remplace la 
 
 ### Examen de T10
 
-Fait le 2026-10-26 à partir des métadonnées publiées sur PyPI. Aucune de ces bibliothèques n'est encore une dépendance : chacune sera ajoutée par sa tâche (ADR-0043), qui refera la vérification à la version retenue.
+Fait le 2026-10-26 à partir des métadonnées publiées sur PyPI. Aucune de ces bibliothèques n'était alors une dépendance : chacune est ajoutée par sa tâche (ADR-0043), qui refait la vérification à la version retenue. `jsonschema` l'a été en T11 (ADR-0054).
 
 | Bibliothèque | Version examinée | Paquets précompilés | Dépendances transitives | Points relevés |
 | --- | --- | --- | --- | --- |
@@ -259,7 +259,7 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | --- | --- |
 | Valeurs des limites, délai, budget de travail ; mesure du coût de démarrage de P2 | T14 |
 | Points « à confirmer » de l'isolation sous macOS et Windows | T14 |
-| Forme des observations, des constats et des messages | T11 |
+| ~~Forme des observations, des constats et des messages~~ | Fixée en T11 : [modèle de données](../modele-de-donnees/modele-de-donnees.md) |
 | Schéma et découpage du catalogue ; syntaxe RE2 admise | T15 |
 | Gabarit HTML et moyen d'échappement | T16 |
 | Paquets binaires de `c2pa-python` sous Windows ; `requests` et `toml` parmi ses dépendances (§9) | T30 |
@@ -274,3 +274,4 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T04 |
 | 2026-10-26 | 1.1 | Nom du paquet `voight_kampff` (§3, §4, ADR-0045) ; examen des dépendances candidates (§9) ; workflow de publication (§11) ; points transmis à T20, T30 (§12) | T10 |
+| 2026-10-26 | 1.2 | Modèle de données : `rapport/modele.py` et `schemas/` (§4), renvoi et précision sur les expressions dans P1 (§6), `jsonschema` ajouté (§9), point de T11 fixé (§12) | T11 |

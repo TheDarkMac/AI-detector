@@ -106,6 +106,9 @@ jobs:
           VIRTUAL_ENV="$RUNNER_TEMP/essai" uv pip install "$RUNNER_TEMP"/a/*.whl
           "$RUNNER_TEMP/essai/bin/voight-kampff" --version
           "$RUNNER_TEMP/essai/bin/vk" --version
+      - name: Schémas livrés dans le wheel et chargeables (T11)
+        run: |
+          "$RUNNER_TEMP/essai/bin/python" -I -c "from voight_kampff import schemas; [schemas.valideur(n) for n in schemas.NOMS]"
 
   # Seule vérification à rendre obligatoire sur detector : elle résume toutes les autres.
   code-ok:
