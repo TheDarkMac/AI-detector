@@ -68,3 +68,9 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0051](ADR-0051-integration-continue-du-code.md) | Intégration continue du code : trois systèmes, Python 3.12 à 3.14 | Accepté | 2026-10-26 |
 | [ADR-0052](ADR-0052-surveillance-des-failles.md) | Surveillance des failles : pip-audit et Dependabot | Accepté | 2026-10-26 |
 | [ADR-0053](ADR-0053-branche-par-defaut.md) | Branche par défaut : `detector` | Accepté | 2026-10-26 |
+| [ADR-0054](ADR-0054-representation-du-modele.md) | Représentation du modèle : dataclasses figées et JSON Schema écrits à la main | Accepté | 2026-10-26 |
+| [ADR-0055](ADR-0055-cinq-directions.md) | Cinq directions de constat : « transformation » ajoutée à F-81 | Accepté | 2026-10-26 |
+| [ADR-0056](ADR-0056-raisons-des-analyses-non-menees.md) | Raisons des analyses non menées : liste fermée, phrase par gabarit | Accepté | 2026-10-26 |
+| [ADR-0057](ADR-0057-marquage-des-donnees-identifiantes.md) | Données identifiantes marquées par l'observation, au module qui la produit | Accepté | 2026-10-26 |
+| [ADR-0058](ADR-0058-observation-et-constat.md) | Structure de l'observation et du constat | Proposé | 2026-10-26 |
+| [ADR-0059](ADR-0059-rapport-et-couverture.md) | Structure du rapport et de la couverture | Proposé | 2026-10-26 |
