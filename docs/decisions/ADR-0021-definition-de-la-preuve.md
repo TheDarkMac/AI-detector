@@ -43,3 +43,4 @@ Le glossaire définit la preuve comme un « élément vérifiable qui établit u
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : glossaire du projet créé (`docs/glossaire.md`) ; une preuve exige un fondement de vérification dans le modèle (ADR-0058) (T11) |

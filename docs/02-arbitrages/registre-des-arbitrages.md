@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.3** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 proposée dans la PR de T10. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.4** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 proposée dans la PR de T11. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -129,7 +129,9 @@ Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent 
 | F-51 | Appliquer F-30 à F-34 aux images clés vidéo | À réécrire avant T71 : seules les analyses applicables à une image vidéo décodée | ADR-0012 |
 | F-41 | Silences, plancher de bruit, respirations | Silence numérique et plancher de bruit | ADR-0012 |
 | F-63 | Extraction ; lecture des documents numérisés ouverte | Couche texte native seulement ; document numérisé = analyse non menée | ADR-0017 |
-| Glossaire « Preuve » | Élément vérifiable qui établit un fait | Fait établi par une vérification cryptographique ou déterministe, avec l'énoncé exact de ce qu'il établit | ADR-0021 |
+| Glossaire « Preuve » | Élément vérifiable qui établit un fait | Fait établi par une vérification cryptographique ou déterministe, avec l'énoncé exact de ce qu'il établit ; reprise dans le [glossaire du projet](../glossaire.md) (T11) | ADR-0021 |
+| F-81 | Directions : origine IA, retouche, authenticité, rien de particulier | Cinq directions : origine IA, retouche, **transformation**, authenticité, rien de particulier | ADR-0055 |
+| Glossaire, « signature » | Désigne aussi les traces d'outils de génération (F-12) | Réservé au sens cryptographique ; « empreinte d'outil » pour F-12 (A-10) | Glossaire du projet (T11) |
 | §8, couverture | Chaque exigence couverte par un test | Chaque exigence a une méthode de vérification et un résultat consigné | ADR-0024 |
 | §8, étude d'usage | Critère d'acceptation | Hors V1 | ADR-0026 |
 | §8, ajout | — | Taux de faux positifs par fichier mesuré et publié | ADR-0018 |
@@ -154,6 +156,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 - [Modèle de menace](../modele-de-menace/modele-de-menace.md) (T03) : points 8, 9 et 10 du §3, portée de NF-17 ; reformulations de NF-01, NF-16, NF-17 et F-05 au §4 ; découpage v0.7.
 - [Architecture](../architecture/architecture.md) (T04) : points 9 et 10 du §3, nom du projet (§2), constats adressés à T04 (§3) ; découpage v0.8.
 - T10 : nom du projet tranché (§2, ADR-0045) ; architecture v1.1.
+- T11 : F-81 et glossaire reformulés (§4, ADR-0055) ; [modèle de données](../modele-de-donnees/modele-de-donnees.md) et [glossaire du projet](../glossaire.md) créés ; architecture v1.2, découpage v0.10.
 
 ## 7. Historique
 
@@ -163,3 +166,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-10-26 | 1.1 | Arbitrages de T03 : conservation et limites (§2), points 8 à 10 (§3), reformulations de NF-01, NF-16, NF-17, F-05 (§4), effets (§6) | T03 |
 | 2026-10-26 | 1.2 | Choix de T04 : nom du projet désormais nécessaire avant T10 (§2), points 9 et 10, constats adressés à T04 (§3), effets (§6) | T04 |
 | 2026-10-26 | 1.3 | Nom du projet tranché : Voight-Kampff (§2, ADR-0045) ; effets (§6) | T10 |
+| 2026-10-26 | 1.4 | Reformulations de F-81 et du glossaire (§4, ADR-0055) ; effets (§6) | T11 |

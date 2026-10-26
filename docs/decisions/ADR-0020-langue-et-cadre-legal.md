@@ -49,3 +49,4 @@ Le §10 laisse ouverts les langues de l'interface et des rapports, et les pays v
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : la phrase d'un constat est un gabarit dont les paramètres renvoient à des observations (ADR-0058) ; raisons des analyses non menées par gabarit (ADR-0056) (T11) |
