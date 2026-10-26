@@ -31,7 +31,8 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : fixer l'architecture et
 6. Rédaction des ADR-0034 à ADR-0044. En rédigeant ADR-0035, les points dont l'assistant n'est pas sûr sans mesure (limite mémoire sous macOS, effet du niveau d'intégrité et des vidages sous Windows) sont marqués « à confirmer en T14 » plutôt qu'affirmés.
 7. Rédaction de l'[architecture](../architecture/architecture.md) v1.0 : vue d'ensemble et déroulé d'une analyse (deux diagrammes Mermaid avec description textuelle), organisation du code, isolation par système, contrats de données, modules, catalogue, dépendances, reproductibilité, distribution, réalisation des ES rattachées à T04, points laissés aux tâches suivantes.
 8. Documents vivants : découpage v0.8 (T04, T10, T12 à T15), registre v1.2 (nom du projet, points 9 et 10, constats adressés à T04), modèle de menace v1.1 (H2, RS-04, colonne « Décision » du §8), `CONTRIBUTING.md` (commande de merge), `docs/README.md`, index des ADR et du journal (T03 → #4) ; renvois ajoutés à l'historique d'ADR-0005, ADR-0010, ADR-0017, ADR-0023, ADR-0028, ADR-0029.
-9. Lint Markdown en local, vérification des fichiers interdits, commits, PR.
+9. Lint Markdown en local, vérification des fichiers interdits, commits ; PR [#5](https://github.com/TheDarkMac/AI-detector/pull/5) ouverte.
+10. Pendant la revue de la PR, TheDarkMac a accepté les quatre points fixés par l'assistant sans question : fichier transmis par descripteur, sans ouverture de chemin ni écriture par le processus de travail (ADR-0036) ; règles évaluées dans le processus de travail ; points « à confirmer en T14 » (ADR-0035) ; nom du projet préalable à T10 et à la publication. Il a demandé le merge une fois la CI verte, avec le titre fixé par ADR-0044.
 
 ## Problèmes rencontrés
 
