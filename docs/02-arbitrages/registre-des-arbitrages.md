@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.2** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 proposée dans la PR de T04. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.3** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 proposée dans la PR de T10. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -24,7 +24,7 @@ Statuts : **Tranché** (ADR cité), **Reporté** (tâche citée), **Non tranché
 
 | Point | Statut | Décision ou raison du report | Référence |
 | --- | --- | --- | --- |
-| Nom du projet | Non tranché | Ne conditionne aucune tâche avant une publication. Le nom de travail « AI-detector » promet une détection que l'outil ne fait pas seul (ADR-0008, NF-14) : à revoir avant toute version publiée. Depuis T04, il est aussi nécessaire avant T10 (nom d'import du paquet) et avant la première publication sur PyPI, où il faudra le réserver (ADR-0041). | — |
+| Nom du projet | Tranché (T10) | Voight-Kampff ; paquet PyPI `voight-kampff-forensics`, import `voight_kampff`, commandes `voight-kampff` et `vk`. Le nom de travail « AI-detector » promettait une détection que l'outil ne fait pas seul (ADR-0008, NF-14). Réservation sur PyPI par une première publication, qui attend le fichier `LICENSE` (ADR-0011). | ADR-0045 |
 | Public cible prioritaire | Tranché | Journalistes et vérificateurs ; juristes en second | ADR-0009 |
 | Mode de distribution | Tranché | Ligne de commande et bibliothèque | ADR-0010 |
 | Modèle économique et licence | Tranché | Libre et gratuit, Apache-2.0 | ADR-0011 |
@@ -153,6 +153,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 - [Analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md) : renvoi vers ce registre.
 - [Modèle de menace](../modele-de-menace/modele-de-menace.md) (T03) : points 8, 9 et 10 du §3, portée de NF-17 ; reformulations de NF-01, NF-16, NF-17 et F-05 au §4 ; découpage v0.7.
 - [Architecture](../architecture/architecture.md) (T04) : points 9 et 10 du §3, nom du projet (§2), constats adressés à T04 (§3) ; découpage v0.8.
+- T10 : nom du projet tranché (§2, ADR-0045) ; architecture v1.1.
 
 ## 7. Historique
 
@@ -161,3 +162,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-10-26 | 1.0 | Création | T02 |
 | 2026-10-26 | 1.1 | Arbitrages de T03 : conservation et limites (§2), points 8 à 10 (§3), reformulations de NF-01, NF-16, NF-17, F-05 (§4), effets (§6) | T03 |
 | 2026-10-26 | 1.2 | Choix de T04 : nom du projet désormais nécessaire avant T10 (§2), points 9 et 10, constats adressés à T04 (§3), effets (§6) | T04 |
+| 2026-10-26 | 1.3 | Nom du projet tranché : Voight-Kampff (§2, ADR-0045) ; effets (§6) | T10 |

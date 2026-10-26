@@ -59,3 +59,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0042](ADR-0042-modules-et-extension.md) | Modules d'analyse : découverte interne, manifeste déclaratif | Accepté | 2026-10-26 |
 | [ADR-0043](ADR-0043-politique-des-bibliotheques.md) | Politique des bibliothèques : Python pur d'abord | Accepté | 2026-10-26 |
 | [ADR-0044](ADR-0044-titre-des-commits-de-merge.md) | Titre des commits de merge : toujours fixé à la main | Accepté | 2026-10-26 |
+| [ADR-0045](ADR-0045-nom-du-projet.md) | Nom du projet : Voight-Kampff | Accepté | 2026-10-26 |
