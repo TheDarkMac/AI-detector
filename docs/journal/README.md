@@ -19,4 +19,5 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T03](T03-modele-de-menace.md) | Modèle de menace | `tache/T03-modele-de-menace` | [#4](https://github.com/TheDarkMac/AI-detector/pull/4) |
 | [T04](T04-architecture.md) | Architecture et choix techniques | `tache/T04-architecture` | [#5](https://github.com/TheDarkMac/AI-detector/pull/5) |
 | [T10](T10-squelette.md) | Squelette du projet Python et outillage | `tache/T10-squelette` | [#6](https://github.com/TheDarkMac/AI-detector/pull/6) |
-| [T11](T11-modele-de-donnees.md) | Modèle de données | `tache/T11-modele-de-donnees` | à venir |
+| [T11](T11-modele-de-donnees.md) | Modèle de données | `tache/T11-modele-de-donnees` | [#9](https://github.com/TheDarkMac/AI-detector/pull/9) |
+| [T12](T12-moteur-de-modules.md) | Moteur de modules | `tache/T12-moteur-de-modules` | à venir |

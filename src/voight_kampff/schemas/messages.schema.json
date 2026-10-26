@@ -2,12 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:voight-kampff:schema:messages",
   "title": "Messages du processus de travail Voight-Kampff",
-  "description": "Une ligne JSON envoyée par le processus de travail au processus principal (ADR-0036, ES-04). Le premier message est l'état de l'isolation, le dernier la fin. Les objets transportés sont ceux du schéma du rapport, de même version.",
+  "description": "Une ligne JSON envoyée par le processus de travail au processus principal (ADR-0036, ES-04). Le premier message est l'état de l'isolation, le dernier la fin ; les résultats de chaque module actif sont suivis de son message « module » (ADR-0062). Les objets transportés sont ceux du schéma du rapport, de même version.",
   "oneOf": [
     { "$ref": "#/$defs/isolation" },
     { "$ref": "#/$defs/observation" },
     { "$ref": "#/$defs/constat" },
     { "$ref": "#/$defs/non_menee" },
+    { "$ref": "#/$defs/module" },
     { "$ref": "#/$defs/versions" },
     { "$ref": "#/$defs/fin" }
   ],
@@ -47,6 +48,16 @@
       "properties": {
         "type": { "const": "non_menee" },
         "non_menee": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/non_menee" }
+      }
+    },
+    "module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "module", "applicable"],
+      "properties": {
+        "type": { "const": "module" },
+        "module": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/identifiant" },
+        "applicable": { "type": "boolean" }
       }
     },
     "versions": {

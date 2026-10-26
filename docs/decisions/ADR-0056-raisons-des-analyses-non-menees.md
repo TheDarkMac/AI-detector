@@ -62,3 +62,4 @@ Liste fixée par l'assistant :
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-26 | Renvoi : T12 produit `erreur_module`, `arret_processus`, `message_invalide`, `module_desactive`, et déjà `limite_depassee` et `delai_depasse` avec des valeurs provisoires (ADR-0065) |

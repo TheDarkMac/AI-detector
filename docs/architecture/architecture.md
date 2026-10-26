@@ -1,6 +1,6 @@
 # Architecture
 
-> Statut : **v1.2** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 proposée dans la PR de T11. Document vivant : toute modification est inscrite à l'historique (§13).
+> Statut : **v1.3** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 proposée dans la PR de T12. Document vivant : toute modification est inscrite à l'historique (§13).
 > Exigences : NF-01, NF-06, NF-10 ; exigences de sécurité ES-01, ES-02, ES-05, ES-10, ES-17, ES-18 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-05, A-16, A-30, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T04. Date de rédaction : 2026-10-26.
 
@@ -81,13 +81,14 @@ sequenceDiagram
   participant P2 as Processus de travail
   P1->>P1: ouvrir le fichier, vérifier fichier régulier, empreinte SHA-256
   P1->>P1: charger et valider catalogue et manifestes
-  P1->>P2: lancer python -I, environnement vide, descripteur hérité
-  Note over P1,P2: Windows : Job Object posé avant tout envoi
+  P1->>P2: lancer python -I -B, environnement vide, descripteur hérité
+  Note over P1,P2: Windows : Job Object posé avant tout envoi (T14)
   P2->>P2: importer les modules, appliquer les restrictions
   P2-->>P1: message 1 : état de l'isolation (aucun octet du fichier lu)
   P1->>P2: configuration : catalogue, limites, modules actifs
   P2->>P2: lire le fichier, recalculer l'empreinte, identifier, analyser
-  P2-->>P1: messages : observations, constats, analyses non menées, versions
+  P2-->>P1: par module : observations, constats, non menées, puis « module »
+  P2-->>P1: versions
   P2-->>P1: message final : empreinte recalculée, fin
   P1->>P1: valider, comparer les empreintes, produire le rapport
 ```
@@ -96,26 +97,27 @@ Description textuelle :
 
 1. P1 ouvre le fichier en lecture seule et sans blocage, vérifie sur le descripteur que c'est un fichier régulier (ES-08), calcule l'empreinte SHA-256 (ADR-0040).
 2. P1 charge le catalogue et la liste de confiance, les valide par schéma (ES-09), lit les manifestes des modules (ADR-0042).
-3. P1 lance P2 : `python -I -m voight_kampff._travail`, environnement vidé, seul le descripteur du fichier et les tubes hérités (ADR-0036). Sous Windows, P2 est placé dans un Job Object avant tout envoi.
+3. P1 lance P2 : `python -I -B -m voight_kampff._travail`, environnement vidé, seul le descripteur du fichier et les tubes hérités (ADR-0036, ADR-0065). Sous Windows, P2 sera placé dans un Job Object avant tout envoi (T14).
 4. P2 importe ses modules, applique ses restrictions (§5), puis envoie l'**état de l'isolation**. À ce moment, il n'a lu aucun octet du fichier : ce message est fiable.
 5. P1 envoie la configuration : catalogue validé, limites, modules actifs.
-6. P2 lit le fichier par lectures à position explicite, recalcule l'empreinte, identifie le format (T13), exécute les modules concernés, évalue les règles, et envoie ses résultats.
+6. P2 lit le fichier par lectures à position explicite, recalcule l'empreinte, identifie le format (T13), exécute les modules concernés dans l'ordre de la configuration, évalue les règles, et envoie les résultats de chaque module suivis de son message « module » (ADR-0062).
 7. P1 valide chaque message ; une empreinte différente invalide le rapport (ES-08) ; un message invalide, un délai dépassé ou un arrêt anormal donnent des analyses non menées (ES-04, NF-03). P3 produit le rapport.
 
 Dans un lot (ADR-0015), ces étapes se répètent pour chaque fichier, avec un nouveau P2, sans état partagé (ES-04).
 
 ## 4. Composants et organisation du code
 
-Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; T11 a créé `rapport/modele.py` et `schemas/` (schémas du rapport et des messages) ; les autres éléments arrivent avec leurs tâches.
+Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; T11 a créé `rapport/modele.py` et `schemas/` (schémas du rapport et des messages) ; T12 a créé `_protocole.py`, `_orchestration/`, `_travail/`, `modules/` (vide) et le schéma des manifestes ; les autres éléments arrivent avec leurs tâches.
 
 ```text
 src/voight_kampff/
   __init__.py        interface publique de la bibliothèque : analyse par P2 seulement (ES-17)
   __main__.py        lancement par python -m voight_kampff
   cli.py             ligne de commande (argparse)
-  _orchestration/    P1 : soumission, empreinte, lancement de P2, délais, validation des messages
+  _protocole.py      lignes JSON du protocole, décodage strict ; tailles provisoires (P1 et P2)
+  _orchestration/    P1 : manifestes, lancement de P2, délai, validation des messages ; soumission et empreinte (T13)
   _isolation/        restrictions par système : linux, macos, windows (ADR-0035)
-  _travail/          point d'entrée de P2 : verrouillage, protocole, acheminement vers les modules
+  _travail/          point d'entrée de P2 : verrouillage, garde, contexte des modules, acheminement
   _regles/           évaluation des règles du catalogue (RE2, ADR-0039)
   modules/           une technique par sous-paquet, avec son manifeste (ADR-0042)
   rapport/           modèle du rapport (T11), exports HTML et JSON (T16)
@@ -162,9 +164,9 @@ Ce qui ne passe par aucun de ces mécanismes, sur tous les systèmes :
 
 | Échange | Forme | Validation |
 | --- | --- | --- |
-| P1 → P2, configuration | Un objet JSON sur l'entrée standard : catalogue validé, limites, modules actifs, options | Données produites par P1 |
-| P2 → P1, résultats | Lignes JSON sur la sortie standard, de types : `isolation`, `observation`, `constat`, `non_menee`, `versions`, `fin` | Taille bornée par message et au total ; JSON Schema par type (ES-04) |
-| P2 → P1, erreurs | Sortie d'erreur | Lue et bornée, jamais affichée ni recopiée (ES-15) |
+| P1 → P2, configuration | Un objet JSON sur l'entrée standard, envoyé après le message d'isolation : modules actifs dans l'ordre d'exécution (identifiant, formats, directions) ; catalogue validé (T15) et limites (T14) à venir | Données produites par P1 ; forme vérifiée par P2 (ADR-0065) |
+| P2 → P1, résultats | Lignes JSON sur la sortie standard, de types : `isolation`, `observation`, `constat`, `non_menee`, `module`, `versions`, `fin` | Taille bornée par message et au total ; JSON strict, JSON Schema par type, modèle, ordre du protocole (ES-04, ADR-0062, ADR-0065) |
+| P2 → P1, erreurs | Sortie d'erreur, où part aussi tout texte affiché par un module | Envoyée vers le néant : jamais lue, affichée ni recopiée (ES-15, ADR-0065) |
 | Catalogue, manifestes | TOML | JSON Schema au chargement (ES-09, ADR-0038) |
 | Rapport exporté | JSON et HTML autonome | Schéma publié (ADR-0025) ; HTML échappé, politique de sécurité du contenu (ES-12) |
 
@@ -177,7 +179,9 @@ Les règles sont évaluées dans P2 : une donnée hostile n'est jamais confront�
 - Un module est un sous-paquet de `modules/`, avec un manifeste TOML : identifiant, version, formats, exigences, règles employées, fiche technique, dépendances envers d'autres modules ([ADR-0042](../decisions/ADR-0042-modules-et-extension.md)).
 - P1 lit les manifestes sans importer le code, et en tire la couverture du rapport (F-25, F-82). P2 importe le code.
 - Ajouter une technique ou un format, c'est ajouter un sous-paquet, ses règles au catalogue et sa fiche : aucun autre module n'est modifié.
-- Une exception dans un module rend ses analyses « non menées » ; un arrêt de P2 rend non menées toutes les analyses restantes du fichier, avec la raison.
+- Un module expose `analyser(contexte)` ; le contexte lit le fichier par position et reçoit observations, constats et analyses non menées ([ADR-0061](../decisions/ADR-0061-interface-d-un-module.md)). Le manifeste est validé par schéma ; un module s'exécute après ceux qu'il requiert ([ADR-0064](../decisions/ADR-0064-manifeste-des-modules.md)).
+- Une exception dans un module rend ses analyses « non menées » et ses résultats sont écartés ([ADR-0060](../decisions/ADR-0060-resultats-d-un-module-en-erreur.md)) ; un arrêt de P2 rend non menées toutes les analyses restantes du fichier, avec la raison ([ADR-0062](../decisions/ADR-0062-message-de-fin-de-module.md)).
+- Un module désactivé, ou qui en requiert un désactivé, n'est pas exécuté ; `voight-kampff --modules` liste les modules livrés ([ADR-0063](../decisions/ADR-0063-desactivation-et-liste-des-modules.md)).
 - Le contenu extrait d'un fichier (images et texte d'un PDF, T53) est acheminé vers les modules concernés dans le même P2.
 - Point d'extension des services tiers (ADR-0017) : interface documentée, aucune implémentation en V1 ; un tel service ne peut pas s'exécuter dans P2, qui n'a pas de réseau. Son mode d'exécution sera fixé par un nouvel ADR, avec révision du modèle de menace.
 
@@ -244,11 +248,11 @@ Reformulée par ADR-0023 : mêmes fichier, versions de l'outil, du catalogue et 
 
 | ES | Ce que l'architecture prévoit | Réalisée en |
 | --- | --- | --- |
-| ES-01 | Un P2 par fichier ; P1 ne lit le fichier que pour l'empreinte (§3) | T12 |
+| ES-01 | Un P2 par fichier ; P1 ne lit le fichier que pour l'empreinte (§3) | T12 (lancement) ; T13 (ouverture et empreinte) |
 | ES-02 | Restrictions par système, état de l'isolation au rapport (§5) | T14 |
 | ES-05 | `defusedxml` ; archives en mémoire ; aucune écriture de P2 (§5) | T20, T21 |
 | ES-10 | P2 sans réseau ; toute requête sortante part de P1, désactivée par défaut, selon ADR-0033 ; inventaire du modèle de menace inchangé | T30 |
-| ES-17 | Interface publique limitée à l'analyse par P2 ; garde dans les analyseurs (§4) | T12 |
+| ES-17 | Interface publique limitée à l'analyse par P2 ; garde dans les analyseurs (§4) | T12 (garde, ADR-0061) ; interface publique avec la commande d'analyse (T13) |
 | ES-18 | Verrou à empreintes, canal unique, attestations, peu de dépendances, Python pur d'abord (§9, §11) | T10 |
 
 Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-22) sont réalisées par les tâches que le modèle de menace leur attribue ; l'architecture leur donne leur place : limites dans P2 (ES-03), messages validés (ES-04), empreinte recalculée (ES-08), catalogue validé (ES-09), rapport dans P1 (ES-12 à ES-14), aucune écriture (ES-15).
@@ -267,6 +271,11 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | Python 3.15, dès que `google-re2` le prend en charge (ADR-0051) | Nouvelle PR |
 | Moyen de lire les coefficients DCT | T41 |
 | Mode d'exécution d'un service tiers | Nouvel ADR, avec le premier service |
+| Identification du format et sa transmission à P1 ; comparaison des empreintes ; interface publique `analyser` | T13 |
+| Job Object sous Windows, lanceur de l'environnement virtuel compris ; valeurs des tailles et du délai, provisoires en T12 (ADR-0065) | T14 |
+| Versions des bibliothèques employées par un module, lues avant le verrouillage (ADR-0064) | Premier module qui en emploie une |
+| Liste des techniques hors V1 par format (`hors_v1`) | T15 |
+| Acheminement des résultats d'un module vers un autre ; constat qui cite les observations d'un autre module (ADR-0061) | T53 |
 
 ## 13. Historique
 
@@ -275,3 +284,4 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | 2026-10-26 | 1.0 | Création | T04 |
 | 2026-10-26 | 1.1 | Nom du paquet `voight_kampff` (§3, §4, ADR-0045) ; examen des dépendances candidates (§9) ; workflow de publication (§11) ; points transmis à T20, T30 (§12) | T10 |
 | 2026-10-26 | 1.2 | Modèle de données : `rapport/modele.py` et `schemas/` (§4), renvoi et précision sur les expressions dans P1 (§6), `jsonschema` ajouté (§9), point de T11 fixé (§12) | T11 |
+| 2026-10-26 | 1.3 | Moteur de modules : commande `-I -B` et message « module » (§3), fichiers créés (§4), configuration, messages et sortie d'erreur (§6), interface et règles des modules (§7), ES-01 et ES-17 (§11), points transmis à T13, T14, T15, T53 (§12) | T12 |
