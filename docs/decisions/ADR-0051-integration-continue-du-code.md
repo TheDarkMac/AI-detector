@@ -63,3 +63,4 @@ ADR-0034 fixe Python 3.12 au minimum ; ADR-0035 prend en charge Linux, macOS et 
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : le lancement planifié et le lancement à la demande ne fonctionnaient pas tant que `main` était la branche par défaut (ERR-0005, ADR-0053) |
+| 2026-10-26 | Renvoi : les lancements sur `detector` s'annulaient entre eux (bloc `concurrency` du workflow) ; corrigé, voir ERR-0006 |
