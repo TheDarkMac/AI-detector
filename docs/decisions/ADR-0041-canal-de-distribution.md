@@ -53,3 +53,4 @@ Le modèle de menace suppose que l'utilisateur obtient l'outil par le canal offi
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : nom du projet et du paquet tranchés par ADR-0045 (`voight-kampff-forensics`) (T10) |
 | 2026-10-26 | Renvoi : workflow de publication et environnement protégé « pypi » créés (T10) |
+| 2026-10-27 | Renvoi : éditeur de confiance constaté sur PyPI, fichier `LICENSE` ajouté (ADR-0067) ; prérequis de la première publication réunis |

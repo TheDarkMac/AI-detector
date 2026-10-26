@@ -100,6 +100,24 @@ jobs:
             echo "::error::Fichiers de dépôt dans le paquet source"
             exit 1
           fi
+      - name: Fichier LICENSE et licence déclarée dans les deux paquets (ADR-0067)
+        run: |
+          tar tzf "$RUNNER_TEMP"/a/*.tar.gz | grep -E '^[^/]+/LICENSE$'
+          python3 -I -c '
+          import sys, tarfile, zipfile
+          wheel, = [f for f in sys.argv[1:] if f.endswith(".whl")]
+          sdist, = [f for f in sys.argv[1:] if f.endswith(".tar.gz")]
+          with zipfile.ZipFile(wheel) as z:
+              noms = z.namelist()
+              if not any(n.endswith(".dist-info/licenses/LICENSE") for n in noms):
+                  sys.exit("LICENSE absent du wheel")
+              meta = z.read(next(n for n in noms if n.endswith(".dist-info/METADATA"))).decode()
+          with tarfile.open(sdist) as t:
+              pkg = t.extractfile(next(m for m in t.getmembers() if m.name.endswith("/PKG-INFO"))).read().decode()
+          for nom, texte in (("wheel", meta), ("sdist", pkg)):
+              if "License-Expression: Apache-2.0" not in texte.splitlines():
+                  sys.exit(f"License-Expression absente des métadonnées du {nom}")
+          ' "$RUNNER_TEMP"/a/*
       - name: Installation du wheel dans un environnement neuf
         run: |
           uv venv "$RUNNER_TEMP/essai"
