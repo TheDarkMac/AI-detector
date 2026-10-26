@@ -7,3 +7,7 @@ L'outil ne délivre pas de verdict certain : il distingue ce qui se vérifie (si
 Le projet est en cours de construction : aucune analyse n'est encore disponible, et aucune version n'est publiée. Le paquet s'appellera `voight-kampff-forensics` sur PyPI, et installera les commandes `voight-kampff` et `vk`.
 
 Le développement se fait sur la branche `detector`. Voir `CONTRIBUTING.md` et `docs/` sur cette branche.
+
+## Licence
+
+Le dépôt, code et documentation compris, est publié sous licence [Apache-2.0](LICENSE).

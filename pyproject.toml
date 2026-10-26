@@ -6,6 +6,9 @@ version = "0.1.0.dev0"
 description = "Analyse de provenance et d'intégrité de fichiers, sans modèle d'IA embarqué."
 readme = "README.md"
 requires-python = ">=3.12"
+# Expression SPDX et fichier de licence (PEP 639) ; pas de classificateur de licence, que PEP 639 permet de refuser à côté (ADR-0067).
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [{ name = "TheDarkMac" }]
 keywords = ["forensics", "provenance", "c2pa", "métadonnées", "vérification"]
 classifiers = [
