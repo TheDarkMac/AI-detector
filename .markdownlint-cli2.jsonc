@@ -1,0 +1,14 @@
+// Configuration du lint Markdown — voir docs/decisions/ADR-0006-ci-documentaire.md
+{
+  "config": {
+    "default": true,
+    // Longueur de ligne : inadaptée à la prose et aux tableaux
+    "MD013": false
+  },
+  "globs": ["**/*.md"],
+  "ignores": [
+    // Cahier des charges reçu : document source, jamais modifié
+    "docs/00-cahier-des-charges/**",
+    "node_modules/**"
+  ]
+}
