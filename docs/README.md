@@ -12,7 +12,7 @@ Toute règle, convention, étape, décision et erreur du projet est consignée i
 | [`journal/`](journal/) | Journal d'étape : une entrée par tâche, ce qui a été fait et dans quel ordre | Dans la branche de chaque tâche |
 | [`errata/`](errata/) | Erreurs d'analyse, de documentation ou d'exécution, et leur correction | Dès qu'une erreur est constatée |
 
-[`01-analyse/`](01-analyse/) contient l'analyse critique du cahier des charges (T01).
+[`01-analyse/`](01-analyse/) contient l'analyse critique du cahier des charges (T01) ; [`02-arbitrages/`](02-arbitrages/) le registre des arbitrages des points ouverts (T02), qui renvoie aux ADR.
 
 Les dossiers suivants seront créés par les tâches qui les concernent : `modele-de-menace/` (T03), `techniques/` (fiches par technique, NF-09).
 
