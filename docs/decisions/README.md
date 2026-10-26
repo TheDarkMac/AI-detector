@@ -67,3 +67,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0050](ADR-0050-numero-de-version.md) | Numéro de version écrit dans `pyproject.toml` | Accepté | 2026-10-26 |
 | [ADR-0051](ADR-0051-integration-continue-du-code.md) | Intégration continue du code : trois systèmes, Python 3.12 à 3.14 | Accepté | 2026-10-26 |
 | [ADR-0052](ADR-0052-surveillance-des-failles.md) | Surveillance des failles : pip-audit et Dependabot | Accepté | 2026-10-26 |
+| [ADR-0053](ADR-0053-branche-par-defaut.md) | Branche par défaut : `detector` | Accepté | 2026-10-26 |

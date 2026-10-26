@@ -17,3 +17,4 @@ Toute erreur constatée — d'analyse, de documentation, de décision ou d'exéc
 | [ERR-0002](ERR-0002-justification-attribuee-sans-source.md) | Justification attribuée à une décision sans qu'elle ait été donnée | `00-plan/decoupage-taches.md` | T00 | 2026-10-26 |
 | [ERR-0003](ERR-0003-adresse-du-commit-de-merge.md) | Adresse e-mail du commit de merge non anticipée | `decisions/ADR-0003-identite-des-commits.md` | T01 | 2026-10-26 |
 | [ERR-0004](ERR-0004-points-de-tracage-rattaches-a-l-ocr.md) | Points de traçage d'imprimante rattachés à tort à la frontière « OCR » | `00-plan/decoupage-taches.md` | T01 | 2026-10-26 |
+| [ERR-0005](ERR-0005-branche-par-defaut-ignoree.md) | Branche par défaut ignorée : Dependabot et l'audit hebdomadaire inactifs | `decisions/ADR-0051-…`, `decisions/ADR-0052-…` | après T10 | 2026-10-26 |

@@ -70,3 +70,4 @@ Le dépôt distant `TheDarkMac/AI-detector` était vide (aucune branche) au dém
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : dépôt trouvé privé et protections supprimées au démarrage de T10 ; dépôt repassé en public et protections rétablies à l'identique (ADR-0046) ; `code-ok` ajouté aux vérifications obligatoires (ADR-0051) (T10) |
+| 2026-10-26 | Renvoi : branche par défaut passée de `main` à `detector` (ADR-0053, ERR-0005) ; le reste de l'ADR est inchangé |
