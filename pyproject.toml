@@ -1,0 +1,96 @@
+# Configuration du paquet et de l'outillage — voir docs/decisions/ADR-0047 à ADR-0050
+
+[project]
+name = "voight-kampff-forensics"
+version = "0.1.0.dev0"
+description = "Analyse de provenance et d'intégrité de fichiers, sans modèle d'IA embarqué."
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "TheDarkMac" }]
+keywords = ["forensics", "provenance", "c2pa", "métadonnées", "vérification"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: French",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Multimedia",
+    "Topic :: Security",
+    "Typing :: Typed",
+]
+# Aucune dépendance en T10 : chaque bibliothèque est ajoutée par la tâche qui l'utilise (ADR-0043).
+dependencies = []
+
+[project.scripts]
+voight-kampff = "voight_kampff.cli:main"
+vk = "voight_kampff.cli:main"
+
+[project.urls]
+Repository = "https://github.com/TheDarkMac/AI-detector"
+Documentation = "https://github.com/TheDarkMac/AI-detector/tree/detector/docs"
+
+[dependency-groups]
+dev = [
+    "coverage>=7.10",
+    "mypy>=1.18",
+    "pip-audit>=2.9",
+    "pytest>=8.4",
+    "ruff>=0.14",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "voight_kampff"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+# Cahier des charges reçu : document source, jamais modifié (y compris ses blocs de code).
+extend-exclude = ["docs/00-cahier-des-charges"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",  # pycodestyle
+    "F",       # pyflakes
+    "I",       # tri des imports
+    "B",       # bugbear
+    "UP",      # syntaxe moderne
+    "S",       # sécurité (règles Bandit)
+    "SIM",     # simplifications
+    "C4",      # compréhensions
+    "PT",      # style pytest
+    "RUF",     # règles propres à Ruff
+]
+
+[tool.ruff.lint.per-file-ignores]
+# assert est l'outil des tests ; les tests lancent l'interpréteur courant, sans entrée externe.
+"tests/**" = ["S101", "S603"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers", "--strict-config", "--import-mode=importlib"]
+xfail_strict = true
+
+[tool.coverage.run]
+branch = true
+source = ["voight_kampff"]
+# Mesure aussi les interpréteurs lancés par les tests (python -m voight_kampff).
+patch = ["subprocess"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
