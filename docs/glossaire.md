@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.0**, proposée dans la PR de T11. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.1** ; v1.0 mergée avec T11, v1.1 proposée dans la PR de T12. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -38,7 +38,11 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Isolation réduite | État d'un processus de travail auquel manque au moins une restriction ; le rapport liste lesquelles. | ADR-0035, ADR-0059 |
 | Arrêt brutal | Fin de l'outil sans rapport, par exception non traitée ou plantage ; NF-03 l'interdit : un échec donne un rapport partiel. | NF-03 |
 | Manifeste (C2PA) | Structure signée, intégrée au fichier, qui déclare son origine et ses transformations. | §11 du cahier, T30 |
-| Manifeste (module) | Fichier TOML qui décrit un module : identifiant, version, formats, règles, fiche technique. | ADR-0042 |
+| Manifeste (module) | Fichier TOML qui décrit un module sans exécuter son code : identifiant, version, formats, exigences, règles, fiche technique, directions permises, modules requis. | ADR-0042, ADR-0064 |
+| Contexte (d'un module) | Objet remis à un module par le moteur : lecture du fichier par position, réception des observations, constats et analyses non menées. | ADR-0061 |
+| Module actif, désactivé | Un module actif est exécuté ; un module désactivé par l'utilisateur, ou qui en requiert un désactivé, ne l'est pas et figure au rapport comme non mené. | ADR-0063 |
+| Module applicable | Module actif dont les formats comprennent le format réel du fichier ; sinon, il est « non applicable » dans la couverture. | ADR-0059, ADR-0062 |
+| Garde | Vérification qui empêche un analyseur de s'exécuter hors d'un processus de travail verrouillé. | ES-17, ADR-0061 |
 | Ingrédient (C2PA) | Fichier source déclaré par un manifeste C2PA comme entrant dans la composition du contenu. | A-10, T30 |
 | DigitalSourceType | Champ IPTC qui déclare la nature de la source d'un contenu, dont `trainedAlgorithmicMedia` (généré par IA). | F-11, T22 |
 | Signature | Réservé au sens cryptographique : signature d'un manifeste C2PA, signature électronique d'un PDF. | A-10 |
@@ -50,3 +54,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Date | Version | Modification | Origine |
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T11 |
+| 2026-10-26 | 1.1 | Manifeste (module) précisé ; contexte, module actif ou désactivé, module applicable, garde ajoutés | T12 |

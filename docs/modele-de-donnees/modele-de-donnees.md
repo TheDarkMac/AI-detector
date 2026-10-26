@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.0**, proposée dans la PR de T11. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.1** ; v1.0 mergée avec T11, v1.1 proposée dans la PR de T12. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-80, F-81, F-82, §6 du cahier ; ES-04, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -27,6 +27,8 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Schéma du rapport | `src/voight_kampff/schemas/rapport.schema.json` |
 | Schéma des messages | `src/voight_kampff/schemas/messages.schema.json` |
 | Chargement et validation | `src/voight_kampff/schemas/__init__.py` |
+| Décodage strict d'une ligne de message (T12) | `src/voight_kampff/_protocole.py` |
+| Réception et validation des messages (T12) | `src/voight_kampff/_orchestration/travail.py` |
 | Tests | `tests/test_modele.py`, `tests/test_schemas.py` |
 
 Version commune : `0.1.0` (`VERSION_SCHEMA`).
@@ -229,7 +231,7 @@ Les observations `c2pa/1` à `c2pa/3` portent l'état de la signature, le signat
 
 ## 7. Validation : ce que le schéma vérifie, ce que seul le code vérifie
 
-Le processus principal applique toujours, dans cet ordre : décodage JSON strict (refus de `NaN` et des infinis, T12), validation par le schéma, construction par `depuis_dict`. Les deux dernières étapes se complètent :
+Le processus principal applique toujours, dans cet ordre : décodage JSON strict (refus de l'UTF-8 invalide, de `NaN`, des infinis, des nombres qui débordent et des clés en double ; T12, ADR-0065), validation par le schéma, construction par `depuis_dict`. Les deux dernières étapes se complètent :
 
 | Vérifié par | Règles |
 | --- | --- |
@@ -251,10 +253,11 @@ Une ligne JSON par message (ADR-0036), validée par `messages.schema.json` :
 | `observation` | `observation` | Pendant l'analyse |
 | `constat` | `constat` | Pendant l'analyse |
 | `non_menee` | `non_menee` | Pendant l'analyse |
+| `module` | `module`, `applicable` | Après les résultats de chaque module actif, dans l'ordre de la configuration (ADR-0062) |
 | `versions` | `dependances` | Versions réelles des bibliothèques chargées dans P2 |
 | `fin` | `empreinte` recalculée par P2 (ES-08) | Dernier message |
 
-L'ordre des messages, les tailles maximales, les délais et la conversion des échecs en analyses non menées relèvent de T12 et T14.
+L'ordre des messages, les contrôles du processus principal et la conversion des échecs en analyses non menées sont fixés par ADR-0062 et ADR-0065 (T12). Les tailles maximales et le délai y sont provisoires ; T14 les fixe.
 
 ## 9. Exigences réalisées
 
@@ -262,15 +265,16 @@ L'ordre des messages, les tailles maximales, les délais et la conversion des é
 | --- | --- | --- |
 | F-80 | Catégorie de chaque constat | Rédaction des phrases (T16) |
 | F-81 | Direction parmi cinq (ADR-0055) | Directions permises par règle (T15) |
-| F-82 | Analyses non menées et raisons fermées ; techniques hors V1 dans la couverture | Production par T12 à T14 |
+| F-82 | Analyses non menées et raisons fermées ; techniques hors V1 dans la couverture ; T12 produit `erreur_module`, `module_desactive`, `arret_processus`, `message_invalide`, et provisoirement `limite_depassee` et `delai_depasse` | `format_partiel`, `fichier_tronque` (T13) ; valeurs des limites (T14) ; `hors_v1` (T15) |
 | §6 | Constat à cinq éléments, plus règle versionnée, technique, fondement, niveau, localisation (A-46, A-47) ; rubriques Identification, Versions, Couverture | Résumé, avertissement, masquage (T16) |
-| ES-04 | Données simples, bornées, validées par schéma puis par le modèle ; erreurs sans contenu | Lecture bornée et délais (T12, T14) |
+| ES-04 | Données simples, bornées, validées par schéma puis par le modèle ; erreurs sans contenu ; lecture bornée et délai (T12) | Valeurs des limites et du délai (T14) |
 | ES-20 | Une preuve exige un fondement de vérification ; une déclaration ne peut être qu'un indice ou une information | Rédaction « le fichier déclare » (T22, T30) |
 | A-10 | Glossaire du projet | Glossaire utilisateur (T103) |
-| A-23 | Couverture : état « non applicable » ; techniques hors V1 | Matrice format × technique (T12, T15) |
+| A-23 | Couverture : état « non applicable », produit par T12 d'après les formats des manifestes ; techniques hors V1 | Matrice format × technique (T15) |
 
 ## 10. Historique
 
 | Date | Version | Modification | Origine |
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T11 |
+| 2026-10-26 | 1.1 | Message `module` (§8, ADR-0062) ; décodage strict et réception réalisés (§1, §7) ; exigences mises à jour (§9) | T12 |
