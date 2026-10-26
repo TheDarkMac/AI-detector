@@ -1,7 +1,8 @@
-"""JSON Schema du rapport et des messages du processus de travail (T11, ADR-0054).
+"""JSON Schema du rapport, des messages du processus de travail (T11, ADR-0054) et des
+manifestes des modules (T12, ADR-0064).
 
 Les schémas sont livrés dans le paquet et résolus entre eux sans accès réseau : le registre
-ne connaît que ces deux fichiers et n'a aucune fonction de récupération.
+ne connaît que ces fichiers et n'a aucune fonction de récupération.
 """
 
 import json
@@ -15,9 +16,9 @@ from referencing import Registry, Resource
 
 __all__ = ["NOMS", "DocumentInvalide", "charger", "valider", "valideur"]
 
-type NomSchema = Literal["rapport", "messages"]
+type NomSchema = Literal["rapport", "messages", "manifeste"]
 
-NOMS: tuple[NomSchema, ...] = ("rapport", "messages")
+NOMS: tuple[NomSchema, ...] = ("rapport", "messages", "manifeste")
 
 
 class DocumentInvalide(ValueError):

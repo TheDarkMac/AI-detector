@@ -50,6 +50,10 @@ def test_chaque_message_conforme(rapport: Rapport) -> None:
         *({"type": "observation", "observation": o} for o in document["observations"]),
         *({"type": "constat", "constat": c} for c in document["constats"]),
         *({"type": "non_menee", "non_menee": n} for n in document["non_menees"]),
+        *(
+            {"type": "module", "module": t["module"], "applicable": t["etat"] != "non_applicable"}
+            for t in document["couverture"]["techniques"]
+        ),
         {"type": "versions", "dependances": document["versions"]["dependances"]},
         {"type": "fin", "empreinte": document["identification"]["empreinte"]},
     ]
@@ -68,6 +72,13 @@ def test_chaque_message_conforme(rapport: Rapport) -> None:
             id="version-differente",
         ),
         pytest.param(["fin"], id="pas-un-objet"),
+        pytest.param({"type": "module", "module": "exif"}, id="module-sans-applicable"),
+        pytest.param(
+            {"type": "module", "module": "exif", "applicable": "oui"}, id="module-applicable-texte"
+        ),
+        pytest.param(
+            {"type": "module", "module": "a b", "applicable": True}, id="module-identifiant"
+        ),
     ],
 )
 def test_message_invalide_refuse(message: object) -> None:
