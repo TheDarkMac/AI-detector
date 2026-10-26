@@ -1,0 +1,448 @@
+"""Lancement du processus de travail et réception de ses messages (ADR-0036, ADR-0062, ADR-0065).
+
+Le processus principal ne lit jamais le fichier pour l'interpréter : il transmet un descripteur
+déjà ouvert, envoie la configuration une fois l'isolation annoncée, puis valide chaque ligne
+reçue, dans cet ordre : taille, JSON strict, schéma, modèle, place dans le protocole.
+
+Tout écart arrête le processus de travail. Les modules terminés gardent leurs résultats ; les
+autres deviennent des analyses non menées, avec la raison de l'arrêt, et l'analyse est
+interrompue (ADR-0056). Un délai et des tailles **provisoires** bornent l'échange ; T14 fixe
+les valeurs.
+"""
+
+import os
+import queue
+import subprocess
+import sys
+import threading
+import time
+from collections.abc import Callable, Collection, Sequence
+from dataclasses import dataclass, field
+from typing import IO, Any
+
+from voight_kampff import schemas
+from voight_kampff._orchestration.manifestes import Manifeste, selectionner
+from voight_kampff._protocole import (
+    TAILLE_MAX_CONFIGURATION,
+    TAILLE_MAX_MESSAGE,
+    TAILLE_MAX_SORTIE,
+    MessageInvalide,
+    decoder,
+    encoder,
+)
+from voight_kampff.rapport.modele import (
+    RAISONS_D_INTERRUPTION,
+    VERSION_SCHEMA,
+    Constat,
+    Couverture,
+    Dependance,
+    EtatIsolation,
+    EtatTechnique,
+    ManqueIsolation,
+    NiveauIsolation,
+    NonMenee,
+    Observation,
+    RaisonNonMenee,
+    TechniqueCouverte,
+)
+
+__all__ = ["DELAI", "ResultatTravail", "commande_travail", "executer"]
+
+DELAI = 60.0
+"""Délai total d'une analyse en secondes, provisoire (T14)."""
+
+_DELAI_ARRET = 5.0
+"""Attente de la fin du processus de travail après son dernier message ou son arrêt forcé."""
+
+_RAISONS_DU_FICHIER = frozenset(
+    {RaisonNonMenee.FORMAT_PARTIEL, RaisonNonMenee.FICHIER_TRONQUE, RaisonNonMenee.LIMITE_DEPASSEE}
+)
+"""Raisons qu'une analyse non menée sans module peut porter quand elle vient du travail."""
+
+_RAISONS_DU_MOTEUR = frozenset({RaisonNonMenee.ERREUR_MODULE, RaisonNonMenee.LIMITE_DEPASSEE})
+"""Raisons posées par le moteur à la place des résultats d'un module (ADR-0060)."""
+
+_RAISONS_D_UN_MODULE = _RAISONS_DU_MOTEUR | {
+    RaisonNonMenee.FORMAT_PARTIEL,
+    RaisonNonMenee.FICHIER_TRONQUE,
+    RaisonNonMenee.REFERENCE_MANQUANTE,
+    RaisonNonMenee.RESEAU_DESACTIVE,
+}
+
+_ISOLATION_INCONNUE = EtatIsolation(NiveauIsolation.REDUITE, tuple(ManqueIsolation))
+"""Retenue si le processus de travail s'arrête avant d'annoncer son isolation."""
+
+
+@dataclass(frozen=True, slots=True)
+class ResultatTravail:
+    """Ce que le processus de travail a établi pour un fichier, validé par le principal.
+
+    Le rapport (T16) y ajoute l'identification (T13) et les versions de l'outil et du
+    catalogue (T15).
+    """
+
+    isolation: EtatIsolation
+    couverture: Couverture
+    observations: tuple[Observation, ...]
+    constats: tuple[Constat, ...]
+    non_menees: tuple[NonMenee, ...]
+    dependances: tuple[Dependance, ...]
+    empreinte: str | None
+    """Empreinte recalculée par le processus de travail ; comparée à celle du principal (T13)."""
+
+    @property
+    def interrompue(self) -> bool:
+        """Analyse interrompue, hors garantie de reproductibilité (ADR-0023)."""
+        return any(non_menee.raison in RAISONS_D_INTERRUPTION for non_menee in self.non_menees)
+
+
+def commande_travail(descripteur: int) -> list[str]:
+    """Commande du processus de travail : Python isolé (``-I``), sans fichier ``.pyc`` (``-B``)."""
+    return [
+        sys.executable,
+        "-I",
+        "-B",
+        "-m",
+        "voight_kampff._travail",
+        "--descripteur",
+        str(descripteur),
+    ]
+
+
+def executer(
+    descripteur: int,
+    manifestes: Sequence[Manifeste],
+    desactives: Collection[str] = (),
+    *,
+    delai: float = DELAI,
+    commande: Callable[[int], Sequence[str]] = commande_travail,
+) -> ResultatTravail:
+    """Analyse le fichier ouvert en ``descripteur`` dans un processus de travail neuf.
+
+    ``manifestes`` est dans l'ordre d'exécution (``decouvrir``) ; ``desactives`` nomme les
+    modules désactivés par l'utilisateur. ``commande`` remplace, pour les tests, le processus
+    de travail livré.
+    """
+    actifs, eteints = selectionner(manifestes, desactives)
+    reception = _Reception(actifs)
+    configuration = encoder(
+        {
+            "version_schema": VERSION_SCHEMA,
+            "modules": [
+                {
+                    "identifiant": manifeste.identifiant,
+                    "formats": list(manifeste.formats),
+                    "directions": list(manifeste.directions),
+                }
+                for manifeste in actifs
+            ],
+        }
+    )
+    if len(configuration) > TAILLE_MAX_CONFIGURATION:
+        raise ValueError("configuration : trop longue pour le processus de travail")
+    echeance = time.monotonic() + delai
+    with _lancer(descripteur, commande) as processus:
+        try:
+            reception.recevoir(processus, configuration, echeance)
+        except _Interruption as interruption:
+            reception.interrompre(interruption.raison)
+        finally:
+            if processus.poll() is None:
+                processus.kill()
+            processus.wait(_DELAI_ARRET)
+    return reception.resultat(manifestes, {manifeste.identifiant for manifeste in eteints})
+
+
+# Lancement
+
+
+def _environnement() -> dict[str, str]:
+    """Environnement vidé ; Windows ne démarre pas Python sans ``SYSTEMROOT``."""
+    if sys.platform == "win32" and "SYSTEMROOT" in os.environ:  # pragma: no cover - CI Windows
+        return {"SYSTEMROOT": os.environ["SYSTEMROOT"]}
+    return {}
+
+
+def _lancer(
+    descripteur: int, commande: Callable[[int], Sequence[str]]
+) -> "subprocess.Popen[bytes]":
+    """Lance le processus de travail ; seuls le fichier et les trois flux standard sont hérités."""
+    options: dict[str, Any] = {
+        "stdin": subprocess.PIPE,
+        "stdout": subprocess.PIPE,
+        # Jamais lue ni recopiée : rien de ce que le processus de travail y écrit n'est gardé.
+        "stderr": subprocess.DEVNULL,
+        "env": _environnement(),
+        "close_fds": True,
+    }
+    if sys.platform == "win32":  # pragma: no cover - exécuté par la CI Windows
+        import msvcrt
+
+        handle = msvcrt.get_osfhandle(descripteur)
+        os.set_handle_inheritable(handle, True)
+        try:
+            options["startupinfo"] = subprocess.STARTUPINFO(
+                lpAttributeList={"handle_list": [handle]}
+            )
+            return subprocess.Popen(commande(handle), **options)  # noqa: S603 - commande fixe
+        finally:
+            os.set_handle_inheritable(handle, False)
+    return subprocess.Popen(commande(descripteur), pass_fds=(descripteur,), **options)  # noqa: S603
+
+
+# Lecture bornée de la sortie
+
+
+@dataclass(frozen=True, slots=True)
+class _Evenement:
+    ligne: bytes | None = None
+    """Ligne complète, saut de ligne compris ; absente pour un événement de flux."""
+    raison: RaisonNonMenee | None = None
+    """Raison d'arrêt détectée par la lecture : ligne ou sortie trop longue, ligne coupée."""
+
+
+_FIN_DU_FLUX = _Evenement()
+
+
+def _lire(flux: IO[bytes], file: "queue.Queue[_Evenement]") -> None:
+    total = 0
+    while ligne := flux.readline(TAILLE_MAX_MESSAGE + 1):
+        total += len(ligne)
+        if len(ligne) > TAILLE_MAX_MESSAGE or total > TAILLE_MAX_SORTIE:
+            file.put(_Evenement(raison=RaisonNonMenee.LIMITE_DEPASSEE))
+            return
+        if not ligne.endswith(b"\n"):
+            file.put(_Evenement(raison=RaisonNonMenee.MESSAGE_INVALIDE))
+            return
+        file.put(_Evenement(ligne=ligne))
+    file.put(_FIN_DU_FLUX)
+
+
+def _ecrire(flux: IO[bytes], donnees: bytes) -> None:
+    try:
+        flux.write(donnees)
+        flux.close()
+    except (OSError, ValueError):
+        pass  # processus de travail arrêté, tube fermé : la lecture le constatera
+
+
+# Réception
+
+
+class _Interruption(Exception):
+    """Arrêt de l'échange, avec la raison qui rendra l'analyse non menée."""
+
+    def __init__(self, raison: RaisonNonMenee) -> None:
+        super().__init__(raison)
+        self.raison = raison
+
+
+def _invalide(condition: bool) -> None:
+    if not condition:
+        raise _Interruption(RaisonNonMenee.MESSAGE_INVALIDE)
+
+
+@dataclass(slots=True)
+class _Module:
+    manifeste: Manifeste
+    observations: list[Observation] = field(default_factory=list)
+    constats: list[Constat] = field(default_factory=list)
+    non_menees: list[NonMenee] = field(default_factory=list)
+    remplace: bool = False
+    """Résultats remplacés par une raison du moteur : plus rien n'est admis ensuite."""
+    applicable: bool | None = None
+    """Fixé par le message « module » ; ``None`` tant que le module n'est pas terminé."""
+
+    @property
+    def vide(self) -> bool:
+        return not (self.observations or self.constats or self.non_menees)
+
+    def etat(self) -> EtatTechnique:
+        if not self.applicable:
+            return EtatTechnique.NON_APPLICABLE
+        if not self.non_menees:
+            return EtatTechnique.APPLIQUEE
+        if self.observations or self.constats:
+            return EtatTechnique.PARTIELLE
+        return EtatTechnique.NON_MENEE
+
+
+class _Reception:
+    """Suit le protocole message par message ; tout écart lève :class:`_Interruption`."""
+
+    def __init__(self, actifs: Sequence[Manifeste]) -> None:
+        self._modules = [_Module(manifeste) for manifeste in actifs]
+        self._rang = 0
+        self._identifiants: set[str] = set()
+        self._isolation: EtatIsolation | None = None
+        self._dependances: tuple[Dependance, ...] | None = None
+        self._non_menees_du_fichier: list[NonMenee] = []
+        self._empreinte: str | None = None
+        self._interruption: RaisonNonMenee | None = None
+
+    # Déroulé
+
+    def recevoir(
+        self, processus: "subprocess.Popen[bytes]", configuration: bytes, echeance: float
+    ) -> None:
+        if processus.stdin is None or processus.stdout is None:
+            raise RuntimeError("processus de travail lancé sans ses tubes")
+        evenements: queue.Queue[_Evenement] = queue.Queue()
+        threading.Thread(target=_lire, args=(processus.stdout, evenements), daemon=True).start()
+
+        premier = self._message(evenements, processus, echeance)
+        _invalide(premier["type"] == "isolation")
+        self._isolation = EtatIsolation.depuis_dict(premier["isolation"])
+        # La configuration part seulement maintenant : le travail a fini de se verrouiller.
+        ecriture = threading.Thread(
+            target=_ecrire, args=(processus.stdin, configuration), daemon=True
+        )
+        ecriture.start()
+
+        while self._empreinte is None:
+            self._traiter(self._message(evenements, processus, echeance))
+        dernier = self._evenement(evenements, echeance)
+        _invalide(dernier is _FIN_DU_FLUX)
+        try:
+            code = processus.wait(max(0.0, echeance - time.monotonic()))
+        except subprocess.TimeoutExpired:
+            raise _Interruption(RaisonNonMenee.DELAI_DEPASSE) from None
+        if code != 0:
+            raise _Interruption(RaisonNonMenee.ARRET_PROCESSUS)
+
+    def _evenement(self, evenements: "queue.Queue[_Evenement]", echeance: float) -> _Evenement:
+        try:
+            return evenements.get(timeout=max(0.0, echeance - time.monotonic()))
+        except queue.Empty:
+            raise _Interruption(RaisonNonMenee.DELAI_DEPASSE) from None
+
+    def _message(
+        self,
+        evenements: "queue.Queue[_Evenement]",
+        processus: "subprocess.Popen[bytes]",
+        echeance: float,
+    ) -> dict[str, Any]:
+        evenement = self._evenement(evenements, echeance)
+        if evenement.raison is not None:
+            raise _Interruption(evenement.raison)
+        if evenement.ligne is None:  # flux fermé avant le message de fin
+            raise _Interruption(RaisonNonMenee.ARRET_PROCESSUS)
+        try:
+            message = decoder(evenement.ligne)
+            schemas.valider("messages", message)
+        except (MessageInvalide, schemas.DocumentInvalide):
+            raise _Interruption(RaisonNonMenee.MESSAGE_INVALIDE) from None
+        return message
+
+    # Messages
+
+    def _traiter(self, message: dict[str, Any]) -> None:
+        try:
+            match message["type"]:
+                case "observation":
+                    self._observation(Observation.depuis_dict(message["observation"]))
+                case "constat":
+                    self._constat(Constat.depuis_dict(message["constat"]))
+                case "non_menee":
+                    self._non_menee(NonMenee.depuis_dict(message["non_menee"]))
+                case "module":
+                    self._fin_de_module(message["module"], message["applicable"])
+                case "versions":
+                    _invalide(self._dependances is None)
+                    self._versions(message["dependances"])
+                case "fin":
+                    _invalide(self._rang == len(self._modules) and self._dependances is not None)
+                    self._empreinte = message["empreinte"]
+                case _:  # « isolation » une seconde fois
+                    raise _Interruption(RaisonNonMenee.MESSAGE_INVALIDE)
+        except (ValueError, TypeError, KeyError):
+            # Invariant du modèle refusé ; le message d'erreur, qui peut citer un nom de
+            # champ, n'est pas gardé.
+            raise _Interruption(RaisonNonMenee.MESSAGE_INVALIDE) from None
+
+    def _courant(self, identifiant: str | None) -> _Module:
+        """Module en cours : les modules rendent leurs résultats un par un, dans l'ordre."""
+        _invalide(self._rang < len(self._modules))
+        module = self._modules[self._rang]
+        _invalide(identifiant == module.manifeste.identifiant and not module.remplace)
+        return module
+
+    def _observation(self, observation: Observation) -> None:
+        module = self._courant(observation.module)
+        _invalide(observation.identifiant.startswith(f"{observation.module}/"))
+        _invalide(observation.identifiant not in self._identifiants)
+        self._identifiants.add(observation.identifiant)
+        module.observations.append(observation)
+
+    def _constat(self, constat: Constat) -> None:
+        module = self._courant(constat.module)
+        siennes = {observation.identifiant for observation in module.observations}
+        _invalide(set(constat.donnees) <= siennes)
+        _invalide(constat.direction in module.manifeste.directions)
+        module.constats.append(constat)
+
+    def _non_menee(self, non_menee: NonMenee) -> None:
+        if non_menee.module is None:
+            _invalide(non_menee.raison in _RAISONS_DU_FICHIER)
+            self._non_menees_du_fichier.append(non_menee)
+            return
+        module = self._courant(non_menee.module)
+        _invalide(non_menee.raison in _RAISONS_D_UN_MODULE)
+        if non_menee.raison in _RAISONS_DU_MOTEUR:
+            # Les résultats du module ont été écartés : la raison est seule (ADR-0060).
+            _invalide(module.vide)
+            module.remplace = True
+        module.non_menees.append(non_menee)
+
+    def _fin_de_module(self, identifiant: str, applicable: bool) -> None:
+        _invalide(self._rang < len(self._modules))
+        module = self._modules[self._rang]
+        _invalide(identifiant == module.manifeste.identifiant)
+        _invalide(applicable or module.vide)
+        module.applicable = applicable
+        self._rang += 1
+
+    def _versions(self, dependances: list[dict[str, Any]]) -> None:
+        lues = tuple(Dependance.depuis_dict(dependance) for dependance in dependances)
+        _invalide(len({dependance.nom for dependance in lues}) == len(lues))
+        self._dependances = lues
+
+    # Résultat
+
+    def interrompre(self, raison: RaisonNonMenee) -> None:
+        self._interruption = raison
+
+    def resultat(self, manifestes: Sequence[Manifeste], eteints: set[str]) -> ResultatTravail:
+        actifs = {module.manifeste.identifiant: module for module in self._modules}
+        techniques: list[TechniqueCouverte] = []
+        observations: list[Observation] = []
+        constats: list[Constat] = []
+        non_menees: list[NonMenee] = []
+        for manifeste in manifestes:
+            identifiant, version = manifeste.identifiant, manifeste.version
+            module = actifs.get(identifiant)
+            if identifiant in eteints or module is None:
+                techniques.append(TechniqueCouverte(identifiant, EtatTechnique.NON_MENEE, version))
+                non_menees.append(NonMenee(RaisonNonMenee.MODULE_DESACTIVE, identifiant))
+            elif module.applicable is None:  # pas terminé : ses résultats sont écartés
+                # Seule une interruption laisse un module inachevé : « fin » exige les autres.
+                raison = self._interruption or RaisonNonMenee.ARRET_PROCESSUS
+                techniques.append(TechniqueCouverte(identifiant, EtatTechnique.NON_MENEE, version))
+                non_menees.append(NonMenee(raison, identifiant))
+            else:
+                techniques.append(TechniqueCouverte(identifiant, module.etat(), version))
+                observations.extend(module.observations)
+                constats.extend(module.constats)
+                non_menees.extend(module.non_menees)
+        non_menees.extend(self._non_menees_du_fichier)
+        if self._interruption is not None:
+            non_menees.append(NonMenee(self._interruption))
+        return ResultatTravail(
+            isolation=self._isolation or _ISOLATION_INCONNUE,
+            couverture=Couverture(tuple(techniques), ()),
+            observations=tuple(observations),
+            constats=tuple(constats),
+            non_menees=tuple(non_menees),
+            dependances=self._dependances or (),
+            empreinte=self._empreinte if self._interruption is None else None,
+        )
