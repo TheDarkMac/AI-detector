@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.4, validé par TheDarkMac le 2026-10-26** (lancement de T00). Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.5** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 proposée dans la PR de T01. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -157,14 +157,14 @@ L'ordre P4 → P8 est une **proposition** ; il dépend de l'arbitrage « périm�
 
 ## 5. Remarques issues de l'analyse du cahier
 
-Elles seront développées dans T01.
+Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md) (T01).
 
 1. **Ligne 96** : un contenu intégré (schéma « chaîne d'analyse ») est absent du fichier ; seul son libellé subsiste.
 2. **F-51** applique F-30/F-31 (tables de quantification et double compression **JPEG**) aux images clés vidéo, qui sont encodées en H.264/H.265/VP9/AV1, pas en JPEG. Ces deux analyses ne se transposent pas telles quelles.
 3. **F-24** (filigranes publics) : peu de filigranes ont un lecteur public *et* non neuronal. Plusieurs lecteurs récents (audio, vidéo) sont eux-mêmes des réseaux de neurones, ce qui heurte le principe « aucune IA embarquée ». Le catalogue V1 risque d'être très court.
 4. **F-72** et la vérification C2PA (F-21) nécessitent des requêtes réseau : tension avec NF-16 et avec un éventuel fonctionnement hors ligne.
 5. **F-90 / F-91** (contrôle avant publication) servent un autre besoin que la détection d'IA (protection des sources) : à prioriser séparément.
-6. **F-63** et **F-90** pour sa partie points de traçage (tâche T94) — documents numérisés, points de traçage — touchent la frontière « sans IA » (OCR). *(Corrigé : ERR-0001.)*
+6. **F-63** (lecture des documents numérisés) touche la frontière « sans IA » (OCR). *(Corrigé : ERR-0001, puis ERR-0004 : les points de traçage de F-90 relèvent du traitement d'image, pas de l'OCR.)*
 7. **Section 8** : un taux d'erreur publié par technique est un critère d'acceptation ; sans corpus (T100), aucune technique ne peut être formellement acceptée. Le banc d'évaluation (T17) est donc avancé dans le socle.
 
 ## 6. Historique des modifications
@@ -175,3 +175,4 @@ Elles seront développées dans T01.
 | 2026-10-26 | 0.2 | Ajout de la règle : `CLAUDE.md` et `.claude/` ne sont jamais commités (§1, T00) | Demande de TheDarkMac, règle omise lors de la consigne initiale |
 | 2026-10-26 | 0.3 | L'exclusion passe de `.gitignore` à `.git/info/exclude` (§1, T00) ; ajout de la procédure de configuration par poste dans `CONTRIBUTING.md` | Demande de TheDarkMac ; la v0.2 versionnait l'exclusion dans le dépôt |
 | 2026-10-26 | 0.4 | Validation par TheDarkMac ; correction de « F-94 » en F-90 (§5, ERR-0001) ; correction de la justification de `.git/info/exclude` (§1, ERR-0002) ; ajout du garde-fou CI (§1) ; lien vers le cahier des charges déplacé dans `docs/` | T00 |
+| 2026-10-26 | 0.5 | Remarque 6 corrigée : seule F-63 touche l'OCR (§5, ERR-0004) ; renvoi vers l'analyse critique | T01 |
