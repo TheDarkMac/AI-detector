@@ -81,4 +81,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0064](ADR-0064-manifeste-des-modules.md) | Manifeste des modules : contenu, validation, ordre d'exécution | Accepté | 2026-10-26 |
 | [ADR-0065](ADR-0065-lancement-et-reception.md) | Lancement du processus de travail et réception de ses messages | Accepté | 2026-10-26 |
 | [ADR-0066](ADR-0066-licence-mit-abandonnee.md) | Passage à la licence MIT | Abandonné | 2026-10-26 |
-| [ADR-0067](ADR-0067-fichier-licence-et-declaration.md) | Fichier LICENSE et déclaration de licence du paquet | Proposé | 2026-10-27 |
+| [ADR-0067](ADR-0067-fichier-licence-et-declaration.md) | Fichier LICENSE et déclaration de licence du paquet | Accepté | 2026-10-27 |

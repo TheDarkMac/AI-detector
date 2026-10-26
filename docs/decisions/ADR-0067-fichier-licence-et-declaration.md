@@ -1,6 +1,6 @@
 # ADR-0067 — Fichier LICENSE et déclaration de licence du paquet
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
 - **Décideur** : TheDarkMac pour la portée ; l'assistant pour la déclaration, le texte et l'absence de NOTICE, soumis dans la PR
 - **Tâche** : T10 (complément)
@@ -56,4 +56,5 @@ Le fichier `LICENSE` contient le texte officiel intégral d'Apache-2.0 et couvre
 
 | Date | Modification |
 | --- | --- |
-| 2026-10-27 | Création |
+| 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR : statut « Accepté » |

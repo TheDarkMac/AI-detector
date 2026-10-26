@@ -32,6 +32,7 @@ Terminer deux points de T10 restés en attente : le fichier `LICENSE` (ADR-0011)
 9. PyPI : page « Publishing » ouverte dans le navigateur intégré ; TheDarkMac s'est connecté (mot de passe et code à deux facteurs saisis par lui). L'éditeur « en attente » existait déjà, avec les valeurs attendues : projet `voight-kampff-forensics`, dépôt `TheDarkMac/AI-detector`, workflow `publication.yml`, environnement `pypi`. Rien n'a été soumis ; la date de sa création n'est pas affichée.
 10. Environnement GitHub `pypi` vérifié par l'API : relecteur obligatoire TheDarkMac, déploiement limité aux étiquettes `v*`. Nom `voight-kampff-forensics` toujours libre sur PyPI (réponse 404 de l'API JSON) le 2026-10-27.
 11. Documents mis à jour : historique d'ADR-0011, ADR-0041 et ADR-0045 (renvois) ; index des ADR ; architecture §11 (version 1.4) ; index du journal.
+12. PR [#11](https://github.com/TheDarkMac/AI-detector/pull/11) ouverte vers `detector`. Pendant la revue, TheDarkMac a validé ADR-0067 : statut « Accepté ». Il a demandé le merge de la PR une fois la CI verte.
 
 ## Problèmes rencontrés
 
