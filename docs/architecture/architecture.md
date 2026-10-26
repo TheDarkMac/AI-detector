@@ -1,6 +1,6 @@
 # Architecture
 
-> Statut : **v1.0, proposée à TheDarkMac dans la PR de T04**. Document vivant : toute modification est inscrite à l'historique (§13).
+> Statut : **v1.1** ; v1.0 mergée avec T04, v1.1 proposée dans la PR de T10. Document vivant : toute modification est inscrite à l'historique (§13).
 > Exigences : NF-01, NF-06, NF-10 ; exigences de sécurité ES-01, ES-02, ES-05, ES-10, ES-17, ES-18 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-05, A-16, A-30, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T04. Date de rédaction : 2026-10-26.
 
@@ -96,7 +96,7 @@ Description textuelle :
 
 1. P1 ouvre le fichier en lecture seule et sans blocage, vérifie sur le descripteur que c'est un fichier régulier (ES-08), calcule l'empreinte SHA-256 (ADR-0040).
 2. P1 charge le catalogue et la liste de confiance, les valide par schéma (ES-09), lit les manifestes des modules (ADR-0042).
-3. P1 lance P2 : `python -I -m <paquet>._travail`, environnement vidé, seul le descripteur du fichier et les tubes hérités (ADR-0036). Sous Windows, P2 est placé dans un Job Object avant tout envoi.
+3. P1 lance P2 : `python -I -m voight_kampff._travail`, environnement vidé, seul le descripteur du fichier et les tubes hérités (ADR-0036). Sous Windows, P2 est placé dans un Job Object avant tout envoi.
 4. P2 importe ses modules, applique ses restrictions (§5), puis envoie l'**état de l'isolation**. À ce moment, il n'a lu aucun octet du fichier : ce message est fiable.
 5. P1 envoie la configuration : catalogue validé, limites, modules actifs.
 6. P2 lit le fichier par lectures à position explicite, recalcule l'empreinte, identifie le format (T13), exécute les modules concernés, évalue les règles, et envoie ses résultats.
@@ -106,11 +106,12 @@ Dans un lot (ADR-0015), ces étapes se répètent pour chaque fichier, avec un n
 
 ## 4. Composants et organisation du code
 
-Le nom du paquet dépend du nom du projet, non tranché (§12) ; il est noté `<paquet>`.
+Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; les autres éléments arrivent avec leurs tâches.
 
 ```text
-src/<paquet>/
+src/voight_kampff/
   __init__.py        interface publique de la bibliothèque : analyse par P2 seulement (ES-17)
+  __main__.py        lancement par python -m voight_kampff
   cli.py             ligne de commande (argparse)
   _orchestration/    P1 : soumission, empreinte, lancement de P2, délais, validation des messages
   _isolation/        restrictions par système : linux, macos, windows (ADR-0035)
@@ -204,6 +205,21 @@ Politique : [ADR-0043](../decisions/ADR-0043-politique-des-bibliotheques.md) ; g
 
 Cette liste est une liste de candidates : chaque tâche confirme ou remplace la sienne selon les critères d'ADR-0043. Exclues : GPL et AGPL, lecteurs qui résolvent des entités externes ou suivent des liens.
 
+### Examen de T10
+
+Fait le 2026-10-26 à partir des métadonnées publiées sur PyPI. Aucune de ces bibliothèques n'est encore une dépendance : chacune sera ajoutée par sa tâche (ADR-0043), qui refera la vérification à la version retenue.
+
+| Bibliothèque | Version examinée | Paquets précompilés | Dépendances transitives | Points relevés |
+| --- | --- | --- | --- | --- |
+| `google-re2` | 1.1.20251105 (nov. 2025) | Python 3.10 à 3.14, Linux, macOS, Windows ; pas de 3.15 | Aucune | 3.15 non pris en charge : matrice limitée à 3.14 (ADR-0051). Licence déclarée par classificateur seulement (BSD) |
+| `c2pa-python` | 0.38.1 (2026-10-22) | Linux (x86_64, aarch64), macOS (x86_64, arm64) ; **pas de Windows** dans cette version, présent jusqu'à 0.38.0 ; pas de paquet source | `cryptography` (Rust et OpenSSL, par `cffi` et `pycparser`), `requests` (avec `urllib3`, `idna`, `charset-normalizer`, `certifi`), `toml` | `requests` est une bibliothèque réseau : critère « aucun accès réseau, ou désactivable » à vérifier en T30 (P2 n'a de toute façon pas de réseau). `toml` n'a plus de version depuis 2020 (critère « maintenue »). `certifi` est sous MPL-2.0, copyleft faible par fichier, compatible avec une diffusion sous Apache-2.0 tant qu'il n'est pas modifié |
+| `jsonschema` | 4.26.0 | Python pur | `attrs`, `jsonschema-specifications`, `referencing`, `rpds-py` | `rpds-py` est écrit en Rust (sûr pour la mémoire), paquets pour les trois systèmes ; s'exécute dans P1. Toutes MIT |
+| `numpy` | 2.5.4 | Python 3.12 à 3.15, trois systèmes | Aucune | Licence composée, toutes permissives (BSD-3-Clause, 0BSD, MIT, Zlib, CC0-1.0) |
+| `pypdf` | 6.21.2 | Python pur | Aucune obligatoire | Les PDF chiffrés demandent l'option `crypto` (`cryptography`) : à trancher en T50 |
+| `defusedxml` | 0.7.1 (mars 2021) | Python pur | Aucune | Plus de version depuis 2021 (critère « maintenue ») ; T20 compare avec les protections actuelles de la bibliothèque standard |
+
+Outillage de développement verrouillé en T10 (41 paquets dans `uv.lock`, avec empreintes) : Ruff 0.17.2, mypy 2.4.0, pytest 9.1.1, coverage.py 7.17.0, pip-audit 2.10.1 et leurs dépendances ; pip-audit n'y signale aucune faille connue. Outil de construction : `uv_build` 0.13.5, épinglé avec empreintes (ADR-0049).
+
 ## 10. Reproductibilité (NF-06)
 
 Reformulée par ADR-0023 : mêmes fichier, versions de l'outil, du catalogue et des dépendances, mêmes données externes, analyse non interrompue.
@@ -221,7 +237,8 @@ Reformulée par ADR-0023 : mêmes fichier, versions de l'outil, du catalogue et 
 - Canal officiel unique : PyPI, publication par Trusted Publishing avec attestations de provenance ; release GitHub avec empreintes des paquets, fichier d'installation verrouillé, version et empreinte du catalogue ([ADR-0041](../decisions/ADR-0041-canal-de-distribution.md)).
 - Installation documentée par `pipx` ou `uv tool` ; installation reproductible par le fichier verrouillé.
 - Actions d'intégration continue épinglées par empreinte de commit (ADR-0006) ; dépendances figées avec empreintes (ADR-0037) ; peu de dépendances (ADR-0043).
-- La première publication attend le nom du projet.
+- Workflow de publication (T10) : déclenché par une étiquette `vX.Y.Z` égale à la version du paquet (ADR-0050) ; construction épinglée (ADR-0049) ; publication depuis l'environnement protégé « pypi », relecture de TheDarkMac obligatoire ; release GitHub avec paquets, empreintes et fichier d'installation verrouillé. La version et l'empreinte du catalogue s'ajouteront à la release avec T15.
+- La première publication attend le fichier `LICENSE` (ADR-0011) et l'éditeur de confiance déclaré sur PyPI par TheDarkMac ; c'est elle qui réservera le nom.
 
 ### Réalisation des exigences de sécurité rattachées à T04
 
@@ -240,13 +257,14 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 
 | Point | Tâche |
 | --- | --- |
-| Nom du projet, donc du paquet ; à trancher avant T10 (nom d'import) et avant toute publication | Registre des arbitrages |
 | Valeurs des limites, délai, budget de travail ; mesure du coût de démarrage de P2 | T14 |
 | Points « à confirmer » de l'isolation sous macOS et Windows | T14 |
 | Forme des observations, des constats et des messages | T11 |
 | Schéma et découpage du catalogue ; syntaxe RE2 admise | T15 |
 | Gabarit HTML et moyen d'échappement | T16 |
-| Disponibilité des paquets binaires de `google-re2` et `c2pa-python` sur les trois systèmes ; examen des dépendances transitives ; surveillance des failles connues | T10 |
+| Paquets binaires de `c2pa-python` sous Windows ; `requests` et `toml` parmi ses dépendances (§9) | T30 |
+| Maintenance de `defusedxml` (dernière version en 2021) (§9) | T20 |
+| Python 3.15, dès que `google-re2` le prend en charge (ADR-0051) | Nouvelle PR |
 | Moyen de lire les coefficients DCT | T41 |
 | Mode d'exécution d'un service tiers | Nouvel ADR, avec le premier service |
 
@@ -255,3 +273,4 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | Date | Version | Modification | Origine |
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T04 |
+| 2026-10-26 | 1.1 | Nom du paquet `voight_kampff` (§3, §4, ADR-0045) ; examen des dépendances candidates (§9) ; workflow de publication (§11) ; points transmis à T20, T30 (§12) | T10 |
