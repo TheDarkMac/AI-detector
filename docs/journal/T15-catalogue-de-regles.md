@@ -1,7 +1,7 @@
 # T15 — Catalogue de règles versionné et daté
 
 - **Branche** : `tache/T15-catalogue-de-regles`
-- **Dates** : 2026-10-27 → 2026-10-27
+- **Dates** : 2026-10-27 → 2026-10-28
 - **Exigences couvertes** : F-26, NF-06, NF-07 ; ES-09 ; F-81 (direction par règle), F-82 (`hors_v1`) ; A-23, A-32, A-37, A-47
 - **Décisions** : ADR-0084 à ADR-0090
 - **Errata** : aucun
@@ -41,6 +41,8 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : catalogue de règles ve
 13. Vérification locale : `uv lock --check` ; pip-audit, aucune faille connue ; 819 tests verts, un sauté (lanceur de Windows), couverture 100 % lignes et branches ; Ruff et mypy sans remarque. Exemples TOML du guide du catalogue validés par les schémas et le modèle.
 14. Documentation : ADR-0084 à ADR-0090 ; renvois dans ADR-0012, ADR-0016, ADR-0018, ADR-0019, ADR-0029, ADR-0038, ADR-0039, ADR-0041, ADR-0043, ADR-0059, ADR-0061, ADR-0064 ; guide [`docs/catalogue/`](../catalogue/README.md) et registre des versions ; architecture v1.8, modèle de données v1.4, glossaire v1.4, découpage v0.14, registre des arbitrages v1.7 ; `README.md`, `CONTRIBUTING.md` (§5, §8, §9), `docs/README.md` ; index des ADR et du journal.
 15. Lint Markdown en local (`npx --yes markdownlint-cli2@0.23.2`) ; aucun fichier interdit suivi. Commits, branche poussée, PR ouverte vers `detector`.
+16. CI de la PR sur `d6a01fe` : `docs` 40568844732 verte ; `code` 40568844786 verte sous Linux (`qualite` avec la nouvelle comparaison à `detector`, `paquet` avec le catalogue du wheel, tests), en échec sous macOS et Windows sur un seul test, `test_catalogue_refuse[nom-de-module]` (voir ci-dessous). Cas corrigé.
+17. Pendant la revue, TheDarkMac a validé ADR-0088, ADR-0089 et ADR-0090 : statut « Accepté ».
 
 ### Critères d'admission de `google-re2` (ADR-0043)
 
@@ -64,6 +66,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : catalogue de règles ve
 | Techniques hors V1 sans rapport avec le fichier | Première version : chaque technique inscrite sur toutes les parties | Seules celles qui s'appliquent à une partie analysée figurent (ADR-0087) |
 | Test « programme trop grand » en échec | `\pL{1000}` dépasse la mémoire de RE2 avant d'atteindre la borne du programme | Deux cas : `\pL{5}` (5 984 instructions) pour la borne, `\pL{1000}` refusé par RE2 |
 | Test « règle d'un autre module » mal écrit | La règle du cas portait le module de son fichier | Cas corrigé : règle d'`alpha` dans `regles/beta.toml` |
+| CI macOS et Windows : catalogue accepté malgré `regles/Alpha.toml` | Système de fichiers insensible à la casse : écrire `Alpha.toml` a remplacé le contenu d'`alpha.toml`, qui a gardé son nom en minuscules ; le code était juste | Cas du test écrit avec `regles/Gamma.toml`, qui ne recouvre aucun fichier |
 | Empreinte différente possible sous Windows | La CI Windows convertit les fins de ligne à l'extraction | Prévenu : `.gitattributes` (`-text`) sur le dossier du catalogue (ADR-0088) |
 
 Aucun de ces problèmes n'est une erreur d'une analyse ou d'une décision antérieure : pas d'erratum. La règle 4 d'ADR-0059, écrite avant les parties (T13), ne prévoyait pas un polyglotte ; elle est précisée par ADR-0087 et l'historique d'ADR-0059.

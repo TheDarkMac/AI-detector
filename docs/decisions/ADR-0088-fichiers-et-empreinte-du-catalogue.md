@@ -1,8 +1,8 @@
 # ADR-0088 — Fichiers, empreinte et limites du catalogue
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
-- **Décideur** : l'assistant, proposition non posée en question pendant T15, soumise dans la PR de T15
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T15, validée pendant la revue de la PR de T15
 - **Tâche** : T15
 - **Exigences liées** : F-26, NF-06, NF-07 ; ES-09 ; M-11, M-12 ; ADR-0029, ADR-0038, ADR-0040, ADR-0085
 
@@ -50,4 +50,5 @@ Option A pour les deux.
 
 | Date | Modification |
 | --- | --- |
-| 2026-10-27 | Création |
+| 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T15 : statut « Accepté » |

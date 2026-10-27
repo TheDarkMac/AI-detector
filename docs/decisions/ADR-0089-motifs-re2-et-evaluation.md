@@ -1,8 +1,8 @@
 # ADR-0089 — Motifs RE2 admis et évaluation des conditions
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
-- **Décideur** : l'assistant, proposition non posée en question pendant T15, soumise dans la PR de T15
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T15, validée pendant la revue de la PR de T15
 - **Tâche** : T15
 - **Exigences liées** : F-12, NF-02, NF-06, NF-08 ; ES-09 ; M-03, M-12 ; ADR-0039, ADR-0076, ADR-0078, ADR-0084
 
@@ -54,4 +54,5 @@ Option A dans les trois cas.
 
 | Date | Modification |
 | --- | --- |
-| 2026-10-27 | Création |
+| 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T15 : statut « Accepté » |

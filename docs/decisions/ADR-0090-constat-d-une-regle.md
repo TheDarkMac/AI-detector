@@ -1,8 +1,8 @@
 # ADR-0090 — Constat d'une règle : cité par son identifiant, contrôlé par le processus principal
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
-- **Décideur** : l'assistant, proposition non posée en question pendant T15, soumise dans la PR de T15
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T15, validée pendant la revue de la PR de T15
 - **Tâche** : T15
 - **Exigences liées** : F-80, F-81, NF-07 ; ES-04, ES-20 ; M-10 ; RR-01 ; ADR-0018, ADR-0058, ADR-0061, ADR-0064, ADR-0084
 
@@ -55,4 +55,5 @@ Option A.
 
 | Date | Modification |
 | --- | --- |
-| 2026-10-27 | Création |
+| 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T15 : statut « Accepté » |
