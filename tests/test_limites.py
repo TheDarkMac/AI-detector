@@ -183,6 +183,7 @@ def deroule(descripteur: int, analyseur: Callable[[Contexte], None]) -> list[str
                 "directions": [Direction.RIEN_DE_PARTICULIER],
             }
         ],
+        "regles": [],
     }
     sortie = io.BytesIO()
     principal.principal(

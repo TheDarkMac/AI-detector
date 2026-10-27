@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:voight-kampff:schema:regles",
+  "title": "Règles d'un module, dans le catalogue Voight-Kampff",
+  "description": "Fichier regles/<module>.toml du catalogue (ADR-0084, ADR-0088, ADR-0089). Le code vérifie en plus : module égal au nom du fichier, identifiants uniques dans le catalogue, motifs acceptés par RE2, combinaisons de catégorie, fondement, direction et niveau admises pour un constat, cohérence avec les manifestes des modules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["regle"],
+  "properties": {
+    "regle": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1024,
+      "items": { "$ref": "#/$defs/regle" }
+    }
+  },
+  "$defs": {
+    "nom": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/identifiant" },
+    "texte": { "type": "string", "minLength": 1, "maxLength": 4096 },
+    "scalaire": {
+      "oneOf": [
+        { "type": "string", "minLength": 1, "maxLength": 4096 },
+        { "type": "boolean" },
+        { "$ref": "urn:voight-kampff:schema:rapport#/$defs/nombre" }
+      ]
+    },
+    "version_corpus": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/version" },
+    "condition": {
+      "description": "Test sur une observation nommée ; un seul test parmi egal, parmi, motif, seuil, presente.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observation"],
+      "properties": {
+        "observation": { "$ref": "#/$defs/nom" },
+        "egal": { "$ref": "#/$defs/scalaire" },
+        "parmi": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/scalaire" }
+        },
+        "motif": {
+          "description": "Expression RE2 (ADR-0039, ADR-0089), cherchée dans un texte ; compilée au chargement.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "seuil": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operateur", "valeur"],
+          "properties": {
+            "operateur": { "enum": ["<", "<=", ">", ">="] },
+            "valeur": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/nombre" }
+          }
+        },
+        "presente": { "const": true },
+        "parametre": { "$ref": "#/$defs/nom" }
+      },
+      "oneOf": [
+        { "required": ["egal"] },
+        { "required": ["parmi"] },
+        { "required": ["motif"] },
+        { "required": ["seuil"] },
+        { "required": ["presente"] }
+      ]
+    },
+    "regle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identifiant",
+        "version",
+        "module",
+        "titre",
+        "description",
+        "gabarit",
+        "categorie",
+        "direction",
+        "fondement",
+        "limites",
+        "application"
+      ],
+      "properties": {
+        "identifiant": {
+          "description": "R-<MODULE>-<NNN>, distinct d'un identifiant d'exigence (A-47).",
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^R-[A-Z][A-Z0-9]*-[0-9]{3}$(?!\\n)"
+        },
+        "version": {
+          "description": "Entier positif écrit en texte ; il augmente à chaque changement de la règle (ADR-0085).",
+          "type": "string",
+          "maxLength": 6,
+          "pattern": "^[1-9][0-9]{0,5}$(?!\\n)"
+        },
+        "module": { "$ref": "urn:voight-kampff:schema:manifeste#/properties/identifiant" },
+        "titre": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "description": { "$ref": "#/$defs/texte" },
+        "gabarit": {
+          "description": "Gabarit de la phrase du constat, rédigé hors du code (ADR-0020).",
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-z0-9]+([.-][a-z0-9]+)*$(?!\\n)"
+        },
+        "categorie": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/categorie" },
+        "direction": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/direction" },
+        "fondement": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/fondement" },
+        "limites": {
+          "description": "Limites connues, contournements compris (ADR-0019).",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": { "type": "string", "minLength": 1, "maxLength": 1024 }
+        },
+        "application": {
+          "description": "moteur : conditions évaluées par le moteur ; module : appliquée par le code du module (ADR-0084).",
+          "enum": ["moteur", "module"]
+        },
+        "condition": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/condition" }
+        },
+        "parametres": {
+          "description": "Paramètres de la phrase d'une règle du module.",
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nom" }
+        },
+        "niveau": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/niveau" },
+        "evaluation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["taux_faux_positifs", "corpus", "date"],
+          "properties": {
+            "taux_faux_positifs": { "type": "number", "minimum": 0, "maximum": 1 },
+            "corpus": { "$ref": "#/$defs/version_corpus" },
+            "date": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/version_catalogue/properties/date" }
+          }
+        },
+        "calibrage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["methode", "procedure"],
+          "properties": {
+            "methode": { "enum": ["manuelle", "corpus"] },
+            "procedure": { "$ref": "#/$defs/texte" },
+            "corpus": { "$ref": "#/$defs/version_corpus" }
+          },
+          "if": { "properties": { "methode": { "const": "corpus" } } },
+          "then": { "required": ["corpus"] },
+          "else": { "not": { "required": ["corpus"] } }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "application": { "const": "moteur" } } },
+          "then": { "required": ["condition"], "not": { "required": ["parametres"] } },
+          "else": { "not": { "required": ["condition"] } }
+        },
+        {
+          "if": { "properties": { "categorie": { "const": "indice" } } },
+          "then": {
+            "required": ["niveau"],
+            "if": { "not": { "required": ["evaluation"] } },
+            "then": { "properties": { "niveau": { "const": "faible" } } }
+          },
+          "else": { "not": { "anyOf": [{ "required": ["niveau"] }, { "required": ["evaluation"] }] } }
+        }
+      ]
+    }
+  }
+}

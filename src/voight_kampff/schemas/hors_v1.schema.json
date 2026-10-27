@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:voight-kampff:schema:hors_v1",
+  "title": "Techniques hors de cette version de Voight-Kampff",
+  "description": "Fichier modules/hors_v1.toml, livré avec l'outil (ADR-0012, ADR-0059, ADR-0087) : chaque technique y est inscrite à la couverture de chaque partie d'un de ses formats, non menée pour la raison hors_v1. Le code vérifie en plus qu'aucun identifiant n'est celui d'un module livré.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["technique"],
+  "properties": {
+    "technique": {
+      "type": "array",
+      "maxItems": 256,
+      "items": { "$ref": "#/$defs/technique" }
+    }
+  },
+  "$defs": {
+    "technique": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identifiant", "tache", "exigences", "statut", "formats"],
+      "properties": {
+        "identifiant": {
+          "description": "Identifiant que prendra le module, s'il est un jour livré.",
+          "$ref": "urn:voight-kampff:schema:manifeste#/properties/identifiant"
+        },
+        "tache": {
+          "description": "Tâche du découpage qui la réaliserait.",
+          "type": "string",
+          "maxLength": 4,
+          "pattern": "^T[0-9]{2,3}$(?!\\n)"
+        },
+        "exigences": { "$ref": "urn:voight-kampff:schema:manifeste#/properties/exigences" },
+        "statut": {
+          "description": "Statut fixé par ADR-0012 : candidate pour la V2, ou hors V1 sans engagement.",
+          "enum": ["candidate_v2", "sans_engagement"]
+        },
+        "formats": { "$ref": "urn:voight-kampff:schema:manifeste#/properties/formats" }
+      }
+    }
+  }
+}

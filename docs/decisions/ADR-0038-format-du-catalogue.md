@@ -52,3 +52,4 @@ Le catalogue est un ensemble de fichiers de données séparés du moteur, livré
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Schéma et découpage fixés en T15 : en-tête et un fichier par module, date écrite en texte (ADR-0084, ADR-0088) |

@@ -1,0 +1,133 @@
+# Techniques hors de cette version de l'outil (ADR-0012, ADR-0059, ADR-0087).
+#
+# Chacune figure à la couverture de chaque partie d'un de ses formats, sans version, non menée
+# pour la raison « hors_v1 » : le rapport dit ce que l'outil ne cherche pas (F-25, F-82).
+# Validé par schemas/hors_v1.schema.json. Ce fichier appartient à l'outil, pas au catalogue :
+# un catalogue fourni par l'utilisateur ne le change pas.
+#
+# Ne figurent pas ici : les techniques de la V1 pas encore livrées dans une version de
+# développement, et la comparaison d'exemplaires (T93), qui porte sur plusieurs fichiers.
+
+# Image (P4) — candidates V2
+
+[[technique]]
+identifiant = "ela"
+tache = "T42"
+exigences = ["F-32", "F-84"]
+statut = "candidate_v2"
+formats = ["jpeg"]
+
+[[technique]]
+identifiant = "bruit"
+tache = "T43"
+exigences = ["F-33", "F-84"]
+statut = "candidate_v2"
+formats = ["jpeg", "png", "webp", "heic"]
+
+[[technique]]
+identifiant = "cfa"
+tache = "T44"
+exigences = ["F-34"]
+statut = "candidate_v2"
+formats = ["jpeg", "png", "webp", "heic"]
+
+[[technique]]
+identifiant = "prnu"
+tache = "T45"
+exigences = ["F-35"]
+statut = "candidate_v2"
+formats = ["jpeg", "png", "webp", "heic"]
+
+# PDF (P5) — candidate V2
+
+[[technique]]
+identifiant = "referencepdf"
+tache = "T54"
+exigences = ["F-64"]
+statut = "candidate_v2"
+formats = ["pdf"]
+
+# Audio (P6)
+
+[[technique]]
+identifiant = "spectrogramme"
+tache = "T60"
+exigences = ["F-40", "F-84"]
+statut = "candidate_v2"
+formats = ["wav", "mp3", "aac", "m4a", "flac", "ogg"]
+
+[[technique]]
+identifiant = "silences"
+tache = "T61"
+exigences = ["F-41"]
+statut = "candidate_v2"
+formats = ["wav", "mp3", "aac", "m4a", "flac", "ogg"]
+
+[[technique]]
+identifiant = "enf"
+tache = "T62"
+exigences = ["F-42"]
+statut = "sans_engagement"
+formats = ["wav", "mp3", "aac", "m4a", "flac", "ogg"]
+
+[[technique]]
+identifiant = "reencodageaudio"
+tache = "T63"
+exigences = ["F-43"]
+statut = "candidate_v2"
+formats = ["wav", "mp3", "aac", "m4a", "flac", "ogg"]
+
+# Vidéo (P7) — candidates V2
+
+[[technique]]
+identifiant = "structurevideo"
+tache = "T70"
+exigences = ["F-50"]
+statut = "candidate_v2"
+formats = ["mp4", "mov", "webm"]
+
+[[technique]]
+identifiant = "imagescles"
+tache = "T71"
+exigences = ["F-51"]
+statut = "candidate_v2"
+formats = ["mp4", "mov", "webm"]
+
+[[technique]]
+identifiant = "pistesonore"
+tache = "T72"
+exigences = ["F-52"]
+statut = "candidate_v2"
+formats = ["mp4", "mov", "webm"]
+
+[[technique]]
+identifiant = "rupturesvideo"
+tache = "T73"
+exigences = ["F-53"]
+statut = "candidate_v2"
+formats = ["mp4", "mov", "webm"]
+
+# Texte (P8) — hors V1, sans engagement
+
+[[technique]]
+identifiant = "stylometrie"
+tache = "T82"
+exigences = ["F-70"]
+statut = "sans_engagement"
+formats = ["texte", "docx", "odt"]
+
+[[technique]]
+identifiant = "references"
+tache = "T83"
+exigences = ["F-72", "NF-16"]
+statut = "sans_engagement"
+formats = ["texte", "docx", "odt", "pdf"]
+
+# Traçabilité (P9) — candidate V2, garde-fous d'ADR-0032
+
+[[technique]]
+identifiant = "pointstracage"
+tache = "T94"
+exigences = ["F-90"]
+statut = "candidate_v2"
+formats = ["jpeg", "png", "webp", "heic", "pdf"]

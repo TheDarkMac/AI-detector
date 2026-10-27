@@ -13,10 +13,12 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from catalogues import CATALOGUE, ecrire_catalogue
 from echantillons import PDF, archive, docx, jpeg
 
 from voight_kampff import Analyse, AnalyseRefusee, MotifRefus, analyser
-from voight_kampff._orchestration import soumission
+from voight_kampff._orchestration import catalogue, manifestes, soumission
+from voight_kampff._orchestration.catalogue import CatalogueInvalide
 from voight_kampff._orchestration.manifestes import Manifeste, ModuleInconnu
 from voight_kampff._orchestration.travail import ResultatTravail
 from voight_kampff.rapport.modele import (
@@ -70,7 +72,14 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
     assert identification.empreinte == hashlib.sha256(PDF).hexdigest()
     assert identification.extension_concordante is True
     assert identification.date_analyse.microsecond == 0
-    assert analyse.couverture.techniques == ()  # aucun module livré en T13
+    # Aucun module livré : seules figurent les techniques hors V1 qui s'appliquent au PDF.
+    assert {(t.module, t.etat, t.version) for t in analyse.couverture.techniques} == {
+        (technique, EtatTechnique.NON_MENEE, None)
+        for technique in ("referencepdf", "references", "pointstracage")
+    }
+    assert {n.raison for n in analyse.non_menees} == {RaisonNonMenee.HORS_V1}
+    assert analyse.catalogue == catalogue.charger(manifestes.decouvrir()).version
+    assert not analyse.catalogue.fourni_par_utilisateur
     assert not analyse.interrompue
 
 
@@ -85,14 +94,22 @@ def test_polyglotte_et_extension_discordante(tmp_path: Path) -> None:
     assert identification.extension == "png"
     assert identification.extension_concordante is False
     assert identification.octets_non_reconnus == (Plage(len(contenu) - 2, 2),)
+    # Chaque technique hors V1 figure sur les deux parties : non menée sur celle de ses
+    # formats, non applicable sur l'autre (ADR-0087).
+    etats = {(t.module, t.partie): t.etat for t in analyse.couverture.techniques}
+    assert etats[("ela", 1)] is EtatTechnique.NON_MENEE
+    assert etats[("ela", 2)] is EtatTechnique.NON_APPLICABLE
+    assert etats[("stylometrie", 1)] is EtatTechnique.NON_APPLICABLE
+    assert etats[("stylometrie", 2)] is EtatTechnique.NON_MENEE
+    assert ("enf", 1) not in etats  # ne s'applique à aucune des deux parties
 
 
 def test_partie_hors_perimetre_declaree_non_analysee(tmp_path: Path) -> None:
     contenu = jpeg() + archive(("a.txt", b"a"))
     analyse = analyser(ecrire(tmp_path, "photo.jpg", contenu))
-    assert [(n.raison, n.partie) for n in analyse.non_menees] == [
-        (RaisonNonMenee.HORS_PERIMETRE, 2)
-    ]
+    assert [
+        (n.raison, n.partie) for n in analyse.non_menees if n.raison is not RaisonNonMenee.HORS_V1
+    ] == [(RaisonNonMenee.HORS_PERIMETRE, 2)]
 
 
 def test_arret_apres_l_identification_resultat_partiel(tmp_path: Path) -> None:
@@ -100,6 +117,7 @@ def test_arret_apres_l_identification_resultat_partiel(tmp_path: Path) -> None:
     analyse = soumission.soumettre(
         ecrire(tmp_path, "f.jpg", b"contenu"),
         manifestes=MODULES,
+        hors_v1=(),
         delai=3.0,
         commande=factice("silence_apres_identification"),
     )
@@ -163,7 +181,10 @@ def test_empreinte_finale_differente(tmp_path: Path) -> None:
     # Le factice annonce une empreinte nulle : ce n'est pas celle du fichier ouvert.
     with pytest.raises(AnalyseRefusee) as refus:
         soumission.soumettre(
-            ecrire(tmp_path, "f.jpg", b"contenu"), manifestes=MODULES, commande=factice("valide")
+            ecrire(tmp_path, "f.jpg", b"contenu"),
+            catalogue=CATALOGUE,
+            manifestes=MODULES,
+            commande=factice("valide"),
         )
     assert refus.value.motif is MotifRefus.FICHIER_MODIFIE
 
@@ -241,3 +262,22 @@ def test_analyse_verifiee_comme_un_rapport(tmp_path: Path) -> None:
             ),
         )
     assert isinstance(analyse, Analyse)
+
+
+# Catalogue (T15, ADR-0086)
+
+
+def test_catalogue_fourni_par_l_utilisateur(tmp_path: Path) -> None:
+    dossier = ecrire_catalogue(tmp_path / "catalogue")
+    analyse = analyser(ecrire(tmp_path, "f.pdf", PDF), catalogue=dossier)
+    assert analyse.catalogue.fourni_par_utilisateur
+    assert (analyse.catalogue.version, analyse.catalogue.date.isoformat()) == (
+        "1.2.3",
+        "2026-10-20",
+    )
+
+
+def test_catalogue_invalide_avant_toute_lecture(tmp_path: Path) -> None:
+    dossier = ecrire_catalogue(tmp_path / "catalogue", entete="format = 2\n")
+    with pytest.raises(CatalogueInvalide, match=r"catalogue\.toml"):
+        analyser(tmp_path / "absent.pdf", catalogue=dossier)

@@ -91,6 +91,8 @@ jobs:
             printf '\n'
           } >> publication/installation-verrouillee.txt
           cat publication/SHA256SUMS publication/installation-verrouillee.txt
+      - name: Version et empreinte du catalogue de règles, inscrites au registre (ADR-0029, ADR-0085)
+        run: python3 -I .github/scripts/catalogue.py paquet dist/*.whl | tee publication/CATALOGUE.txt
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: paquets
@@ -130,7 +132,7 @@ jobs:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: artefacts/
-      - name: Release avec paquets, empreintes et fichier d'installation verrouillé
+      - name: Release avec paquets, empreintes, fichier d'installation verrouillé et catalogue
         env:
           GH_TOKEN: ${{ github.token }}
           PRE_VERSION: ${{ needs.construction.outputs.pre-version }}
@@ -143,5 +145,5 @@ jobs:
           gh release create "${GITHUB_REF_NAME}" "${options[@]}" \
             --repo "${GITHUB_REPOSITORY}" \
             --title "${GITHUB_REF_NAME}" \
-            --notes "Paquets publiés sur PyPI (voight-kampff-forensics), avec attestations de provenance. Empreintes SHA-256 et fichier d'installation verrouillé joints." \
+            --notes "Paquets publiés sur PyPI (voight-kampff-forensics), avec attestations de provenance. Empreintes SHA-256 et fichier d'installation verrouillé joints. $(cat artefacts/publication/CATALOGUE.txt)" \
             artefacts/paquets/* artefacts/publication/*

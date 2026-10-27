@@ -6,15 +6,19 @@ manifestes sans importer ce code ; seul le processus de travail l'importe.
 
 La découverte se limite à ce dossier : aucune extension tierce n'est chargée (ADR-0042). Aucun
 module n'est livré avant T13.
+
+``hors_v1.toml`` liste les techniques hors de cette version de l'outil (ADR-0087).
 """
 
 from importlib.resources import files
 from importlib.resources.abc import Traversable
 
-__all__ = ["MANIFESTE", "dossiers"]
+__all__ = ["HORS_V1", "MANIFESTE", "dossiers"]
 
 MANIFESTE = "manifeste.toml"
 """Nom du manifeste dans le dossier de chaque module."""
+HORS_V1 = "hors_v1.toml"
+"""Techniques hors de cette version, à la racine de ce dossier."""
 
 
 def dossiers(racine: Traversable | None = None) -> tuple[Traversable, ...]:

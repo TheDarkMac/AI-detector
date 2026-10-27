@@ -1,0 +1,10 @@
+# Catalogue de règles de Voight-Kampff : en-tête (ADR-0029, ADR-0038, ADR-0085, ADR-0088).
+#
+# Les règles sont dans regles/<module>.toml ; tout est public (ADR-0019). Toute modification
+# d'un fichier de ce dossier change l'empreinte du catalogue : elle exige une nouvelle version,
+# inscrite au registre docs/catalogue/versions.toml (procédure : docs/catalogue/README.md).
+
+format = 1
+version = "0.1.0"
+date = "2026-10-27"
+description = "Catalogue initial, sans règle : aucun module d'analyse n'est encore livré."

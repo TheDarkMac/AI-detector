@@ -75,3 +75,4 @@ Hors du modèle de T11 :
 | 2026-10-26 | Validé par TheDarkMac pendant la revue de la PR de T11 : statut « Accepté » |
 | 2026-10-26 | Renvoi : couverture construite par T12 à partir des manifestes et du message « module » (ADR-0062) ; liste des techniques hors V1 par format laissée à T15 |
 | 2026-10-27 | Précisé en T13 : couverture par technique et par partie (ADR-0071), signalements de l'identification (ADR-0072), empreinte finale du travail ou à défaut du principal (ADR-0075) |
+| 2026-10-27 | Point 4 précisé par ADR-0087 (T15) : une technique sans version est non menée pour la seule raison `hors_v1`, ou non applicable sur une autre partie d'un polyglotte ; liste des techniques hors V1 tenue par T15 |

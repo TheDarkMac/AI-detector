@@ -3,10 +3,11 @@
 1. Importer les modules livrés, tant que le système de fichiers est accessible.
 2. Appliquer les restrictions du système (ADR-0035, ADR-0079 à ADR-0081), se déclarer
    verrouillé, envoyer l'état de l'isolation : aucun octet du fichier n'a encore été lu.
-3. Lire la configuration : modules actifs, dans l'ordre d'exécution.
+3. Lire la configuration : modules actifs, dans l'ordre d'exécution, et règles du catalogue
+   qui relèvent d'eux (ADR-0084).
 4. Identifier les formats et envoyer les parties reconnues (ADR-0070, ADR-0071).
-5. Pour chaque partie du périmètre, exécuter chaque module actif, envoyer ses résultats puis
-   son message « module » (ADR-0062).
+5. Pour chaque partie du périmètre, exécuter chaque module actif, lui appliquer ses règles
+   « moteur », envoyer ses résultats puis son message « module » (ADR-0062).
 6. Envoyer les versions, puis l'empreinte du fichier recalculée en fin d'analyse (ES-08).
 
 Une exception dans un module ne touche que ce module (NF-03, ADR-0060) ; une limite comptée
@@ -30,6 +31,7 @@ from voight_kampff._protocole import (
     TAILLE_MAX_SORTIE,
     encoder,
 )
+from voight_kampff._regles import Regle
 from voight_kampff._travail import garde, identification, restrictions
 from voight_kampff._travail.contexte import Contexte, LimiteDepassee
 from voight_kampff._travail.fichier import Fichier, ouvrir_herite
@@ -68,6 +70,8 @@ class ModuleConfigure:
     identifiant: str
     formats: frozenset[str]
     directions: frozenset[Direction]
+    regles: tuple[Regle, ...] = ()
+    """Règles du catalogue qui relèvent du module, dans l'ordre de leurs identifiants."""
 
 
 def canal_du_protocole() -> BinaryIO:
@@ -108,7 +112,8 @@ def lire_configuration(entree: BinaryIO) -> tuple[ModuleConfigure, ...]:
     """Lit la configuration envoyée par le processus principal (ADR-0065).
 
     Elle vient d'un processus de confiance : une configuration mal formée est un défaut de
-    l'outil, qui arrête le processus de travail.
+    l'outil, qui arrête le processus de travail. Les règles, déjà validées par le principal, sont
+    reconstruites ici, ce qui compile de nouveau leurs motifs (ADR-0039).
     """
     ligne = entree.readline(TAILLE_MAX_CONFIGURATION + 1)
     if not ligne.endswith(b"\n") or len(ligne) > TAILLE_MAX_CONFIGURATION:
@@ -116,11 +121,15 @@ def lire_configuration(entree: BinaryIO) -> tuple[ModuleConfigure, ...]:
     document = json.loads(ligne)
     if document["version_schema"] != VERSION_SCHEMA:
         raise ValueError("configuration : version de schéma différente")
+    regles: dict[str, list[Regle]] = {}
+    for regle in map(Regle.depuis_dict, document["regles"]):
+        regles.setdefault(regle.module, []).append(regle)
     return tuple(
         ModuleConfigure(
             identifiant=str(module["identifiant"]),
             formats=frozenset(str(f) for f in module["formats"]),
             directions=frozenset(Direction(d) for d in module["directions"]),
+            regles=tuple(regles.get(str(module["identifiant"]), ())),
         )
         for module in document["modules"]
     )
@@ -158,9 +167,12 @@ def _executer(
     contexte: Contexte | None = None
     if analyseur is not None:
         budget = TAILLE_MAX_SORTIE - canal.envoye - _RESERVE
-        contexte = Contexte(module.identifiant, module.directions, fichier, partie, budget, numero)
+        contexte = Contexte(
+            module.identifiant, module.directions, fichier, partie, budget, numero, module.regles
+        )
         try:
             analyseur(contexte)
+            contexte.appliquer_catalogue()
         except LimiteDepassee:
             raison = RaisonNonMenee.LIMITE_DEPASSEE
         except MemoryError:  # limite du système (ADR-0077) : hors garantie (ADR-0078)

@@ -569,6 +569,24 @@ def test_rang_de_partie_a_partir_de_un(fabrique: Any) -> None:
 def test_version_absente_seulement_pour_une_technique_non_menee() -> None:
     with pytest.raises(ValueError, match="version"):
         TechniqueCouverte("stylometrie", EtatTechnique.APPLIQUEE)
+    with pytest.raises(ValueError, match="version"):
+        TechniqueCouverte("stylometrie", EtatTechnique.PARTIELLE)
+
+
+def test_technique_hors_v1_non_applicable_sans_version(rapport: Rapport) -> None:
+    # Sur la partie d'un polyglotte qui n'est pas de ses formats (ADR-0087).
+    couverture = Couverture(
+        (*rapport.couverture.techniques, TechniqueCouverte("enf", EtatTechnique.NON_APPLICABLE)),
+        rapport.couverture.marquages_recherches,
+    )
+    assert dataclasses.replace(rapport, couverture=couverture).couverture == couverture
+    # Une technique livrée, non menée pour une autre raison que hors_v1, garde sa version.
+    sans_version = tuple(
+        dataclasses.replace(t, version=None) if t.module == "prnu" else t
+        for t in rapport.couverture.techniques
+    )
+    with pytest.raises(ValueError, match="version absente seulement si hors V1"):
+        dataclasses.replace(rapport, couverture=Couverture(sans_version, ()))
 
 
 @pytest.mark.parametrize(

@@ -26,18 +26,13 @@ from voight_kampff._travail.contexte import Contexte
 from voight_kampff._travail.fichier import Fichier, ouvrir_herite
 from voight_kampff._travail.principal import Identifieur, canal_du_protocole, principal
 from voight_kampff.rapport.modele import (
-    Categorie,
-    Direction,
     EtatIsolation,
-    Fondement,
     Localisation,
     ManqueIsolation,
     NiveauIsolation,
     Partie,
-    Phrase,
     Plage,
     RaisonNonMenee,
-    ReferenceRegle,
 )
 
 FORMAT = "jpeg"
@@ -66,14 +61,8 @@ def alpha(contexte: Contexte) -> None:
     print("texte affiché par un module")  # doit partir sur la sortie d'erreur
     debut = contexte.observer("debut", contexte.lire(0, 4).decode("ascii"))
     taille = contexte.observer("taille", contexte.taille, unite="o")
-    contexte.constater(
-        Phrase("test.taille", {"taille": taille}),
-        (debut, taille),
-        ReferenceRegle("R-TEST-001", "1"),
-        fondement=Fondement.MESURE,
-        categorie=Categorie.INFORMATION_NEUTRE,
-        direction=Direction.RIEN_DE_PARTICULIER,
-    )
+    # Règle « module » du catalogue de test ; le moteur applique ensuite R-TEST-003.
+    contexte.constater("R-TEST-001", (debut, taille), {"taille": taille})
 
 
 def beta(contexte: Contexte) -> None:
@@ -184,13 +173,21 @@ def observation(identifiant: str, module: str = "alpha", **autres: Any) -> dict[
     return {"type": "observation", "observation": contenu | autres}
 
 
-def constat(donnee: str, direction: str = "rien_de_particulier") -> dict[str, Any]:
+def constat(
+    donnee: str,
+    direction: str = "rien_de_particulier",
+    *,
+    regle: str = "R-TEST-002",
+    version: str = "1",
+    gabarit: str = "g",
+) -> dict[str, Any]:
+    """Constat conforme à la règle R-TEST-002 du catalogue de test, sauf modification."""
     return {
         "type": "constat",
         "constat": {
-            "phrase": {"gabarit": "g", "parametres": {}},
+            "phrase": {"gabarit": gabarit, "parametres": {}},
             "donnees": [donnee],
-            "regle": {"identifiant": "R-1", "version": "1"},
+            "regle": {"identifiant": regle, "version": version},
             "module": "alpha",
             "fondement": "mesure",
             "categorie": "information_neutre" if direction == "rien_de_particulier" else "indice",
@@ -279,6 +276,9 @@ HOSTILES: dict[str, list[Ligne]] = {
     "modele": [observation("alpha/1", localisation={"intervalle": {"debut": 2, "fin": 1}})],
     "constat_sans_donnee": [observation("alpha/1"), constat("alpha/9")],
     "direction_interdite": [observation("alpha/1"), constat("alpha/1", "origine_ia")],
+    "regle_inconnue": [observation("alpha/1"), constat("alpha/1", regle="R-TEST-999")],
+    "regle_d_une_autre_version": [observation("alpha/1"), constat("alpha/1", version="2")],
+    "regle_d_un_autre_gabarit": [observation("alpha/1"), constat("alpha/1", gabarit="autre")],
     "raison_reservee": [non_menee("module_desactive")],
     "raison_reservee_fichier": [non_menee("arret_processus", module=None, partie=None)],
     "hors_perimetre_par_le_travail": [non_menee("hors_perimetre", module=None)],

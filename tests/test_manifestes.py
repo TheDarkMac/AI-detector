@@ -10,8 +10,10 @@ from voight_kampff._orchestration.manifestes import (
     ManifesteInvalide,
     ModuleInconnu,
     decouvrir,
+    hors_v1,
     selectionner,
 )
+from voight_kampff.formats import PERIMETRE
 from voight_kampff.rapport.modele import Direction
 
 RACINE_DU_DEPOT = Path(__file__).resolve().parents[1]
@@ -146,3 +148,50 @@ def test_modules_livres_valides() -> None:
 def test_aucun_module_livre_en_t12() -> None:
     # À retirer avec le premier module (T13) : il rappelle que la couverture est vide.
     assert decouvrir() == ()
+
+
+# Techniques hors de cette version (T15, ADR-0087)
+
+
+def test_techniques_hors_v1_livrees() -> None:
+    techniques = hors_v1(decouvrir())
+    identifiants = [technique.identifiant for technique in techniques]
+    assert {"ela", "stylometrie"} <= set(identifiants)
+    assert all(set(technique.formats) <= PERIMETRE for technique in techniques)
+    # ENF, stylométrie, références : hors V1 sans engagement (ADR-0012).
+    sans_engagement = {t.tache for t in techniques if t.statut == "sans_engagement"}
+    assert sans_engagement == {"T62", "T82", "T83"}
+
+
+HORS_V1 = """
+[[technique]]
+identifiant = "ela"
+tache = "T42"
+exigences = ["F-32"]
+statut = "candidate_v2"
+formats = ["jpeg"]
+"""
+
+
+@pytest.mark.parametrize(
+    ("contenu", "attendu"),
+    [
+        pytest.param(HORS_V1 + HORS_V1, "deux fois", id="en-double"),
+        pytest.param(HORS_V1.replace('"jpeg"', '"gif"'), "document non conforme", id="format"),
+        pytest.param("technique = [", "fichier illisible", id="illisible"),
+        pytest.param(b"\xff", "fichier illisible", id="non-utf8"),
+    ],
+)
+def test_techniques_hors_v1_refusees(tmp_path: Path, contenu: str | bytes, attendu: str) -> None:
+    fichier = tmp_path / modules.HORS_V1
+    fichier.write_bytes(contenu.encode() if isinstance(contenu, str) else contenu)
+    with pytest.raises(ManifesteInvalide, match=attendu):
+        hors_v1((), tmp_path)
+
+
+def test_module_livre_inscrit_hors_v1(tmp_path: Path) -> None:
+    (tmp_path / modules.HORS_V1).write_text(HORS_V1, encoding="utf-8")
+    livre = Manifeste("ela", "1.0", ("jpeg",), ("F-32",), (), "ela", (Direction.RETOUCHE,))
+    assert [t.identifiant for t in hors_v1((), tmp_path)] == ["ela"]
+    with pytest.raises(ManifesteInvalide, match="module livré inscrit hors V1 : ela"):
+        hors_v1((livre,), tmp_path)

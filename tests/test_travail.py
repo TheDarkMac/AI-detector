@@ -13,32 +13,30 @@ import io
 import json
 import os
 import sys
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
 import pytest
+from catalogues import moteur, regle, regle_dict
 
 from voight_kampff import modules, schemas
 from voight_kampff._protocole import TAILLE_MAX_LECTURE
+from voight_kampff._regles import Regle
 from voight_kampff._travail import garde, principal
 from voight_kampff._travail.contexte import Contexte, LimiteDepassee
 from voight_kampff._travail.fichier import Fichier
 from voight_kampff._travail.principal import Analyseur, lire_configuration
 from voight_kampff.rapport.modele import (
     VERSION_SCHEMA,
-    Categorie,
     Direction,
     EtatIsolation,
-    Fondement,
     Localisation,
     ManqueIsolation,
     NiveauIsolation,
     Partie,
-    Phrase,
     Plage,
     RaisonNonMenee,
-    ReferenceRegle,
 )
 
 CONTENU = b"0123456789"
@@ -78,13 +76,21 @@ def transmis(descripteur: int) -> str:
     return str(descripteur)
 
 
-def configuration(*identifiants: str, formats: tuple[str, ...] = ("jpeg", "pdf")) -> io.BytesIO:
+REGLE_DU_MODULE = regle("R-TEST-001", parametres=["valeur"])
+"""Règle « module » d'alpha dans les tests du contexte."""
+
+
+def configuration(
+    *identifiants: str,
+    formats: tuple[str, ...] = ("jpeg", "pdf"),
+    regles: Sequence[dict[str, Any]] = (),
+) -> io.BytesIO:
     modules_actifs = [
         {"identifiant": i, "formats": list(formats), "directions": ["rien_de_particulier"]}
         for i in identifiants
     ]
-    texte = json.dumps({"version_schema": VERSION_SCHEMA, "modules": modules_actifs})
-    return io.BytesIO(texte.encode() + b"\n")
+    document = {"version_schema": VERSION_SCHEMA, "modules": modules_actifs, "regles": list(regles)}
+    return io.BytesIO(json.dumps(document).encode() + b"\n")
 
 
 def derouler(
@@ -92,11 +98,12 @@ def derouler(
     *identifiants: str,
     analyseurs: Mapping[str, Analyseur] | None = None,
     parties: tuple[Partie, ...] = (PARTIE,),
+    regles: Sequence[dict[str, Any]] = (),
 ) -> list[dict[str, Any]]:
     sortie = io.BytesIO()
     code = principal.principal(
         ["--descripteur", transmis(descripteur)],
-        configuration(*identifiants),
+        configuration(*identifiants, regles=regles),
         sortie,
         analyseurs=analyseurs,
         identifier=lambda _fichier, _taille: parties,
@@ -113,9 +120,10 @@ def types(messages: list[dict[str, Any]]) -> list[str]:
     return [message["type"] for message in messages]
 
 
-def contexte(budget: int = 1 << 20) -> Contexte:
+def contexte(budget: int = 1 << 20, regles: Sequence[Regle] = (REGLE_DU_MODULE,)) -> Contexte:
     garde.verrouiller()
-    return Contexte("alpha", {Direction.RIEN_DE_PARTICULIER}, Fichier(-1), PARTIE, budget)
+    directions = {Direction.RIEN_DE_PARTICULIER}
+    return Contexte("alpha", directions, Fichier(-1), PARTIE, budget, regles=regles)
 
 
 # Déroulé
@@ -230,18 +238,68 @@ def test_module_absent_ou_non_importe(descripteur: int, monkeypatch: pytest.Monk
 def test_resultats_dans_l_ordre(descripteur: int) -> None:
     def module(contexte: Contexte) -> None:
         premiere = contexte.observer("premiere", "a")
-        contexte.constater(
-            Phrase("g"),
-            [premiere],
-            ReferenceRegle("R-1", "1"),
-            fondement=Fondement.MESURE,
-            categorie=Categorie.INFORMATION_NEUTRE,
-            direction=Direction.RIEN_DE_PARTICULIER,
-        )
+        contexte.constater("R-TEST-001", [premiere], {"valeur": premiere})
         contexte.non_mener(RaisonNonMenee.FICHIER_TRONQUE)
 
-    messages = derouler(descripteur, "alpha", analyseurs={"alpha": module})
+    regles = [regle_dict("R-TEST-001", parametres=["valeur"])]
+    messages = derouler(descripteur, "alpha", analyseurs={"alpha": module}, regles=regles)
     assert types(messages)[2:6] == ["observation", "constat", "non_menee", "module"]
+    assert messages[3]["constat"]["regle"] == {"identifiant": "R-TEST-001", "version": "1"}
+    assert messages[3]["constat"]["phrase"] == {
+        "gabarit": "test.regle",
+        "parametres": {"valeur": "alpha/1"},
+    }
+
+
+def test_regles_du_moteur_apres_le_module(descripteur: int) -> None:
+    def module(contexte: Contexte) -> None:
+        contexte.observer("logiciel", "Autre")
+        contexte.observer("logiciel", "Générateur 5")
+        contexte.observer("largeur", 1024)
+
+    regles = [
+        # Satisfaite : la seconde observation « logiciel » est retenue, avec la largeur.
+        regle_dict(
+            "R-TEST-002",
+            **moteur(
+                {"observation": "logiciel", "motif": "^Générateur", "parametre": "logiciel"},
+                {"observation": "largeur", "parmi": [512, 1024]},
+            ),
+        ),
+        regle_dict("R-TEST-003", **moteur({"observation": "hauteur", "presente": True})),
+        regle_dict("R-TEST-004", module="beta", **moteur({"observation": "largeur", "egal": 1024})),
+    ]
+    messages = derouler(descripteur, "alpha", analyseurs={"alpha": module}, regles=regles)
+    constats = [m["constat"] for m in messages if m["type"] == "constat"]
+    assert constats == [
+        {
+            "phrase": {"gabarit": "test.regle", "parametres": {"logiciel": "alpha/2"}},
+            "donnees": ["alpha/2", "alpha/3"],
+            "regle": {"identifiant": "R-TEST-002", "version": "1"},
+            "module": "alpha",
+            "fondement": "mesure",
+            "categorie": "information_neutre",
+            "direction": "rien_de_particulier",
+            "partie": 1,
+        }
+    ]
+    assert types(messages)[2:7] == ["observation"] * 3 + ["constat", "module"]
+
+
+def test_regles_du_moteur_comptees_dans_le_budget(
+    descripteur: int, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(principal, "TAILLE_MAX_SORTIE", principal._RESERVE + 600)
+
+    def module(contexte: Contexte) -> None:
+        contexte.observer("n", 1)
+
+    regles = [
+        regle_dict(f"R-TEST-{numero:03}", **moteur({"observation": "n", "presente": True}))
+        for numero in range(1, 4)
+    ]
+    messages = derouler(descripteur, "alpha", analyseurs={"alpha": module}, regles=regles)
+    assert messages[2]["non_menee"]["raison"] == "limite_depassee"
 
 
 def test_limite_de_la_sortie(descripteur: int, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -292,25 +350,40 @@ def test_observation_invalide_non_comptee() -> None:
     assert c.observer("a", 1) == "alpha/1"
 
 
+INDICE_IA = regle(
+    "R-TEST-005", categorie="indice", direction="origine_ia", niveau="faible", parametres=["valeur"]
+)
+DU_MOTEUR = regle("R-TEST-006", **moteur({"observation": "a", "presente": True}))
+
+
 @pytest.mark.parametrize(
-    ("direction", "donnee", "attendu"),
+    ("identifiant", "donnee", "parametres", "attendu"),
     [
-        (Direction.ORIGINE_IA, "alpha/1", "direction"),
-        (Direction.RIEN_DE_PARTICULIER, "beta/1", "donnees"),
+        ("R-TEST-005", "alpha/1", {"valeur": "alpha/1"}, "direction"),
+        ("R-TEST-001", "beta/1", {"valeur": "beta/1"}, "donnees"),
+        ("R-TEST-009", "alpha/1", {}, "absente"),
+        ("R-TEST-006", "alpha/1", {}, "moteur"),
+        ("R-TEST-001", "alpha/1", {}, "paramètres"),
+        ("R-TEST-001", "alpha/1", {"valeur": "alpha/1", "autre": "alpha/1"}, "paramètres"),
     ],
 )
-def test_constat_refuse(direction: Direction, donnee: str, attendu: str) -> None:
-    c = contexte()
+def test_constat_refuse(
+    identifiant: str, donnee: str, parametres: dict[str, str], attendu: str
+) -> None:
+    c = contexte(regles=(REGLE_DU_MODULE, INDICE_IA, DU_MOTEUR))
     c.observer("a", 1)
     with pytest.raises(ValueError, match=attendu):
-        c.constater(
-            Phrase("g"),
-            [donnee],
-            ReferenceRegle("R-1", "1"),
-            fondement=Fondement.MESURE,
-            categorie=Categorie.INFORMATION_NEUTRE,
-            direction=direction,
-        )
+        c.constater(identifiant, [donnee], parametres)
+
+
+def test_constat_d_un_indice_gradue_par_sa_regle() -> None:
+    c = contexte(regles=(INDICE_IA,))
+    c._directions = frozenset(Direction)
+    valeur = c.observer("a", 1)
+    c.constater("R-TEST-005", [valeur], {"valeur": valeur})
+    constat = json.loads(c.lignes[1])["constat"]
+    assert constat["graduation"] == {"niveau": "faible", "evaluee": False}
+    assert (constat["categorie"], constat["direction"]) == ("indice", "origine_ia")
 
 
 @pytest.mark.parametrize(
@@ -397,6 +470,13 @@ def test_configuration_trop_longue(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(principal, "TAILLE_MAX_CONFIGURATION", 8)
     with pytest.raises(ValueError, match="configuration"):
         lire_configuration(configuration())
+
+
+def test_configuration_avec_ses_regles() -> None:
+    regles = [regle_dict("R-TEST-002"), regle_dict("R-TEST-001", module="beta")]
+    alpha, beta = lire_configuration(configuration("alpha", "beta", regles=regles))
+    assert alpha.regles == (regle("R-TEST-002"),)
+    assert beta.regles == (regle("R-TEST-001", module="beta"),)
 
 
 def test_import_des_modules_livres() -> None:

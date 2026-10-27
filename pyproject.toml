@@ -27,8 +27,10 @@ classifiers = [
     "Topic :: Security",
     "Typing :: Typed",
 ]
-# Chaque bibliothèque est ajoutée par la tâche qui l'utilise (ADR-0043) : jsonschema en T11 (ADR-0054).
+# Chaque bibliothèque est ajoutée par la tâche qui l'utilise (ADR-0043) : jsonschema en T11 (ADR-0054),
+# google-re2 en T15 (ADR-0039).
 dependencies = [
+    "google-re2>=1.1.20251105",
     "jsonschema>=4.26",
 ]
 
@@ -86,6 +88,11 @@ select = [
 python_version = "3.12"
 strict = true
 files = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+# google-re2 ne publie pas ses types : ses objets sont Any, employés dans _regles.py seulement.
+module = ["re2"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

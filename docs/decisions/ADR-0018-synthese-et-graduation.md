@@ -53,3 +53,4 @@ Le §10 laisse ouverts la forme de la synthèse globale (aucune, niveaux qualita
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : le constat porte sa règle et sa graduation (niveau, règle évaluée ou non), ADR-0058 (T11) |
+| 2026-10-27 | Réalisé en T15 : niveau et évaluation (taux, corpus, date) portés par la règle ; sans évaluation, niveau « faible » imposé (ADR-0084) |

@@ -1,7 +1,7 @@
 """Interface publique d'analyse : un fichier, analysé par un processus de travail (ES-17).
 
-Avant le catalogue (T15) et le rapport (T16), une analyse rend l'identification et les
-résultats validés, sans rapport complet ni masquage (ADR-0073). Ce module n'importe le
+Avant le rapport (T16), une analyse rend l'identification, les résultats validés et la version
+du catalogue employé, sans rapport complet ni masquage (ADR-0073). Ce module n'importe le
 processus principal qu'à l'appel de :func:`analyser` : le processus de travail, qui importe
 le paquet, n'en charge rien.
 """
@@ -22,6 +22,7 @@ from voight_kampff.rapport.modele import (
     NonMenee,
     Observation,
     RaisonNonMenee,
+    VersionCatalogue,
     verifier_resultats,
 )
 
@@ -102,6 +103,8 @@ class Analyse:
     non_menees: tuple[NonMenee, ...]
     dependances: tuple[Dependance, ...]
     """Bibliothèques qui ont lu le fichier, avec leur version réelle (ADR-0023)."""
+    catalogue: VersionCatalogue
+    """Catalogue de règles employé : version, date, empreinte, livré ou fourni (ADR-0029)."""
 
     def __post_init__(self) -> None:
         verifier_resultats(
@@ -118,12 +121,19 @@ class Analyse:
         return any(non_menee.raison in RAISONS_D_INTERRUPTION for non_menee in self.non_menees)
 
 
-def analyser(chemin: str | os.PathLike[str], *, desactiver: Collection[str] = ()) -> Analyse:
+def analyser(
+    chemin: str | os.PathLike[str],
+    *,
+    desactiver: Collection[str] = (),
+    catalogue: str | os.PathLike[str] | None = None,
+) -> Analyse:
     """Analyse un fichier dans un processus de travail neuf et isolé (ADR-0036).
 
     ``desactiver`` nomme des modules à ne pas exécuter (ADR-0063) ; un nom inconnu lève
-    ``ModuleInconnu`` avant toute lecture. Un fichier refusé lève :class:`AnalyseRefusee`.
+    ``ModuleInconnu`` avant toute lecture. ``catalogue`` nomme le dossier d'un catalogue fourni
+    par l'utilisateur, qui remplace le catalogue livré (ADR-0086) ; un catalogue invalide lève
+    ``CatalogueInvalide`` avant toute lecture. Un fichier refusé lève :class:`AnalyseRefusee`.
     """
     from voight_kampff._orchestration import soumission  # importé ici : voir le docstring
 
-    return soumission.soumettre(chemin, desactiver)
+    return soumission.soumettre(chemin, desactiver, catalogue=catalogue)

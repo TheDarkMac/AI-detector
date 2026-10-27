@@ -16,12 +16,17 @@ Deux familles (ADR-0076) :
 __all__ = [
     "DELAI",
     "DELAI_ARRET",
+    "FICHIERS_MAX_CATALOGUE",
     "MEMOIRE_MAX",
+    "MEMOIRE_MAX_MOTIF",
     "OBJETS_MAX",
     "PIXELS_MAX",
     "PROFONDEUR_MAX",
+    "PROGRAMME_MAX_MOTIF",
     "RAPPORT_COMPRESSION_MAX",
+    "REGLES_MAX",
     "SEUIL_RAPPORT_COMPRESSION",
+    "TAILLE_MAX_CATALOGUE",
     "TAILLE_MAX_CONFIGURATION",
     "TAILLE_MAX_DECOMPRESSEE",
     "TAILLE_MAX_FICHIER",
@@ -73,3 +78,18 @@ PROFONDEUR_MAX = 64
 """Profondeur d'imbrication des structures parcourues."""
 OBJETS_MAX = 1 << 20
 """Objets parcourus : entrées d'une archive, objets d'un PDF, blocs, balises."""
+
+# Catalogue de règles : comptées, contrôlées au chargement (ES-09, ADR-0088, ADR-0089)
+
+TAILLE_MAX_CATALOGUE = 8 << 20
+"""Taille cumulée des fichiers d'un catalogue : 8 Mio, la moitié de la configuration."""
+FICHIERS_MAX_CATALOGUE = 256
+"""Fichiers d'un catalogue, en-tête compris."""
+REGLES_MAX = 4096
+"""Règles d'un catalogue."""
+PROGRAMME_MAX_MOTIF = 5000
+"""Taille du programme compilé d'un motif RE2, en instructions : assez pour une classe
+Unicode (``\\pL`` en compte environ 1 200) et une répétition bornée."""
+MEMOIRE_MAX_MOTIF = 8 << 20
+"""Mémoire que RE2 peut employer pour un motif : sa valeur par défaut, écrite ici pour qu'une
+autre version de RE2 ne la change pas."""

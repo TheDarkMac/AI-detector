@@ -8,10 +8,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from catalogues import VERSION, ecrire_catalogue, moteur, regle_dict, toml_regles
 from echantillons import PDF, archive, jpeg
 
 from voight_kampff import Analyse, __version__
-from voight_kampff._orchestration import manifestes
+from voight_kampff._orchestration import catalogue, manifestes
 from voight_kampff._orchestration.manifestes import Manifeste
 from voight_kampff.cli import main, resume
 from voight_kampff.rapport.modele import (
@@ -94,8 +95,14 @@ def test_resume_d_un_polyglotte(tmp_path: Path, capsys: pytest.CaptureFixture[st
         "hors périmètre, non analysée",
         f"  non reconnus : octets {len(contenu) - 2} à {len(contenu) - 1}",
     ]
-    assert "  techniques : aucune dans cette version" in sortie
-    assert sortie.endswith("  nom et empreinte : masqués\n")
+    assert "  technique ela, partie 1 : hors de cette version" in sortie
+    assert "hors_v1" not in sortie  # dit une fois, avec la technique
+    livre = catalogue.charger(manifestes.decouvrir()).version
+    assert sortie.endswith(
+        f"  catalogue : {livre.version} du {livre.date.isoformat()}, "
+        f"empreinte {livre.empreinte}\n"
+        "  nom et empreinte du fichier : masqués\n"
+    )
     # Ni le nom ni l'empreinte n'apparaissent (ADR-0031).
     assert "SOURCE" not in sortie
     assert hashlib.sha256(contenu).hexdigest() not in sortie
@@ -151,6 +158,7 @@ def test_resume_de_chaque_element() -> None:
                 TechniqueCouverte("a", EtatTechnique.APPLIQUEE, "1"),
                 TechniqueCouverte("b", EtatTechnique.PARTIELLE, "1"),
                 TechniqueCouverte("c", EtatTechnique.NON_APPLICABLE, "1"),
+                TechniqueCouverte("d", EtatTechnique.NON_MENEE),
             ),
             (),
         ),
@@ -164,9 +172,11 @@ def test_resume_de_chaque_element() -> None:
                 partie=1,
             ),
             NonMenee(RaisonNonMenee.HORS_PERIMETRE, partie=2),
+            NonMenee(RaisonNonMenee.HORS_V1, "d", partie=1),
             NonMenee(RaisonNonMenee.DELAI_DEPASSE),
         ),
         dependances=(),
+        catalogue=VERSION,
     )
     assert resume(analyse) == [
         "format réel : pdf",
@@ -177,12 +187,14 @@ def test_resume_de_chaque_element() -> None:
         "technique a, partie 1 : appliquée",
         "technique b, partie 1 : partielle",
         "technique c, partie 1 : non applicable",
+        "technique d, partie 1 : hors de cette version",
         "observations : 0 ; constats : 0",
         "non menée : fichier_tronque (b, partie 1)",
         "non menée : fichier_tronque (partie 1, octets 0 à 9)",
         "non menée : delai_depasse",
         "analyse interrompue : résultats partiels, hors garantie de reproductibilité",
-        "nom et empreinte : masqués",
+        f"catalogue : 0.0.1 du 2026-10-27, empreinte {'c' * 64}",
+        "nom et empreinte du fichier : masqués",
     ]
     # Isolation réduite (Windows, ou système sans Landlock) : ce qui manque est nommé.
     manques = (ManqueIsolation.RESEAU, ManqueIsolation.LECTURE)
@@ -190,3 +202,54 @@ def test_resume_de_chaque_element() -> None:
         analyse, isolation=EtatIsolation(NiveauIsolation.REDUITE, manques)
     )
     assert "isolation : réduite ; manque : reseau, lecture" in resume(reduite)
+    du_fichier = tuple(n for n in analyse.non_menees if n.module is None)
+    vide = dataclasses.replace(analyse, couverture=Couverture((), ()), non_menees=du_fichier)
+    assert "techniques : aucune dans cette version" in resume(vide)
+
+
+# Catalogue (T15, ADR-0086, NF-07)
+
+
+def test_regles_du_catalogue_livre(capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["--regles"]) == 0
+    livre = catalogue.charger(manifestes.decouvrir()).version
+    assert capsys.readouterr().out == (
+        f"catalogue : {livre.version} du {livre.date.isoformat()}, empreinte {livre.empreinte}\n"
+        "Aucune règle dans cette version du catalogue.\n"
+    )
+
+
+def test_regles_d_un_catalogue_fourni(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    livre = Manifeste("exif", "1.2.0", ("pdf",), ("F-10",), (), "exif", (Direction.ORIGINE_IA,))
+    monkeypatch.setattr(manifestes, "decouvrir", lambda: (livre,))
+    regles = toml_regles(
+        regle_dict(
+            "R-EXIF-001",
+            "exif",
+            titre="Logiciel générateur déclaré",
+            categorie="indice",
+            direction="origine_ia",
+            fondement="declaration",
+            niveau="faible",
+            **moteur({"observation": "logiciel", "parmi": ["Générateur"]}),
+        )
+    )
+    dossier = ecrire_catalogue(tmp_path / "catalogue", {"exif": regles})
+    assert main(["--catalogue", str(dossier), "--regles"]) == 0
+    lignes = capsys.readouterr().out.splitlines()
+    assert lignes[0].startswith("catalogue : 1.2.3 du 2026-10-20, fourni par l'utilisateur")
+    assert lignes[1:] == ["R-EXIF-001 version 1 (exif) : Logiciel générateur déclaré"]
+
+    document = tmp_path / "document.pdf"
+    document.write_bytes(PDF)
+    assert main(["--catalogue", str(dossier), str(document)]) == 0
+    assert ", fourni par l'utilisateur, empreinte" in capsys.readouterr().out
+
+
+def test_catalogue_invalide(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    with pytest.raises(SystemExit) as sortie:
+        main(["--catalogue", str(tmp_path / "absent"), "f.pdf"])
+    assert sortie.value.code == 2
+    assert "catalogue invalide : catalogue : dossier introuvable" in capsys.readouterr().err

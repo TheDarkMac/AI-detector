@@ -8,10 +8,12 @@ Après l'isolation vient l'identification : les parties reconnues (ADR-0071). Le
 arrivent ensuite partie par partie, chaque module actif dans l'ordre pour chaque partie du
 périmètre ; une partie hors périmètre est déclarée non analysée ici, pas par le travail.
 
-Tout écart arrête le processus de travail. Les modules terminés gardent leurs résultats ; les
-autres deviennent des analyses non menées, avec la raison de l'arrêt, et l'analyse est
-interrompue (ADR-0056). Un délai et des tailles, fixés par ADR-0077, bornent l'échange ; sous
-macOS, la mémoire du travail est surveillée pendant l'attente (ADR-0080).
+Chaque constat doit dire ce que fixe sa règle du catalogue : gabarit, catégorie, direction,
+fondement, niveau (ADR-0090). Tout écart arrête le processus de travail. Les modules terminés
+gardent leurs résultats ; les autres deviennent des analyses non menées, avec la raison de
+l'arrêt, et l'analyse est interrompue (ADR-0056). Un délai et des tailles, fixés par ADR-0077,
+bornent l'échange ; sous macOS, la mémoire du travail est surveillée pendant l'attente
+(ADR-0080).
 """
 
 import os
@@ -21,13 +23,15 @@ import subprocess
 import sys
 import threading
 import time
-from collections.abc import Callable, Collection, Sequence
+from collections.abc import Callable, Collection, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import IO, Any
 
 from voight_kampff import schemas
 from voight_kampff._limites import DELAI, DELAI_ARRET
+from voight_kampff._orchestration import catalogue as catalogues
 from voight_kampff._orchestration import surveillance
+from voight_kampff._orchestration.catalogue import Catalogue
 from voight_kampff._orchestration.manifestes import Manifeste, selectionner
 from voight_kampff._protocole import (
     TAILLE_MAX_CONFIGURATION,
@@ -37,6 +41,7 @@ from voight_kampff._protocole import (
     decoder,
     encoder,
 )
+from voight_kampff._regles import Regle, conforme
 from voight_kampff.rapport.modele import (
     RAISONS_D_INTERRUPTION,
     VERSION_SCHEMA,
@@ -111,8 +116,9 @@ def _raison_de_l_arret(processus: "subprocess.Popen[bytes]", echeance: float) ->
 class ResultatTravail:
     """Ce que le processus de travail a établi pour un fichier, validé par le principal.
 
-    La soumission (ADR-0075) y ajoute le nom, la taille et l'empreinte du processus principal ;
-    le rapport (T16), les versions de l'outil et du catalogue (T15).
+    La soumission (ADR-0075) y ajoute le nom, la taille et l'empreinte du processus principal,
+    la version du catalogue et les techniques hors de cette version (T15) ; le rapport (T16),
+    la version de l'outil.
     """
 
     parties: tuple[Partie, ...] | None
@@ -150,6 +156,7 @@ def executer(
     manifestes: Sequence[Manifeste],
     desactives: Collection[str] = (),
     *,
+    catalogue: Catalogue | None = None,
     taille: int | None = None,
     delai: float = DELAI,
     commande: Callable[[int], Sequence[str]] = commande_travail,
@@ -157,12 +164,20 @@ def executer(
     """Analyse le fichier ouvert en ``descripteur`` dans un processus de travail neuf.
 
     ``manifestes`` est dans l'ordre d'exécution (``decouvrir``) ; ``desactives`` nomme les
-    modules désactivés par l'utilisateur. ``taille``, celle que le principal a hachée, borne
-    les parties reçues ; à défaut, celle du descripteur. ``commande`` remplace, pour les
-    tests, le processus de travail livré.
+    modules désactivés par l'utilisateur. ``catalogue`` vaut par défaut le catalogue livré,
+    validé avec ces manifestes. ``taille``, celle que le principal a hachée, borne les parties
+    reçues ; à défaut, celle du descripteur. ``commande`` remplace, pour les tests, le
+    processus de travail livré.
     """
     actifs, eteints = selectionner(manifestes, desactives)
-    reception = _Reception(actifs, os.fstat(descripteur).st_size if taille is None else taille)
+    if catalogue is None:
+        catalogue = catalogues.charger(manifestes)
+    identifiants = {manifeste.identifiant for manifeste in actifs}
+    regles = {
+        regle.identifiant: regle for regle in catalogue.regles if regle.module in identifiants
+    }
+    taille_hachee = os.fstat(descripteur).st_size if taille is None else taille
+    reception = _Reception(actifs, regles, taille_hachee)
     configuration = encoder(
         {
             "version_schema": VERSION_SCHEMA,
@@ -174,6 +189,7 @@ def executer(
                 }
                 for manifeste in actifs
             ],
+            "regles": catalogue.configuration(identifiants),
         }
     )
     if len(configuration) > TAILLE_MAX_CONFIGURATION:
@@ -314,8 +330,12 @@ class _Module:
 class _Reception:
     """Suit le protocole message par message ; tout écart lève :class:`_Interruption`."""
 
-    def __init__(self, actifs: Sequence[Manifeste], taille: int) -> None:
+    def __init__(
+        self, actifs: Sequence[Manifeste], regles: Mapping[str, Regle], taille: int
+    ) -> None:
         self._actifs = tuple(actifs)
+        self._regles = regles
+        """Règles des modules actifs, par identifiant : chaque constat doit suivre la sienne."""
         self._taille = taille
         self._parties: tuple[Partie, ...] | None = None
         self._modules: list[_Module] = []
@@ -460,6 +480,8 @@ class _Reception:
         siennes = {observation.identifiant for observation in module.observations}
         _invalide(set(constat.donnees) <= siennes)
         _invalide(constat.direction in module.manifeste.directions)
+        regle = self._regles.get(constat.regle.identifiant)
+        _invalide(regle is not None and conforme(regle, constat))
         module.constats.append(constat)
 
     def _non_menee(self, non_menee: NonMenee) -> None:
