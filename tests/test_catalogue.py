@@ -148,7 +148,8 @@ DIRECTION = toml_regles(
     [
         pytest.param("LISEZMOI.md", "texte", "inattendu : 'LISEZMOI.md'", id="fichier-a-la-racine"),
         pytest.param("autres/a.toml", "", "inattendu : 'autres'", id="dossier-a-la-racine"),
-        pytest.param("regles/Alpha.toml", ALPHA, "inattendu : regles/'Alpha", id="nom-de-module"),
+        # Gamma et non Alpha : sous macOS et Windows, Alpha.toml remplacerait alpha.toml.
+        pytest.param("regles/Gamma.toml", ALPHA, "inattendu : regles/'Gamma", id="nom-de-module"),
         pytest.param("regles/alpha.txt", ALPHA, "inattendu", id="extension"),
         pytest.param("regles/sous/a.toml", "", "inattendu", id="sous-dossier"),
         pytest.param("catalogue.toml", "format = ", "TOML illisible", id="entete-illisible"),
