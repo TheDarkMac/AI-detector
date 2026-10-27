@@ -4,8 +4,8 @@ Contrat décrit dans ``docs/modele-de-donnees/modele-de-donnees.md`` (T11, ADR-0
 Les JSON Schema de :mod:`voight_kampff.schemas` portent les mêmes règles, sauf les renvois
 entre objets, que seul ce module vérifie ; les tests confrontent les deux.
 
-Ce module n'importe que la bibliothèque standard : le processus de travail s'en sert pour
-construire ses résultats sans charger ``jsonschema``.
+Ce module n'importe que la bibliothèque standard et le vocabulaire des formats : le processus
+de travail s'en sert pour construire ses résultats sans charger ``jsonschema``.
 
 Les messages d'erreur ne recopient jamais une valeur reçue : elle peut venir d'un fichier
 hostile (ES-04, ES-15).
@@ -20,6 +20,8 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import Any
 
+from voight_kampff import formats
+
 __all__ = [
     "LONGUEUR_MAX_IDENTIFIANT",
     "LONGUEUR_MAX_TEXTE",
@@ -28,7 +30,9 @@ __all__ = [
     "NOMBRE_MAX_DONNEES",
     "NOMBRE_MAX_ELEMENTS",
     "NOMBRE_MAX_PARAMETRES",
+    "NOMBRE_MAX_PARTIES",
     "RAISONS_D_INTERRUPTION",
+    "RAISONS_D_UNE_PARTIE",
     "RAISONS_PROPRES_A_UNE_TECHNIQUE",
     "VERSION_SCHEMA",
     "Categorie",
@@ -49,6 +53,7 @@ __all__ = [
     "NiveauIsolation",
     "NonMenee",
     "Observation",
+    "Partie",
     "Phrase",
     "Plage",
     "RaisonNonMenee",
@@ -60,6 +65,9 @@ __all__ = [
     "VersionCatalogue",
     "Versions",
     "Zone",
+    "plages_non_reconnues",
+    "verifier_parties",
+    "verifier_resultats",
 ]
 
 VERSION_SCHEMA = "0.1.0"
@@ -73,6 +81,7 @@ LONGUEUR_MAX_UNITE = 32
 NOMBRE_MAX_ELEMENTS = 4096
 NOMBRE_MAX_DONNEES = 256
 NOMBRE_MAX_PARAMETRES = 32
+NOMBRE_MAX_PARTIES = 16
 _ENTIER_MIN = -(2**63)
 _ENTIER_MAX = 2**63 - 1
 
@@ -136,6 +145,7 @@ class RaisonNonMenee(StrEnum):
     """Raisons, en liste fermée, d'une analyse non menée (F-82, ADR-0056)."""
 
     HORS_V1 = "hors_v1"
+    HORS_PERIMETRE = "hors_perimetre"
     MODULE_DESACTIVE = "module_desactive"
     FORMAT_PARTIEL = "format_partiel"
     FICHIER_TRONQUE = "fichier_tronque"
@@ -158,6 +168,9 @@ RAISONS_PROPRES_A_UNE_TECHNIQUE = frozenset(
     }
 )
 """Raisons qui désignent toujours une technique : la non menée nomme alors son module."""
+
+RAISONS_D_UNE_PARTIE = frozenset({RaisonNonMenee.HORS_PERIMETRE})
+"""Raisons qui désignent une partie du fichier, jamais une technique (ADR-0071)."""
 
 RAISONS_D_INTERRUPTION = frozenset(
     {
@@ -417,9 +430,12 @@ class Observation:
     localisation: Localisation | None = None
     identifiante: CategorieIdentifiante | None = None
     """Catégorie de donnée identifiante, fixée par le module ; masquée par défaut (ES-13)."""
+    partie: int = 1
+    """Rang de la partie du fichier analysée par le module (ADR-0071)."""
 
     def __post_init__(self) -> None:
         _identifiant(self.identifiant, "observation.identifiant")
+        _entier(self.partie, "observation.partie", minimum=1)
         _identifiant(self.module, "observation.module")
         _identifiant(self.nom, "observation.nom")
         if isinstance(self.valeur, tuple):
@@ -445,6 +461,7 @@ class Observation:
                 "unite": self.unite,
                 "localisation": self.localisation.vers_dict() if self.localisation else None,
                 "identifiante": self.identifiante,
+                "partie": self.partie,
             }
         )
 
@@ -465,6 +482,7 @@ class Observation:
             unite=document.get("unite"),
             localisation=_localisation(document),
             identifiante=CategorieIdentifiante(identifiante) if identifiante else None,
+            partie=document["partie"],
         )
 
 
@@ -565,8 +583,11 @@ class Constat:
     graduation: Graduation | None = None
     """Présente pour un indice, absente sinon."""
     localisation: Localisation | None = None
+    partie: int = 1
+    """Rang de la partie analysée ; celle de toutes ses données (ADR-0071)."""
 
     def __post_init__(self) -> None:
+        _entier(self.partie, "constat.partie", minimum=1)
         if not self.donnees:
             raise ValueError("constat.donnees : aucune donnée observée")
         if len(self.donnees) > NOMBRE_MAX_DONNEES:
@@ -606,6 +627,7 @@ class Constat:
                 "direction": self.direction,
                 "graduation": self.graduation.vers_dict() if self.graduation else None,
                 "localisation": self.localisation.vers_dict() if self.localisation else None,
+                "partie": self.partie,
             }
         )
 
@@ -622,6 +644,7 @@ class Constat:
             direction=Direction(document["direction"]),
             graduation=Graduation.depuis_dict(graduation) if graduation is not None else None,
             localisation=_localisation(document),
+            partie=document["partie"],
         )
 
 
@@ -636,13 +659,23 @@ class NonMenee:
     module: str | None = None
     """Technique concernée ; absente quand c'est l'analyse du fichier entier qui n'a pas abouti."""
     localisation: Localisation | None = None
-    """Partie du fichier concernée, par exemple la deuxième image d'un HEIC (A-25)."""
+    """Endroit du fichier concerné, par exemple la deuxième image d'un HEIC (A-25)."""
+    partie: int | None = None
+    """Rang de la partie concernée ; obligatoire avec un module (ADR-0071)."""
 
     def __post_init__(self) -> None:
+        if self.partie is not None:
+            _entier(self.partie, "non_menee.partie", minimum=1)
         if self.module is not None:
             _identifiant(self.module, "non_menee.module")
+            if self.raison in RAISONS_D_UNE_PARTIE:
+                raise ValueError("non_menee.module : raison propre à une partie")
+            if self.partie is None:
+                raise ValueError("non_menee.partie : obligatoire avec un module")
         elif self.raison in RAISONS_PROPRES_A_UNE_TECHNIQUE:
             raise ValueError("non_menee.module : raison propre à une technique")
+        elif self.raison in RAISONS_D_UNE_PARTIE and self.partie is None:
+            raise ValueError("non_menee.partie : raison propre à une partie")
 
     def vers_dict(self) -> Document:
         return _sans_none(
@@ -650,6 +683,7 @@ class NonMenee:
                 "raison": self.raison,
                 "module": self.module,
                 "localisation": self.localisation.vers_dict() if self.localisation else None,
+                "partie": self.partie,
             }
         )
 
@@ -659,6 +693,7 @@ class NonMenee:
             raison=RaisonNonMenee(document["raison"]),
             module=document.get("module"),
             localisation=_localisation(document),
+            partie=document.get("partie"),
         )
 
 
@@ -670,16 +705,26 @@ class TechniqueCouverte:
     etat: EtatTechnique
     version: str | None = None
     """Absente seulement pour une technique hors de cette version de l'outil (ADR-0012)."""
+    partie: int = 1
+    """Rang de la partie du fichier : une technique figure une fois par partie analysée."""
 
     def __post_init__(self) -> None:
         _identifiant(self.module, "technique.module")
+        _entier(self.partie, "technique.partie", minimum=1)
         if self.version is not None:
             _version(self.version, "technique.version")
         elif self.etat is not EtatTechnique.NON_MENEE:
             raise ValueError("technique.version : absente seulement hors de cette version")
 
     def vers_dict(self) -> Document:
-        return _sans_none({"module": self.module, "etat": self.etat, "version": self.version})
+        return _sans_none(
+            {
+                "module": self.module,
+                "etat": self.etat,
+                "version": self.version,
+                "partie": self.partie,
+            }
+        )
 
     @classmethod
     def depuis_dict(cls, document: Mapping[str, Any]) -> "TechniqueCouverte":
@@ -687,6 +732,7 @@ class TechniqueCouverte:
             module=document["module"],
             etat=EtatTechnique(document["etat"]),
             version=document.get("version"),
+            partie=document["partie"],
         )
 
 
@@ -699,7 +745,10 @@ class Couverture:
     """Identifiants, dans le catalogue, des marquages recherchés (F-25)."""
 
     def __post_init__(self) -> None:
-        _uniques((technique.module for technique in self.techniques), "couverture.techniques")
+        _uniques(
+            ((technique.module, technique.partie) for technique in self.techniques),
+            "couverture.techniques",
+        )
         for marquage in self.marquages_recherches:
             _identifiant(marquage, "couverture.marquages_recherches")
         _uniques(self.marquages_recherches, "couverture.marquages_recherches")
@@ -722,51 +771,175 @@ class Couverture:
 
 
 @dataclass(frozen=True, slots=True)
+class Partie:
+    """Format reconnu dans le fichier et plage d'octets qu'il occupe (F-02, ES-07, ADR-0071)."""
+
+    rang: int
+    """À partir de 1, dans l'ordre des débuts ; la partie 1 donne le format réel."""
+    format: str
+    octets: Plage
+    """Du début du format à sa fin logique, ou à la fin du fichier si elle n'est pas connue."""
+    fin_connue: bool
+    """Faux si la fin logique n'a pas pu être établie (structure non parcourue ou tronquée)."""
+    tronquee: bool = False
+    """Vrai si la structure s'interrompt avant sa fin : fichier tronqué ou corrompu (ADR-0071)."""
+
+    def __post_init__(self) -> None:
+        _entier(self.rang, "partie.rang", minimum=1)
+        if self.format not in formats.FORMATS:
+            raise ValueError("partie.format : format inconnu")
+        if self.tronquee and self.fin_connue:
+            raise ValueError("partie.tronquee : une partie tronquée n'a pas de fin connue")
+
+    @property
+    def dans_perimetre(self) -> bool:
+        """Vrai si le format est analysé ; sinon la partie est déclarée non analysée."""
+        return self.format in formats.PERIMETRE
+
+    @property
+    def fin(self) -> int:
+        """Position qui suit le dernier octet de la partie."""
+        return self.octets.debut + self.octets.longueur
+
+    def vers_dict(self) -> Document:
+        return {
+            "rang": self.rang,
+            "format": self.format,
+            "octets": self.octets.vers_dict(),
+            "fin_connue": self.fin_connue,
+            "tronquee": self.tronquee,
+        }
+
+    @classmethod
+    def depuis_dict(cls, document: Mapping[str, Any]) -> "Partie":
+        return cls(
+            rang=document["rang"],
+            format=document["format"],
+            octets=Plage.depuis_dict(document["octets"]),
+            fin_connue=document["fin_connue"],
+            tronquee=document["tronquee"],
+        )
+
+
+def verifier_parties(parties: tuple[Partie, ...], taille: int) -> None:
+    """Rangs consécutifs dans l'ordre des débuts, plages dans le fichier (ADR-0071).
+
+    Une partie dont la fin n'est pas connue s'étend jusqu'à la fin du fichier. Les plages
+    peuvent se chevaucher : un PDF peut commencer à l'intérieur d'un JPEG.
+    """
+    if len(parties) > NOMBRE_MAX_PARTIES:
+        raise ValueError("parties : trop de parties")
+    debut_precedent = 0
+    for numero, partie in enumerate(parties, start=1):
+        if partie.rang != numero:
+            raise ValueError("parties : rangs non consécutifs")
+        if partie.octets.debut < debut_precedent:
+            raise ValueError("parties : ordre des débuts non respecté")
+        if partie.fin > taille or (not partie.fin_connue and partie.fin != taille):
+            raise ValueError("parties : plage hors du fichier")
+        debut_precedent = partie.octets.debut
+
+
+def plages_non_reconnues(parties: tuple[Partie, ...], taille: int) -> tuple[Plage, ...]:
+    """Plages du fichier qu'aucune partie ne couvre, dans l'ordre."""
+    trous: list[Plage] = []
+    position = 0
+    for partie in sorted(parties, key=lambda p: p.octets.debut):
+        if partie.octets.debut > position:
+            trous.append(Plage(position, partie.octets.debut - position))
+        position = max(position, partie.fin)
+    if position < taille:
+        trous.append(Plage(position, taille - position))
+    return tuple(trous)
+
+
+@dataclass(frozen=True, slots=True)
 class Identification:
-    """Rubrique « Identification » ; nom et empreinte sont identifiants (ADR-0014, ADR-0031)."""
+    """Rubrique « Identification » ; nom et empreinte sont identifiants (ADR-0014, ADR-0031).
+
+    Les signalements de F-03 et ES-07 en sont tirés (ADR-0072) : extension et concordance,
+    parties reconnues, octets qu'aucune ne couvre, dont ceux qui suivent la fin logique.
+    """
 
     nom: str
     """Nom du fichier seul, sans chemin (ES-14)."""
     format_reel: str
-    """Format identifié par le contenu (F-02, T13)."""
+    """Format identifié par le contenu (F-02) : celui de la partie 1."""
     taille: int
     """Taille en octets."""
     empreinte: str
     """SHA-256 du fichier entier, en hexadécimal minuscule (ADR-0040)."""
     date_analyse: datetime
     """En UTC, à la seconde (ES-14)."""
+    parties: tuple[Partie, ...]
+    """Formats reconnus, au moins un du périmètre ; plusieurs pour un polyglotte (ADR-0071)."""
 
     def __post_init__(self) -> None:
         if not self.nom or "/" in self.nom or "\\" in self.nom or "\x00" in self.nom:
             raise ValueError("identification.nom : nom de fichier sans chemin attendu")
         _texte(self.nom, "identification.nom")
-        _identifiant(self.format_reel, "identification.format_reel")
         _entier(self.taille, "identification.taille", minimum=0)
         _empreinte(self.empreinte, "identification.empreinte")
         if self.date_analyse.utcoffset() != timedelta(0):
             raise ValueError("identification.date_analyse : heure UTC attendue")
         if self.date_analyse.microsecond:
             raise ValueError("identification.date_analyse : précision à la seconde attendue")
+        if not self.parties:
+            raise ValueError("identification.parties : aucun format reconnu")
+        verifier_parties(self.parties, self.taille)
+        if self.format_reel != self.parties[0].format:
+            raise ValueError("identification.format_reel : format de la partie 1 attendu")
+        if not any(partie.dans_perimetre for partie in self.parties):
+            raise ValueError("identification.parties : aucun format du périmètre")
+
+    @property
+    def extension(self) -> str | None:
+        """Extension du nom, en minuscules ; elle n'est pas identifiante, le nom l'est."""
+        return formats.extension(self.nom)
+
+    @property
+    def extension_concordante(self) -> bool | None:
+        """Concordance de l'extension avec le format réel (F-03) ; ``None`` sans extension."""
+        extension = self.extension
+        return None if extension is None else formats.concordante(extension, self.format_reel)
+
+    @property
+    def octets_non_reconnus(self) -> tuple[Plage, ...]:
+        """Plages qu'aucune partie ne couvre ; la dernière suit la fin logique (ES-07)."""
+        return plages_non_reconnues(self.parties, self.taille)
 
     def vers_dict(self) -> Document:
-        return {
-            "nom": self.nom,
-            "format_reel": self.format_reel,
-            "taille": self.taille,
-            "empreinte": self.empreinte,
-            "date_analyse": self.date_analyse.strftime(_FORMAT_DATE_HEURE),
-        }
+        return _sans_none(
+            {
+                "nom": self.nom,
+                "format_reel": self.format_reel,
+                "taille": self.taille,
+                "empreinte": self.empreinte,
+                "date_analyse": self.date_analyse.strftime(_FORMAT_DATE_HEURE),
+                "parties": [partie.vers_dict() for partie in self.parties],
+                "extension": self.extension,
+                "extension_concordante": self.extension_concordante,
+                "octets_non_reconnus": [plage.vers_dict() for plage in self.octets_non_reconnus],
+            }
+        )
 
     @classmethod
     def depuis_dict(cls, document: Mapping[str, Any]) -> "Identification":
         date_analyse = datetime.strptime(document["date_analyse"], _FORMAT_DATE_HEURE)
-        return cls(
+        identification = cls(
             nom=document["nom"],
             format_reel=document["format_reel"],
             taille=document["taille"],
             empreinte=document["empreinte"],
             date_analyse=date_analyse.replace(tzinfo=UTC),
+            parties=tuple(Partie.depuis_dict(partie) for partie in document["parties"]),
         )
+        # Champs déduits : présents pour le lecteur du JSON, vérifiés à la relecture.
+        deduits = identification.vers_dict()
+        for champ in ("extension", "extension_concordante", "octets_non_reconnus"):
+            if document.get(champ) != deduits.get(champ):
+                raise ValueError(f"identification.{champ} : incohérent avec le nom ou les parties")
+        return identification
 
 
 @dataclass(frozen=True, slots=True)
@@ -877,6 +1050,84 @@ _ETATS_AVEC_RESULTATS = frozenset({EtatTechnique.APPLIQUEE, EtatTechnique.PARTIE
 _ETATS_AVEC_NON_MENEE = frozenset({EtatTechnique.PARTIELLE, EtatTechnique.NON_MENEE})
 
 
+def verifier_resultats(
+    identification: Identification,
+    couverture: Couverture,
+    observations: tuple[Observation, ...],
+    constats: tuple[Constat, ...],
+    non_menees: tuple[NonMenee, ...],
+) -> None:
+    """Renvois entre les objets d'une analyse, que les schémas ne vérifient pas.
+
+    Une technique figure une fois pour chaque partie du périmètre. Ce que l'identification n'a
+    pas pu analyser est déclaré non mené : partie hors périmètre (``hors_perimetre``), partie
+    tronquée (``fichier_tronque``), plage non reconnue (``format_partiel``) (ADR-0071). Les
+    résultats d'une technique portent sur une partie où elle est appliquée ou partielle ; un
+    constat ne cite que des observations de sa technique et de sa partie.
+    """
+    rangs = {partie.rang for partie in identification.parties}
+    analysees = {partie.rang for partie in identification.parties if partie.dans_perimetre}
+
+    par_identifiant = {observation.identifiant: observation for observation in observations}
+    _uniques((observation.identifiant for observation in observations), "observations")
+    for constat in constats:
+        citees = [par_identifiant.get(donnee) for donnee in constat.donnees]
+        if any(observation is None for observation in citees):
+            raise ValueError("constats : renvoi vers une observation absente")
+        if any(
+            o is not None and (o.module, o.partie) != (constat.module, constat.partie)
+            for o in citees
+        ):
+            raise ValueError("constats : observation d'une autre technique ou partie")
+
+    techniques = {(t.module, t.partie): t for t in couverture.techniques}
+    modules = {technique.module for technique in couverture.techniques}
+    if set(techniques) != {(module, rang) for module in modules for rang in analysees}:
+        raise ValueError("couverture : une entrée par technique et par partie analysée")
+    portees = [(o.module, o.partie) for o in observations] + [
+        (c.module, c.partie) for c in constats
+    ]
+    for cle in portees:
+        technique = techniques.get(cle)
+        if technique is None or technique.etat not in _ETATS_AVEC_RESULTATS:
+            raise ValueError("résultat d'une technique ni appliquée ni partielle")
+
+    raisons: dict[tuple[str, int], set[RaisonNonMenee]] = {}
+    hors_perimetre: list[int] = []
+    for non_menee in non_menees:
+        if non_menee.partie is not None and non_menee.partie not in rangs:
+            raise ValueError("non_menees : partie absente de l'identification")
+        if non_menee.raison is RaisonNonMenee.HORS_PERIMETRE:
+            hors_perimetre.append(non_menee.partie or 0)
+        if non_menee.module is None:
+            continue
+        cle = (non_menee.module, non_menee.partie or 0)
+        if cle not in techniques:
+            raise ValueError("non_menees : technique absente de la couverture")
+        raisons.setdefault(cle, set()).add(non_menee.raison)
+    if sorted(hors_perimetre) != sorted(rangs - analysees):
+        raise ValueError("non_menees : une non menée « hors_perimetre » par partie non analysée")
+    du_fichier = {
+        (n.raison, n.partie, n.localisation.octets if n.localisation else None)
+        for n in non_menees
+        if n.module is None
+    }
+    for partie in identification.parties:
+        if partie.tronquee and not any(
+            (RaisonNonMenee.FICHIER_TRONQUE, partie.rang) == cle[:2] for cle in du_fichier
+        ):
+            raise ValueError("non_menees : « fichier_tronque » attendu pour une partie tronquée")
+    for plage in identification.octets_non_reconnus:
+        if (RaisonNonMenee.FORMAT_PARTIEL, None, plage) not in du_fichier:
+            raise ValueError("non_menees : « format_partiel » attendu pour une plage non reconnue")
+    for cle, technique in techniques.items():
+        if (technique.etat in _ETATS_AVEC_NON_MENEE) != (cle in raisons):
+            raise ValueError("couverture : état incohérent avec les non menées")
+        hors_version = raisons.get(cle) == {RaisonNonMenee.HORS_V1}
+        if hors_version != (technique.version is None):
+            raise ValueError("couverture : version absente seulement si hors V1")
+
+
 @dataclass(frozen=True, slots=True)
 class Rapport:
     """Rapport d'analyse d'un fichier : données, sans mise en forme ni masquage (T16).
@@ -894,32 +1145,13 @@ class Rapport:
     non_menees: tuple[NonMenee, ...] = ()
 
     def __post_init__(self) -> None:
-        identifiants = [observation.identifiant for observation in self.observations]
-        _uniques(identifiants, "rapport.observations")
-        connues = set(identifiants)
-        for constat in self.constats:
-            if not set(constat.donnees) <= connues:
-                raise ValueError("rapport.constats : renvoi vers une observation absente")
-
-        techniques = {technique.module: technique for technique in self.couverture.techniques}
-        avec_resultats = {o.module for o in self.observations} | {c.module for c in self.constats}
-        for module in avec_resultats:
-            technique = techniques.get(module)
-            if technique is None or technique.etat not in _ETATS_AVEC_RESULTATS:
-                raise ValueError("rapport : résultat d'une technique ni appliquée ni partielle")
-        raisons: dict[str, set[RaisonNonMenee]] = {}
-        for non_menee in self.non_menees:
-            if non_menee.module is None:
-                continue
-            if non_menee.module not in techniques:
-                raise ValueError("rapport.non_menees : technique absente de la couverture")
-            raisons.setdefault(non_menee.module, set()).add(non_menee.raison)
-        for module, technique in techniques.items():
-            if (technique.etat in _ETATS_AVEC_NON_MENEE) != (module in raisons):
-                raise ValueError("rapport.couverture : état incohérent avec les non menées")
-            hors_version = raisons.get(module) == {RaisonNonMenee.HORS_V1}
-            if hors_version != (technique.version is None):
-                raise ValueError("rapport.couverture : version absente seulement si hors V1")
+        verifier_resultats(
+            self.identification,
+            self.couverture,
+            self.observations,
+            self.constats,
+            self.non_menees,
+        )
 
     @property
     def interrompue(self) -> bool:

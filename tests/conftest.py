@@ -23,6 +23,7 @@ from voight_kampff.rapport.modele import (
     NiveauIsolation,
     NonMenee,
     Observation,
+    Partie,
     Phrase,
     Plage,
     RaisonNonMenee,
@@ -35,6 +36,12 @@ from voight_kampff.rapport.modele import (
 )
 
 EMPREINTE = "3f" * 32
+TAILLE = 2_048_576
+PARTIES = (
+    Partie(1, "jpeg", Plage(0, 2_000_000), fin_connue=True),
+    Partie(2, "zip", Plage(2_000_000, 48_000), fin_connue=True),
+)
+"""Un JPEG suivi d'une archive ZIP, hors périmètre, puis de 576 octets non reconnus."""
 
 
 def construire_rapport() -> Rapport:
@@ -124,9 +131,10 @@ def construire_rapport() -> Rapport:
         identification=Identification(
             nom="photo virale.jpg",
             format_reel="jpeg",
-            taille=2_048_576,
+            taille=TAILLE,
             empreinte=EMPREINTE,
             date_analyse=datetime(2026, 10, 26, 14, 3, 0, tzinfo=UTC),
+            parties=PARTIES,
         ),
         versions=Versions(
             outil="0.1.0.dev0",
@@ -152,10 +160,20 @@ def construire_rapport() -> Rapport:
                 RaisonNonMenee.FORMAT_PARTIEL,
                 "jpeg",
                 localisation=Localisation(page=2),
+                partie=1,
             ),
-            NonMenee(RaisonNonMenee.REFERENCE_MANQUANTE, "prnu"),
-            NonMenee(RaisonNonMenee.HORS_V1, "stylometrie"),
+            NonMenee(RaisonNonMenee.REFERENCE_MANQUANTE, "prnu", partie=1),
+            NonMenee(RaisonNonMenee.HORS_V1, "stylometrie", partie=1),
             NonMenee(RaisonNonMenee.FICHIER_TRONQUE),
+            NonMenee(
+                RaisonNonMenee.FORMAT_PARTIEL,
+                localisation=Localisation(octets=Plage(2_048_000, 576)),
+            ),
+            NonMenee(
+                RaisonNonMenee.HORS_PERIMETRE,
+                localisation=Localisation(octets=Plage(2_000_000, 48_000)),
+                partie=2,
+            ),
         ),
     )
 

@@ -16,12 +16,12 @@
     },
     "version": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/version" },
     "formats": {
-      "description": "Formats réels traités, identifiants fixés par T13.",
+      "description": "Formats réels traités, parmi ceux du périmètre (ADR-0070).",
       "type": "array",
       "minItems": 1,
       "maxItems": 64,
       "uniqueItems": true,
-      "items": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/identifiant" }
+      "items": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/format_du_perimetre" }
     },
     "exigences": {
       "description": "Exigences du cahier ou du modèle de menace réalisées par le module.",
