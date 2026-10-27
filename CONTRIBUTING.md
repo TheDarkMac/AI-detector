@@ -126,3 +126,26 @@ printf 'uv_build==X.Y.Z\n' | uv pip compile - --generate-hashes --universal --no
 ## 7. PR de Dependabot — ADR-0052
 
 Dependabot ouvre chaque lundi des PR vers `detector` (dépendances de `uv.lock`, actions GitHub). Par exception à ADR-0003 et ADR-0005, elles sont mergées telles quelles quand `code-ok` est vert, avec le titre `Merge: dépendances — <objet> (#N)`. Une version majeure, un changement de licence ou une nouvelle dépendance transitive est d'abord vérifié selon ADR-0043, et consigné dans la PR.
+
+## 8. Publier une version — ADR-0041, ADR-0050, ADR-0068, ADR-0069
+
+Numérotation : versionnage sémantique écrit en PEP 440 (`X.Y.Z`, pré-versions `aN`, `bN`, `rcN`). Tant que `X` vaut 0, `Y` augmente pour un changement incompatible de l'interface publique (options et codes de sortie de la ligne de commande, format JSON du rapport, interface Python d'analyse, interface des modules), `Z` pour le reste. Avant la première version stable, les versions de développement `.devN` peuvent être publiées.
+
+1. Si la version à publier n'est pas déjà celle de `pyproject.toml`, une PR la change ; la commande met à jour `pyproject.toml` et `uv.lock` :
+
+   ```bash
+   uv version X.Y.Z
+   ```
+
+2. Après le merge, étiqueter le **commit de merge** de `detector`, et lui seul : le workflow refuse un commit de branche de tâche. L'étiquette vaut `v` suivi de la version, sous sa forme normalisée (`uv version --short`).
+
+   ```bash
+   git switch detector && git pull --ff-only
+   git tag -a vX.Y.Z -m "vX.Y.Z"
+   git push origin vX.Y.Z
+   ```
+
+3. Le workflow `publication` construit les paquets, puis attend : approuver le déploiement dans l'environnement `pypi` (onglet Actions, « Review deployments »), seulement si le job `construction` est vert.
+4. Vérifier la page PyPI et la release GitHub : paquets, `SHA256SUMS`, `installation-verrouillee.txt` ; une pré-version est marquée comme telle.
+
+Une version publiée est définitive : en cas d'erreur, la retirer de l'affichage sur PyPI (« yank ») et publier un nouveau numéro, jamais le même.

@@ -82,5 +82,5 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0065](ADR-0065-lancement-et-reception.md) | Lancement du processus de travail et réception de ses messages | Accepté | 2026-10-26 |
 | [ADR-0066](ADR-0066-licence-mit-abandonnee.md) | Passage à la licence MIT | Abandonné | 2026-10-26 |
 | [ADR-0067](ADR-0067-fichier-licence-et-declaration.md) | Fichier LICENSE et déclaration de licence du paquet | Accepté | 2026-10-27 |
-| [ADR-0068](ADR-0068-numerotation-des-versions.md) | Numérotation des versions publiées | Proposé | 2026-10-27 |
-| [ADR-0069](ADR-0069-controles-de-la-publication.md) | Contrôles de la publication : étiquette sur `detector`, pré-version marquée | Proposé | 2026-10-27 |
+| [ADR-0068](ADR-0068-numerotation-des-versions.md) | Numérotation des versions publiées | Accepté | 2026-10-27 |
+| [ADR-0069](ADR-0069-controles-de-la-publication.md) | Contrôles de la publication : étiquette sur `detector`, pré-version marquée | Accepté | 2026-10-27 |

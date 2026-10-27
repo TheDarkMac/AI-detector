@@ -3,7 +3,7 @@
 - **Branche** : `tache/T10-versions-et-publication`
 - **Dates** : 2026-10-27 → 2026-10-27
 - **Exigences couvertes** : ES-18 (canal de distribution) ; NF-06 (version au rapport)
-- **Décisions** : ADR-0068 (proposé, choix attendu de TheDarkMac), ADR-0069
+- **Décisions** : ADR-0068, ADR-0069
 - **Errata** : aucun
 
 ## Objectif
@@ -30,6 +30,8 @@ Préparer la première publication sur PyPI, à la demande de TheDarkMac : propo
 6. Essais en local des trois scripts, extraits du YAML. Étiquette : `c9031fd` et `239f646` (commits de merge de `detector`) acceptés ; `89fbd7d` et `53d61d6` (commits de branches de tâche, mergés) refusés. Version : `0.1.0.dev0`, `0.1.0a1`, `1.0.0rc2`, `1.0.0b1.post1`, `1.0.0.post1.dev3` → pré-version ; `1.0.0`, `1.0.0.post1`, `2.1` → version ; `1.0.0+local` → refusée. Release : `--prerelease` présent seulement pour une pré-version.
 7. [ADR-0068](../decisions/ADR-0068-numerotation-des-versions.md) rédigé avec les options (forme des numéros ; publication avant une version stable) et une recommandation, au statut « Proposé » : le choix revient à TheDarkMac.
 8. Documents mis à jour : historique d'ADR-0041 et ADR-0050 (renvois) ; index des ADR ; architecture §11 (version 1.5) ; index du journal.
+9. PR [#12](https://github.com/TheDarkMac/AI-detector/pull/12) ouverte vers `detector`. Pendant la revue, TheDarkMac a retenu les options A et D d'ADR-0068, comme recommandé, et validé ADR-0069 : les deux passent au statut « Accepté ». Il a demandé la procédure dans `CONTRIBUTING.md`, puis le merge une fois la CI verte.
+10. `CONTRIBUTING.md` §8 « Publier une version ». Essai préalable dans une copie du dépôt : `uv version 0.1.0.dev1` modifie `pyproject.toml` et `uv.lock` (le verrou porte la version du projet) ; la procédure passe donc par cette commande.
 
 ## Problèmes rencontrés
 
@@ -48,11 +50,10 @@ Les deux défauts ont été trouvés à la relecture, avant tout lancement : pas
 ## Résultat
 
 - Workflow de publication : étiquette refusée hors de `detector`, version non publique refusée, release marquée pré-version quand il le faut. Vérifié en local seulement : ces étapes ne tournent qu'à une vraie publication.
-- ADR-0068 en attente du choix de TheDarkMac.
+- Numérotation fixée (ADR-0068) et procédure de version dans `CONTRIBUTING.md` §8.
 
 ## Reste à faire
 
-- Choix de numérotation (ADR-0068) ; selon ce choix, procédure de version dans `CONTRIBUTING.md`.
-- Première publication, après ce choix : avec l'option D, étiquette `v0.1.0.dev0` sur le commit de merge de cette PR, puis approbation dans l'environnement `pypi`. Ce sera le premier essai réel des contrôles d'ADR-0069.
+- Première publication : étiquette `v0.1.0.dev0` sur le commit de merge de cette PR, puis approbation dans l'environnement `pypi`. Ce sera le premier essai réel des contrôles d'ADR-0069.
 - Facultatif, sur demande : règle GitHub sur les étiquettes `v*` ; `can_admins_bypass` désactivé.
 - Messages à @Jean ; Dependabot à observer ; alertes de sécurité de Dependabot à proposer.

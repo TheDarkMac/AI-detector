@@ -1,6 +1,6 @@
 # ADR-0069 — Contrôles de la publication : étiquette sur `detector`, pré-version marquée
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
 - **Décideur** : demande de TheDarkMac ; options et choix de l'assistant, soumis dans la PR
 - **Tâche** : T10 (complément)
@@ -78,3 +78,4 @@ Le workflow refuse une étiquette dont le commit n'est pas dans l'historique de 
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR : statut « Accepté » |
