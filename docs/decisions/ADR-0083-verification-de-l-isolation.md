@@ -1,8 +1,8 @@
 # ADR-0083 — Vérification de l'isolation : depuis un module, et code restreint hors de la couverture
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
-- **Décideur** : l'assistant, proposition non posée en question pendant T14, soumise dans la PR de T14
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T14, validée pendant la revue de la PR de T14
 - **Tâche** : T14
 - **Exigences liées** : ES-02, ES-11, ES-15 ; ADR-0024, ADR-0035, ADR-0048, ADR-0051
 
@@ -58,3 +58,4 @@ Option A :
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T14 : statut « Accepté » |

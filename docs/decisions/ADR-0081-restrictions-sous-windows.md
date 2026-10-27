@@ -1,8 +1,8 @@
 # ADR-0081 — Restrictions sous Windows : Job Object posé par le travail, intégrité basse
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
-- **Décideur** : l'assistant, proposition non posée en question pendant T14, soumise dans la PR de T14
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T14, validée pendant la revue de la PR de T14
 - **Tâche** : T14
 - **Exigences liées** : NF-01, NF-02, ES-02, ES-03, ES-15 ; M-01, M-04, M-05, M-19 ; ADR-0028, ADR-0035, ADR-0065, ADR-0077
 
@@ -54,3 +54,4 @@ Option A, par `_travail/restrictions/windows.py` :
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T14 : statut « Accepté » |

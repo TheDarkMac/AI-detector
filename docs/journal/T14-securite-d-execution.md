@@ -46,6 +46,8 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : limites de taille, de t
 17. Le test du lanceur de Windows saute désormais explicitement si `sys.executable` n'est pas un lanceur, pour que le journal de la CI dise s'il a vraiment porté.
 18. Documentation : ADR-0076 à ADR-0083 ; renvois dans ADR-0023, ADR-0028, ADR-0035, ADR-0036, ADR-0048, ADR-0054, ADR-0056, ADR-0061, ADR-0065, ADR-0075 ; architecture v1.7, modèle de données v1.3, glossaire v1.3, découpage v0.13, registre des arbitrages v1.6 ; `README.md`, `CONTRIBUTING.md`, `.gitignore` ; index des ADR et du journal.
 19. Lint Markdown en local (`npx --yes markdownlint-cli2@0.23.2`) : aucune remarque ; aucun fichier interdit suivi. Commits, branche poussée, PR ouverte vers `detector`.
+20. CI de la PR (lancement `code` 40455310503) : verte sur les 15 vérifications. Sous Windows, le test du lanceur a été exécuté, pas sauté, sur Python 3.12 à 3.14 : `sys.executable` y est un lanceur, et son arrêt arrête le véritable interpréteur (ADR-0081).
+21. Pendant la revue, TheDarkMac a validé ADR-0078, ADR-0079, ADR-0080, ADR-0081 et ADR-0083 : statut « Accepté ».
 
 ## Problèmes rencontrés
 

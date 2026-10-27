@@ -1,8 +1,8 @@
 # ADR-0078 — Budget d'un module et raisons des dépassements
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
-- **Décideur** : l'assistant, proposition non posée en question pendant T14, soumise dans la PR de T14
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T14, validée pendant la revue de la PR de T14
 - **Tâche** : T14
 - **Exigences liées** : NF-02, NF-03, NF-08, ES-03, ES-04, ES-05 ; M-02, M-03, M-10 ; ADR-0023, ADR-0056, ADR-0060, ADR-0061, ADR-0065, ADR-0076, ADR-0077
 
@@ -89,3 +89,4 @@ Le contexte refuse, avant l'envoi, toute ligne de plus de 1 Mio et toute sortie 
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T14 : statut « Accepté » |

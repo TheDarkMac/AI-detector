@@ -1,8 +1,8 @@
 # ADR-0079 — Restrictions sous Linux : Landlock sans règle, liste de refus seccomp
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
-- **Décideur** : l'assistant, proposition non posée en question pendant T14, soumise dans la PR de T14
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T14, validée pendant la revue de la PR de T14
 - **Tâche** : T14
 - **Exigences liées** : NF-01, NF-02, ES-02, ES-03, ES-15 ; M-01, M-04, M-05, M-19 ; ADR-0028, ADR-0035, ADR-0036, ADR-0077
 
@@ -69,3 +69,4 @@ Avant les restrictions, le processus de travail importe tout ce qu'il emploiera 
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T14 : statut « Accepté » |
