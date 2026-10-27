@@ -124,6 +124,8 @@ def test_arret_du_lanceur_arrete_le_travail() -> None:  # pragma: no cover - CI 
         pid = int(processus.stdout.readline())
         processus.kill()
         processus.wait(5)
+    if pid == processus.pid:
+        pytest.skip("interpréteur lancé directement, sans lanceur")
     noyau = ctypes.WinDLL("kernel32", use_last_error=True)  # type: ignore[attr-defined,unused-ignore]
     noyau.OpenProcess.restype = ctypes.c_void_p
     handle = noyau.OpenProcess(0x00100000, False, pid)  # SYNCHRONIZE

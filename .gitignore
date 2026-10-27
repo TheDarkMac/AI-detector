@@ -9,3 +9,5 @@ __pycache__/
 .coverage.*
 htmlcov/
 dist/
+# Cache de constantes de Hypothesis (ADR-0082)
+.hypothesis/
