@@ -90,3 +90,11 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0073](ADR-0073-resultat-et-resume-avant-le-rapport.md) | Avant le rapport : résultat d'analyse et résumé sans donnée identifiante | Accepté | 2026-10-27 |
 | [ADR-0074](ADR-0074-texte-colle-reporte.md) | Texte collé : reporté à T80 | Accepté | 2026-10-27 |
 | [ADR-0075](ADR-0075-soumission-et-refus.md) | Soumission : ouverture, empreinte vérifiée en fin d'analyse, refus, codes de sortie | Accepté | 2026-10-27 |
+| [ADR-0076](ADR-0076-limites-comptees-et-limites-du-systeme.md) | Limites comptées et limites du système : un budget mixte | Accepté | 2026-10-27 |
+| [ADR-0077](ADR-0077-valeurs-des-limites.md) | Valeurs des limites : modérées, fixes en V1, refus « hors limites » | Accepté | 2026-10-27 |
+| [ADR-0078](ADR-0078-budget-d-un-module-et-raisons.md) | Budget d'un module et raisons des dépassements | Proposé | 2026-10-27 |
+| [ADR-0079](ADR-0079-restrictions-sous-linux.md) | Restrictions sous Linux : Landlock sans règle, liste de refus seccomp | Proposé | 2026-10-27 |
+| [ADR-0080](ADR-0080-restrictions-sous-macos.md) | Restrictions sous macOS : profil Seatbelt, mémoire surveillée par le principal | Proposé | 2026-10-27 |
+| [ADR-0081](ADR-0081-restrictions-sous-windows.md) | Restrictions sous Windows : Job Object posé par le travail, intégrité basse | Proposé | 2026-10-27 |
+| [ADR-0082](ADR-0082-fuzzing-par-hypothesis.md) | Fuzzing des analyseurs par Hypothesis | Accepté | 2026-10-27 |
+| [ADR-0083](ADR-0083-verification-de-l-isolation.md) | Vérification de l'isolation : depuis un module, et code restreint hors de la couverture | Proposé | 2026-10-27 |

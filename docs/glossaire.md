@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.2** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 proposée dans la PR de T13. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.2** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 proposée dans la PR de T14. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -42,7 +42,10 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Processus principal (P1) | Processus qui reçoit la commande, ouvre le fichier sans l'interpréter, valide les messages et produit le rapport. | ADR-0036 |
 | Processus de travail (P2) | Processus restreint, un par fichier, qui lit et analyse le fichier. | ADR-0028, ADR-0036 |
 | Exécution isolée | Analyse menée dans un processus de travail auquel le système retire réseau, écriture et lancement de programmes. | NF-01, ADR-0028 |
-| Isolation réduite | État d'un processus de travail auquel manque au moins une restriction ; le rapport liste lesquelles. | ADR-0035, ADR-0059 |
+| Isolation réduite | État d'un processus de travail auquel manque au moins une restriction ; le rapport liste lesquelles. Sous Windows, elle l'est toujours (réseau, lecture, vidages). | ADR-0035, ADR-0059, ADR-0081 |
+| Limite comptée | Limite que le moteur compte (octets décompressés, objets, dimensions, imbrication, taille des résultats) : un fichier la dépasse ou non sur toutes les machines. Dépassée, elle rend le module non mené (`limite_depassee`) sans sortir l'analyse de la garantie de reproductibilité. | ADR-0076, ADR-0078 |
+| Limite du système | Garde-fou posé par le système ou le processus principal : mémoire, temps. Dépassée, elle interrompt l'analyse (`memoire_depassee`, `delai_depasse`), hors garantie. | ADR-0076, ADR-0077 |
+| Budget (d'un module) | Ensemble des limites comptées d'un module sur une partie, tenu par son contexte. | ADR-0078 |
 | Arrêt brutal | Fin de l'outil sans rapport, par exception non traitée ou plantage ; NF-03 l'interdit : un échec donne un rapport partiel. | NF-03 |
 | Manifeste (C2PA) | Structure signée, intégrée au fichier, qui déclare son origine et ses transformations. | §11 du cahier, T30 |
 | Manifeste (module) | Fichier TOML qui décrit un module sans exécuter son code : identifiant, version, formats, exigences, règles, fiche technique, directions permises, modules requis. | ADR-0042, ADR-0064 |
@@ -50,7 +53,7 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Module actif, désactivé | Un module actif est exécuté ; un module désactivé par l'utilisateur, ou qui en requiert un désactivé, ne l'est pas et figure au rapport comme non mené. | ADR-0063 |
 | Module applicable | Module actif dont les formats comprennent le format de la partie analysée ; sinon, il est « non applicable » pour cette partie dans la couverture. | ADR-0059, ADR-0062, ADR-0071 |
 | Analyse (résultat) | Ce que l'interface publique rend pour un fichier avant le rapport complet : identification, isolation, couverture, observations, constats, analyses non menées. | ADR-0073 |
-| Refus | Fichier pour lequel l'outil ne livre aucun résultat, avec un motif explicite : illisible, non régulier, vide, format inconnu ou hors périmètre, fichier modifié pendant l'analyse, arrêt avant l'identification. | F-04, ES-08, ADR-0075 |
+| Refus | Fichier pour lequel l'outil ne livre aucun résultat, avec un motif explicite : illisible, non régulier, vide, format inconnu ou hors périmètre, fichier modifié pendant l'analyse, arrêt avant l'identification, hors limites (plus de 1 Gio). | F-04, ES-08, ADR-0075, ADR-0077 |
 | Garde | Vérification qui empêche un analyseur de s'exécuter hors d'un processus de travail verrouillé. | ES-17, ADR-0061 |
 | Ingrédient (C2PA) | Fichier source déclaré par un manifeste C2PA comme entrant dans la composition du contenu. | A-10, T30 |
 | DigitalSourceType | Champ IPTC qui déclare la nature de la source d'un contenu, dont `trainedAlgorithmicMedia` (généré par IA). | F-11, T22 |
@@ -65,3 +68,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-10-26 | 1.0 | Création | T11 |
 | 2026-10-26 | 1.1 | Manifeste (module) précisé ; contexte, module actif ou désactivé, module applicable, garde ajoutés | T12 |
 | 2026-10-27 | 1.2 | Format réel, partie, fichier polyglotte, fin logique, octets non reconnus, formats du périmètre, concordance de l'extension, analyse, refus ajoutés ; contexte et module applicable précisés | T13 |
+| 2026-10-27 | 1.3 | Limite comptée, limite du système, budget ajoutés ; isolation réduite et refus précisés | T14 |

@@ -49,3 +49,4 @@ NF-06 est reformulée pour le projet : « Même fichier ; mêmes versions de l'o
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : versions des dépendances figées par ADR-0037 (T04) |
+| 2026-10-27 | Tranché par ADR-0076 (T14) : budget mixte ; limites comptées dans la garantie, mémoire et temps du système hors garantie |

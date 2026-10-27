@@ -64,3 +64,4 @@ Liste fixée par l'assistant :
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : T12 produit `erreur_module`, `arret_processus`, `message_invalide`, `module_desactive`, et déjà `limite_depassee` et `delai_depasse` avec des valeurs provisoires (ADR-0065) |
 | 2026-10-27 | Complété par ADR-0071 (T13) : raison `hors_perimetre` ajoutée ; `fichier_tronque` et `format_partiel` produits à partir de l'identification ; partie d'une analyse non menée |
+| 2026-10-27 | Précisé par ADR-0078 (T14) : raison `memoire_depassee` ajoutée, qui interrompt ; `limite_depassee`, désormais comptée par le moteur, n'interrompt plus (ADR-0076) |

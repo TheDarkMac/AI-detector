@@ -56,6 +56,14 @@ uv run --locked mypy
 uv run --locked coverage run -m pytest
 ```
 
+Les tests de fuzzing (ADR-0082) tirent 300 exemples par test d'une graine fixe. Une recherche longue, aléatoire, se lance à la main ; un échec affiche de quoi le rejouer :
+
+```bash
+VK_FUZZING=campagne uv run --locked pytest tests/test_fuzzing.py
+```
+
+Les tests d'isolation (ADR-0083) vérifient l'effet des restrictions depuis un vrai processus de travail ; leurs attentes par système sont dans `tests/systeme.py`.
+
 Ajouter ou mettre à jour une dépendance : `uv add` ou `uv lock --upgrade-package <nom>`, puis commiter `uv.lock` avec `pyproject.toml`. Les critères d'admission d'une bibliothèque (ADR-0043) sont consignés dans la PR.
 
 ## 2. Branches — ADR-0001, ADR-0005, ADR-0053

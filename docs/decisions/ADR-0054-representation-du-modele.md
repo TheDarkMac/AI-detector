@@ -76,3 +76,4 @@ Licences compatibles avec Apache-2.0, aucun accès réseau, exécuté dans P1 su
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | T14 : raison `memoire_depassee` ajoutée sans changer `VERSION_SCHEMA`, sa règle de numérotation restant à fixer en T16 (ADR-0078) |

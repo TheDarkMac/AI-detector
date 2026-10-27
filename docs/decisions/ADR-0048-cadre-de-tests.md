@@ -44,3 +44,4 @@ Chaque exigence a une méthode de vérification (ADR-0024), et la plupart seront
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Précisé en T14 : fuzzing par Hypothesis, intégré à pytest (ADR-0082) ; code d'appel au système des restrictions exclu de la couverture, vérifié par son effet (ADR-0083) |
