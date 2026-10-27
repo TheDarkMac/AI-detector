@@ -1,5 +1,6 @@
 """Tests de la ligne de commande (T10, T12, T13)."""
 
+import dataclasses
 import hashlib
 import subprocess
 import sys
@@ -20,6 +21,7 @@ from voight_kampff.rapport.modele import (
     EtatTechnique,
     Identification,
     Localisation,
+    ManqueIsolation,
     NiveauIsolation,
     NonMenee,
     Partie,
@@ -182,3 +184,9 @@ def test_resume_de_chaque_element() -> None:
         "analyse interrompue : résultats partiels, hors garantie de reproductibilité",
         "nom et empreinte : masqués",
     ]
+    # Isolation réduite (Windows, ou système sans Landlock) : ce qui manque est nommé.
+    manques = (ManqueIsolation.RESEAU, ManqueIsolation.LECTURE)
+    reduite = dataclasses.replace(
+        analyse, isolation=EtatIsolation(NiveauIsolation.REDUITE, manques)
+    )
+    assert "isolation : réduite ; manque : reseau, lecture" in resume(reduite)

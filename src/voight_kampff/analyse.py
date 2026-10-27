@@ -11,6 +11,7 @@ from collections.abc import Collection
 from dataclasses import dataclass
 from enum import StrEnum
 
+from voight_kampff._limites import TAILLE_MAX_FICHIER
 from voight_kampff.rapport.modele import (
     RAISONS_D_INTERRUPTION,
     Constat,
@@ -33,6 +34,7 @@ class MotifRefus(StrEnum):
     ILLISIBLE = "illisible"
     NON_REGULIER = "non_regulier"
     VIDE = "vide"
+    HORS_LIMITES = "hors_limites"
     FORMAT_INCONNU = "format_inconnu"
     HORS_PERIMETRE = "hors_perimetre"
     FICHIER_MODIFIE = "fichier_modifie"
@@ -46,6 +48,9 @@ _MESSAGES = {
         "est analysé"
     ),
     MotifRefus.VIDE: "fichier vide : aucun format à identifier",
+    MotifRefus.HORS_LIMITES: (
+        f"fichier trop volumineux : l'outil analyse au plus {TAILLE_MAX_FICHIER >> 30} Gio"
+    ),
     MotifRefus.FORMAT_INCONNU: "format non reconnu : il n'est pas dans le périmètre de l'outil",
     MotifRefus.HORS_PERIMETRE: "format hors du périmètre de l'outil",
     MotifRefus.FICHIER_MODIFIE: (

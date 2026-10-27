@@ -18,6 +18,7 @@ from types import SimpleNamespace
 from typing import cast
 
 import pytest
+from systeme import MANQUES_ATTENDUS
 
 from voight_kampff._orchestration import manifestes, travail
 from voight_kampff._orchestration.manifestes import Manifeste, ModuleInconnu
@@ -25,6 +26,7 @@ from voight_kampff._orchestration.travail import ResultatTravail, executer
 from voight_kampff.analyse import Analyse
 from voight_kampff.rapport.modele import (
     Direction,
+    EtatIsolation,
     EtatTechnique,
     Identification,
     Localisation,
@@ -66,6 +68,7 @@ def mesure() -> list[str]:
     L'environnement vidé (ADR-0065) empêche coverage de s'inviter seul dans l'interpréteur.
     Seulement pour un processus qui se termine de lui-même : arrêté de force pendant qu'il
     écrit ses mesures, il laisserait un fichier corrompu qui fait échouer ``coverage combine``.
+    Et seulement sans restrictions : restreint, il ne peut plus les écrire (ADR-0081).
     """
     return ["-m", "coverage", "run", "--parallel-mode", f"--rcfile={PYPROJECT}"]
 
@@ -73,8 +76,9 @@ def mesure() -> list[str]:
 def factice(scenario: str, *, mesure_couverture: bool = False) -> Callable[[int], list[str]]:
     def commande(descripteur: int) -> list[str]:
         script = [str(FACTICE), scenario, "--descripteur", str(descripteur)]
-        avant = mesure() if mesure_couverture else []
-        return [sys.executable, "-I", "-B", *avant, *script]
+        if mesure_couverture:
+            return [sys.executable, "-I", "-B", *mesure(), *script, "--sans-restriction"]
+        return [sys.executable, "-I", "-B", *script]
 
     return commande
 
@@ -135,9 +139,8 @@ def test_vrai_processus_identifie_le_format(pdf: int) -> None:
     resultat = executer(pdf, manifestes.decouvrir())
     assert resultat.parties == (Partie(1, "pdf", Plage(0, len(PDF)), fin_connue=True),)
     assert resultat.empreinte == hashlib.sha256(PDF).hexdigest()
-    # Aucune restriction avant T14 : l'isolation est réduite et tout manque.
-    assert resultat.isolation.niveau is NiveauIsolation.REDUITE
-    assert set(resultat.isolation.manques) == set(ManqueIsolation)
+    assert set(resultat.isolation.manques) == MANQUES_ATTENDUS
+    assert (resultat.isolation.niveau is NiveauIsolation.COMPLETE) == (not MANQUES_ATTENDUS)
     assert resultat.couverture.techniques == ()
     assert not resultat.interrompue
     analyse_de(resultat, len(PDF))
@@ -150,14 +153,25 @@ def test_vrai_processus_format_non_reconnu(descripteur: int) -> None:
     assert not resultat.interrompue
 
 
-def test_vrai_processus_mesure(pdf: int) -> None:
-    # Même processus, sous coverage : mesure le point d'entrée du processus de travail.
-    def commande(valeur: int) -> list[str]:
-        arguments = ["-m", "voight_kampff._travail", "--descripteur", str(valeur)]
-        return [sys.executable, "-I", "-B", *mesure(), *arguments]
+def test_point_d_entree_mesure() -> None:
+    # Sous coverage, et arrêté avant les restrictions faute de descripteur : le point d'entrée
+    # et la réservation de la sortie sont mesurés, ce qu'un processus restreint ne permet pas.
+    commande = [sys.executable, "-I", "-B", *mesure(), "-m", "voight_kampff._travail"]
+    termine = subprocess.run(commande, capture_output=True, check=False)
+    assert termine.returncode == 2
+    assert b"--descripteur" in termine.stderr
 
-    resultat = executer(pdf, (), commande=commande)
-    assert resultat.empreinte == hashlib.sha256(PDF).hexdigest()
+
+def test_manque_ajoute_par_le_principal() -> None:
+    # Sous macOS, si la mémoire ne peut pas être surveillée (ADR-0079).
+    recue = EtatIsolation(NiveauIsolation.REDUITE, (ManqueIsolation.TEMPS,))
+    assert travail._avec_manque(recue, ManqueIsolation.MEMOIRE) == EtatIsolation(
+        NiveauIsolation.REDUITE, (ManqueIsolation.MEMOIRE, ManqueIsolation.TEMPS)
+    )
+    complete = EtatIsolation(NiveauIsolation.COMPLETE)
+    assert travail._avec_manque(complete, ManqueIsolation.MEMOIRE).manques == (
+        ManqueIsolation.MEMOIRE,
+    )
 
 
 def test_commande_du_processus_de_travail() -> None:
@@ -416,10 +430,11 @@ MESSAGE_INVALIDE = [
     ("scenario", "raison"),
     [
         *((scenario, RaisonNonMenee.MESSAGE_INVALIDE) for scenario in MESSAGE_INVALIDE),
-        ("ligne_trop_longue", RaisonNonMenee.LIMITE_DEPASSEE),
-        ("sortie_trop_longue", RaisonNonMenee.LIMITE_DEPASSEE),
+        ("ligne_trop_longue", RaisonNonMenee.MESSAGE_INVALIDE),
+        ("sortie_trop_longue", RaisonNonMenee.MESSAGE_INVALIDE),
         ("rien", RaisonNonMenee.ARRET_PROCESSUS),
         ("code_non_nul", RaisonNonMenee.ARRET_PROCESSUS),
+        ("ferme_trop_tot", RaisonNonMenee.ARRET_PROCESSUS),
         ("silence", RaisonNonMenee.DELAI_DEPASSE),
         ("silence_apres_identification", RaisonNonMenee.DELAI_DEPASSE),
         ("ferme_et_attend", RaisonNonMenee.DELAI_DEPASSE),

@@ -552,6 +552,10 @@ def _classer_zip(fichier: Fichier, debut: int, repertoire: bytes) -> str:
 
 _CONTROLES = re.compile(rb"[\x00-\x08\x0b\x0e-\x1f\x7f]")
 _CONTROLES_TEXTE = re.compile(r"[\x00-\x08\x0b\x0e-\x1f\x7f]")
+# Décodeurs cherchés dès l'import : après les restrictions, la recherche d'un codec ne peut plus
+# charger son module depuis le disque (ADR-0078).
+_DECODEUR_UTF16 = codecs.getincrementaldecoder("utf-16")
+_DECODEUR_UTF8 = codecs.getincrementaldecoder("utf-8-sig")
 
 
 def _texte(fichier: Fichier, taille: int) -> bool:
@@ -559,7 +563,7 @@ def _texte(fichier: Fichier, taille: int) -> bool:
     autre que tabulation, sauts de ligne et de page."""
     debut = fichier.lire(0, 2)
     utf16 = debut in (codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)
-    decodeur = codecs.getincrementaldecoder("utf-16" if utf16 else "utf-8-sig")("strict")
+    decodeur = (_DECODEUR_UTF16 if utf16 else _DECODEUR_UTF8)("strict")
     position = 0
     try:
         while position < taille:

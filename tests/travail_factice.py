@@ -5,13 +5,21 @@ Lancé par ``python -I -B tests/travail_factice.py <scenario> --descripteur N``.
 analyseurs ci-dessous et une identification choisie ; les autres écrivent des lignes choisies,
 pour vérifier que le processus principal refuse un processus de travail défaillant ou
 compromis (ES-04, M-10).
+
+Le vrai déroulé applique les vraies restrictions (T14), sauf avec ``--sans-restriction`` :
+sous coverage, le processus doit pouvoir écrire ses mesures en se terminant. Les analyseurs
+``sonde`` et ``memoire`` vérifient l'effet des restrictions depuis un module (ADR-0081).
 """
 
 import json
 import os
+import signal
+import socket
+import subprocess
 import sys
 import time
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any, BinaryIO
 
 from voight_kampff._travail.contexte import Contexte
@@ -20,8 +28,11 @@ from voight_kampff._travail.principal import Identifieur, canal_du_protocole, pr
 from voight_kampff.rapport.modele import (
     Categorie,
     Direction,
+    EtatIsolation,
     Fondement,
     Localisation,
+    ManqueIsolation,
+    NiveauIsolation,
     Partie,
     Phrase,
     Plage,
@@ -92,7 +103,51 @@ def eta(_contexte: Contexte) -> None:
     os._exit(0)
 
 
-ANALYSEURS = {f.__name__: f for f in (alpha, beta, gamma, delta, epsilon, zeta, eta)}
+def _essai(action: Callable[[], object]) -> str:
+    """« permise », ou le nom de l'exception qui a refusé l'action."""
+    try:
+        action()
+    except Exception as refus:
+        return type(refus).__name__
+    return "permise"
+
+
+def _connexion() -> None:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as connexion:
+        connexion.settimeout(2)
+        connexion.connect(("127.0.0.1", 9))
+
+
+def _ecriture() -> None:
+    Path(__file__).with_name("ecriture-interdite.tmp").open("x").close()
+
+
+def sonde(contexte: Contexte) -> None:
+    """Tente, depuis un module, ce que les restrictions doivent refuser (ES-02, ES-11)."""
+    essais: dict[str, Callable[[], object]] = {
+        "lecture": Path(__file__).read_bytes,
+        "ecriture": _ecriture,
+        "socket": socket.socket,
+        "connexion": _connexion,
+        "programme": lambda: subprocess.run([sys.executable, "-c", "pass"], check=True),
+    }
+    for nom, action in essais.items():
+        contexte.observer(f"sonde.{nom}", _essai(action))
+
+
+def memoire(_contexte: Contexte) -> None:
+    """Remplit 3 Gio, au-delà de la limite de 2 Gio (ADR-0077) : chaque page est écrite."""
+    rempli = b"x" * (3 << 30)
+    del rempli
+
+
+ANALYSEURS = {
+    f.__name__: f for f in (alpha, beta, gamma, delta, epsilon, zeta, eta, sonde, memoire)
+}
+
+
+def sans_restriction() -> EtatIsolation:
+    return EtatIsolation(NiveauIsolation.REDUITE, tuple(ManqueIsolation))
 
 
 # Lignes choisies
@@ -280,6 +335,12 @@ def special(nom: str, entree: BinaryIO, sortie: BinaryIO, taille: int) -> int:
     match nom:
         case "silence":
             time.sleep(60)
+        case "temps_processeur":
+            # Comme un travail arrêté par sa limite de temps processeur (RLIMIT_CPU).
+            sortie.write(ligne(IDENTIFICATION, taille))
+            sortie.flush()
+            os.kill(os.getpid(), signal.SIGXCPU)
+            time.sleep(60)
         case "silence_apres_identification":
             sortie.write(ligne(IDENTIFICATION, taille))
             sortie.flush()
@@ -289,6 +350,12 @@ def special(nom: str, entree: BinaryIO, sortie: BinaryIO, taille: int) -> int:
                 sortie.write(ligne(element, taille))
             sortie.flush()
             return 1
+        case "ferme_trop_tot":
+            # Sortie fermée avant la fin, processus toujours là : arrêt anormal, constaté
+            # après l'attente de sa fin.
+            sortie.write(ligne(IDENTIFICATION, taille))
+            sortie.close()
+            time.sleep(60)
         case "ferme_et_attend":
             # Tout est envoyé, la sortie est fermée, mais le processus ne se termine pas.
             for element in [IDENTIFICATION, *FINS]:
@@ -310,8 +377,10 @@ def special(nom: str, entree: BinaryIO, sortie: BinaryIO, taille: int) -> int:
 SPECIAUX = (
     "rien",
     "silence",
+    "temps_processeur",
     "silence_apres_identification",
     "code_non_nul",
+    "ferme_trop_tot",
     "ferme_et_attend",
     "ligne_coupee",
     "sortie_trop_longue",
@@ -324,8 +393,17 @@ def main() -> int:
     sortie = canal_du_protocole()
     executer: Callable[[str, BinaryIO, BinaryIO, int], int]
     if scenario in IDENTIFIEURS:
+        options: dict[str, Any] = {}
+        if "--sans-restriction" in argv:
+            argv = [argument for argument in argv if argument != "--sans-restriction"]
+            options["restreindre"] = sans_restriction
         return principal(
-            argv, entree, sortie, analyseurs=ANALYSEURS, identifier=IDENTIFIEURS[scenario]
+            argv,
+            entree,
+            sortie,
+            analyseurs=ANALYSEURS,
+            identifier=IDENTIFIEURS[scenario],
+            **options,
         )
     # Taille du fichier transmis : les parties annoncées s'étendent jusqu'à sa fin.
     taille = os.fstat(ouvrir_herite(int(argv[argv.index("--descripteur") + 1]))).st_size

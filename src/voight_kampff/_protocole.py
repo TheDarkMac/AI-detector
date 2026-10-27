@@ -3,13 +3,20 @@
 Lignes JSON, une par message, dans les deux processus. Ce module n'importe que la bibliothèque
 standard : le processus de travail s'en sert sans charger ``jsonschema``.
 
-Les tailles sont **provisoires** : T14 fixe les limites (ES-03).
+Les tailles viennent de :mod:`voight_kampff._limites`, où T14 les a fixées (ADR-0077).
 """
 
 import json
 import math
 from collections.abc import Mapping
 from typing import Any, NoReturn
+
+from voight_kampff._limites import (
+    TAILLE_MAX_CONFIGURATION,
+    TAILLE_MAX_LECTURE,
+    TAILLE_MAX_MESSAGE,
+    TAILLE_MAX_SORTIE,
+)
 
 __all__ = [
     "TAILLE_MAX_CONFIGURATION",
@@ -20,15 +27,6 @@ __all__ = [
     "decoder",
     "encoder",
 ]
-
-TAILLE_MAX_MESSAGE = 1 << 20
-"""Taille maximale d'une ligne envoyée par le processus de travail, saut de ligne compris."""
-TAILLE_MAX_SORTIE = 64 << 20
-"""Taille maximale de l'ensemble des messages d'une analyse."""
-TAILLE_MAX_CONFIGURATION = 16 << 20
-"""Taille maximale de la configuration envoyée par le processus principal."""
-TAILLE_MAX_LECTURE = 16 << 20
-"""Taille maximale d'une lecture du fichier par un module."""
 
 
 class MessageInvalide(ValueError):

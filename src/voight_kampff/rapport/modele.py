@@ -153,6 +153,7 @@ class RaisonNonMenee(StrEnum):
     RESEAU_DESACTIVE = "reseau_desactive"
     ERREUR_MODULE = "erreur_module"
     LIMITE_DEPASSEE = "limite_depassee"
+    MEMOIRE_DEPASSEE = "memoire_depassee"
     DELAI_DEPASSE = "delai_depasse"
     ARRET_PROCESSUS = "arret_processus"
     MESSAGE_INVALIDE = "message_invalide"
@@ -174,7 +175,7 @@ RAISONS_D_UNE_PARTIE = frozenset({RaisonNonMenee.HORS_PERIMETRE})
 
 RAISONS_D_INTERRUPTION = frozenset(
     {
-        RaisonNonMenee.LIMITE_DEPASSEE,
+        RaisonNonMenee.MEMOIRE_DEPASSEE,
         RaisonNonMenee.DELAI_DEPASSE,
         RaisonNonMenee.ARRET_PROCESSUS,
         RaisonNonMenee.MESSAGE_INVALIDE,

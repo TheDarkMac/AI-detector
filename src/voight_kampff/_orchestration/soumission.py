@@ -7,6 +7,7 @@ l'empreinte recalculée par le travail doit être celle du début ; si le travai
 avant de l'envoyer, le principal hache de nouveau le fichier (ADR-0075).
 
 Le principal ne lit le fichier que pour le hacher : l'identification se fait dans le travail.
+Un fichier de plus de 1 Gio est refusé « hors limites » avant d'être lu (F-04, ADR-0077).
 """
 
 import hashlib
@@ -16,6 +17,7 @@ from collections.abc import Callable, Collection, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
+from voight_kampff._limites import TAILLE_MAX_FICHIER
 from voight_kampff._orchestration import manifestes as livres
 from voight_kampff._orchestration.manifestes import Manifeste, selectionner
 from voight_kampff._orchestration.travail import DELAI, ResultatTravail, commande_travail, executer
@@ -46,14 +48,20 @@ def ouvrir(chemin: str | os.PathLike[str]) -> int:
     return descripteur
 
 
-def empreinte(descripteur: int) -> tuple[str, int]:
-    """SHA-256 du fichier entier et sa taille, depuis le début (ADR-0040)."""
+def empreinte(descripteur: int, maximum: int | None = None) -> tuple[str, int]:
+    """SHA-256 du fichier entier et sa taille, depuis le début (ADR-0040).
+
+    Avec ``maximum``, la lecture s'arrête au premier bloc qui le dépasse : la taille rendue
+    dit alors que le fichier est trop grand, et l'empreinte n'a pas de sens.
+    """
     os.lseek(descripteur, 0, os.SEEK_SET)
     condensat = hashlib.sha256()
     taille = 0
     while bloc := os.read(descripteur, _BLOC):
         condensat.update(bloc)
         taille += len(bloc)
+        if maximum is not None and taille > maximum:
+            break
     return condensat.hexdigest(), taille
 
 
@@ -89,13 +97,19 @@ def soumettre(
     date_analyse = datetime.now(UTC).replace(microsecond=0)
     descripteur = ouvrir(chemin)
     try:
-        initiale, taille = empreinte(descripteur)
+        # Taille annoncée d'abord, pour ne pas lire un fichier énorme ; puis taille lue, s'il a
+        # grandi entre-temps.
+        if os.fstat(descripteur).st_size > TAILLE_MAX_FICHIER:
+            raise AnalyseRefusee(MotifRefus.HORS_LIMITES)
+        initiale, taille = empreinte(descripteur, TAILLE_MAX_FICHIER)
+        if taille > TAILLE_MAX_FICHIER:
+            raise AnalyseRefusee(MotifRefus.HORS_LIMITES)
         if taille == 0:
             raise AnalyseRefusee(MotifRefus.VIDE)
         resultat = executer(
             descripteur, modules, desactives, taille=taille, delai=delai, commande=commande
         )
-        finale = resultat.empreinte or empreinte(descripteur)[0]
+        finale = resultat.empreinte or empreinte(descripteur, TAILLE_MAX_FICHIER)[0]
     finally:
         os.close(descripteur)
     if finale != initiale:
