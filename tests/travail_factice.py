@@ -8,7 +8,7 @@ compromis (ES-04, M-10).
 
 Le vrai déroulé applique les vraies restrictions (T14), sauf avec ``--sans-restriction`` :
 sous coverage, le processus doit pouvoir écrire ses mesures en se terminant. Les analyseurs
-``sonde`` et ``memoire`` vérifient l'effet des restrictions depuis un module (ADR-0081).
+``sonde`` et ``memoire`` vérifient l'effet des restrictions depuis un module (ADR-0083).
 """
 
 import json

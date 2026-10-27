@@ -1,6 +1,6 @@
 """Restrictions que le processus de travail s'applique avant de lire le fichier (ADR-0035).
 
-Chaque système a son module (ADR-0078 à ADR-0080) ; tous appellent le système par ``ctypes``
+Chaque système a son module (ADR-0079 à ADR-0081) ; tous appellent le système par ``ctypes``
 ou la bibliothèque standard, sans privilège ni dépendance. Une restriction qui échoue
 n'arrête pas l'analyse : elle figure parmi les manques, et le rapport dit l'isolation réduite
 (ADR-0028).

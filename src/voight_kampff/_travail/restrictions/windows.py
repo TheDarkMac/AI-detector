@@ -1,4 +1,4 @@
-"""Restrictions sous Windows (ADR-0035, ADR-0080).
+"""Restrictions sous Windows (ADR-0035, ADR-0081).
 
 - Job Object, auquel le processus de travail s'affecte lui-même : un seul processus actif,
   mémoire et temps processeur limités, arrêt à la première exception non traitée, aucun accès
@@ -9,11 +9,11 @@
 
 Manquent toujours : le réseau (seul un conteneur d'application le bloque), la lecture (le
 niveau bas n'interdit que l'écriture vers un niveau plus haut) et les vidages mémoire, que ces
-réglages n'empêchent pas de façon vérifiable (ADR-0080).
+réglages n'empêchent pas de façon vérifiable (ADR-0081).
 
 L'interpréteur d'un environnement virtuel est un lanceur qui démarre le véritable
 interpréteur : le Job Object couvre ce dernier, qui lit le fichier ; le lanceur, qui ne lit
-rien, n'y est pas, et l'arrêt du lanceur entraîne celui du travail (ADR-0080).
+rien, n'y est pas, et l'arrêt du lanceur entraîne celui du travail (ADR-0081).
 """
 
 import ctypes

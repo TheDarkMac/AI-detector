@@ -1,4 +1,4 @@
-"""Tests des restrictions du processus de travail (ES-02, ES-03, ES-11, ADR-0078 à ADR-0081).
+"""Tests des restrictions du processus de travail (ES-02, ES-03, ES-11, ADR-0079 à ADR-0083).
 
 Deux familles :
 
@@ -9,7 +9,7 @@ Deux familles :
 
 Le code qui appelle le système ne s'exécute que dans un processus restreint, qui ne peut plus
 écrire ses mesures de couverture : il est exclu de la mesure, et vérifié par la première
-famille (ADR-0081).
+famille (ADR-0083).
 """
 
 import ctypes
@@ -89,15 +89,17 @@ def test_ce_que_les_restrictions_refusent(descripteur: int) -> None:
     assert essais["ecriture"] != "permise"
     assert essais["programme"] != "permise"
     if sys.platform == "win32":
-        # Windows ne bloque ni la lecture ni le réseau : le rapport le dit (ADR-0080).
+        # Windows ne bloque ni la lecture ni le réseau : le rapport le dit (ADR-0081).
         assert essais["lecture"] == "permise"
         assert essais["socket"] == "permise"
         assert essais["connexion"] != "PermissionError"
     else:
+        # Seatbelt laisse créer une socket mais refuse toute connexion (ADR-0080).
+        socket = "permise" if sys.platform == "darwin" else "PermissionError"
         assert essais == {
             "lecture": "PermissionError",
             "ecriture": "PermissionError",
-            "socket": "PermissionError",
+            "socket": socket,
             "connexion": "PermissionError",
             "programme": "PermissionError",
         }
@@ -105,11 +107,11 @@ def test_ce_que_les_restrictions_refusent(descripteur: int) -> None:
 
 def test_memoire_limitee(descripteur: int) -> None:
     # 3 Gio remplis, pour une limite de 2 Gio : sous Linux et Windows le système refuse
-    # l'allocation ; sous macOS le processus principal arrête le travail (ADR-0079).
+    # l'allocation ; sous macOS le processus principal arrête le travail (ADR-0080).
     resultat = analyser_avec(descripteur, "memoire")
     raisons = {(non_menee.raison, non_menee.module) for non_menee in resultat.non_menees}
     assert (RaisonNonMenee.MEMOIRE_DEPASSEE, "memoire") in raisons
-    assert resultat.interrompue  # limite du système : hors garantie (ADR-0076)
+    assert resultat.interrompue  # limite du système : hors garantie (ADR-0078)
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="lanceur de l'environnement virtuel")

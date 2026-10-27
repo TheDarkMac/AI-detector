@@ -37,7 +37,7 @@ from voight_kampff.rapport.modele import (
     Zone,
 )
 
-# Fuzzing (ES-19, ADR-0081). « defaut » : exemples tirés d'une graine fixe, identiques à chaque
+# Fuzzing (ES-19, ADR-0082). « defaut » : exemples tirés d'une graine fixe, identiques à chaque
 # passage et sur chaque système, pour une CI reproductible ; aucune base d'exemples écrite sur
 # le disque. « campagne » : recherche longue et aléatoire, lancée à la main.
 settings.register_profile(

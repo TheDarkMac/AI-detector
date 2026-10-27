@@ -1,7 +1,7 @@
-"""Isolation attendue du processus de travail sur chaque système de la V1 (ADR-0078 à ADR-0080).
+"""Isolation attendue du processus de travail sur chaque système de la V1 (ADR-0079 à ADR-0081).
 
 Linux et macOS appliquent toutes les restrictions ; Windows ne bloque ni le réseau ni la
-lecture, et l'effet de ses réglages sur les vidages mémoire n'est pas vérifiable (ADR-0080).
+lecture, et l'effet de ses réglages sur les vidages mémoire n'est pas vérifiable (ADR-0081).
 """
 
 import sys

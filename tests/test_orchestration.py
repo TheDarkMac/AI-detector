@@ -68,7 +68,7 @@ def mesure() -> list[str]:
     L'environnement vidé (ADR-0065) empêche coverage de s'inviter seul dans l'interpréteur.
     Seulement pour un processus qui se termine de lui-même : arrêté de force pendant qu'il
     écrit ses mesures, il laisserait un fichier corrompu qui fait échouer ``coverage combine``.
-    Et seulement sans restrictions : restreint, il ne peut plus les écrire (ADR-0081).
+    Et seulement sans restrictions : restreint, il ne peut plus les écrire (ADR-0083).
     """
     return ["-m", "coverage", "run", "--parallel-mode", f"--rcfile={PYPROJECT}"]
 
@@ -163,7 +163,7 @@ def test_point_d_entree_mesure() -> None:
 
 
 def test_manque_ajoute_par_le_principal() -> None:
-    # Sous macOS, si la mémoire ne peut pas être surveillée (ADR-0079).
+    # Sous macOS, si la mémoire ne peut pas être surveillée (ADR-0080).
     recue = EtatIsolation(NiveauIsolation.REDUITE, (ManqueIsolation.TEMPS,))
     assert travail._avec_manque(recue, ManqueIsolation.MEMOIRE) == EtatIsolation(
         NiveauIsolation.REDUITE, (ManqueIsolation.MEMOIRE, ManqueIsolation.TEMPS)

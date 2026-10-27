@@ -1,7 +1,7 @@
 """Déroulé du processus de travail (ADR-0036) et acheminement vers les modules (ADR-0042).
 
 1. Importer les modules livrés, tant que le système de fichiers est accessible.
-2. Appliquer les restrictions du système (ADR-0035, ADR-0078 à ADR-0080), se déclarer
+2. Appliquer les restrictions du système (ADR-0035, ADR-0079 à ADR-0081), se déclarer
    verrouillé, envoyer l'état de l'isolation : aucun octet du fichier n'a encore été lu.
 3. Lire la configuration : modules actifs, dans l'ordre d'exécution.
 4. Identifier les formats et envoyer les parties reconnues (ADR-0070, ADR-0071).
@@ -11,7 +11,7 @@
 
 Une exception dans un module ne touche que ce module (NF-03, ADR-0060) ; une limite comptée
 dépassée le rend non mené pour ``limite_depassee``, la mémoire du système épuisée pour
-``memoire_depassee`` (ADR-0076). Toute autre erreur arrête le processus, et le processus
+``memoire_depassee`` (ADR-0078). Toute autre erreur arrête le processus, et le processus
 principal en fait une analyse non menée.
 """
 
@@ -86,7 +86,7 @@ def importer() -> tuple[dict[str, Analyseur], frozenset[str]]:
     """Importe les modules livrés ; renvoie leurs analyseurs et ceux qui n'ont pas pu l'être.
 
     Appelé avant les restrictions : après, le code ne peut plus être lu sur le disque. Un
-    module importe donc à son chargement tout ce dont il aura besoin (ADR-0078).
+    module importe donc à son chargement tout ce dont il aura besoin (ADR-0079).
     """
     analyseurs: dict[str, Analyseur] = {}
     echecs: set[str] = set()
@@ -163,7 +163,7 @@ def _executer(
             analyseur(contexte)
         except LimiteDepassee:
             raison = RaisonNonMenee.LIMITE_DEPASSEE
-        except MemoryError:  # limite du système (ADR-0077) : hors garantie (ADR-0076)
+        except MemoryError:  # limite du système (ADR-0077) : hors garantie (ADR-0078)
             raison = RaisonNonMenee.MEMOIRE_DEPASSEE
         except Exception:  # NF-03 : seul ce module est touché
             raison = RaisonNonMenee.ERREUR_MODULE

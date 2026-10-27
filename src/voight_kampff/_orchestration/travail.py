@@ -11,7 +11,7 @@ périmètre ; une partie hors périmètre est déclarée non analysée ici, pas 
 Tout écart arrête le processus de travail. Les modules terminés gardent leurs résultats ; les
 autres deviennent des analyses non menées, avec la raison de l'arrêt, et l'analyse est
 interrompue (ADR-0056). Un délai et des tailles, fixés par ADR-0077, bornent l'échange ; sous
-macOS, la mémoire du travail est surveillée pendant l'attente (ADR-0079).
+macOS, la mémoire du travail est surveillée pendant l'attente (ADR-0080).
 """
 
 import os
@@ -249,7 +249,7 @@ def _lire(flux: IO[bytes], file: "queue.Queue[_Evenement]") -> None:
         total += len(ligne)
         if len(ligne) > TAILLE_MAX_MESSAGE or total > TAILLE_MAX_SORTIE:
             # Le contexte d'un module refuse ces tailles avant l'envoi : seul un travail
-            # défaillant ou compromis les dépasse (ADR-0076).
+            # défaillant ou compromis les dépasse (ADR-0078).
             file.put(_Evenement(raison=RaisonNonMenee.MESSAGE_INVALIDE))
             return
         if not ligne.endswith(b"\n"):
@@ -331,7 +331,7 @@ class _Reception:
         self._memoire_non_surveillee = False
 
     def surveiller(self, memoire_depassee: Callable[[], bool] | None) -> None:
-        """Sous macOS, mesure la mémoire du travail pendant l'attente (ADR-0079)."""
+        """Sous macOS, mesure la mémoire du travail pendant l'attente (ADR-0080)."""
         self._memoire_depassee = memoire_depassee
         self._memoire_non_surveillee = sys.platform == "darwin" and memoire_depassee is None
 

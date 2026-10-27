@@ -1,4 +1,4 @@
-"""Restrictions sous macOS (ADR-0035, ADR-0079).
+"""Restrictions sous macOS (ADR-0035, ADR-0080).
 
 - Profil Seatbelt (``sandbox_init``) : tout est refusé, sauf la lecture de l'installation de
   Python et du paquet (un module peut encore importer à la demande) et l'écriture sur

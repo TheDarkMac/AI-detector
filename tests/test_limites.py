@@ -84,7 +84,7 @@ def test_seule_la_limite_du_systeme_interrompt() -> None:
     assert RaisonNonMenee.MEMOIRE_DEPASSEE in RAISONS_D_INTERRUPTION
 
 
-# Budget compté d'un module (ADR-0076)
+# Budget compté d'un module (ADR-0078)
 
 
 def test_objets_comptes(contexte: Contexte) -> None:

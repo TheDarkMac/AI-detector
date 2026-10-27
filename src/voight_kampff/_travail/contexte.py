@@ -8,7 +8,7 @@ Un module analyse une partie du fichier à la fois (ADR-0071) : il la lit comme 
 autonome, positions comptées depuis son début, et le contexte ramène les plages d'octets de
 ses localisations à des positions dans le fichier entier.
 
-Le contexte tient aussi le budget du module sur sa partie (ES-03, ADR-0076) : octets
+Le contexte tient aussi le budget du module sur sa partie (ES-03, ADR-0076, ADR-0078) : octets
 décompressés, objets parcourus, dimensions déclarées, imbrication. Ces limites sont comptées,
 pas chronométrées : un même fichier les dépasse ou non sur toutes les machines.
 """
@@ -134,7 +134,7 @@ class Contexte:
         taille = min(taille, max(0, self.taille - position))
         return self._fichier.lire(self._debut + position, taille)
 
-    # Budget (ES-03, ADR-0076)
+    # Budget (ES-03, ADR-0078)
 
     def compter_objets(self, nombre: int = 1) -> None:
         """Compte des objets parcourus : entrées d'archive, objets PDF, blocs, balises."""

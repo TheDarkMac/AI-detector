@@ -553,7 +553,7 @@ def _classer_zip(fichier: Fichier, debut: int, repertoire: bytes) -> str:
 _CONTROLES = re.compile(rb"[\x00-\x08\x0b\x0e-\x1f\x7f]")
 _CONTROLES_TEXTE = re.compile(r"[\x00-\x08\x0b\x0e-\x1f\x7f]")
 # Décodeurs cherchés dès l'import : après les restrictions, la recherche d'un codec ne peut plus
-# charger son module depuis le disque (ADR-0078).
+# charger son module depuis le disque (ADR-0079).
 _DECODEUR_UTF16 = codecs.getincrementaldecoder("utf-16")
 _DECODEUR_UTF8 = codecs.getincrementaldecoder("utf-8-sig")
 

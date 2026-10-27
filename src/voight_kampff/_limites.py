@@ -1,4 +1,4 @@
-"""Valeurs des limites d'une analyse (ES-03, NF-02, NF-08, ADR-0076, ADR-0077).
+"""Valeurs des limites d'une analyse (ES-03, NF-02, NF-08, ADR-0076 à ADR-0078).
 
 Fixes en V1 : aucune option ne les change, et les deux processus lisent ce même module. Le
 processus de travail les applique avant d'avoir reçu quoi que ce soit, d'où l'absence des

@@ -1,4 +1,4 @@
-"""Mémoire du processus de travail surveillée par le processus principal, sous macOS (ADR-0079).
+"""Mémoire du processus de travail surveillée par le processus principal, sous macOS (ADR-0080).
 
 macOS n'applique pas de limite fiable à la mémoire d'un processus (ADR-0035). Le processus
 principal mesure donc l'empreinte physique du travail (``proc_pid_rusage``, celle qu'emploie le
@@ -6,7 +6,7 @@ système pour arbitrer la mémoire) pendant qu'il attend ses messages, et l'arr�
 limite. C'est une surveillance, pas une limite stricte : entre deux mesures, le travail peut
 dépasser la limite de ce qu'il alloue en une période.
 
-Linux et Windows limitent la mémoire eux-mêmes (ADR-0078, ADR-0080) : rien n'y est surveillé.
+Linux et Windows limitent la mémoire eux-mêmes (ADR-0079, ADR-0081) : rien n'y est surveillé.
 """
 
 import ctypes

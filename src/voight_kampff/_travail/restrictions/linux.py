@@ -1,4 +1,4 @@
-"""Restrictions sous Linux, système de référence (ADR-0035, ADR-0078).
+"""Restrictions sous Linux, système de référence (ADR-0035, ADR-0079).
 
 Dans l'ordre :
 
