@@ -32,6 +32,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Historique complet : le registre du catalogue est comparé à detector (ADR-0085).
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
           version: ${{ env.UV_VERSION }}
@@ -45,6 +48,11 @@ jobs:
         run: uv run --locked ruff check .
       - name: Types (mypy strict)
         run: uv run --locked mypy
+      - name: Versions publiées du catalogue inchangées (ADR-0085)
+        env:
+          # PR : sa branche cible ; push sur detector : le commit précédent ; sinon detector.
+          BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event_name == 'push' && 'HEAD^1' || 'origin/detector' }}
+        run: python3 -I .github/scripts/catalogue.py base "$BASE"
 
   tests:
     strategy:
@@ -138,6 +146,12 @@ jobs:
               sys.exit("processus de travail en échec depuis le wheel")
           ' "$RUNNER_TEMP/essai.bin"
           "$RUNNER_TEMP/essai/bin/vk" --modules
+      - name: Catalogue livré dans le wheel, inscrit au registre (T15)
+        run: |
+          python3 -I .github/scripts/catalogue.py paquet "$RUNNER_TEMP"/a/*.whl | tee "$RUNNER_TEMP/catalogue.txt"
+          empreinte="$(sed -n 's/^Empreinte SHA-256 : //p' "$RUNNER_TEMP/catalogue.txt")"
+          "$RUNNER_TEMP/essai/bin/vk" --regles | tee "$RUNNER_TEMP/regles.txt"
+          grep -q "empreinte ${empreinte}\$" "$RUNNER_TEMP/regles.txt"
       - name: Commande d'analyse depuis le wheel (T13)
         run: |
           printf '%%PDF-1.7\n%%%%EOF\n' > "$RUNNER_TEMP/essai.pdf"
