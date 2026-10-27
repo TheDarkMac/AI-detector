@@ -20,6 +20,7 @@ import tempfile
 from typing import Any
 
 import pytest
+from catalogues import CATALOGUE
 from echantillons import (
     PDF,
     TRAME_MP3,
@@ -208,7 +209,7 @@ def messages_mutes(draw: st.DrawFn) -> dict[str, Any]:
 
 @given(st.lists(messages_mutes(), min_size=1, max_size=5))
 def test_reception_messages_mutes(suite: list[dict[str, Any]]) -> None:
-    reception = travail._Reception((MODULE,), 100)
+    reception = travail._Reception((MODULE,), {r.identifiant: r for r in CATALOGUE.regles}, 100)
     for message in suite:
         try:
             schemas.valider("messages", decoder(encoder(message)))

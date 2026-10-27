@@ -1,0 +1,3 @@
+# Fichiers du catalogue de règles : octets livrés tels quels sur tous les systèmes, sans
+# conversion des fins de ligne, pour que leur empreinte soit la même partout (ADR-0088).
+src/voight_kampff/donnees/catalogue/** -text

@@ -366,7 +366,7 @@
         "partie": { "$ref": "#/$defs/entier_strictement_positif" }
       },
       "if": { "not": { "required": ["version"] } },
-      "then": { "properties": { "etat": { "const": "non_menee" } } }
+      "then": { "properties": { "etat": { "enum": ["non_menee", "non_applicable"] } } }
     },
     "couverture": {
       "type": "object",

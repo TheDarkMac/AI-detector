@@ -11,6 +11,10 @@ ses localisations à des positions dans le fichier entier.
 Le contexte tient aussi le budget du module sur sa partie (ES-03, ADR-0076, ADR-0078) : octets
 décompressés, objets parcourus, dimensions déclarées, imbrication. Ces limites sont comptées,
 pas chronométrées : un même fichier les dépasse ou non sur toutes les machines.
+
+Il porte enfin les règles du catalogue qui relèvent du module (ADR-0084, ADR-0090) : le module
+cite une règle « module » par son identifiant, et le catalogue fixe ce que dit le constat ; après
+lui, le moteur applique les règles « moteur » aux observations qu'il a produites.
 """
 
 import contextlib
@@ -28,23 +32,19 @@ from voight_kampff._limites import (
     TAILLE_MAX_DECOMPRESSEE,
 )
 from voight_kampff._protocole import TAILLE_MAX_LECTURE, TAILLE_MAX_MESSAGE, encoder
+from voight_kampff._regles import Application, Regle, appliquer
 from voight_kampff._travail import garde
 from voight_kampff._travail.fichier import Fichier
 from voight_kampff.rapport.modele import (
-    Categorie,
     CategorieIdentifiante,
     Constat,
     Direction,
-    Fondement,
-    Graduation,
     Localisation,
     NonMenee,
     Observation,
     Partie,
-    Phrase,
     Plage,
     RaisonNonMenee,
-    ReferenceRegle,
     Scalaire,
 )
 
@@ -87,6 +87,8 @@ class Contexte:
         "_objets",
         "_observations",
         "_profondeur",
+        "_regles",
+        "_releves",
         "_taille_lignes",
         "format_reel",
         "module",
@@ -102,6 +104,7 @@ class Contexte:
         partie: Partie,
         budget: int,
         numero: int = 0,
+        regles: Sequence[Regle] = (),
     ) -> None:
         garde.exiger()
         self.module = module
@@ -119,6 +122,10 @@ class Contexte:
         self._taille_lignes = 0
         self._numero = numero
         self._observations: set[str] = set()
+        self._releves: list[Observation] = []
+        """Observations du module, dans l'ordre : le moteur leur applique ses règles."""
+        self._regles = {regle.identifiant: regle for regle in regles}
+        """Règles du catalogue qui relèvent de ce module, par identifiant."""
         self._depasse = False
         self._compresses = 0
         self._decompresses = 0
@@ -227,34 +234,52 @@ class Contexte:
         self._ajouter({"type": "observation", "observation": observation.vers_dict()})
         self._numero += 1
         self._observations.add(identifiant)
+        self._releves.append(observation)
         return identifiant
 
     def constater(
         self,
-        phrase: Phrase,
+        regle: str,
         donnees: Sequence[str],
-        regle: ReferenceRegle,
+        parametres: Mapping[str, str] | None = None,
         *,
-        fondement: Fondement,
-        categorie: Categorie,
-        direction: Direction,
-        graduation: Graduation | None = None,
         localisation: Localisation | None = None,
     ) -> None:
-        """Enregistre un constat ; ses données sont des observations de ce module."""
-        if direction not in self._directions:
+        """Enregistre le constat d'une règle « module » du catalogue, citée par son identifiant.
+
+        Gabarit, catégorie, direction, fondement et niveau sont ceux de la règle (ADR-0090) ;
+        ``parametres`` associe chaque paramètre de sa phrase à une observation de ``donnees``.
+        """
+        trouvee = self._regles.get(regle)
+        if trouvee is None:
+            raise ValueError("constat.regle : absente du catalogue pour ce module")
+        if trouvee.application is not Application.MODULE:
+            raise ValueError("constat.regle : appliquée par le moteur, pas par le module")
+        parametres = dict(parametres or {})
+        if set(parametres) != set(trouvee.noms_des_parametres):
+            raise ValueError("constat.phrase : paramètres différents de ceux de la règle")
+        self._constater(trouvee, donnees, parametres, localisation)
+
+    def _constater(
+        self,
+        regle: Regle,
+        donnees: Sequence[str],
+        parametres: Mapping[str, str],
+        localisation: Localisation | None,
+    ) -> None:
+        if regle.direction not in self._directions:
             raise ValueError("constat : direction non permise par la fiche technique")
         if not set(donnees) <= self._observations:
             raise ValueError("constat.donnees : observation inconnue de ce module")
         constat = Constat(
-            phrase,
+            regle.phrase(parametres),
             tuple(donnees),
-            regle,
+            regle.reference,
             self.module,
-            fondement,
-            categorie,
-            direction,
-            graduation=graduation,
+            regle.fondement,
+            regle.categorie,
+            regle.direction,
+            graduation=regle.graduation,
             localisation=self._dans_le_fichier(localisation),
             partie=self.partie,
         )
@@ -277,6 +302,15 @@ class Contexte:
         return dataclasses.replace(localisation, octets=octets)
 
     # Pour le moteur
+
+    def appliquer_catalogue(self) -> None:
+        """Applique les règles « moteur » du module à ses observations, une fois qu'il a fini.
+
+        Les règles sont prises dans l'ordre de leurs identifiants ; leurs constats suivent ceux
+        du module et comptent contre son budget.
+        """
+        for regle, donnees, parametres in appliquer(self._regles.values(), self._releves):
+            self._constater(regle, donnees, parametres, None)
 
     @property
     def numero(self) -> int:

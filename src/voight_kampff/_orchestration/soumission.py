@@ -8,6 +8,10 @@ avant de l'envoyer, le principal hache de nouveau le fichier (ADR-0075).
 
 Le principal ne lit le fichier que pour le hacher : l'identification se fait dans le travail.
 Un fichier de plus de 1 Gio est refusé « hors limites » avant d'être lu (F-04, ADR-0077).
+
+Le catalogue, livré ou fourni par l'utilisateur, est validé avant l'ouverture du fichier
+(ADR-0029, ADR-0086) ; sa version est jointe à l'analyse. Les techniques hors de cette version
+sont inscrites non menées pour chaque partie d'un de leurs formats (ADR-0087).
 """
 
 import hashlib
@@ -18,11 +22,22 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from voight_kampff._limites import TAILLE_MAX_FICHIER
+from voight_kampff._orchestration import catalogue as catalogues
 from voight_kampff._orchestration import manifestes as livres
-from voight_kampff._orchestration.manifestes import Manifeste, selectionner
+from voight_kampff._orchestration.catalogue import Catalogue
+from voight_kampff._orchestration.manifestes import Manifeste, TechniqueHorsV1, selectionner
 from voight_kampff._orchestration.travail import DELAI, ResultatTravail, commande_travail, executer
 from voight_kampff.analyse import Analyse, AnalyseRefusee, MotifRefus
-from voight_kampff.rapport.modele import RAISONS_D_INTERRUPTION, Identification
+from voight_kampff.rapport.modele import (
+    RAISONS_D_INTERRUPTION,
+    Couverture,
+    EtatTechnique,
+    Identification,
+    NonMenee,
+    Partie,
+    RaisonNonMenee,
+    TechniqueCouverte,
+)
 
 __all__ = ["empreinte", "nom_affichable", "ouvrir", "soumettre"]
 
@@ -83,17 +98,24 @@ def soumettre(
     chemin: str | os.PathLike[str],
     desactives: Collection[str] = (),
     *,
+    catalogue: Catalogue | str | os.PathLike[str] | None = None,
     manifestes: Sequence[Manifeste] | None = None,
+    hors_v1: Sequence[TechniqueHorsV1] | None = None,
     delai: float = DELAI,
     commande: Callable[[int], Sequence[str]] = commande_travail,
 ) -> Analyse:
     """Analyse un fichier ; lève :class:`AnalyseRefusee` s'il n'y a rien à livrer.
 
-    ``manifestes`` et ``commande`` remplacent, pour les tests, les modules et le processus
-    de travail livrés.
+    ``catalogue`` est un catalogue déjà validé, ou le dossier d'un catalogue fourni par
+    l'utilisateur ; par défaut, le catalogue livré. ``manifestes``, ``hors_v1`` et
+    ``commande`` remplacent, pour les tests, les modules, les techniques hors de cette version
+    et le processus de travail livrés.
     """
     modules = livres.decouvrir() if manifestes is None else tuple(manifestes)
     selectionner(modules, desactives)  # un module inconnu est refusé avant toute lecture
+    if not isinstance(catalogue, Catalogue):
+        catalogue = catalogues.charger(modules, catalogue)
+    techniques_hors_v1 = livres.hors_v1(modules) if hors_v1 is None else tuple(hors_v1)
     date_analyse = datetime.now(UTC).replace(microsecond=0)
     descripteur = ouvrir(chemin)
     try:
@@ -107,19 +129,68 @@ def soumettre(
         if taille == 0:
             raise AnalyseRefusee(MotifRefus.VIDE)
         resultat = executer(
-            descripteur, modules, desactives, taille=taille, delai=delai, commande=commande
+            descripteur,
+            modules,
+            desactives,
+            catalogue=catalogue,
+            taille=taille,
+            delai=delai,
+            commande=commande,
         )
         finale = resultat.empreinte or empreinte(descripteur, TAILLE_MAX_FICHIER)[0]
     finally:
         os.close(descripteur)
     if finale != initiale:
         raise AnalyseRefusee(MotifRefus.FICHIER_MODIFIE)
-    return _analyse(resultat, nom_affichable(chemin), taille, initiale, date_analyse)
+    identification = _identification(
+        resultat, nom_affichable(chemin), taille, initiale, date_analyse
+    )
+    techniques, non_menees = _hors_v1(identification.parties, techniques_hors_v1)
+    return Analyse(
+        identification=identification,
+        isolation=resultat.isolation,
+        couverture=Couverture(
+            resultat.couverture.techniques + techniques,
+            resultat.couverture.marquages_recherches,
+        ),
+        observations=resultat.observations,
+        constats=resultat.constats,
+        non_menees=resultat.non_menees + non_menees,
+        dependances=resultat.dependances,
+        catalogue=catalogue.version,
+    )
 
 
-def _analyse(
+def _hors_v1(
+    parties: Sequence[Partie], techniques: Sequence[TechniqueHorsV1]
+) -> tuple[tuple[TechniqueCouverte, ...], tuple[NonMenee, ...]]:
+    """Couverture et non menées des techniques hors de cette version (ADR-0012, ADR-0087).
+
+    Seules figurent celles qui s'appliqueraient à au moins une partie analysée : non menées
+    sur les parties de leurs formats, non applicables sur les autres d'un polyglotte, puisque
+    chaque technique figure une fois par partie analysée (ADR-0071).
+    """
+    analysees = [partie for partie in parties if partie.dans_perimetre]
+    couverture: list[TechniqueCouverte] = []
+    non_menees: list[NonMenee] = []
+    for technique in techniques:
+        if not any(partie.format in technique.formats for partie in analysees):
+            continue
+        for partie in analysees:
+            if partie.format in technique.formats:
+                etat = EtatTechnique.NON_MENEE
+                non_menees.append(
+                    NonMenee(RaisonNonMenee.HORS_V1, technique.identifiant, partie=partie.rang)
+                )
+            else:
+                etat = EtatTechnique.NON_APPLICABLE
+            couverture.append(TechniqueCouverte(technique.identifiant, etat, None, partie.rang))
+    return tuple(couverture), tuple(non_menees)
+
+
+def _identification(
     resultat: ResultatTravail, nom: str, taille: int, empreinte_: str, date_analyse: datetime
-) -> Analyse:
+) -> Identification:
     if resultat.parties is None:
         arret = next(n.raison for n in resultat.non_menees if n.raison in RAISONS_D_INTERRUPTION)
         raise AnalyseRefusee(MotifRefus.ANALYSE_IMPOSSIBLE, raison=arret)
@@ -128,20 +199,11 @@ def _analyse(
     if not any(partie.dans_perimetre for partie in resultat.parties):
         formats = tuple(dict.fromkeys(partie.format for partie in resultat.parties))
         raise AnalyseRefusee(MotifRefus.HORS_PERIMETRE, formats=formats)
-    identification = Identification(
+    return Identification(
         nom=nom,
         format_reel=resultat.parties[0].format,
         taille=taille,
         empreinte=empreinte_,
         date_analyse=date_analyse,
         parties=resultat.parties,
-    )
-    return Analyse(
-        identification=identification,
-        isolation=resultat.isolation,
-        couverture=resultat.couverture,
-        observations=resultat.observations,
-        constats=resultat.constats,
-        non_menees=resultat.non_menees,
-        dependances=resultat.dependances,
     )

@@ -11,18 +11,20 @@ import os
 import subprocess
 import sys
 import time
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Collection, Iterator, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import cast
+from typing import Any, cast
 
 import pytest
+from catalogues import CATALOGUE
 from systeme import MANQUES_ATTENDUS
 
 from voight_kampff._orchestration import manifestes, travail
+from voight_kampff._orchestration.catalogue import Catalogue
 from voight_kampff._orchestration.manifestes import Manifeste, ModuleInconnu
-from voight_kampff._orchestration.travail import ResultatTravail, executer
+from voight_kampff._orchestration.travail import ResultatTravail
 from voight_kampff.analyse import Analyse
 from voight_kampff.rapport.modele import (
     Direction,
@@ -60,6 +62,18 @@ def manifeste(
         directions=(Direction.RIEN_DE_PARTICULIER,),
         requiert=tuple(requiert),
     )
+
+
+def executer(
+    descripteur: int,
+    livres: Sequence[Manifeste],
+    desactives: Collection[str] = (),
+    *,
+    catalogue: Catalogue = CATALOGUE,
+    **options: Any,
+) -> ResultatTravail:
+    """Le vrai ``executer``, avec par défaut le catalogue des modules factices."""
+    return travail.executer(descripteur, livres, desactives, catalogue=catalogue, **options)
 
 
 def mesure() -> list[str]:
@@ -120,6 +134,7 @@ def analyse_de(resultat: ResultatTravail, taille: int = len(CONTENU)) -> Analyse
         constats=resultat.constats,
         non_menees=resultat.non_menees,
         dependances=resultat.dependances,
+        catalogue=CATALOGUE.version,
     )
 
 
@@ -217,7 +232,12 @@ def test_modules_isoles_les_uns_des_autres(descripteur: int) -> None:
     assert [o.identifiant for o in resultat.observations] == ["alpha/1", "alpha/2", "delta/1"]
     assert resultat.observations[0].valeur == "VKFT"
     assert resultat.observations[1].valeur == len(CONTENU)
-    assert len(resultat.constats) == 1
+    # Le constat d'alpha, puis celui de la règle du moteur appliquée à ses observations (ADR-0084).
+    assert [(c.regle.identifiant, c.donnees) for c in resultat.constats] == [
+        ("R-TEST-001", ("alpha/1", "alpha/2")),
+        ("R-TEST-003", ("alpha/1",)),
+    ]
+    assert dict(resultat.constats[1].phrase.parametres) == {"debut": "alpha/1"}
     # Le texte affiché par alpha n'a pas atteint le protocole.
     assert not resultat.interrompue
     assert resultat.empreinte == hashlib.sha256(CONTENU).hexdigest()
@@ -256,6 +276,12 @@ def test_polyglotte_chaque_format_du_perimetre_analyse(descripteur: int) -> None
     partielle = next(n for n in resultat.non_menees if n.module == "delta")
     assert partielle.localisation == Localisation(octets=Plage(105, 1))
     assert analyse_de(resultat).identification.octets_non_reconnus == ()
+    # La règle du moteur ne vaut que pour la partie 1, où alpha a lu « VKFT ».
+    assert [(c.regle.identifiant, c.partie) for c in resultat.constats] == [
+        ("R-TEST-001", 1),
+        ("R-TEST-003", 1),
+        ("R-TEST-001", 3),
+    ]
 
 
 def test_module_desactive_et_ceux_qui_le_requierent(descripteur: int) -> None:
@@ -410,6 +436,9 @@ MESSAGE_INVALIDE = [
     "modele",
     "constat_sans_donnee",
     "direction_interdite",
+    "regle_inconnue",
+    "regle_d_une_autre_version",
+    "regle_d_un_autre_gabarit",
     "raison_reservee",
     "raison_reservee_fichier",
     "erreur_apres_resultats",
@@ -482,4 +511,4 @@ def test_ecriture_dans_un_tube_ferme() -> None:
 def test_processus_sans_tubes() -> None:
     sans_tubes = cast("subprocess.Popen[bytes]", SimpleNamespace(stdin=None, stdout=None))
     with pytest.raises(RuntimeError, match="tubes"):
-        travail._Reception((), 0).recevoir(sans_tubes, b"", 0.0)
+        travail._Reception((), {}, 0).recevoir(sans_tubes, b"", 0.0)

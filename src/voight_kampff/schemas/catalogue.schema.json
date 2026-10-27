@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:voight-kampff:schema:catalogue",
+  "title": "En-tête du catalogue de règles Voight-Kampff",
+  "description": "Fichier catalogue.toml à la racine du dossier du catalogue (ADR-0029, ADR-0038, ADR-0085, ADR-0088). Les règles sont dans regles/<module>.toml, validées par le schéma regles. Le code vérifie en plus que la date existe.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "version", "date", "description"],
+  "properties": {
+    "format": {
+      "description": "Format du catalogue que cette version de l'outil sait lire ; un autre format est refusé.",
+      "const": 1
+    },
+    "version": {
+      "description": "Version du catalogue, X.Y.Z, propre au catalogue (ADR-0085).",
+      "type": "string",
+      "maxLength": 32,
+      "pattern": "^(0|[1-9][0-9]{0,8})\\.(0|[1-9][0-9]{0,8})\\.(0|[1-9][0-9]{0,8})$(?!\\n)"
+    },
+    "date": {
+      "description": "Date d'édition de cette version, AAAA-MM-JJ.",
+      "$ref": "urn:voight-kampff:schema:rapport#/$defs/version_catalogue/properties/date"
+    },
+    "description": {
+      "description": "Ce que contient ce catalogue, en une phrase ou deux.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    }
+  }
+}

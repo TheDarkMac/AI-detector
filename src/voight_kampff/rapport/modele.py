@@ -698,6 +698,10 @@ class NonMenee:
         )
 
 
+_ETATS_HORS_VERSION = frozenset({EtatTechnique.NON_MENEE, EtatTechnique.NON_APPLICABLE})
+"""États possibles d'une technique hors de cette version, donc sans version (ADR-0087)."""
+
+
 @dataclass(frozen=True, slots=True)
 class TechniqueCouverte:
     """Une technique et ce qu'elle est devenue pour ce fichier."""
@@ -705,7 +709,8 @@ class TechniqueCouverte:
     module: str
     etat: EtatTechnique
     version: str | None = None
-    """Absente seulement pour une technique hors de cette version de l'outil (ADR-0012)."""
+    """Absente seulement pour une technique hors de cette version de l'outil (ADR-0012) : non
+    menée sur une partie d'un de ses formats, non applicable sur les autres (ADR-0087)."""
     partie: int = 1
     """Rang de la partie du fichier : une technique figure une fois par partie analysée."""
 
@@ -714,7 +719,7 @@ class TechniqueCouverte:
         _entier(self.partie, "technique.partie", minimum=1)
         if self.version is not None:
             _version(self.version, "technique.version")
-        elif self.etat is not EtatTechnique.NON_MENEE:
+        elif self.etat not in _ETATS_HORS_VERSION:
             raise ValueError("technique.version : absente seulement hors de cette version")
 
     def vers_dict(self) -> Document:
@@ -1124,8 +1129,12 @@ def verifier_resultats(
     for cle, technique in techniques.items():
         if (technique.etat in _ETATS_AVEC_NON_MENEE) != (cle in raisons):
             raise ValueError("couverture : état incohérent avec les non menées")
+        # Sans version : non menée pour la seule raison hors_v1, ou non applicable (ADR-0087).
         hors_version = raisons.get(cle) == {RaisonNonMenee.HORS_V1}
-        if hors_version != (technique.version is None):
+        sans_version = hors_version or technique.etat is EtatTechnique.NON_APPLICABLE
+        if hors_version and technique.version is not None:
+            raise ValueError("couverture : version absente seulement si hors V1")
+        if technique.version is None and not sans_version:
             raise ValueError("couverture : version absente seulement si hors V1")
 
 

@@ -2,19 +2,31 @@
 
 Les manifestes sont lus et validés sans importer le code des modules. Ils sont livrés avec
 l'outil : un manifeste invalide est un défaut de l'outil, qui arrête l'analyse avec un message
-explicite, comme un catalogue invalide (ADR-0029).
+explicite, comme un catalogue invalide (ADR-0029). La liste des techniques hors de cette version
+est lue de la même façon, à côté d'eux (ADR-0087).
 """
 
 import tomllib
 from collections.abc import Collection, Iterable
 from dataclasses import dataclass
+from importlib.resources import files
 from importlib.resources.abc import Traversable
+from typing import Literal
 
-from voight_kampff import schemas
+from voight_kampff import modules, schemas
 from voight_kampff.modules import MANIFESTE, dossiers
 from voight_kampff.rapport.modele import Direction
 
-__all__ = ["Manifeste", "ManifesteInvalide", "ModuleInconnu", "decouvrir", "lire", "selectionner"]
+__all__ = [
+    "Manifeste",
+    "ManifesteInvalide",
+    "ModuleInconnu",
+    "TechniqueHorsV1",
+    "decouvrir",
+    "hors_v1",
+    "lire",
+    "selectionner",
+]
 
 
 class ManifesteInvalide(ValueError):
@@ -43,6 +55,19 @@ class Manifeste:
     """Directions permises par la fiche technique (ADR-0022)."""
     requiert: tuple[str, ...] = ()
     """Modules exécutés avant celui-ci, dans le même processus de travail."""
+
+
+@dataclass(frozen=True, slots=True)
+class TechniqueHorsV1:
+    """Technique hors de cette version de l'outil, inscrite non menée à la couverture."""
+
+    identifiant: str
+    tache: str
+    exigences: tuple[str, ...]
+    statut: Literal["candidate_v2", "sans_engagement"]
+    """Statut fixé par ADR-0012."""
+    formats: tuple[str, ...]
+    """Formats où elle s'appliquerait : une entrée de couverture par partie de ces formats."""
 
 
 def lire(dossier: Traversable) -> Manifeste:
@@ -84,6 +109,40 @@ def decouvrir(racine: Traversable | None = None) -> tuple[Manifeste, ...]:
                     f"module {manifeste.identifiant} : module requis absent ou lui-même"
                 )
     return _ordonner(manifestes)
+
+
+def hors_v1(
+    livres: Iterable[Manifeste], racine: Traversable | None = None
+) -> tuple[TechniqueHorsV1, ...]:
+    """Techniques hors de cette version (ADR-0087), dans l'ordre du fichier.
+
+    Une technique hors V1 ne peut pas porter l'identifiant d'un module livré : le rapport
+    dirait à la fois qu'elle est menée et qu'elle ne l'est pas.
+    """
+    racine = files(modules.__name__) if racine is None else racine
+    try:
+        document = tomllib.loads((racine / modules.HORS_V1).read_text(encoding="utf-8"))
+        schemas.valider("hors_v1", document)
+    except (UnicodeDecodeError, tomllib.TOMLDecodeError, schemas.DocumentInvalide) as erreur:
+        detail = erreur if isinstance(erreur, schemas.DocumentInvalide) else "fichier illisible"
+        raise ManifesteInvalide(f"{modules.HORS_V1} : {detail}") from None
+    techniques = tuple(
+        TechniqueHorsV1(
+            identifiant=technique["identifiant"],
+            tache=technique["tache"],
+            exigences=tuple(technique["exigences"]),
+            statut=technique["statut"],
+            formats=tuple(technique["formats"]),
+        )
+        for technique in document["technique"]
+    )
+    identifiants = [technique.identifiant for technique in techniques]
+    if len(set(identifiants)) != len(identifiants):
+        raise ManifesteInvalide(f"{modules.HORS_V1} : technique inscrite deux fois")
+    livrees = sorted(set(identifiants) & {manifeste.identifiant for manifeste in livres})
+    if livrees:
+        raise ManifesteInvalide(f"{modules.HORS_V1} : module livré inscrit hors V1 : {livrees[0]}")
+    return techniques
 
 
 def _ordonner(manifestes: dict[str, Manifeste]) -> tuple[Manifeste, ...]:
