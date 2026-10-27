@@ -51,3 +51,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Réalisé en T13 : option `--desactiver MODULE` de la commande d'analyse (ADR-0073) |

@@ -93,3 +93,4 @@ Ligne : 1 Mio ; sortie totale : 64 Mio ; configuration : 16 Mio ; lecture du fic
 | --- | --- |
 | 2026-10-26 | Création, statut « Proposé » |
 | 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T12 : statut « Accepté » |
+| 2026-10-27 | Précisé par ADR-0071 (T13) : message `identification` en deuxième, parties contrôlées contre la taille hachée par le principal |

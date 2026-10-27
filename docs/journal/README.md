@@ -22,4 +22,5 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T11](T11-modele-de-donnees.md) | Modèle de données | `tache/T11-modele-de-donnees` | [#9](https://github.com/TheDarkMac/AI-detector/pull/9) |
 | [T12](T12-moteur-de-modules.md) | Moteur de modules | `tache/T12-moteur-de-modules` | [#10](https://github.com/TheDarkMac/AI-detector/pull/10) |
 | [T10 (complément)](T10-licence-et-publication.md) | Fichier LICENSE et éditeur de confiance PyPI | `tache/T10-licence-et-publication` | [#11](https://github.com/TheDarkMac/AI-detector/pull/11) |
-| [T10 (complément 2)](T10-versions-et-publication.md) | Numérotation des versions et contrôles de la publication | `tache/T10-versions-et-publication` | à venir |
+| [T10 (complément 2)](T10-versions-et-publication.md) | Numérotation des versions et contrôles de la publication | `tache/T10-versions-et-publication` | [#12](https://github.com/TheDarkMac/AI-detector/pull/12) |
+| [T13](T13-soumission-et-identification.md) | Soumission et identification | `tache/T13-soumission-et-identification` | à venir |

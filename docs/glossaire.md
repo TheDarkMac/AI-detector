@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.1** ; v1.0 mergée avec T11, v1.1 proposée dans la PR de T12. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.2** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 proposée dans la PR de T13. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -27,6 +27,13 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Technique, module | Une technique d'analyse est livrée sous la forme d'un module, sous-paquet de `modules/` avec son manifeste. Les deux mots désignent la même unité dans le modèle. | ADR-0042 |
 | Localisation | Endroit du fichier où se trouve ce qui a été observé : chemin dans la structure, plage d'octets, page, zone d'image, intervalle de temps. | A-46 |
 | Donnée identifiante | Donnée qui peut désigner une source : métadonnée nominative, numéro de série, coordonnées GPS, nom du fichier, empreinte. Masquée par défaut. | ES-13, ADR-0057 |
+| Format réel | Format identifié par le contenu du fichier, non par son extension : celui de la partie 1. | F-02, ADR-0070 |
+| Partie (d'un fichier) | Format reconnu dans le fichier et plage d'octets qu'il occupe, du début à sa fin logique. Un fichier en a une ou plusieurs ; chaque partie du périmètre est analysée. | ADR-0071 |
+| Fichier polyglotte | Fichier reconnu dans plusieurs formats à la fois : un JPEG suivi d'une archive ZIP, un PDF caché dans un JPEG. | A-31, ES-07 |
+| Fin logique | Position où s'achève la structure d'un format (EOI d'un JPEG, IEND d'un PNG, dernier `%%EOF` d'un PDF). Elle est établie, non établie (structure non parcourue ou de taille inconnue) ou tronquée (structure interrompue). | ES-07, ADR-0070 |
+| Octets non reconnus | Plages du fichier qu'aucune partie ne couvre, dont les données après la fin logique ; déclarées non menées (`format_partiel`). | ES-07, ADR-0072 |
+| Format du périmètre, hors périmètre | Les formats du §3 du cahier sont analysés ; d'autres sont reconnus pour être nommés, jamais analysés. Un fichier sans format du périmètre est refusé. | F-04, ADR-0070 |
+| Concordance de l'extension | L'extension du nom est l'une de celles du format réel ; sinon, elle est discordante (F-03). | ADR-0072 |
 
 ## Termes de l'architecture
 
@@ -39,9 +46,11 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Arrêt brutal | Fin de l'outil sans rapport, par exception non traitée ou plantage ; NF-03 l'interdit : un échec donne un rapport partiel. | NF-03 |
 | Manifeste (C2PA) | Structure signée, intégrée au fichier, qui déclare son origine et ses transformations. | §11 du cahier, T30 |
 | Manifeste (module) | Fichier TOML qui décrit un module sans exécuter son code : identifiant, version, formats, exigences, règles, fiche technique, directions permises, modules requis. | ADR-0042, ADR-0064 |
-| Contexte (d'un module) | Objet remis à un module par le moteur : lecture du fichier par position, réception des observations, constats et analyses non menées. | ADR-0061 |
+| Contexte (d'un module) | Objet remis à un module par le moteur : lecture de la partie analysée par position, réception des observations, constats et analyses non menées. | ADR-0061, ADR-0071 |
 | Module actif, désactivé | Un module actif est exécuté ; un module désactivé par l'utilisateur, ou qui en requiert un désactivé, ne l'est pas et figure au rapport comme non mené. | ADR-0063 |
-| Module applicable | Module actif dont les formats comprennent le format réel du fichier ; sinon, il est « non applicable » dans la couverture. | ADR-0059, ADR-0062 |
+| Module applicable | Module actif dont les formats comprennent le format de la partie analysée ; sinon, il est « non applicable » pour cette partie dans la couverture. | ADR-0059, ADR-0062, ADR-0071 |
+| Analyse (résultat) | Ce que l'interface publique rend pour un fichier avant le rapport complet : identification, isolation, couverture, observations, constats, analyses non menées. | ADR-0073 |
+| Refus | Fichier pour lequel l'outil ne livre aucun résultat, avec un motif explicite : illisible, non régulier, vide, format inconnu ou hors périmètre, fichier modifié pendant l'analyse, arrêt avant l'identification. | F-04, ES-08, ADR-0075 |
 | Garde | Vérification qui empêche un analyseur de s'exécuter hors d'un processus de travail verrouillé. | ES-17, ADR-0061 |
 | Ingrédient (C2PA) | Fichier source déclaré par un manifeste C2PA comme entrant dans la composition du contenu. | A-10, T30 |
 | DigitalSourceType | Champ IPTC qui déclare la nature de la source d'un contenu, dont `trainedAlgorithmicMedia` (généré par IA). | F-11, T22 |
@@ -55,3 +64,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T11 |
 | 2026-10-26 | 1.1 | Manifeste (module) précisé ; contexte, module actif ou désactivé, module applicable, garde ajoutés | T12 |
+| 2026-10-27 | 1.2 | Format réel, partie, fichier polyglotte, fin logique, octets non reconnus, formats du périmètre, concordance de l'extension, analyse, refus ajoutés ; contexte et module applicable précisés | T13 |

@@ -1,4 +1,4 @@
-"""Tests du modèle de données : invariants, sérialisation, analyse interrompue (T11)."""
+"""Tests du modèle de données : invariants, sérialisation, analyse interrompue (T11, T13)."""
 
 import dataclasses
 import json
@@ -13,7 +13,9 @@ from voight_kampff.rapport.modele import (
     LONGUEUR_MAX_IDENTIFIANT,
     LONGUEUR_MAX_TEXTE,
     NOMBRE_MAX_ELEMENTS,
+    NOMBRE_MAX_PARTIES,
     RAISONS_D_INTERRUPTION,
+    RAISONS_D_UNE_PARTIE,
     RAISONS_PROPRES_A_UNE_TECHNIQUE,
     VERSION_SCHEMA,
     Categorie,
@@ -25,6 +27,7 @@ from voight_kampff.rapport.modele import (
     EtatTechnique,
     Fondement,
     Graduation,
+    Identification,
     Intervalle,
     Localisation,
     ManqueIsolation,
@@ -32,6 +35,7 @@ from voight_kampff.rapport.modele import (
     NiveauIsolation,
     NonMenee,
     Observation,
+    Partie,
     Phrase,
     Plage,
     RaisonNonMenee,
@@ -43,6 +47,7 @@ from voight_kampff.rapport.modele import (
 )
 
 EMPREINTE = "3f" * 32
+JPEG = Partie(1, "jpeg", Plage(0, 2_000_000), fin_connue=True)
 
 
 def aller_retour(rapport: Rapport) -> Rapport:
@@ -124,9 +129,9 @@ def test_le_modele_ne_charge_pas_jsonschema() -> None:
 # Analyse interrompue (ADR-0023)
 
 
-@pytest.mark.parametrize("raison", list(RaisonNonMenee))
+@pytest.mark.parametrize("raison", [r for r in RaisonNonMenee if r not in RAISONS_D_UNE_PARTIE])
 def test_interrompue_selon_la_raison(rapport: Rapport, raison: RaisonNonMenee) -> None:
-    non_menee = NonMenee(raison, "jpeg")
+    non_menee = NonMenee(raison, "jpeg", partie=1)
     modifie = dataclasses.replace(rapport, non_menees=(*rapport.non_menees, non_menee))
     assert modifie.interrompue is (raison in RAISONS_D_INTERRUPTION)
     assert aller_retour(modifie) == modifie
@@ -357,7 +362,46 @@ def test_localisation_invalide_refusee(fabrique: Any, motif: str) -> None:
         pytest.param({"empreinte": EMPREINTE.upper()}, "SHA-256", id="empreinte-majuscules"),
         pytest.param({"empreinte": EMPREINTE[:-1]}, "SHA-256", id="empreinte-courte"),
         pytest.param({"taille": -1}, "hors bornes", id="taille-negative"),
-        pytest.param({"format_reel": "jpeg 2000"}, "identifiant", id="format-invalide"),
+        pytest.param({"format_reel": "png"}, "partie 1", id="format-autre-que-la-partie-1"),
+        pytest.param({"parties": ()}, "aucun format reconnu", id="sans-partie"),
+        pytest.param(
+            {"format_reel": "zip", "parties": (Partie(1, "zip", Plage(0, 10), fin_connue=True),)},
+            "aucun format du périmètre",
+            id="hors-perimetre-seulement",
+        ),
+        pytest.param(
+            {"parties": (dataclasses.replace(JPEG, rang=2),)}, "consécutifs", id="rang-initial"
+        ),
+        pytest.param(
+            {
+                "parties": (
+                    Partie(1, "jpeg", Plage(10, 100), fin_connue=True),
+                    Partie(2, "pdf", Plage(0, 10), fin_connue=True),
+                )
+            },
+            "ordre des débuts",
+            id="debuts-en-desordre",
+        ),
+        pytest.param(
+            {"parties": (Partie(1, "jpeg", Plage(0, 2_048_577), fin_connue=True),)},
+            "hors du fichier",
+            id="plage-au-dela",
+        ),
+        pytest.param(
+            {"parties": (dataclasses.replace(JPEG, fin_connue=False),)},
+            "hors du fichier",
+            id="fin-inconnue-avant-la-fin-du-fichier",
+        ),
+        pytest.param(
+            {
+                "parties": tuple(
+                    Partie(rang, "jpeg", Plage(rang, 1), fin_connue=True)
+                    for rang in range(1, NOMBRE_MAX_PARTIES + 2)
+                )
+            },
+            "trop de parties",
+            id="trop-de-parties",
+        ),
         pytest.param({"date_analyse": datetime(2026, 10, 26, 14, 3)}, "UTC", id="date-sans-fuseau"),
         pytest.param(
             {"date_analyse": datetime(2026, 10, 26, 14, 3, tzinfo=timezone(timedelta(hours=2)))},
@@ -380,6 +424,79 @@ def test_identification_invalide_refusee(
 
 def test_date_d_analyse_en_utc_a_la_seconde(rapport: Rapport) -> None:
     assert rapport.vers_dict()["identification"]["date_analyse"] == "2026-10-26T14:03:00Z"
+
+
+def test_format_de_partie_inconnu_refuse() -> None:
+    with pytest.raises(ValueError, match="format inconnu"):
+        Partie(1, "jpeg2000", Plage(0, 1), fin_connue=True)
+
+
+def test_partie_tronquee_sans_fin_connue() -> None:
+    with pytest.raises(ValueError, match="tronquée"):
+        Partie(1, "jpeg", Plage(0, 1), fin_connue=True, tronquee=True)
+
+
+def test_signalements_deduits(rapport: Rapport) -> None:
+    identification = rapport.identification
+    assert identification.extension == "jpg"
+    assert identification.extension_concordante is True
+    # Les 576 octets qui suivent l'archive : après la fin logique de la dernière partie.
+    assert identification.octets_non_reconnus == (Plage(2_048_000, 576),)
+    document = rapport.vers_dict()["identification"]
+    assert document["extension_concordante"] is True
+    assert document["octets_non_reconnus"] == [{"debut": 2_048_000, "longueur": 576}]
+
+
+@pytest.mark.parametrize(
+    ("nom", "extension", "concordante"),
+    [
+        ("photo.JPG", "jpg", True),
+        ("photo.png", "png", False),
+        ("archive.tar.gz", "gz", False),
+        ("sans-extension", None, None),
+        (".profil", None, None),
+        ("nom." + "x" * 33, None, None),
+    ],
+)
+def test_extension_et_concordance(
+    rapport: Rapport, nom: str, extension: str | None, concordante: bool | None
+) -> None:
+    identification = dataclasses.replace(rapport.identification, nom=nom)
+    assert identification.extension == extension
+    assert identification.extension_concordante is concordante
+    assert Identification.depuis_dict(identification.vers_dict()) == identification
+
+
+def test_octets_non_reconnus_avant_entre_et_apres() -> None:
+    identification = Identification(
+        nom="f.pdf",
+        format_reel="pdf",
+        taille=100,
+        empreinte=EMPREINTE,
+        date_analyse=datetime(2026, 10, 27, tzinfo=UTC),
+        parties=(
+            Partie(1, "pdf", Plage(10, 30), fin_connue=True),
+            Partie(2, "pdf", Plage(20, 20), fin_connue=True),  # chevauche la première
+            Partie(3, "zip", Plage(60, 30), fin_connue=True),
+        ),
+    )
+    assert identification.octets_non_reconnus == (Plage(0, 10), Plage(40, 20), Plage(90, 10))
+
+
+@pytest.mark.parametrize(
+    ("champ", "valeur"),
+    [
+        ("extension", "png"),
+        ("extension_concordante", False),
+        ("octets_non_reconnus", []),
+    ],
+)
+def test_signalement_incoherent_refuse_a_la_lecture(
+    rapport: Rapport, champ: str, valeur: object
+) -> None:
+    document = rapport.vers_dict()["identification"] | {champ: valeur}
+    with pytest.raises(ValueError, match=champ):
+        Identification.depuis_dict(document)
 
 
 # Versions, isolation (ADR-0023, ADR-0035)
@@ -418,8 +535,35 @@ def test_module_obligatoire_selon_la_raison(raison: RaisonNonMenee) -> None:
     if raison in RAISONS_PROPRES_A_UNE_TECHNIQUE:
         with pytest.raises(ValueError, match="propre à une technique"):
             NonMenee(raison)
+    elif raison in RAISONS_D_UNE_PARTIE:
+        with pytest.raises(ValueError, match="propre à une partie"):
+            NonMenee(raison)
+        with pytest.raises(ValueError, match="propre à une partie"):
+            NonMenee(raison, "jpeg", partie=1)
+        assert NonMenee(raison, partie=2).module is None
     else:
         assert NonMenee(raison).module is None
+
+
+def test_partie_obligatoire_avec_un_module() -> None:
+    with pytest.raises(ValueError, match="obligatoire avec un module"):
+        NonMenee(RaisonNonMenee.ERREUR_MODULE, "jpeg")
+    with pytest.raises(ValueError, match="hors bornes"):
+        NonMenee(RaisonNonMenee.ERREUR_MODULE, "jpeg", partie=0)
+
+
+@pytest.mark.parametrize(
+    "fabrique",
+    [
+        lambda: Observation("m/1", "m", "n", 1, partie=0),
+        lambda: TechniqueCouverte("m", EtatTechnique.APPLIQUEE, "1", partie=0),
+        lambda: Partie(0, "jpeg", Plage(0, 1), fin_connue=True),
+        lambda: indice(partie=0),
+    ],
+)
+def test_rang_de_partie_a_partir_de_un(fabrique: Any) -> None:
+    with pytest.raises(ValueError, match="hors bornes"):
+        fabrique()
 
 
 def test_version_absente_seulement_pour_une_technique_non_menee() -> None:
@@ -445,6 +589,17 @@ def test_couverture_en_double_refusee(
 ) -> None:
     with pytest.raises(ValueError, match="doublon"):
         Couverture(techniques, marquages)
+
+
+def test_une_technique_par_partie() -> None:
+    couverture = Couverture(
+        (
+            TechniqueCouverte("m", EtatTechnique.APPLIQUEE, "1", partie=1),
+            TechniqueCouverte("m", EtatTechnique.NON_APPLICABLE, "1", partie=2),
+        ),
+        (),
+    )
+    assert len(couverture.techniques) == 2
 
 
 def avec_couverture(rapport: Rapport, *techniques: TechniqueCouverte) -> Couverture:
@@ -482,13 +637,18 @@ def avec_couverture(rapport: Rapport, *techniques: TechniqueCouverte) -> Couvert
             id="observation-d-une-technique-non-applicable",
         ),
         pytest.param(
-            lambda r: {"non_menees": (*r.non_menees, NonMenee(RaisonNonMenee.HORS_V1, "audio"))},
+            lambda r: {
+                "non_menees": (*r.non_menees, NonMenee(RaisonNonMenee.HORS_V1, "audio", partie=1))
+            },
             "absente de la couverture",
             id="non-menee-hors-couverture",
         ),
         pytest.param(
             lambda r: {
-                "non_menees": (*r.non_menees, NonMenee(RaisonNonMenee.ERREUR_MODULE, "c2pa"))
+                "non_menees": (
+                    *r.non_menees,
+                    NonMenee(RaisonNonMenee.ERREUR_MODULE, "c2pa", partie=1),
+                )
             },
             "état incohérent",
             id="appliquee-avec-non-menee",
@@ -514,6 +674,76 @@ def avec_couverture(rapport: Rapport, *techniques: TechniqueCouverte) -> Couvert
             "hors V1",
             id="sans-version-pour-une-autre-raison",
         ),
+        pytest.param(
+            lambda r: {
+                "observations": (*r.observations, Observation("x/1", "c2pa", "n", 1, partie=2))
+            },
+            "ni appliquée ni partielle",
+            id="observation-d-une-partie-non-analysee",
+        ),
+        pytest.param(
+            lambda r: {
+                "observations": (*r.observations, Observation("c2pa/9", "c2pa", "n", 1)),
+                "constats": (
+                    *r.constats,
+                    dataclasses.replace(
+                        r.constats[0], donnees=("c2pa/9", "jpeg/1"), phrase=Phrase("g")
+                    ),
+                ),
+            },
+            "autre technique ou partie",
+            id="constat-citant-une-autre-technique",
+        ),
+        pytest.param(
+            lambda r: {
+                "couverture": avec_couverture(
+                    r, TechniqueCouverte("c2pa", EtatTechnique.NON_APPLICABLE, "0.1.0", partie=2)
+                )
+            },
+            "une entrée par technique et par partie",
+            id="technique-sur-une-partie-hors-perimetre",
+        ),
+        pytest.param(
+            lambda r: {"non_menees": r.non_menees[:-1]},
+            "une non menée « hors_perimetre » par partie",
+            id="partie-hors-perimetre-sans-non-menee",
+        ),
+        pytest.param(
+            lambda r: {
+                "non_menees": (*r.non_menees, NonMenee(RaisonNonMenee.HORS_PERIMETRE, partie=1))
+            },
+            "une non menée « hors_perimetre » par partie",
+            id="hors-perimetre-sur-une-partie-analysee",
+        ),
+        pytest.param(
+            lambda r: {
+                "non_menees": (*r.non_menees, NonMenee(RaisonNonMenee.FICHIER_TRONQUE, partie=3))
+            },
+            "partie absente",
+            id="non-menee-d-une-partie-inconnue",
+        ),
+        pytest.param(
+            lambda r: {
+                "non_menees": tuple(
+                    n for n in r.non_menees if n.raison is not RaisonNonMenee.FORMAT_PARTIEL
+                )
+            },
+            "« format_partiel » attendu",
+            id="plage-non-reconnue-sans-non-menee",
+        ),
+        pytest.param(
+            lambda r: {
+                "identification": dataclasses.replace(
+                    r.identification,
+                    parties=(
+                        r.identification.parties[0],
+                        Partie(2, "zip", Plage(2_000_000, 48_576), False, tronquee=True),
+                    ),
+                )
+            },
+            "« fichier_tronque » attendu",
+            id="partie-tronquee-sans-non-menee",
+        ),
     ],
 )
 def test_rapport_incoherent_refuse(rapport: Rapport, modifier: Any, motif: str) -> None:
@@ -521,9 +751,27 @@ def test_rapport_incoherent_refuse(rapport: Rapport, modifier: Any, motif: str) 
         dataclasses.replace(rapport, **modifier(rapport))
 
 
+def test_couverture_incomplete_pour_un_polyglotte(rapport: Rapport) -> None:
+    # Deux parties analysées : chaque technique doit figurer pour chacune des deux.
+    polyglotte = dataclasses.replace(
+        rapport.identification,
+        parties=(JPEG, Partie(2, "pdf", Plage(2_000_000, 48_576), fin_connue=False)),
+    )
+    with pytest.raises(ValueError, match="une entrée par technique et par partie"):
+        dataclasses.replace(
+            rapport,
+            identification=polyglotte,
+            non_menees=tuple(
+                n for n in rapport.non_menees if n.raison is not RaisonNonMenee.HORS_PERIMETRE
+            ),
+        )
+
+
 def test_rapport_minimal(rapport: Rapport) -> None:
     minimal = Rapport(
-        identification=rapport.identification,
+        identification=dataclasses.replace(
+            rapport.identification, parties=(Partie(1, "jpeg", Plage(0, 2_048_576), True),)
+        ),
         versions=rapport.versions,
         isolation=EtatIsolation(NiveauIsolation.COMPLETE),
         couverture=Couverture((), ()),

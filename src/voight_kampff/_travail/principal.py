@@ -4,8 +4,10 @@
 2. Appliquer les restrictions (T14), se déclarer verrouillé, envoyer l'état de l'isolation :
    aucun octet du fichier n'a encore été lu.
 3. Lire la configuration : modules actifs, dans l'ordre d'exécution.
-4. Recalculer l'empreinte, identifier le format (T13), exécuter chaque module actif, envoyer
-   ses résultats puis son message « module » (ADR-0062), et enfin les versions et la fin.
+4. Identifier les formats et envoyer les parties reconnues (ADR-0070, ADR-0071).
+5. Pour chaque partie du périmètre, exécuter chaque module actif, envoyer ses résultats puis
+   son message « module » (ADR-0062).
+6. Envoyer les versions, puis l'empreinte du fichier recalculée en fin d'analyse (ES-08).
 
 Une exception dans un module ne touche que ce module (NF-03, ADR-0060) ; toute autre erreur
 arrête le processus, et le processus principal en fait une analyse non menée.
@@ -26,7 +28,7 @@ from voight_kampff._protocole import (
     TAILLE_MAX_SORTIE,
     encoder,
 )
-from voight_kampff._travail import garde
+from voight_kampff._travail import garde, identification
 from voight_kampff._travail.contexte import Contexte, LimiteDepassee
 from voight_kampff._travail.fichier import Fichier, ouvrir_herite
 from voight_kampff.rapport.modele import (
@@ -36,11 +38,13 @@ from voight_kampff.rapport.modele import (
     ManqueIsolation,
     NiveauIsolation,
     NonMenee,
+    Partie,
     RaisonNonMenee,
 )
 
 __all__ = [
     "Analyseur",
+    "Identifieur",
     "ModuleConfigure",
     "canal_du_protocole",
     "importer",
@@ -49,6 +53,7 @@ __all__ = [
 ]
 
 type Analyseur = Callable[[Contexte], None]
+type Identifieur = Callable[[Fichier, int], tuple[Partie, ...]]
 
 _RESERVE = 64 << 10
 """Part de la sortie gardée pour les messages du moteur après le dernier module."""
@@ -118,11 +123,6 @@ def lire_configuration(entree: BinaryIO) -> tuple[ModuleConfigure, ...]:
     )
 
 
-def _identifier(_fichier: Fichier) -> str | None:
-    """Format réel du fichier ; aucun avant T13, donc aucun module n'est applicable."""
-    return None
-
-
 class _Canal:
     """Sortie du protocole : une ligne par message, comptée contre la taille maximale."""
 
@@ -146,17 +146,16 @@ def _executer(
     module: ModuleConfigure,
     analyseur: Analyseur | None,
     fichier: Fichier,
-    format_reel: str,
-    taille: int,
+    partie: Partie,
     canal: _Canal,
-) -> None:
+    numero: int,
+) -> int:
+    """Exécute le module sur une partie ; renvoie le numéro de sa dernière observation."""
     raison: RaisonNonMenee | None = RaisonNonMenee.ERREUR_MODULE
     contexte: Contexte | None = None
     if analyseur is not None:
         budget = TAILLE_MAX_SORTIE - canal.envoye - _RESERVE
-        contexte = Contexte(
-            module.identifiant, module.directions, fichier, format_reel, taille, budget
-        )
+        contexte = Contexte(module.identifiant, module.directions, fichier, partie, budget, numero)
         try:
             analyseur(contexte)
         except LimiteDepassee:
@@ -169,8 +168,10 @@ def _executer(
         canal.envoyer(contexte.lignes)
     else:
         # Résultats écartés (ADR-0060) : rien de ce que le module a produit n'est envoyé.
-        non_menee = NonMenee(raison or RaisonNonMenee.ERREUR_MODULE, module.identifiant)
+        raison = raison or RaisonNonMenee.ERREUR_MODULE
+        non_menee = NonMenee(raison, module.identifiant, partie=partie.rang)
         canal.message({"type": "non_menee", "non_menee": non_menee.vers_dict()})
+    return numero if contexte is None else contexte.numero
 
 
 def principal(
@@ -179,7 +180,7 @@ def principal(
     sortie: BinaryIO,
     *,
     analyseurs: Mapping[str, Analyseur] | None = None,
-    identifier: Callable[[Fichier], str | None] = _identifier,
+    identifier: Identifieur = identification.identifier,
 ) -> int:
     """Analyse le fichier transmis par le processus principal ; renvoie le code de sortie.
 
@@ -204,15 +205,32 @@ def principal(
 
     configures = lire_configuration(entree)
     fichier = Fichier(ouvrir_herite(descripteur))
-    empreinte, taille = fichier.empreinte()
-    format_reel = identifier(fichier)
-    for module in configures:
-        applicable = format_reel is not None and format_reel in module.formats
-        if format_reel is not None and applicable:
-            analyseur = None if module.identifiant in echecs else analyseurs.get(module.identifiant)
-            _executer(module, analyseur, fichier, format_reel, taille, canal)
-        canal.message({"type": "module", "module": module.identifiant, "applicable": applicable})
+    parties = identifier(fichier, fichier.taille())
+    canal.message({"type": "identification", "parties": [p.vers_dict() for p in parties]})
+    numeros = dict.fromkeys((module.identifiant for module in configures), 0)
+    for partie in parties:
+        if not partie.dans_perimetre:
+            continue  # déclarée non analysée par le processus principal
+        for module in configures:
+            applicable = partie.format in module.formats
+            if applicable:
+                analyseur = (
+                    None if module.identifiant in echecs else analyseurs.get(module.identifiant)
+                )
+                numeros[module.identifiant] = _executer(
+                    module, analyseur, fichier, partie, canal, numeros[module.identifiant]
+                )
+            canal.message(
+                {
+                    "type": "module",
+                    "module": module.identifiant,
+                    "partie": partie.rang,
+                    "applicable": applicable,
+                }
+            )
     # Versions des bibliothèques qui lisent le fichier : avec le premier module qui en emploie.
     canal.message({"type": "versions", "dependances": []})
+    # Empreinte de ce qui a été analysé, recalculée après les modules (ES-08).
+    empreinte, _taille = fichier.empreinte()
     canal.message({"type": "fin", "empreinte": empreinte})
     return 0

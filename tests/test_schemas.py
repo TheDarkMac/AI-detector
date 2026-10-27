@@ -1,4 +1,4 @@
-"""Tests des JSON Schema : conformité, accord avec le modèle, aucun accès réseau (T11)."""
+"""Tests des JSON Schema : conformité, accord avec le modèle, aucun accès réseau (T11, T13)."""
 
 import copy
 import json
@@ -9,7 +9,7 @@ from typing import Any
 import pytest
 from referencing.exceptions import NoSuchResource
 
-from voight_kampff import schemas
+from voight_kampff import formats, schemas
 from voight_kampff.rapport import modele
 from voight_kampff.rapport.modele import Rapport
 
@@ -47,11 +47,18 @@ def test_chaque_message_conforme(rapport: Rapport) -> None:
             "version_schema": modele.VERSION_SCHEMA,
             "isolation": document["isolation"],
         },
+        {"type": "identification", "parties": document["identification"]["parties"]},
+        {"type": "identification", "parties": []},
         *({"type": "observation", "observation": o} for o in document["observations"]),
         *({"type": "constat", "constat": c} for c in document["constats"]),
         *({"type": "non_menee", "non_menee": n} for n in document["non_menees"]),
         *(
-            {"type": "module", "module": t["module"], "applicable": t["etat"] != "non_applicable"}
+            {
+                "type": "module",
+                "module": t["module"],
+                "partie": t["partie"],
+                "applicable": t["etat"] != "non_applicable",
+            }
             for t in document["couverture"]["techniques"]
         ),
         {"type": "versions", "dependances": document["versions"]["dependances"]},
@@ -72,12 +79,49 @@ def test_chaque_message_conforme(rapport: Rapport) -> None:
             id="version-differente",
         ),
         pytest.param(["fin"], id="pas-un-objet"),
-        pytest.param({"type": "module", "module": "exif"}, id="module-sans-applicable"),
         pytest.param(
-            {"type": "module", "module": "exif", "applicable": "oui"}, id="module-applicable-texte"
+            {"type": "module", "module": "exif", "partie": 1}, id="module-sans-applicable"
         ),
         pytest.param(
-            {"type": "module", "module": "a b", "applicable": True}, id="module-identifiant"
+            {"type": "module", "module": "exif", "partie": 1, "applicable": "oui"},
+            id="module-applicable-texte",
+        ),
+        pytest.param(
+            {"type": "module", "module": "a b", "partie": 1, "applicable": True},
+            id="module-identifiant",
+        ),
+        pytest.param(
+            {"type": "module", "module": "exif", "applicable": True}, id="module-sans-partie"
+        ),
+        pytest.param({"type": "identification"}, id="identification-sans-parties"),
+        pytest.param(
+            {
+                "type": "identification",
+                "parties": [
+                    {
+                        "rang": 1,
+                        "format": "jpeg2000",
+                        "octets": {"debut": 0, "longueur": 1},
+                        "fin_connue": True,
+                    }
+                ],
+            },
+            id="identification-format-inconnu",
+        ),
+        pytest.param(
+            {
+                "type": "identification",
+                "parties": [
+                    {
+                        "rang": r,
+                        "format": "jpeg",
+                        "octets": {"debut": r, "longueur": 1},
+                        "fin_connue": True,
+                    }
+                    for r in range(1, 18)
+                ],
+            },
+            id="identification-trop-de-parties",
         ),
     ],
 )
@@ -108,8 +152,19 @@ def test_enumerations_identiques(definition: str, enumeration: type[StrEnum]) ->
 
 
 def test_raisons_propres_a_une_technique_identiques() -> None:
-    condition = definitions()["non_menee"]["if"]["properties"]["raison"]["enum"]
+    condition = definitions()["non_menee"]["allOf"][0]["if"]["properties"]["raison"]["enum"]
     assert set(condition) == set(modele.RAISONS_PROPRES_A_UNE_TECHNIQUE)
+
+
+def test_raisons_d_une_partie_identiques() -> None:
+    condition = definitions()["non_menee"]["allOf"][1]["if"]["properties"]["raison"]["enum"]
+    assert set(condition) == set(modele.RAISONS_D_UNE_PARTIE)
+
+
+def test_formats_identiques() -> None:
+    assert definitions()["format"]["enum"] == sorted(formats.FORMATS)
+    assert definitions()["format_du_perimetre"]["enum"] == sorted(formats.PERIMETRE)
+    assert set(formats.EXTENSIONS) == formats.FORMATS
 
 
 def test_fondements_de_preuve_identiques() -> None:
@@ -139,6 +194,14 @@ def test_bornes_identiques() -> None:
     assert defs["phrase"]["properties"]["parametres"]["maxProperties"] == (
         modele.NOMBRE_MAX_PARAMETRES
     )
+    assert defs["identification"]["properties"]["parties"]["maxItems"] == modele.NOMBRE_MAX_PARTIES
+    assert defs["partie"]["properties"]["rang"]["maximum"] == modele.NOMBRE_MAX_PARTIES
+    trous = defs["identification"]["properties"]["octets_non_reconnus"]["maxItems"]
+    assert trous == modele.NOMBRE_MAX_PARTIES + 1
+    extension = defs["identification"]["properties"]["extension"]["maxLength"]
+    assert extension == formats.LONGUEUR_MAX_EXTENSION
+    messages = schemas.charger("messages")["$defs"]["identification"]["properties"]
+    assert messages["parties"]["maxItems"] == modele.NOMBRE_MAX_PARTIES
     assert defs["nombre"]["minimum"] == -(2**63)
     assert defs["nombre"]["maximum"] == 2**63 - 1
 
@@ -175,6 +238,8 @@ PREUVE = premier_constat("preuve")
 INDICE = premier_constat("indice")
 NEUTRE = premier_constat("information_neutre")
 IDENTIFICATION: Callable[[Document], Document] = lambda d: d["identification"]  # noqa: E731
+PARTIE_1: Callable[[Document], Document] = lambda d: d["identification"]["parties"][0]  # noqa: E731
+HORS_PERIMETRE: Callable[[Document], Document] = lambda d: d["non_menees"][-1]  # noqa: E731
 ISOLATION: Callable[[Document], Document] = lambda d: d["isolation"]  # noqa: E731
 
 # Chaque altération doit être refusée à la fois par le schéma et par le modèle.
@@ -230,6 +295,29 @@ ALTERATIONS_REFUSEES_PARTOUT: list[Any] = [
     pytest.param(
         modifier(IDENTIFICATION, date_analyse="2026-10-26T14:03:00.5Z"), id="date-fraction"
     ),
+    pytest.param(modifier(IDENTIFICATION, parties=[]), id="sans-partie"),
+    pytest.param(modifier(IDENTIFICATION, parties=...), id="parties-absentes"),
+    pytest.param(modifier(IDENTIFICATION, format_reel="jpeg2000"), id="format-reel-inconnu"),
+    pytest.param(modifier(PARTIE_1, format="jpeg2000"), id="format-de-partie-inconnu"),
+    pytest.param(modifier(PARTIE_1, rang=0), id="rang-zero"),
+    pytest.param(modifier(PARTIE_1, fin_connue=...), id="fin-connue-absente"),
+    pytest.param(modifier(PARTIE_1, tronquee=...), id="tronquee-absente"),
+    pytest.param(modifier(PARTIE_1, tronquee=True), id="tronquee-avec-fin-connue"),
+    pytest.param(
+        modifier(IDENTIFICATION, extension_concordante=...), id="extension-sans-concordance"
+    ),
+    pytest.param(modifier(IDENTIFICATION, extension=...), id="concordance-sans-extension"),
+    pytest.param(modifier(IDENTIFICATION, extension="x" * 33), id="extension-trop-longue"),
+    pytest.param(modifier(observation(0), partie=...), id="observation-sans-partie"),
+    pytest.param(modifier(observation(0), partie=0), id="observation-partie-zero"),
+    pytest.param(modifier(PREUVE, partie=...), id="constat-sans-partie"),
+    pytest.param(
+        modifier(lambda d: d["couverture"]["techniques"][0], partie=...),
+        id="technique-sans-partie",
+    ),
+    pytest.param(modifier(lambda d: d["non_menees"][1], partie=...), id="module-sans-partie"),
+    pytest.param(modifier(HORS_PERIMETRE, partie=...), id="hors-perimetre-sans-partie"),
+    pytest.param(modifier(HORS_PERIMETRE, module="jpeg"), id="hors-perimetre-avec-module"),
     pytest.param(modifier(ISOLATION, niveau="complete"), id="complete-avec-manques"),
     pytest.param(modifier(ISOLATION, manques=[]), id="reduite-sans-manque"),
     pytest.param(
@@ -295,6 +383,13 @@ ALTERATIONS_REFUSEES_PAR_LE_MODELE_SEUL: list[Any] = [
     pytest.param(modifier(observation(0), valeur="\ud800"), id="substitut-isole"),
     pytest.param(modifier(racine, interrompue=True), id="interrompue-incoherente"),
     pytest.param(modifier(IDENTIFICATION, date_analyse="2026-02-30T14:03:00Z"), id="date-du-30"),
+    pytest.param(modifier(PARTIE_1, rang=2), id="rangs-non-consecutifs"),
+    pytest.param(modifier(IDENTIFICATION, format_reel="png"), id="format-reel-d-une-autre-partie"),
+    pytest.param(modifier(IDENTIFICATION, extension="png"), id="extension-incoherente"),
+    pytest.param(modifier(IDENTIFICATION, extension_concordante=False), id="concordance-fausse"),
+    pytest.param(modifier(IDENTIFICATION, octets_non_reconnus=[]), id="non-reconnus-omis"),
+    pytest.param(modifier(observation(0), partie=2), id="observation-partie-hors-perimetre"),
+    pytest.param(modifier(HORS_PERIMETRE, partie=1), id="hors-perimetre-partie-analysee"),
 ]
 
 

@@ -70,3 +70,4 @@ Le contexte (`voight_kampff._travail.contexte.Contexte`) offre :
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Précisé par ADR-0071 (T13) : le contexte lit la partie analysée, `taille` et `format_reel` sont les siens, `partie` ajouté, localisations ramenées au fichier, numérotation continue d'une partie à l'autre |

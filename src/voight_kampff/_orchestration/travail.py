@@ -4,6 +4,10 @@ Le processus principal ne lit jamais le fichier pour l'interpréter : il transme
 déjà ouvert, envoie la configuration une fois l'isolation annoncée, puis valide chaque ligne
 reçue, dans cet ordre : taille, JSON strict, schéma, modèle, place dans le protocole.
 
+Après l'isolation vient l'identification : les parties reconnues (ADR-0071). Les résultats
+arrivent ensuite partie par partie, chaque module actif dans l'ordre pour chaque partie du
+périmètre ; une partie hors périmètre est déclarée non analysée ici, pas par le travail.
+
 Tout écart arrête le processus de travail. Les modules terminés gardent leurs résultats ; les
 autres deviennent des analyses non menées, avec la raison de l'arrêt, et l'analyse est
 interrompue (ADR-0056). Un délai et des tailles **provisoires** bornent l'échange ; T14 fixe
@@ -38,12 +42,16 @@ from voight_kampff.rapport.modele import (
     Dependance,
     EtatIsolation,
     EtatTechnique,
+    Localisation,
     ManqueIsolation,
     NiveauIsolation,
     NonMenee,
     Observation,
+    Partie,
     RaisonNonMenee,
     TechniqueCouverte,
+    plages_non_reconnues,
+    verifier_parties,
 )
 
 __all__ = ["DELAI", "ResultatTravail", "commande_travail", "executer"]
@@ -77,10 +85,12 @@ _ISOLATION_INCONNUE = EtatIsolation(NiveauIsolation.REDUITE, tuple(ManqueIsolati
 class ResultatTravail:
     """Ce que le processus de travail a établi pour un fichier, validé par le principal.
 
-    Le rapport (T16) y ajoute l'identification (T13) et les versions de l'outil et du
-    catalogue (T15).
+    La soumission (ADR-0075) y ajoute le nom, la taille et l'empreinte du processus principal ;
+    le rapport (T16), les versions de l'outil et du catalogue (T15).
     """
 
+    parties: tuple[Partie, ...] | None
+    """Parties reconnues par le travail ; ``None`` s'il s'est arrêté avant de les envoyer."""
     isolation: EtatIsolation
     couverture: Couverture
     observations: tuple[Observation, ...]
@@ -88,7 +98,7 @@ class ResultatTravail:
     non_menees: tuple[NonMenee, ...]
     dependances: tuple[Dependance, ...]
     empreinte: str | None
-    """Empreinte recalculée par le processus de travail ; comparée à celle du principal (T13)."""
+    """Empreinte recalculée en fin d'analyse ; comparée à celle du principal (ES-08)."""
 
     @property
     def interrompue(self) -> bool:
@@ -114,17 +124,19 @@ def executer(
     manifestes: Sequence[Manifeste],
     desactives: Collection[str] = (),
     *,
+    taille: int | None = None,
     delai: float = DELAI,
     commande: Callable[[int], Sequence[str]] = commande_travail,
 ) -> ResultatTravail:
     """Analyse le fichier ouvert en ``descripteur`` dans un processus de travail neuf.
 
     ``manifestes`` est dans l'ordre d'exécution (``decouvrir``) ; ``desactives`` nomme les
-    modules désactivés par l'utilisateur. ``commande`` remplace, pour les tests, le processus
-    de travail livré.
+    modules désactivés par l'utilisateur. ``taille``, celle que le principal a hachée, borne
+    les parties reçues ; à défaut, celle du descripteur. ``commande`` remplace, pour les
+    tests, le processus de travail livré.
     """
     actifs, eteints = selectionner(manifestes, desactives)
-    reception = _Reception(actifs)
+    reception = _Reception(actifs, os.fstat(descripteur).st_size if taille is None else taille)
     configuration = encoder(
         {
             "version_schema": VERSION_SCHEMA,
@@ -244,7 +256,10 @@ def _invalide(condition: bool) -> None:
 
 @dataclass(slots=True)
 class _Module:
+    """Un module actif sur une partie du périmètre."""
+
     manifeste: Manifeste
+    partie: int
     observations: list[Observation] = field(default_factory=list)
     constats: list[Constat] = field(default_factory=list)
     non_menees: list[NonMenee] = field(default_factory=list)
@@ -270,8 +285,12 @@ class _Module:
 class _Reception:
     """Suit le protocole message par message ; tout écart lève :class:`_Interruption`."""
 
-    def __init__(self, actifs: Sequence[Manifeste]) -> None:
-        self._modules = [_Module(manifeste) for manifeste in actifs]
+    def __init__(self, actifs: Sequence[Manifeste], taille: int) -> None:
+        self._actifs = tuple(actifs)
+        self._taille = taille
+        self._parties: tuple[Partie, ...] | None = None
+        self._modules: list[_Module] = []
+        """Modules attendus, partie par partie ; connus à la réception de l'identification."""
         self._rang = 0
         self._identifiants: set[str] = set()
         self._isolation: EtatIsolation | None = None
@@ -299,6 +318,9 @@ class _Reception:
         )
         ecriture.start()
 
+        second = self._message(evenements, processus, echeance)
+        _invalide(second["type"] == "identification")
+        self._traiter(second)
         while self._empreinte is None:
             self._traiter(self._message(evenements, processus, echeance))
         dernier = self._evenement(evenements, echeance)
@@ -339,6 +361,9 @@ class _Reception:
     def _traiter(self, message: dict[str, Any]) -> None:
         try:
             match message["type"]:
+                case "identification":
+                    _invalide(self._parties is None)
+                    self._identification(message["parties"])
                 case "observation":
                     self._observation(Observation.depuis_dict(message["observation"]))
                 case "constat":
@@ -346,7 +371,7 @@ class _Reception:
                 case "non_menee":
                     self._non_menee(NonMenee.depuis_dict(message["non_menee"]))
                 case "module":
-                    self._fin_de_module(message["module"], message["applicable"])
+                    self._fin_de_module(message["module"], message["partie"], message["applicable"])
                 case "versions":
                     _invalide(self._dependances is None)
                     self._versions(message["dependances"])
@@ -360,22 +385,34 @@ class _Reception:
             # champ, n'est pas gardé.
             raise _Interruption(RaisonNonMenee.MESSAGE_INVALIDE) from None
 
-    def _courant(self, identifiant: str | None) -> _Module:
+    def _identification(self, documents: list[dict[str, Any]]) -> None:
+        parties = tuple(Partie.depuis_dict(document) for document in documents)
+        verifier_parties(parties, self._taille)
+        self._parties = parties
+        self._modules = [
+            _Module(manifeste, partie.rang)
+            for partie in parties
+            if partie.dans_perimetre
+            for manifeste in self._actifs
+        ]
+
+    def _courant(self, identifiant: str | None, partie: int | None) -> _Module:
         """Module en cours : les modules rendent leurs résultats un par un, dans l'ordre."""
         _invalide(self._rang < len(self._modules))
         module = self._modules[self._rang]
         _invalide(identifiant == module.manifeste.identifiant and not module.remplace)
+        _invalide(partie == module.partie)
         return module
 
     def _observation(self, observation: Observation) -> None:
-        module = self._courant(observation.module)
+        module = self._courant(observation.module, observation.partie)
         _invalide(observation.identifiant.startswith(f"{observation.module}/"))
         _invalide(observation.identifiant not in self._identifiants)
         self._identifiants.add(observation.identifiant)
         module.observations.append(observation)
 
     def _constat(self, constat: Constat) -> None:
-        module = self._courant(constat.module)
+        module = self._courant(constat.module, constat.partie)
         siennes = {observation.identifiant for observation in module.observations}
         _invalide(set(constat.donnees) <= siennes)
         _invalide(constat.direction in module.manifeste.directions)
@@ -384,9 +421,11 @@ class _Reception:
     def _non_menee(self, non_menee: NonMenee) -> None:
         if non_menee.module is None:
             _invalide(non_menee.raison in _RAISONS_DU_FICHIER)
+            rangs = {partie.rang for partie in self._parties or ()}
+            _invalide(non_menee.partie is None or non_menee.partie in rangs)
             self._non_menees_du_fichier.append(non_menee)
             return
-        module = self._courant(non_menee.module)
+        module = self._courant(non_menee.module, non_menee.partie)
         _invalide(non_menee.raison in _RAISONS_D_UN_MODULE)
         if non_menee.raison in _RAISONS_DU_MOTEUR:
             # Les résultats du module ont été écartés : la raison est seule (ADR-0060).
@@ -394,10 +433,10 @@ class _Reception:
             module.remplace = True
         module.non_menees.append(non_menee)
 
-    def _fin_de_module(self, identifiant: str, applicable: bool) -> None:
+    def _fin_de_module(self, identifiant: str, partie: int, applicable: bool) -> None:
         _invalide(self._rang < len(self._modules))
         module = self._modules[self._rang]
-        _invalide(identifiant == module.manifeste.identifiant)
+        _invalide(identifiant == module.manifeste.identifiant and partie == module.partie)
         _invalide(applicable or module.vide)
         module.applicable = applicable
         self._rang += 1
@@ -413,31 +452,57 @@ class _Reception:
         self._interruption = raison
 
     def resultat(self, manifestes: Sequence[Manifeste], eteints: set[str]) -> ResultatTravail:
-        actifs = {module.manifeste.identifiant: module for module in self._modules}
+        executes = {
+            (module.manifeste.identifiant, module.partie): module for module in self._modules
+        }
         techniques: list[TechniqueCouverte] = []
         observations: list[Observation] = []
         constats: list[Constat] = []
         non_menees: list[NonMenee] = []
-        for manifeste in manifestes:
-            identifiant, version = manifeste.identifiant, manifeste.version
-            module = actifs.get(identifiant)
-            if identifiant in eteints or module is None:
-                techniques.append(TechniqueCouverte(identifiant, EtatTechnique.NON_MENEE, version))
-                non_menees.append(NonMenee(RaisonNonMenee.MODULE_DESACTIVE, identifiant))
-            elif module.applicable is None:  # pas terminé : ses résultats sont écartés
-                # Seule une interruption laisse un module inachevé : « fin » exige les autres.
-                raison = self._interruption or RaisonNonMenee.ARRET_PROCESSUS
-                techniques.append(TechniqueCouverte(identifiant, EtatTechnique.NON_MENEE, version))
-                non_menees.append(NonMenee(raison, identifiant))
-            else:
-                techniques.append(TechniqueCouverte(identifiant, module.etat(), version))
-                observations.extend(module.observations)
-                constats.extend(module.constats)
-                non_menees.extend(module.non_menees)
+        for partie in self._parties or ():
+            # Ce que l'identification n'a pas pu analyser est déclaré ici (ADR-0056, ADR-0071).
+            localisation = Localisation(octets=partie.octets)
+            if partie.tronquee:
+                non_menees.append(
+                    NonMenee(RaisonNonMenee.FICHIER_TRONQUE, None, localisation, partie.rang)
+                )
+            if not partie.dans_perimetre:
+                non_menees.append(
+                    NonMenee(RaisonNonMenee.HORS_PERIMETRE, None, localisation, partie.rang)
+                )
+                continue
+            for manifeste in manifestes:
+                identifiant, version, rang = manifeste.identifiant, manifeste.version, partie.rang
+                module = executes.get((identifiant, rang))
+                if identifiant in eteints or module is None:
+                    techniques.append(
+                        TechniqueCouverte(identifiant, EtatTechnique.NON_MENEE, version, rang)
+                    )
+                    non_menees.append(
+                        NonMenee(RaisonNonMenee.MODULE_DESACTIVE, identifiant, partie=rang)
+                    )
+                elif module.applicable is None:  # pas terminé : ses résultats sont écartés
+                    # Seule une interruption laisse un module inachevé : « fin » exige les autres.
+                    raison = self._interruption or RaisonNonMenee.ARRET_PROCESSUS
+                    techniques.append(
+                        TechniqueCouverte(identifiant, EtatTechnique.NON_MENEE, version, rang)
+                    )
+                    non_menees.append(NonMenee(raison, identifiant, partie=rang))
+                else:
+                    techniques.append(TechniqueCouverte(identifiant, module.etat(), version, rang))
+                    observations.extend(module.observations)
+                    constats.extend(module.constats)
+                    non_menees.extend(module.non_menees)
+        if self._parties:
+            non_menees.extend(
+                NonMenee(RaisonNonMenee.FORMAT_PARTIEL, localisation=Localisation(octets=plage))
+                for plage in plages_non_reconnues(self._parties, self._taille)
+            )
         non_menees.extend(self._non_menees_du_fichier)
         if self._interruption is not None:
             non_menees.append(NonMenee(self._interruption))
         return ResultatTravail(
+            parties=self._parties,
             isolation=self._isolation or _ISOLATION_INCONNUE,
             couverture=Couverture(tuple(techniques), ()),
             observations=tuple(observations),

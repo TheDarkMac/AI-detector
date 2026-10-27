@@ -2,9 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:voight-kampff:schema:messages",
   "title": "Messages du processus de travail Voight-Kampff",
-  "description": "Une ligne JSON envoyée par le processus de travail au processus principal (ADR-0036, ES-04). Le premier message est l'état de l'isolation, le dernier la fin ; les résultats de chaque module actif sont suivis de son message « module » (ADR-0062). Les objets transportés sont ceux du schéma du rapport, de même version.",
+  "description": "Une ligne JSON envoyée par le processus de travail au processus principal (ADR-0036, ES-04). Le premier message est l'état de l'isolation, le deuxième l'identification, le dernier la fin ; pour chaque partie du périmètre, les résultats de chaque module actif sont suivis de son message « module » (ADR-0062, ADR-0071). Les objets transportés sont ceux du schéma du rapport, de même version.",
   "oneOf": [
     { "$ref": "#/$defs/isolation" },
+    { "$ref": "#/$defs/identification" },
     { "$ref": "#/$defs/observation" },
     { "$ref": "#/$defs/constat" },
     { "$ref": "#/$defs/non_menee" },
@@ -21,6 +22,19 @@
         "type": { "const": "isolation" },
         "version_schema": { "const": "0.1.0" },
         "isolation": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/isolation" }
+      }
+    },
+    "identification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "parties"],
+      "properties": {
+        "type": { "const": "identification" },
+        "parties": {
+          "type": "array",
+          "maxItems": 16,
+          "items": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/partie" }
+        }
       }
     },
     "observation": {
@@ -53,10 +67,11 @@
     "module": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["type", "module", "applicable"],
+      "required": ["type", "module", "partie", "applicable"],
       "properties": {
         "type": { "const": "module" },
         "module": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/identifiant" },
+        "partie": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/entier_strictement_positif" },
         "applicable": { "type": "boolean" }
       }
     },

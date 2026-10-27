@@ -89,6 +89,8 @@ files = ["src", "tests"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["-ra", "--strict-markers", "--strict-config", "--import-mode=importlib"]
+# Échantillons partagés entre fichiers de tests (tests/echantillons.py).
+pythonpath = ["tests"]
 xfail_strict = true
 
 [tool.coverage.run]
