@@ -41,3 +41,4 @@ La version est **écrite dans `pyproject.toml`** (champ `version`). Le workflow 
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Renvoi : règles de numérotation fixées (ADR-0068) ; étiquette limitée aux commits de `detector` et pré-versions marquées (ADR-0069) |

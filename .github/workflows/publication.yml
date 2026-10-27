@@ -4,6 +4,8 @@
 # - éditeur de confiance déclaré sur PyPI pour ce dépôt, ce workflow et l'environnement « pypi » ;
 # - environnement GitHub « pypi » protégé (relecteur obligatoire) ;
 # - fichier LICENSE présent (ADR-0011) : la construction le vérifie.
+# L'étiquette doit être posée sur un commit de detector (ADR-0069) ; une pré-version donne une release
+# GitHub marquée comme telle.
 name: publication
 
 on:
@@ -23,8 +25,13 @@ defaults:
 jobs:
   construction:
     runs-on: ubuntu-latest
+    outputs:
+      pre-version: ${{ steps.version.outputs.pre-version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Historique complet : le contrôle de l'étiquette parcourt celui de detector.
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
           version: ${{ env.UV_VERSION }}
@@ -35,6 +42,32 @@ jobs:
             echo "::error::Étiquette ${GITHUB_REF_NAME}, version du paquet ${version}"
             exit 1
           fi
+      - name: L'étiquette est posée sur un commit de detector (ADR-0069)
+        run: |
+          commit="$(git rev-parse HEAD)"
+          # Premier parent seulement : un commit d'une branche de tâche, même mergée, est refusé.
+          # Substitution plutôt que tube : avec pipefail, l'arrêt anticipé de grep ferait échouer git.
+          if ! grep -qx "$commit" <(git rev-list --first-parent origin/detector); then
+            echo "::error::Le commit ${commit} de ${GITHUB_REF_NAME} n'est pas un commit de detector"
+            exit 1
+          fi
+      - name: Version publique PEP 440 ; pré-version ou non (ADR-0069)
+        id: version
+        run: |
+          # uv rend la forme normalisée ; une version locale (+…) est refusée, comme sur PyPI.
+          version="$(uv version --short)"
+          if ! [[ "$version" =~ ^[0-9]+(\.[0-9]+)*((a|b|rc)[0-9]+)?(\.post[0-9]+)?(\.dev[0-9]+)?$ ]]; then
+            echo "::error::Version ${version} : forme publique PEP 440 attendue"
+            exit 1
+          fi
+          # Groupe 2 : aN, bN ou rcN ; groupe 5 : .devN.
+          if [ -n "${BASH_REMATCH[2]}" ] || [ -n "${BASH_REMATCH[5]}" ]; then
+            pre=true
+          else
+            pre=false
+          fi
+          echo "Version ${version}, pré-version : ${pre}"
+          echo "pre-version=${pre}" >> "$GITHUB_OUTPUT"
       - name: Le fichier LICENSE est présent (ADR-0011)
         run: |
           if [ ! -f LICENSE ]; then
@@ -89,7 +122,7 @@ jobs:
           print-hash: true
 
   release-github:
-    needs: pypi
+    needs: [construction, pypi]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -100,8 +133,14 @@ jobs:
       - name: Release avec paquets, empreintes et fichier d'installation verrouillé
         env:
           GH_TOKEN: ${{ github.token }}
+          PRE_VERSION: ${{ needs.construction.outputs.pre-version }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" \
+          options=()
+          # Une pré-version n'est jamais présentée comme la dernière version (ADR-0069).
+          if [ "$PRE_VERSION" = "true" ]; then
+            options+=(--prerelease)
+          fi
+          gh release create "${GITHUB_REF_NAME}" "${options[@]}" \
             --repo "${GITHUB_REPOSITORY}" \
             --title "${GITHUB_REF_NAME}" \
             --notes "Paquets publiés sur PyPI (voight-kampff-forensics), avec attestations de provenance. Empreintes SHA-256 et fichier d'installation verrouillé joints." \
