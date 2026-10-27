@@ -49,3 +49,4 @@ Les règles, les seuils, leur procédure de calibrage, leurs taux d'erreur et le
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Réalisé en T15 : chaque règle porte au moins une limite connue ; catalogue public, consultable par `vk --regles` (ADR-0084, ADR-0086) |

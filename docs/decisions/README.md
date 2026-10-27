@@ -98,3 +98,10 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0081](ADR-0081-restrictions-sous-windows.md) | Restrictions sous Windows : Job Object posé par le travail, intégrité basse | Accepté | 2026-10-27 |
 | [ADR-0082](ADR-0082-fuzzing-par-hypothesis.md) | Fuzzing des analyseurs par Hypothesis | Accepté | 2026-10-27 |
 | [ADR-0083](ADR-0083-verification-de-l-isolation.md) | Vérification de l'isolation : depuis un module, et code restreint hors de la couverture | Accepté | 2026-10-27 |
+| [ADR-0084](ADR-0084-langage-des-regles.md) | Langage des règles : conditions fermées, toutes requises ; règles appliquées par un module | Accepté | 2026-10-27 |
+| [ADR-0085](ADR-0085-version-date-et-registre-du-catalogue.md) | Version, date et registre du catalogue | Accepté | 2026-10-27 |
+| [ADR-0086](ADR-0086-catalogue-fourni-par-l-utilisateur.md) | Catalogue fourni par l'utilisateur : il remplace le catalogue livré | Accepté | 2026-10-27 |
+| [ADR-0087](ADR-0087-techniques-hors-v1.md) | Techniques hors V1 : une liste de l'outil, à côté des modules | Accepté | 2026-10-27 |
+| [ADR-0088](ADR-0088-fichiers-et-empreinte-du-catalogue.md) | Fichiers, empreinte et limites du catalogue | Proposé | 2026-10-27 |
+| [ADR-0089](ADR-0089-motifs-re2-et-evaluation.md) | Motifs RE2 admis et évaluation des conditions | Proposé | 2026-10-27 |
+| [ADR-0090](ADR-0090-constat-d-une-regle.md) | Constat d'une règle : cité par son identifiant, contrôlé par le processus principal | Proposé | 2026-10-27 |

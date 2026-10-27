@@ -1,6 +1,6 @@
 # Architecture
 
-> Statut : **v1.7** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 proposée dans la PR de T14. Document vivant : toute modification est inscrite à l'historique (§13).
+> Statut : **v1.8** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 proposée dans la PR de T15. Document vivant : toute modification est inscrite à l'historique (§13).
 > Exigences : NF-01, NF-06, NF-10 ; exigences de sécurité ES-01, ES-02, ES-05, ES-10, ES-17, ES-18 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-05, A-16, A-30, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T04. Date de rédaction : 2026-10-26.
 
@@ -108,7 +108,7 @@ Dans un lot (ADR-0015), ces étapes se répètent pour chaque fichier, avec un n
 
 ## 4. Composants et organisation du code
 
-Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; T11 a créé `rapport/modele.py` et `schemas/` (schémas du rapport et des messages) ; T12 a créé `_protocole.py`, `_orchestration/`, `_travail/`, `modules/` (vide) et le schéma des manifestes ; T13 a créé `formats.py`, `analyse.py`, `_orchestration/soumission.py` et `_travail/identification.py` ; T14 a créé `_limites.py`, `_orchestration/surveillance.py` et `_travail/restrictions/` ; les autres éléments arrivent avec leurs tâches.
+Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; T11 a créé `rapport/modele.py` et `schemas/` (schémas du rapport et des messages) ; T12 a créé `_protocole.py`, `_orchestration/`, `_travail/`, `modules/` (vide) et le schéma des manifestes ; T13 a créé `formats.py`, `analyse.py`, `_orchestration/soumission.py` et `_travail/identification.py` ; T14 a créé `_limites.py`, `_orchestration/surveillance.py` et `_travail/restrictions/` ; T15 a créé `_regles.py`, `_orchestration/catalogue.py`, `donnees/catalogue/` et `modules/hors_v1.toml` ; les autres éléments arrivent avec leurs tâches.
 
 ```text
 src/voight_kampff/
@@ -119,14 +119,14 @@ src/voight_kampff/
   formats.py         vocabulaire des formats et extensions (P1, P2, modèle ; ADR-0070)
   _limites.py        valeurs des limites, fixes (P1 et P2 ; ADR-0077, ADR-0078)
   _protocole.py      lignes JSON du protocole, décodage strict (P1 et P2)
-  _orchestration/    P1 : manifestes, lancement de P2, délai, validation des messages ; soumission, empreinte, refus (T13) ; surveillance de la mémoire sous macOS (T14)
+  _orchestration/    P1 : manifestes, lancement de P2, délai, validation des messages ; soumission, empreinte, refus (T13) ; surveillance de la mémoire sous macOS (T14) ; chargement du catalogue (T15)
   _travail/          point d'entrée de P2 : verrouillage, garde, identification, contexte et budget des modules, acheminement
   _travail/restrictions/  restrictions par système : linux, macos, windows (ADR-0079 à ADR-0081)
-  _regles/           évaluation des règles du catalogue (RE2, ADR-0039)
-  modules/           une technique par sous-paquet, avec son manifeste (ADR-0042)
+  _regles.py         règles du catalogue : forme, motifs RE2, évaluation (P1 et P2 ; ADR-0084, ADR-0089)
+  modules/           une technique par sous-paquet, avec son manifeste (ADR-0042) ; techniques hors V1 (hors_v1.toml, ADR-0087)
   rapport/           modèle du rapport (T11), exports HTML et JSON (T16)
-  schemas/           JSON Schema : messages de P2, catalogue, manifestes, rapport
-  donnees/           catalogue TOML, liste de confiance C2PA (ADR-0029, ADR-0038)
+  schemas/           JSON Schema : messages de P2, catalogue et règles, manifestes, techniques hors V1, rapport
+  donnees/           catalogue TOML (T15, ADR-0088) ; liste de confiance C2PA (T30)
 ```
 
 | Composant | Processus | Rôle | Tâches |
@@ -136,7 +136,8 @@ src/voight_kampff/
 | Identification | P2 | Formats reconnus, leurs plages et leur fin logique (ADR-0070) | T13 |
 | Isolation | P2 (P1 pour la mémoire sous macOS) | Restrictions du système, état de l'isolation | T14 |
 | Travail | P2 | Verrouillage, protocole, acheminement, isolation des erreurs par module | T12 |
-| Règles | P2 | Application du catalogue aux observations | T15 |
+| Catalogue | P1 | Lecture, validation, empreinte, cohérence avec les manifestes | T15 |
+| Règles | P1 (forme, compilation), P2 (évaluation) | Application du catalogue aux observations | T15 |
 | Modules | P2 | Une technique chacun | T13, T20 et suivantes |
 | Rapport | P1 | Résumé sans verdict, rubriques, masquage, exports | T11, T16 |
 | Schémas, données | P1 et P2 | Contrats et catalogue livrés avec l'outil | T11, T15, T30 |
@@ -170,13 +171,13 @@ Ce qui ne passe par aucun de ces mécanismes, sur tous les systèmes :
 
 | Échange | Forme | Validation |
 | --- | --- | --- |
-| P1 → P2, configuration | Un objet JSON sur l'entrée standard, envoyé après le message d'isolation : modules actifs dans l'ordre d'exécution (identifiant, formats, directions) ; catalogue validé (T15) à venir ; les limites n'y passent pas (ADR-0077) | Données produites par P1 ; forme vérifiée par P2 (ADR-0065) |
+| P1 → P2, configuration | Un objet JSON sur l'entrée standard, envoyé après le message d'isolation : modules actifs dans l'ordre d'exécution (identifiant, formats, directions) ; règles du catalogue qui relèvent d'eux (T15, ADR-0084) ; les limites n'y passent pas (ADR-0077) | Données produites par P1 ; forme vérifiée par P2 (ADR-0065) |
 | P2 → P1, résultats | Lignes JSON sur la sortie standard, de types : `isolation`, `identification`, `observation`, `constat`, `non_menee`, `module`, `versions`, `fin` | Taille bornée par message et au total ; JSON strict, JSON Schema par type, modèle, ordre du protocole (ES-04, ADR-0062, ADR-0065) |
 | P2 → P1, erreurs | Sortie d'erreur, où part aussi tout texte affiché par un module | Envoyée vers le néant : jamais lue, affichée ni recopiée (ES-15, ADR-0065) |
 | Catalogue, manifestes | TOML | JSON Schema au chargement (ES-09, ADR-0038) |
 | Rapport exporté | JSON et HTML autonome | Schéma publié (ADR-0025) ; HTML échappé, politique de sécurité du contenu (ES-12) |
 
-Une **observation** est une donnée relevée par un module (valeur d'un champ, mesure). Un **constat** est ce qu'une règle du catalogue en tire : phrase, donnée observée, règle, catégorie, direction, niveau (§6 du cahier, ADR-0018, ADR-0021). Cette séparation garde les règles hors du moteur (F-26) ; un module peut aussi produire un constat directement quand la vérification est déterministe (signature C2PA). La forme exacte est fixée par le [modèle de données](../modele-de-donnees/modele-de-donnees.md) (T11, ADR-0058).
+Une **observation** est une donnée relevée par un module (valeur d'un champ, mesure). Un **constat** est ce qu'une règle du catalogue en tire : phrase, donnée observée, règle, catégorie, direction, niveau (§6 du cahier, ADR-0018, ADR-0021). Cette séparation garde les règles hors du moteur (F-26) ; un module peut aussi produire un constat directement quand la vérification est déterministe (signature C2PA), en citant une règle « module » du catalogue, qui fixe ce que dit le constat ; le principal vérifie que chaque constat reçu est conforme à sa règle (ADR-0084, ADR-0090). La forme exacte est fixée par le [modèle de données](../modele-de-donnees/modele-de-donnees.md) (T11, ADR-0058).
 
 Les règles sont évaluées dans P2 : une donnée hostile n'est jamais confrontée à une expression régulière **du catalogue** dans P1. Les schémas des messages emploient seulement des expressions fixes, ancrées et linéaires, bornées en longueur (ADR-0054). Conséquence acceptée : un P2 compromis peut forger les constats de son propre fichier (RR-01).
 
@@ -193,9 +194,12 @@ Les règles sont évaluées dans P2 : une donnée hostile n'est jamais confront�
 
 ## 8. Catalogue et règles
 
-- Fichiers TOML livrés dans le paquet, validés par JSON Schema au chargement ; version et empreinte SHA-256 au rapport ; catalogue fourni par l'utilisateur accepté et signalé (ADR-0029, ADR-0038, ADR-0040).
-- Expressions régulières exécutées par RE2, compilées par P1 au chargement pour valider le catalogue, appliquées par P2 (ADR-0039).
-- Seuils, procédure de calibrage, niveau et taux de chaque règle dans le catalogue (ADR-0016, ADR-0018) ; schéma en T15.
+- Fichiers TOML livrés dans le paquet (`donnees/catalogue/` : `catalogue.toml`, `regles/<module>.toml`), validés par JSON Schema au chargement ; version, date et empreinte SHA-256 au rapport ; catalogue fourni par l'utilisateur accepté, en remplacement complet, et signalé (ADR-0029, ADR-0038, ADR-0040, ADR-0086, ADR-0088).
+- Règles « moteur » (conditions fermées, toutes requises) et règles « module » (appliquées par le code du module) ; la règle fixe gabarit, catégorie, direction, fondement, niveau (ADR-0084, ADR-0090).
+- Expressions régulières exécutées par RE2, compilées par P1 au chargement pour valider le catalogue, appliquées par P2 après chaque module (ADR-0039, ADR-0089).
+- Seuils, procédure de calibrage, niveau, évaluation et limites connues de chaque règle dans le catalogue (ADR-0016, ADR-0018, ADR-0019).
+- Version propre au catalogue, registre des versions vérifié par les tests et la CI (ADR-0085) ; guide et procédure de mise à jour : [`docs/catalogue/`](../catalogue/README.md).
+- Les techniques hors V1 ne sont pas dans le catalogue : `modules/hors_v1.toml`, livré avec l'outil (ADR-0087).
 
 ## 9. Dépendances
 
@@ -207,7 +211,7 @@ Politique : [ADR-0043](../decisions/ADR-0043-politique-des-bibliotheques.md) ; g
 | `c2pa-python` | Apache-2.0 ou MIT | P2 | C2PA (T30) |
 | `defusedxml` | PSF-2.0 | P2 | XMP, DOCX, ODT (ES-05) |
 | `pypdf` | BSD-3-Clause | P2 | Objets PDF (T50 à T53) |
-| `google-re2` | BSD-3-Clause | P1 (compilation), P2 | Expressions du catalogue (ES-09) |
+| `google-re2` | BSD-3-Clause | P1 (compilation), P2 | Expressions du catalogue (ES-09) ; dépendance depuis T15 (ADR-0039, ADR-0089) |
 | `jsonschema` | MIT | P1 | Validation des messages, du catalogue, des manifestes ; dépendance depuis T11 (ADR-0054) |
 | `numpy` | BSD-3-Clause | P2 | Analyses JPEG (T40, T41) |
 | uv | Apache-2.0 ou MIT | Développement, CI | Verrou à empreintes |
@@ -247,7 +251,7 @@ Reformulée par ADR-0023 : mêmes fichier, versions de l'outil, du catalogue et 
 - Canal officiel unique : PyPI, publication par Trusted Publishing avec attestations de provenance ; release GitHub avec empreintes des paquets, fichier d'installation verrouillé, version et empreinte du catalogue ([ADR-0041](../decisions/ADR-0041-canal-de-distribution.md)).
 - Installation documentée par `pipx` ou `uv tool` ; installation reproductible par le fichier verrouillé.
 - Actions d'intégration continue épinglées par empreinte de commit (ADR-0006) ; dépendances figées avec empreintes (ADR-0037) ; peu de dépendances (ADR-0043).
-- Workflow de publication (T10) : déclenché par une étiquette `vX.Y.Z` égale à la version du paquet (ADR-0050) ; construction épinglée (ADR-0049) ; publication depuis l'environnement protégé « pypi », relecture de TheDarkMac obligatoire ; release GitHub avec paquets, empreintes et fichier d'installation verrouillé. L'étiquette doit être posée sur un commit de l'historique de premier parent de `detector`, la version être publique au sens de PEP 440 ; une pré-version donne une release marquée comme telle ([ADR-0069](../decisions/ADR-0069-controles-de-la-publication.md)). Numérotation : [ADR-0068](../decisions/ADR-0068-numerotation-des-versions.md). La version et l'empreinte du catalogue s'ajouteront à la release avec T15.
+- Workflow de publication (T10) : déclenché par une étiquette `vX.Y.Z` égale à la version du paquet (ADR-0050) ; construction épinglée (ADR-0049) ; publication depuis l'environnement protégé « pypi », relecture de TheDarkMac obligatoire ; release GitHub avec paquets, empreintes et fichier d'installation verrouillé. L'étiquette doit être posée sur un commit de l'historique de premier parent de `detector`, la version être publique au sens de PEP 440 ; une pré-version donne une release marquée comme telle ([ADR-0069](../decisions/ADR-0069-controles-de-la-publication.md)). Numérotation : [ADR-0068](../decisions/ADR-0068-numerotation-des-versions.md). La version, la date et l'empreinte du catalogue, recalculées depuis le wheel et contrôlées contre le registre, sont jointes à la release (`CATALOGUE.txt`, ADR-0085).
 - Fichier `LICENSE` (Apache-2.0, tout le dépôt) livré dans les deux paquets, licence déclarée par expression SPDX ([ADR-0067](../decisions/ADR-0067-fichier-licence-et-declaration.md)) ; éditeur de confiance « en attente » déclaré sur PyPI. Prérequis réunis : la première publication, par une étiquette de version, réservera le nom.
 
 ### Réalisation des exigences de sécurité rattachées à T04
@@ -270,7 +274,7 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | ~~Valeurs des limites, délai, budget de travail ; mesure du coût de démarrage de P2~~ | Fixés en T14 : ADR-0076 à ADR-0078 ; 0,35 s par fichier |
 | ~~Points « à confirmer » de l'isolation sous macOS et Windows~~ | Tranchés en T14 : ADR-0080, ADR-0081 |
 | ~~Forme des observations, des constats et des messages~~ | Fixée en T11 : [modèle de données](../modele-de-donnees/modele-de-donnees.md) |
-| Schéma et découpage du catalogue ; syntaxe RE2 admise | T15 |
+| ~~Schéma et découpage du catalogue ; syntaxe RE2 admise~~ | Fixés en T15 : ADR-0084, ADR-0088, ADR-0089 |
 | Gabarit HTML et moyen d'échappement | T16 |
 | Paquets binaires de `c2pa-python` sous Windows ; `requests` et `toml` parmi ses dépendances (§9) | T30 |
 | Maintenance de `defusedxml` (dernière version en 2021) (§9) | T20 |
@@ -285,7 +289,9 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | Coût de la validation des messages par P1 (environ 1,5 ms par message, compté dans le délai de 120 s) | Premier module à produire beaucoup d'observations (T20) |
 | Conteneur d'application (AppContainer) sous Windows, pour bloquer réseau et lecture | Nouvel ADR (ADR-0035, ADR-0081) |
 | Versions des bibliothèques employées par un module, lues avant le verrouillage (ADR-0064) | Premier module qui en emploie une |
-| Liste des techniques hors V1 par format (`hors_v1`) | T15 |
+| ~~Liste des techniques hors V1 par format (`hors_v1`)~~ | Fixée en T15 : ADR-0087 |
+| Règle qui compare deux observations (F-13, incohérences de dates) | T23, nouveau format du catalogue ou règle « module » (ADR-0084) |
+| Marquages recherchés (F-25) inscrits au catalogue | T31 |
 | Acheminement des résultats d'un module vers un autre ; constat qui cite les observations d'un autre module (ADR-0061) | T53 |
 
 ## 13. Historique
@@ -300,3 +306,4 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | 2026-10-27 | 1.5 | Contrôles de la publication et numérotation des versions (§11, ADR-0068, ADR-0069) | T10 (complément) |
 | 2026-10-27 | 1.6 | Soumission et identification : déroulé (§3), fichiers créés et composant Identification (§4), message `identification` (§6), ES-01 et ES-17 (§11), points fixés et transmis à T14, T16, T80 (§12) | T13 |
 | 2026-10-27 | 1.7 | Sécurité d'exécution : refus hors limites et Job Object (§3), fichiers créés, restrictions dans `_travail/restrictions/` au lieu de `_isolation/` (§4), isolation réalisée et mesurée (§5), limites hors de la configuration (§6), budget mixte (§10), ES-02 (§11), points fixés et transmis à T20 (§12) | T14 |
+| 2026-10-27 | 1.8 | Catalogue de règles : fichiers créés et composants Catalogue et Règles (§4), règles dans la configuration et constats conformes à leur règle (§6), catalogue et règles (§8), `google-re2` ajouté (§9), catalogue joint à la release (§11), points fixés et transmis à T23, T31 (§12) | T15 |

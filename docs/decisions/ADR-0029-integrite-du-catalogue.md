@@ -52,3 +52,4 @@ Le catalogue de règles (F-26) et la liste de confiance C2PA décident de ce que
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : format du catalogue fixé par ADR-0038, canal de distribution par ADR-0041 (T04) |
+| 2026-10-27 | Réalisé en T15 : forme et empreinte (ADR-0088), version, date et registre publiés avec les versions (ADR-0085), catalogue fourni par l'utilisateur en remplacement complet (ADR-0086) |

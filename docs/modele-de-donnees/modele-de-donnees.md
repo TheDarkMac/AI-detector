@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.3** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 proposée dans la PR de T14. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.4** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 proposée dans la PR de T15. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -28,6 +28,14 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0072](../decisions/ADR-0072-signalements-de-l-identification.md) | Extension, concordance, parties et octets non reconnus dans la rubrique Identification |
 | [ADR-0073](../decisions/ADR-0073-resultat-et-resume-avant-le-rapport.md) | `Analyse` : identification et résultats, vérifiés comme un rapport, en attendant T15 et T16 |
 
+### Décisions de T15 qui touchent le modèle
+
+| ADR | Décision |
+| --- | --- |
+| [ADR-0084](../decisions/ADR-0084-langage-des-regles.md) | La règle du catalogue fixe gabarit, catégorie, direction, fondement et niveau d'un constat |
+| [ADR-0087](../decisions/ADR-0087-techniques-hors-v1.md) | Technique sans version : non menée (`hors_v1`) ou non applicable ; `Analyse` porte la version du catalogue |
+| [ADR-0090](../decisions/ADR-0090-constat-d-une-regle.md) | Constat conforme à sa règle, vérifié par le processus principal |
+
 ### Où se trouve le code
 
 | Élément | Fichier |
@@ -38,6 +46,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Chargement et validation | `src/voight_kampff/schemas/__init__.py` |
 | Vocabulaire des formats (T13) | `src/voight_kampff/formats.py` |
 | Analyse rendue par l'interface publique (T13) | `src/voight_kampff/analyse.py` |
+| Règles du catalogue (T15) | `src/voight_kampff/_regles.py` ; guide : [`docs/catalogue/`](../catalogue/README.md) |
 | Décodage strict d'une ligne de message (T12) | `src/voight_kampff/_protocole.py` |
 | Réception et validation des messages (T12) | `src/voight_kampff/_orchestration/travail.py` |
 | Tests | `tests/test_modele.py`, `tests/test_schemas.py` |
@@ -204,7 +213,7 @@ Combinaisons admises :
 | Indice | Tous | Toutes sauf « rien de particulier » | Obligatoire ; non évaluée ⇒ faible (ADR-0018) |
 | Information neutre | Tous | « Rien de particulier » seulement | Interdite |
 
-Les limites connues et le taux de la règle sont lus dans le catalogue (T15) ; la source d'une preuve est portée par ses observations (ADR-0058).
+Les limites connues et le taux de la règle sont lus dans le catalogue (T15) ; la source d'une preuve est portée par ses observations (ADR-0058). Gabarit, catégorie, direction, fondement et graduation sont ceux de la règle citée : le processus principal refuse un constat qui s'en écarte (ADR-0090).
 
 ### Exemple : le constat du §6 du cahier
 
@@ -242,7 +251,7 @@ Les observations `c2pa/1` à `c2pa/3` portent l'état de la signature, le signat
 
 Le processus principal tire de l'identification trois sortes d'analyses non menées, sans module (ADR-0071) : `hors_perimetre` pour chaque partie hors périmètre, `fichier_tronque` pour chaque partie tronquée, `format_partiel` pour chaque plage non reconnue, avec la plage en localisation. Le modèle exige leur présence.
 
-**Couverture** (ADR-0059) : la liste des techniques, une fois par partie du périmètre (ADR-0071), chacune avec sa version et son état (`appliquee`, `partielle`, `non_menee`, `non_applicable`), et les identifiants des marquages recherchés (F-25). Une technique hors de cette version de l'outil y figure sans version, à l'état non menée, avec la seule raison `hors_v1` (ADR-0012).
+**Couverture** (ADR-0059) : la liste des techniques, une fois par partie du périmètre (ADR-0071), chacune avec sa version et son état (`appliquee`, `partielle`, `non_menee`, `non_applicable`), et les identifiants des marquages recherchés (F-25). Une technique hors de cette version de l'outil y figure sans version, à l'état non menée, avec la seule raison `hors_v1` (ADR-0012) ; sur une autre partie d'un polyglotte, qui n'est pas de ses formats, elle est non applicable, toujours sans version. Ces techniques sont lues dans `modules/hors_v1.toml` et ne figurent que si une partie analysée est d'un de leurs formats (ADR-0087).
 
 ## 6. Localisation, identification, versions, isolation
 
@@ -270,7 +279,7 @@ Le processus principal applique toujours, dans cet ordre : décodage JSON strict
 
 | Vérifié par | Règles |
 | --- | --- |
-| Schéma **et** modèle | Types, champs obligatoires, énumérations, bornes de longueur et de nombre, syntaxe des identifiants, des versions, des empreintes et des dates, combinaisons du §4, raisons qui exigent un module, isolation, version de technique absente seulement pour une technique non menée |
+| Schéma **et** modèle | Types, champs obligatoires, énumérations, bornes de longueur et de nombre, syntaxe des identifiants, des versions, des empreintes et des dates, combinaisons du §4, raisons qui exigent un module, isolation, version de technique absente seulement pour une technique non menée ou non applicable (ADR-0087) |
 | Schéma seul | Champ inconnu : le modèle lit un document déjà validé et l'ignore |
 | Modèle seul | Paramètres de phrase pris parmi les données du constat ; observations citées présentes dans le rapport, de la même technique et de la même partie ; unicité des identifiants d'observation et des couples technique-partie de la couverture ; une entrée de couverture par technique et par partie du périmètre ; cohérence de la couverture avec les résultats et les non menées ; non menées tirées de l'identification présentes (`hors_perimetre`, `fichier_tronque`, `format_partiel`) ; rangs consécutifs, débuts ordonnés et plages dans le fichier ; format réel égal à celui de la partie 1 ; champs déduits de l'identification égaux à leur calcul ; `debut` ≤ `fin` d'un intervalle ; texte encodable en UTF-8 (substitut isolé) ; date réelle (pas de 30 février) ; `interrompue` égal à la valeur calculée |
 
@@ -300,14 +309,14 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | Exigence | Réalisation | Reste |
 | --- | --- | --- |
 | F-80 | Catégorie de chaque constat | Rédaction des phrases (T16) |
-| F-81 | Direction parmi cinq (ADR-0055) | Directions permises par règle (T15) |
-| F-82 | Analyses non menées et raisons fermées ; techniques hors V1 dans la couverture ; T12 produit `erreur_module`, `module_desactive`, `arret_processus`, `message_invalide` ; T13 `hors_perimetre`, `fichier_tronque` et `format_partiel` à partir de l'identification ; T14 `limite_depassee`, `memoire_depassee` et `delai_depasse`, valeurs fixées (ADR-0077, ADR-0078) | `hors_v1` (T15) ; `format_partiel` des modules pour les contenus multiples (A-25) |
+| F-81 | Direction parmi cinq (ADR-0055) ; fixée par la règle, permise par le manifeste (T15, ADR-0084) | — |
+| F-82 | Analyses non menées et raisons fermées ; techniques hors V1 dans la couverture ; T12 produit `erreur_module`, `module_desactive`, `arret_processus`, `message_invalide` ; T13 `hors_perimetre`, `fichier_tronque` et `format_partiel` à partir de l'identification ; T14 `limite_depassee`, `memoire_depassee` et `delai_depasse`, valeurs fixées (ADR-0077, ADR-0078) ; T15 `hors_v1` (ADR-0087) | `format_partiel` des modules pour les contenus multiples (A-25) |
 | F-02, F-03, ES-07 | Format réel par le contenu, parties d'un polyglotte, extension et concordance, octets non reconnus (T13, ADR-0070 à ADR-0072) | Gabarits des signalements (T16) |
 | §6 | Constat à cinq éléments, plus règle versionnée, technique, fondement, niveau, localisation (A-46, A-47) ; rubriques Identification, Versions, Couverture | Résumé, avertissement, masquage (T16) |
 | ES-04 | Données simples, bornées, validées par schéma puis par le modèle ; erreurs sans contenu ; lecture bornée et délai (T12), valeurs fixées (T14, ADR-0077) | — |
 | ES-20 | Une preuve exige un fondement de vérification ; une déclaration ne peut être qu'un indice ou une information | Rédaction « le fichier déclare » (T22, T30) |
 | A-10 | Glossaire du projet | Glossaire utilisateur (T103) |
-| A-23 | Couverture : état « non applicable », produit par T12 d'après les formats des manifestes ; techniques hors V1 | Matrice format × technique (T15) |
+| A-23 | Couverture : état « non applicable », produit par T12 d'après les formats des manifestes ; techniques hors V1 par format (T15, ADR-0087) | Formats de chaque technique livrée, dans sa fiche (T20 et suivantes) |
 
 ## 10. Historique
 
@@ -317,3 +326,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-10-26 | 1.1 | Message `module` (§8, ADR-0062) ; décodage strict et réception réalisés (§1, §7) ; exigences mises à jour (§9) | T12 |
 | 2026-10-27 | 1.2 | Parties et champs `partie` (§2 à §6, ADR-0071) ; raison `hors_perimetre` et non menées tirées de l'identification (§5) ; signalements de l'identification (§6, ADR-0072) ; contrôles du modèle (§7) ; message `identification` et partie du message `module` (§8) ; exigences (§9) | T13 |
 | 2026-10-27 | 1.3 | Raison `memoire_depassee` ; `limite_depassee` n'interrompt plus (§5, ADR-0078) ; paragraphe des non menées tirées de l'identification sorti du tableau, où il avait été inséré (§5) ; limites fixées (§8, §9) | T14 |
+| 2026-10-27 | 1.4 | Décisions de T15 (§1) ; constat conforme à sa règle (§4) ; techniques hors V1 et technique sans version non applicable (§5, §7, ADR-0087) ; exigences (§9) | T15 |

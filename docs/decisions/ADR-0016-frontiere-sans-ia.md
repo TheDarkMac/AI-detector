@@ -52,3 +52,4 @@ Le §10 demande si un seuil calibré sur un corpus est admis, et une pondératio
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Réalisé en T15 : calibrage (méthode, procédure, corpus) obligatoire pour une règle à seuil ; un changement de seuil change la version de la règle et du catalogue (ADR-0084, ADR-0085) |

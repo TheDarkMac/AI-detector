@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.2** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 proposée dans la PR de T14. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.4** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 proposée dans la PR de T15. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -11,7 +11,14 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | --- | --- | --- |
 | Observation | Donnée relevée par un module dans le fichier (valeur d'un champ, mesure), sans interprétation. Seul objet du rapport qui porte des valeurs tirées du fichier. | ADR-0058 |
 | Constat | Ce qu'une règle du catalogue tire d'une ou plusieurs observations : phrase, données, règle, technique, fondement, catégorie, direction, et niveau pour un indice. | §6, ADR-0058 |
-| Règle | Élément versionné du catalogue qui transforme des observations en constat. Son identifiant (par exemple `R-C2PA-001`) est distinct de celui d'une exigence (F-xx). | A-47, T15 |
+| Règle | Élément versionné du catalogue qui transforme des observations en constat ; elle fixe le gabarit, la catégorie, la direction, le fondement et le niveau du constat. Son identifiant (`R-<MODULE>-<NNN>`, par exemple `R-C2PA-001`) est distinct de celui d'une exigence (F-xx) ; sa version est un entier qui augmente à chaque changement. | A-47, ADR-0084, ADR-0085 |
+| Règle du moteur | Règle écrite par des conditions, toutes requises, que le moteur applique aux observations d'un module après lui. | ADR-0084, ADR-0089 |
+| Règle du module | Règle sans condition, appliquée par le code de son module, qui la cite par son identifiant ; réservée aux vérifications qu'aucune condition ne sait écrire (C2PA). | ADR-0084, ADR-0090 |
+| Condition | Test sur une observation nommée : égale à une valeur, parmi une liste, conforme à un motif RE2, au-delà d'un seuil, ou présente. | ADR-0084, ADR-0089 |
+| Catalogue (de règles) | Dossier de fichiers TOML séparé du moteur : un en-tête (format, version, date) et les règles de chaque module. Livré avec l'outil, ou fourni par l'utilisateur, qui le remplace alors en entier. | F-26, ADR-0029, ADR-0086, ADR-0088 |
+| Empreinte du catalogue | SHA-256 de la liste `sha256sum` de ses fichiers, triée par chemin ; inscrite au rapport, au registre et à la release. | ADR-0088 |
+| Registre des versions du catalogue | `docs/catalogue/versions.toml` : version, date et empreinte de chaque version, dans l'ordre ; une entrée ne change plus une fois sur `detector`. | NF-07, ADR-0085 |
+| Technique hors V1 | Technique que cette version de l'outil ne livre pas ; inscrite à la couverture, sans version, non menée (`hors_v1`) sur les parties de ses formats. | ADR-0012, ADR-0087 |
 | Gabarit | Phrase rédigée hors du code, identifiée, dont les paramètres sont remplacés par des observations au moment de l'export. | ADR-0020 |
 | Fondement | Ce sur quoi repose un constat : vérification cryptographique, vérification déterministe, déclaration du fichier, ou mesure. | ES-20, ADR-0058 |
 | Preuve | Fait établi par une vérification cryptographique ou déterministe, accompagné de l'énoncé exact de ce qu'il établit. Remplace la définition du cahier. | ADR-0021 |
@@ -69,3 +76,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-10-26 | 1.1 | Manifeste (module) précisé ; contexte, module actif ou désactivé, module applicable, garde ajoutés | T12 |
 | 2026-10-27 | 1.2 | Format réel, partie, fichier polyglotte, fin logique, octets non reconnus, formats du périmètre, concordance de l'extension, analyse, refus ajoutés ; contexte et module applicable précisés | T13 |
 | 2026-10-27 | 1.3 | Limite comptée, limite du système, budget ajoutés ; isolation réduite et refus précisés | T14 |
+| 2026-10-27 | 1.4 | Règle précisée ; règle du moteur, règle du module, condition, catalogue, empreinte du catalogue, registre des versions, technique hors V1 ajoutés | T15 |

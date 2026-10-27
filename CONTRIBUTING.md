@@ -105,10 +105,10 @@ Types : `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`, `build`, `perf
 | --- | --- | --- |
 | `docs` | `lint-markdown` | Forme du Markdown (markdownlint-cli2, configuration `.markdownlint-cli2.jsonc`) |
 | `docs` | `fichiers-interdits` | Aucun `CLAUDE.md`, `CLAUDE.local.md` ni `.claude/` suivi par git |
-| `code` | `qualite` | Verrou à jour, Ruff, mypy (ADR-0047) |
+| `code` | `qualite` | Verrou à jour, Ruff, mypy (ADR-0047) ; versions publiées du catalogue inchangées face à la branche cible (ADR-0085) |
 | `code` | `tests` | pytest et couverture, Linux, macOS et Windows × Python 3.12 à 3.14 (ADR-0048, ADR-0051) |
 | `code` | `audit-dependances` | Aucune faille connue dans les dépendances verrouillées (ADR-0052) |
-| `code` | `paquet` | Construction reproductible et installable (ADR-0049) |
+| `code` | `paquet` | Construction reproductible et installable (ADR-0049) ; catalogue du wheel inscrit au registre (ADR-0085) |
 | `code` | `code-ok` | Résume les quatre jobs précédents |
 
 Vérifications obligatoires pour merger dans `detector` : `lint-markdown`, `fichiers-interdits` et `code-ok` (ADR-0001, ADR-0051).
@@ -154,6 +154,16 @@ Numérotation : versionnage sémantique écrit en PEP 440 (`X.Y.Z`, pré-version
    ```
 
 3. Le workflow `publication` construit les paquets, puis attend : approuver le déploiement dans l'environnement `pypi` (onglet Actions, « Review deployments »), seulement si le job `construction` est vert.
-4. Vérifier la page PyPI et la release GitHub : paquets, `SHA256SUMS`, `installation-verrouillee.txt` ; une pré-version est marquée comme telle.
+4. Vérifier la page PyPI et la release GitHub : paquets, `SHA256SUMS`, `installation-verrouillee.txt`, `CATALOGUE.txt` (version, date et empreinte du catalogue) ; une pré-version est marquée comme telle.
 
 Une version publiée est définitive : en cas d'erreur, la retirer de l'affichage sur PyPI (« yank ») et publier un nouveau numéro, jamais le même.
+
+## 9. Modifier le catalogue de règles — ADR-0085
+
+Toute modification d'un fichier de `src/voight_kampff/donnees/catalogue/` demande, dans la même PR : la version de chaque règle touchée augmentée, une nouvelle version et une nouvelle date dans `catalogue.toml`, et une nouvelle entrée à la fin de `docs/catalogue/versions.toml`, avec l'empreinte calculée dans le dossier du catalogue :
+
+```bash
+find . -type f -printf '%P\n' | LC_ALL=C sort | xargs sha256sum | sha256sum
+```
+
+Une entrée du registre déjà sur `detector` ne se modifie jamais. Détail du format et de la procédure : [`docs/catalogue/README.md`](docs/catalogue/README.md).

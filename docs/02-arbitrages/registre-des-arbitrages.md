@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.5** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 proposée dans la PR de T14. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.7** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 proposée dans la PR de T15. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -98,7 +98,7 @@ Autres constats de l'analyse adressés à T02 :
 | Constat | Traitement |
 | --- | --- |
 | A-08 Méthode de vérification | ADR-0024 (proposé dans le lot 4, retenu par TheDarkMac) |
-| A-23 Matrice format × technique | Tenue dans les fiches techniques et le catalogue (ADR-0022, ADR-0012) |
+| A-23 Matrice format × technique | Tenue dans les fiches techniques et le catalogue (ADR-0022, ADR-0012) ; techniques hors V1 par format dans `modules/hors_v1.toml`, hors du catalogue (ADR-0087, T15) |
 | A-24 DOCX/ODT comme conteneurs | Examiné en T81 (ADR-0013) ; non tranché |
 | A-35, A-38, A-40, A-41 | ADR-0012, ADR-0013 |
 | A-45, A-51 | ADR-0014, ADR-0020 |
@@ -126,6 +126,14 @@ Constats de l'analyse adressés à T14 :
 | --- | --- |
 | A-05 Reproductibilité contre limite de temps | Budget mixte (ADR-0076) : seules la mémoire et le temps du système sortent une analyse de la garantie |
 | A-53 Niveau d'isolation | Réalisé : ADR-0079 (Linux, isolation complète), ADR-0080 (macOS, complète), ADR-0081 (Windows, réduite : réseau, lecture, vidages) |
+
+Constats de l'analyse adressés à T15 :
+
+| Constat | Traitement |
+| --- | --- |
+| A-32 Listes de référence (dimensions typiques) | Dans le catalogue, versionnées : test `parmi` d'une condition (ADR-0084) |
+| A-37 Contenu et authentification du catalogue | Signatures, règles, seuils, calibrage, niveaux, évaluations et limites connues dans le catalogue (ADR-0084) ; livré avec l'outil, version, date et empreinte au rapport et au registre, contrôlées par la CI (ADR-0029, ADR-0085, ADR-0088) |
+| A-47 Identifiant de règle | `R-<MODULE>-<NNN>`, distinct d'une exigence, avec une version entière citée par chaque constat (ADR-0084, ADR-0085) |
 
 ## 4. Exigences du cahier reformulées pour le projet
 
@@ -163,7 +171,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2. Schéma « chaîne d'analyse » | Aucune |
 | 3. Cahier compagnon | Articulation non tranchée (§2) |
 | 4. §5.4 engagement ou catalogue | ADR-0012 (traité comme catalogue de candidats) |
-| 5. Seuils dans le catalogue | T15 ; ADR-0019 |
+| 5. Seuils dans le catalogue | ADR-0019 ; oui, avec leur calibrage (ADR-0084, T15) |
 | 6. Source de la date du 2 décembre 2026 | Aucune |
 
 ## 6. Effets sur les autres documents
@@ -176,6 +184,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 - T11 : F-81 et glossaire reformulés (§4, ADR-0055) ; [modèle de données](../modele-de-donnees/modele-de-donnees.md) et [glossaire du projet](../glossaire.md) créés ; architecture v1.2, découpage v0.10.
 - T13 : constats A-25, A-29, A-31 (§3) ; saisie de texte et portée d'ES-07 (§4) ; architecture v1.6, modèle de données v1.2, glossaire v1.2, découpage v0.12.
 - T14 : limites tranchées (§2), constats A-05 et A-53 (§3) ; architecture v1.7, modèle de données v1.3, découpage v0.13.
+- T15 : constats A-23, A-32, A-37, A-47 (§3), question 5 (§5) ; [guide du catalogue](../catalogue/README.md) créé ; architecture v1.8, modèle de données v1.4, glossaire v1.4, découpage v0.14.
 
 ## 7. Historique
 
@@ -188,3 +197,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-10-26 | 1.4 | Reformulations de F-81 et du glossaire (§4, ADR-0055) ; effets (§6) | T11 |
 | 2026-10-27 | 1.5 | Constats adressés à T13 (§3) ; saisie de texte et portée d'ES-07 (§4, ADR-0071, ADR-0074) ; effets (§6) | T13 |
 | 2026-10-27 | 1.6 | Limites tranchées (§2, ADR-0076 à ADR-0078) ; constats adressés à T14 (§3) ; effets (§6) | T14 |
+| 2026-10-27 | 1.7 | Constats adressés à T15 (§3) ; question 5 (§5) ; effets (§6) | T15 |
