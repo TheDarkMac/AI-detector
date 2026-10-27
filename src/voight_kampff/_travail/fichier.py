@@ -54,6 +54,10 @@ class Fichier:
             return os.read(self._descripteur, taille)
         return os.pread(self._descripteur, taille, position)
 
+    def taille(self) -> int:
+        """Taille actuelle du fichier ; l'empreinte finale dira s'il a changé (ES-08)."""
+        return os.fstat(self._descripteur).st_size
+
     def empreinte(self) -> tuple[str, int]:
         """SHA-256 du fichier entier, en hexadécimal minuscule, et sa taille (ES-08, ADR-0040)."""
         condensat = hashlib.sha256()
