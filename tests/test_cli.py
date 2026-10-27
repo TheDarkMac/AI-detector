@@ -1,14 +1,32 @@
-"""Tests de la ligne de commande (T10, T12)."""
+"""Tests de la ligne de commande (T10, T12, T13)."""
 
+import hashlib
 import subprocess
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
 import pytest
+from echantillons import PDF, archive, jpeg
 
-from voight_kampff import __version__
+from voight_kampff import Analyse, __version__
 from voight_kampff._orchestration import manifestes
 from voight_kampff._orchestration.manifestes import Manifeste
-from voight_kampff.cli import main
+from voight_kampff.cli import main, resume
+from voight_kampff.rapport.modele import (
+    Couverture,
+    Direction,
+    EtatIsolation,
+    EtatTechnique,
+    Identification,
+    Localisation,
+    NiveauIsolation,
+    NonMenee,
+    Partie,
+    Plage,
+    RaisonNonMenee,
+    TechniqueCouverte,
+)
 
 
 def test_version_affichee(capsys: pytest.CaptureFixture[str]) -> None:
@@ -54,3 +72,113 @@ def test_lancement_par_module() -> None:
         timeout=60,
     )
     assert resultat.stdout.strip() == f"voight-kampff {__version__}"
+
+
+# Commande d'analyse (T13, ADR-0073, ADR-0075)
+
+
+def test_resume_d_un_polyglotte(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    contenu = jpeg() + archive(("a.txt", b"a")) + b"\x00\x00"
+    chemin = tmp_path / "SOURCE-photo.png"
+    chemin.write_bytes(contenu)
+    assert main([str(chemin)]) == 0
+    sortie = capsys.readouterr().out
+    fin_jpeg = len(jpeg()) - 1
+    assert sortie.splitlines()[:5] == [
+        "[1/1] format réel : jpeg",
+        "  extension : png, discordante",
+        f"  partie 1 : jpeg, octets 0 à {fin_jpeg}",
+        f"  partie 2 : zip, octets {fin_jpeg + 1} à {len(contenu) - 3}, "
+        "hors périmètre, non analysée",
+        f"  non reconnus : octets {len(contenu) - 2} à {len(contenu) - 1}",
+    ]
+    assert "  techniques : aucune dans cette version" in sortie
+    assert sortie.endswith("  nom et empreinte : masqués\n")
+    # Ni le nom ni l'empreinte n'apparaissent (ADR-0031).
+    assert "SOURCE" not in sortie
+    assert hashlib.sha256(contenu).hexdigest() not in sortie
+
+
+def test_lot_avec_un_refus(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    vide = tmp_path / "vide.pdf"
+    vide.write_bytes(b"")
+    document = tmp_path / "document.pdf"
+    document.write_bytes(PDF)
+    assert main([str(vide), str(document)]) == 1
+    sorties = capsys.readouterr()
+    assert sorties.err == "[1/2] refusé : fichier vide : aucun format à identifier\n"
+    assert sorties.out.startswith("[2/2] format réel : pdf\n  extension : pdf, concordante\n")
+
+
+def test_desactiver_un_module_inconnu(capsys: pytest.CaptureFixture[str]) -> None:
+    with pytest.raises(SystemExit) as sortie:
+        main(["--desactiver", "omega", "f.pdf"])
+    assert sortie.value.code == 2
+    assert "module inconnu : omega ; modules livrés : aucun" in capsys.readouterr().err
+
+
+def test_desactiver_un_module_livre(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    livre = Manifeste("exif", "1.2.0", ("pdf",), ("F-10",), (), "exif", (Direction.ORIGINE_IA,))
+    monkeypatch.setattr(manifestes, "decouvrir", lambda: (livre,))
+    document = tmp_path / "document.pdf"
+    document.write_bytes(PDF)
+    assert main(["--desactiver", "exif", str(document)]) == 0
+    sortie = capsys.readouterr().out
+    assert "  technique exif, partie 1 : non menée\n" in sortie
+    assert "  non menée : module_desactive (exif, partie 1)\n" in sortie
+
+
+def test_resume_de_chaque_element() -> None:
+    analyse = Analyse(
+        identification=Identification(
+            nom="sans-extension",
+            format_reel="pdf",
+            taille=10,
+            empreinte="0" * 64,
+            date_analyse=datetime(2026, 10, 27, tzinfo=UTC),
+            parties=(
+                Partie(1, "pdf", Plage(0, 10), fin_connue=False, tronquee=True),
+                Partie(2, "gif", Plage(5, 5), fin_connue=False),
+            ),
+        ),
+        isolation=EtatIsolation(NiveauIsolation.COMPLETE),
+        couverture=Couverture(
+            (
+                TechniqueCouverte("a", EtatTechnique.APPLIQUEE, "1"),
+                TechniqueCouverte("b", EtatTechnique.PARTIELLE, "1"),
+                TechniqueCouverte("c", EtatTechnique.NON_APPLICABLE, "1"),
+            ),
+            (),
+        ),
+        observations=(),
+        constats=(),
+        non_menees=(
+            NonMenee(RaisonNonMenee.FICHIER_TRONQUE, "b", partie=1),
+            NonMenee(
+                RaisonNonMenee.FICHIER_TRONQUE,
+                localisation=Localisation(octets=Plage(0, 10)),
+                partie=1,
+            ),
+            NonMenee(RaisonNonMenee.HORS_PERIMETRE, partie=2),
+            NonMenee(RaisonNonMenee.DELAI_DEPASSE),
+        ),
+        dependances=(),
+    )
+    assert resume(analyse) == [
+        "format réel : pdf",
+        "extension : aucune",
+        "partie 1 : pdf, octets 0 à 9, tronquée ou corrompue",
+        "partie 2 : gif, octets 5 à 9, fin logique non établie, hors périmètre, non analysée",
+        "isolation : complète",
+        "technique a, partie 1 : appliquée",
+        "technique b, partie 1 : partielle",
+        "technique c, partie 1 : non applicable",
+        "observations : 0 ; constats : 0",
+        "non menée : fichier_tronque (b, partie 1)",
+        "non menée : fichier_tronque (partie 1, octets 0 à 9)",
+        "non menée : delai_depasse",
+        "analyse interrompue : résultats partiels, hors garantie de reproductibilité",
+        "nom et empreinte : masqués",
+    ]

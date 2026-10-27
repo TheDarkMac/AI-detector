@@ -1,4 +1,4 @@
-"""Tests du processus principal face à un vrai processus de travail ou à un factice (T12).
+"""Tests du processus principal face à un vrai processus de travail ou à un factice (T12, T13).
 
 Chaque test lance au moins un interpréteur. Le factice (``travail_factice.py``) exécute le vrai
 déroulé avec des analyseurs de test, ou écrit des lignes choisies pour simuler un processus de
@@ -12,7 +12,7 @@ import subprocess
 import sys
 import time
 from collections.abc import Callable, Iterator, Sequence
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 from typing import cast
@@ -22,28 +22,30 @@ import pytest
 from voight_kampff._orchestration import manifestes, travail
 from voight_kampff._orchestration.manifestes import Manifeste, ModuleInconnu
 from voight_kampff._orchestration.travail import ResultatTravail, executer
+from voight_kampff.analyse import Analyse
 from voight_kampff.rapport.modele import (
     Direction,
     EtatTechnique,
     Identification,
+    Localisation,
     ManqueIsolation,
     NiveauIsolation,
     NonMenee,
+    Partie,
+    Plage,
     RaisonNonMenee,
-    Rapport,
-    VersionCatalogue,
-    Versions,
 )
 
 FACTICE = Path(__file__).with_name("travail_factice.py")
 PYPROJECT = Path(__file__).resolve().parents[1] / "pyproject.toml"
 CONTENU = b"VKFT" + bytes(range(256)) * 4
+PDF = b"%PDF-1.7\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n"
 DELAI_COURT = 3.0
 
 
 def manifeste(
     identifiant: str,
-    formats: Sequence[str] = ("test",),
+    formats: Sequence[str] = ("jpeg",),
     requiert: Sequence[str] = (),
 ) -> Manifeste:
     return Manifeste(
@@ -77,40 +79,49 @@ def factice(scenario: str, *, mesure_couverture: bool = False) -> Callable[[int]
     return commande
 
 
+def ouvrir(chemin: Path, contenu: bytes) -> int:
+    chemin.write_bytes(contenu)
+    return os.open(chemin, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+
+
 @pytest.fixture
 def descripteur(tmp_path: Path) -> Iterator[int]:
-    chemin = tmp_path / "analyse.bin"
-    chemin.write_bytes(CONTENU)
-    ouvert = os.open(chemin, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+    ouvert = ouvrir(tmp_path / "analyse.bin", CONTENU)
     yield ouvert
     os.close(ouvert)
 
 
-def rapport_de(resultat: ResultatTravail) -> Rapport:
-    """Le résultat doit toujours donner un rapport valide : le modèle vérifie la cohérence."""
-    return Rapport(
+@pytest.fixture
+def pdf(tmp_path: Path) -> Iterator[int]:
+    ouvert = ouvrir(tmp_path / "document.pdf", PDF)
+    yield ouvert
+    os.close(ouvert)
+
+
+def analyse_de(resultat: ResultatTravail, taille: int = len(CONTENU)) -> Analyse:
+    """Le résultat doit toujours donner une analyse valide : le modèle vérifie la cohérence."""
+    assert resultat.parties
+    return Analyse(
         identification=Identification(
             nom="analyse.bin",
-            format_reel="test",
-            taille=len(CONTENU),
+            format_reel=resultat.parties[0].format,
+            taille=taille,
             empreinte=resultat.empreinte or "0" * 64,
             date_analyse=datetime(2026, 10, 26, tzinfo=UTC),
-        ),
-        versions=Versions(
-            outil="0.1.0",
-            catalogue=VersionCatalogue("0", date(2026, 10, 26), "0" * 64, False),
-            dependances=resultat.dependances,
+            parties=resultat.parties,
         ),
         isolation=resultat.isolation,
         couverture=resultat.couverture,
         observations=resultat.observations,
         constats=resultat.constats,
         non_menees=resultat.non_menees,
+        dependances=resultat.dependances,
     )
 
 
-def etats(resultat: ResultatTravail) -> dict[str, EtatTechnique]:
-    return {technique.module: technique.etat for technique in resultat.couverture.techniques}
+def etats(resultat: ResultatTravail, partie: int = 1) -> dict[str, EtatTechnique]:
+    techniques = resultat.couverture.techniques
+    return {t.module: t.etat for t in techniques if t.partie == partie}
 
 
 def raisons(resultat: ResultatTravail) -> set[tuple[RaisonNonMenee, str | None]]:
@@ -120,25 +131,33 @@ def raisons(resultat: ResultatTravail) -> set[tuple[RaisonNonMenee, str | None]]
 # Vrai processus de travail
 
 
-def test_vrai_processus_sans_module(descripteur: int) -> None:
-    resultat = executer(descripteur, manifestes.decouvrir())
-    assert resultat.empreinte == hashlib.sha256(CONTENU).hexdigest()
+def test_vrai_processus_identifie_le_format(pdf: int) -> None:
+    resultat = executer(pdf, manifestes.decouvrir())
+    assert resultat.parties == (Partie(1, "pdf", Plage(0, len(PDF)), fin_connue=True),)
+    assert resultat.empreinte == hashlib.sha256(PDF).hexdigest()
     # Aucune restriction avant T14 : l'isolation est réduite et tout manque.
     assert resultat.isolation.niveau is NiveauIsolation.REDUITE
     assert set(resultat.isolation.manques) == set(ManqueIsolation)
     assert resultat.couverture.techniques == ()
     assert not resultat.interrompue
-    rapport_de(resultat)
+    analyse_de(resultat, len(PDF))
 
 
-def test_vrai_processus_mesure(descripteur: int) -> None:
+def test_vrai_processus_format_non_reconnu(descripteur: int) -> None:
+    resultat = executer(descripteur, manifestes.decouvrir())
+    assert resultat.parties == ()
+    assert resultat.empreinte == hashlib.sha256(CONTENU).hexdigest()
+    assert not resultat.interrompue
+
+
+def test_vrai_processus_mesure(pdf: int) -> None:
     # Même processus, sous coverage : mesure le point d'entrée du processus de travail.
     def commande(valeur: int) -> list[str]:
         arguments = ["-m", "voight_kampff._travail", "--descripteur", str(valeur)]
         return [sys.executable, "-I", "-B", *mesure(), *arguments]
 
-    resultat = executer(descripteur, (), commande=commande)
-    assert resultat.empreinte == hashlib.sha256(CONTENU).hexdigest()
+    resultat = executer(pdf, (), commande=commande)
+    assert resultat.empreinte == hashlib.sha256(PDF).hexdigest()
 
 
 def test_commande_du_processus_de_travail() -> None:
@@ -153,19 +172,18 @@ def test_commande_du_processus_de_travail() -> None:
     ]
 
 
-def test_vrai_processus_sans_identification_aucun_module_applicable(descripteur: int) -> None:
-    # Avant T13, aucun format n'est identifié : un module actif est « non applicable ».
-    resultat = executer(descripteur, (manifeste("alpha"),))
+def test_vrai_processus_module_d_un_autre_format(pdf: int) -> None:
+    resultat = executer(pdf, (manifeste("alpha"),))
     assert etats(resultat) == {"alpha": EtatTechnique.NON_APPLICABLE}
     assert resultat.non_menees == ()
-    rapport_de(resultat)
+    analyse_de(resultat, len(PDF))
 
 
 # Déroulé réel avec des analyseurs de test
 
 
 def test_modules_isoles_les_uns_des_autres(descripteur: int) -> None:
-    actifs = [manifeste("alpha"), manifeste("beta"), manifeste("gamma", ("autre",))]
+    actifs = [manifeste("alpha"), manifeste("beta"), manifeste("gamma", ("png",))]
     resultat = executer(
         descripteur,
         (*actifs, manifeste("delta")),
@@ -189,7 +207,41 @@ def test_modules_isoles_les_uns_des_autres(descripteur: int) -> None:
     # Le texte affiché par alpha n'a pas atteint le protocole.
     assert not resultat.interrompue
     assert resultat.empreinte == hashlib.sha256(CONTENU).hexdigest()
-    rapport_de(resultat)
+    analyse_de(resultat)
+
+
+def test_polyglotte_chaque_format_du_perimetre_analyse(descripteur: int) -> None:
+    livres = (manifeste("alpha", ("jpeg", "pdf")), manifeste("delta", ("pdf",)))
+    resultat = executer(descripteur, livres, commande=factice("polyglotte", mesure_couverture=True))
+    assert [p.format for p in resultat.parties or ()] == ["jpeg", "zip", "pdf"]
+    assert etats(resultat, 1) == {
+        "alpha": EtatTechnique.APPLIQUEE,
+        "delta": EtatTechnique.NON_APPLICABLE,
+    }
+    assert etats(resultat, 2) == {}  # hors périmètre : aucune technique
+    assert etats(resultat, 3) == {
+        "alpha": EtatTechnique.APPLIQUEE,
+        "delta": EtatTechnique.PARTIELLE,
+    }
+    # Chaque module lit sa partie comme un fichier autonome ; la numérotation continue.
+    valeurs = {(o.identifiant, o.partie): o.valeur for o in resultat.observations}
+    assert valeurs == {
+        ("alpha/1", 1): "VKFT",
+        ("alpha/2", 1): 4,
+        ("alpha/3", 3): CONTENU[104:108].decode("ascii"),
+        ("alpha/4", 3): len(CONTENU) - 104,
+        ("delta/1", 3): CONTENU[104:106].hex(),
+    }
+    assert (
+        NonMenee(
+            RaisonNonMenee.HORS_PERIMETRE, localisation=Localisation(octets=Plage(4, 100)), partie=2
+        )
+        in resultat.non_menees
+    )
+    # La plage relative à la partie 3 a été ramenée à une position dans le fichier.
+    partielle = next(n for n in resultat.non_menees if n.module == "delta")
+    assert partielle.localisation == Localisation(octets=Plage(105, 1))
+    assert analyse_de(resultat).identification.octets_non_reconnus == ()
 
 
 def test_module_desactive_et_ceux_qui_le_requierent(descripteur: int) -> None:
@@ -206,7 +258,7 @@ def test_module_desactive_et_ceux_qui_le_requierent(descripteur: int) -> None:
         (RaisonNonMenee.MODULE_DESACTIVE, "beta"),
         (RaisonNonMenee.MODULE_DESACTIVE, "delta"),
     }
-    rapport_de(resultat)
+    analyse_de(resultat)
 
 
 def test_module_inconnu_a_desactiver(descripteur: int) -> None:
@@ -231,7 +283,7 @@ def test_arret_du_processus_pendant_un_module(descripteur: int, arret: str) -> N
     }
     assert resultat.interrompue
     assert resultat.empreinte is None
-    assert rapport_de(resultat).interrompue
+    assert analyse_de(resultat).interrompue
 
 
 def test_delai_depasse(descripteur: int) -> None:
@@ -244,7 +296,7 @@ def test_delai_depasse(descripteur: int) -> None:
         (RaisonNonMenee.DELAI_DEPASSE, "zeta"),
         (RaisonNonMenee.DELAI_DEPASSE, None),
     }
-    rapport_de(resultat)
+    analyse_de(resultat)
 
 
 def test_configuration_trop_longue(descripteur: int, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -271,11 +323,65 @@ def test_factice_valide(descripteur: int) -> None:
     # Une non menée sans module porte sur le fichier entier : elle n'interrompt pas l'analyse.
     assert resultat.non_menees == (NonMenee(RaisonNonMenee.FICHIER_TRONQUE),)
     assert not resultat.interrompue
-    rapport_de(resultat)
+    analyse_de(resultat)
+
+
+def test_factice_polyglotte_valide(descripteur: int) -> None:
+    resultat = executer(
+        descripteur, (manifeste("alpha", ("jpeg", "pdf")),), commande=factice("polyglotte_valide")
+    )
+    assert {(t.module, t.partie): t.etat for t in resultat.couverture.techniques} == {
+        ("alpha", 1): EtatTechnique.APPLIQUEE,
+        ("alpha", 3): EtatTechnique.APPLIQUEE,
+    }
+    assert [o.partie for o in resultat.observations] == [3]
+    assert {(n.raison, n.partie) for n in resultat.non_menees} == {
+        (RaisonNonMenee.HORS_PERIMETRE, 2),
+        (RaisonNonMenee.FORMAT_PARTIEL, 2),
+    }
+    analyse_de(resultat)
+
+
+def test_factice_partie_tronquee(descripteur: int) -> None:
+    livres = (manifeste("alpha"), manifeste("beta"))
+    resultat = executer(descripteur, livres, commande=factice("partie_tronquee"))
+    # Le principal déclare la partie tronquée non menée : rien ne vient du travail ici.
+    assert resultat.non_menees == (
+        NonMenee(
+            RaisonNonMenee.FICHIER_TRONQUE,
+            localisation=Localisation(octets=Plage(0, len(CONTENU))),
+            partie=1,
+        ),
+    )
+    assert not resultat.interrompue
+    analyse_de(resultat)
+
+
+def test_factice_aucun_format_reconnu(descripteur: int) -> None:
+    resultat = executer(descripteur, (manifeste("alpha"),), commande=factice("identification_vide"))
+    assert resultat.parties == ()
+    assert resultat.couverture.techniques == ()
+    assert resultat.non_menees == ()
+    assert not resultat.interrompue
+
+
+def test_factice_seulement_hors_perimetre(descripteur: int) -> None:
+    resultat = executer(descripteur, (manifeste("alpha"),), commande=factice("hors_perimetre"))
+    assert [p.format for p in resultat.parties or ()] == ["gif"]
+    assert resultat.couverture.techniques == ()
+    assert [n.raison for n in resultat.non_menees] == [RaisonNonMenee.HORS_PERIMETRE]
 
 
 MESSAGE_INVALIDE = [
     "sans_isolation",
+    "sans_identification",
+    "identification_double",
+    "identification_rangs",
+    "identification_hors_fichier",
+    "partie_d_un_autre_module",
+    "module_d_une_autre_partie",
+    "non_menee_partie_inconnue",
+    "hors_perimetre_par_le_travail",
     "json_invalide",
     "nan",
     "infini",
@@ -315,26 +421,32 @@ MESSAGE_INVALIDE = [
         ("rien", RaisonNonMenee.ARRET_PROCESSUS),
         ("code_non_nul", RaisonNonMenee.ARRET_PROCESSUS),
         ("silence", RaisonNonMenee.DELAI_DEPASSE),
+        ("silence_apres_identification", RaisonNonMenee.DELAI_DEPASSE),
         ("ferme_et_attend", RaisonNonMenee.DELAI_DEPASSE),
     ],
 )
 def test_factice_refuse(descripteur: int, scenario: str, raison: RaisonNonMenee) -> None:
+    attente = {"silence", "silence_apres_identification", "ferme_et_attend"}
     resultat = executer(
         descripteur,
         (manifeste("alpha"), manifeste("beta")),
-        delai=DELAI_COURT if scenario in {"silence", "ferme_et_attend"} else travail.DELAI,
+        delai=DELAI_COURT if scenario in attente else travail.DELAI,
         commande=factice(scenario),
     )
     assert NonMenee(raison) in resultat.non_menees
     assert {n.raison for n in resultat.non_menees} == {raison}
     assert resultat.interrompue
     assert resultat.empreinte is None
-    rapport = rapport_de(resultat)
+    if resultat.parties is None:
+        # Arrêt avant l'identification : rien à analyser, la soumission refusera le fichier.
+        assert resultat.couverture.techniques == ()
+        return
+    analyse = analyse_de(resultat)
     # Les modules inachevés n'ont aucun résultat : seul un module terminé en garde.
     termines = {
-        t.module for t in rapport.couverture.techniques if t.etat is not EtatTechnique.NON_MENEE
+        t.module for t in analyse.couverture.techniques if t.etat is not EtatTechnique.NON_MENEE
     }
-    assert {o.module for o in rapport.observations} <= termines
+    assert {o.module for o in analyse.observations} <= termines
 
 
 def test_isolation_inconnue_si_aucun_message(descripteur: int) -> None:
@@ -355,4 +467,4 @@ def test_ecriture_dans_un_tube_ferme() -> None:
 def test_processus_sans_tubes() -> None:
     sans_tubes = cast("subprocess.Popen[bytes]", SimpleNamespace(stdin=None, stdout=None))
     with pytest.raises(RuntimeError, match="tubes"):
-        travail._Reception(()).recevoir(sans_tubes, b"", 0.0)
+        travail._Reception((), 0).recevoir(sans_tubes, b"", 0.0)
