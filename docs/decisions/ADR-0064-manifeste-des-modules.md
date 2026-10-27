@@ -62,3 +62,4 @@ Option A. Champs de `manifeste.toml`, validés par `schemas/manifeste.schema.jso
 | --- | --- |
 | 2026-10-26 | Création, statut « Proposé » |
 | 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T12 : statut « Accepté » |
+| 2026-10-27 | Vocabulaire des formats fixé par ADR-0070 (T13) : seuls les formats du périmètre sont admis |

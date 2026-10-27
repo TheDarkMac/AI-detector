@@ -50,3 +50,4 @@ En V1, le module texte comprend **F-73** (T80) et **F-71** (T81, absence d'histo
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Renvoi : texte collé reporté à T80 par ADR-0074 (T13) |

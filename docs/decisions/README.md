@@ -84,3 +84,9 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0067](ADR-0067-fichier-licence-et-declaration.md) | Fichier LICENSE et déclaration de licence du paquet | Accepté | 2026-10-27 |
 | [ADR-0068](ADR-0068-numerotation-des-versions.md) | Numérotation des versions publiées | Accepté | 2026-10-27 |
 | [ADR-0069](ADR-0069-controles-de-la-publication.md) | Contrôles de la publication : étiquette sur `detector`, pré-version marquée | Accepté | 2026-10-27 |
+| [ADR-0070](ADR-0070-identification-du-format.md) | Identification du format par le contenu : vocabulaire, signatures, fin logique | Proposé | 2026-10-27 |
+| [ADR-0071](ADR-0071-fichiers-polyglottes.md) | Fichiers polyglottes : chaque format reconnu est analysé | Accepté | 2026-10-27 |
+| [ADR-0072](ADR-0072-signalements-de-l-identification.md) | Signalements de l'identification : dans la rubrique Identification | Accepté | 2026-10-27 |
+| [ADR-0073](ADR-0073-resultat-et-resume-avant-le-rapport.md) | Avant le rapport : résultat d'analyse et résumé sans donnée identifiante | Accepté | 2026-10-27 |
+| [ADR-0074](ADR-0074-texte-colle-reporte.md) | Texte collé : reporté à T80 | Accepté | 2026-10-27 |
+| [ADR-0075](ADR-0075-soumission-et-refus.md) | Soumission : ouverture, empreinte vérifiée en fin d'analyse, refus, codes de sortie | Proposé | 2026-10-27 |

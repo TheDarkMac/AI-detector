@@ -60,3 +60,4 @@ L'état de chaque module terminé en découle : non applicable ; appliqué sans 
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Précisé par ADR-0071 (T13) : le message `module` porte la partie ; un message par module et par partie du périmètre |

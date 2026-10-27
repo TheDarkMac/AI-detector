@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.11** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 proposée dans la PR de T12. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.12** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 proposée dans la PR de T13. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -55,8 +55,8 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 | T10 | Squelette du projet Python (ADR-0034), outillage (formatage, analyse statique, tests), uv et verrou à empreintes (ADR-0037), intégration continue sur Linux, macOS et Windows (ADR-0035), workflow de publication PyPI avec attestations (ADR-0041), examen des dépendances transitives et disponibilité des paquets binaires (ADR-0039, ADR-0043) ; nom du projet (ADR-0045) ; outillage, CI et surveillance des failles (ADR-0046 à ADR-0052) | NF-09 (outillage), ES-18 |
 | T11 | Modèle de données : **Constat** (phrase, donnée observée, règle, catégorie, direction), **Rapport**, analyse non menée, couverture ; schémas des messages et du rapport ; glossaire du projet (ADR-0021) ; livrable : [`modele-de-donnees/`](../modele-de-donnees/modele-de-donnees.md), ADR-0054 à ADR-0059 | F-80, F-81, F-82, §6, ES-04, ES-20 |
 | T12 | Moteur de modules : découverte et manifestes (ADR-0042), activation/désactivation, isolation des erreurs par module ; lancement du processus de travail et protocole (ADR-0036) ; décisions : ADR-0060 à ADR-0065 | Modularité, NF-10, NF-03 |
-| T13 | Soumission et identification : format réel par signature binaire, discordance d'extension, refus hors périmètre, empreinte SHA-256 (ADR-0040) vérifiée en fin d'analyse, fichiers polyglottes signalés (ES-07, ES-08) ; plusieurs fichiers par commande, analysés indépendamment (ADR-0015) ; format réel transmis par le processus de travail, option de désactivation des modules (ADR-0063) | F-01 à F-05 |
-| T14 | Sécurité d'exécution : limites taille/temps/mémoire, bombes de décompression, processus restreint par fichier (ADR-0028), mécanismes par système (ADR-0035) dont le Job Object sous Windows, lanceur de l'environnement virtuel compris (ADR-0065), valeurs des limites et du délai provisoires de T12, aucune trace sur le poste (ES-15), fuzzing des analyseurs (ES-19), rapport partiel en cas d'échec | NF-01, NF-02, NF-03, NF-08 |
+| T13 | Soumission et identification : format réel par signature binaire, discordance d'extension, refus hors périmètre, empreinte SHA-256 (ADR-0040) vérifiée en fin d'analyse, fichiers polyglottes signalés (ES-07, ES-08) ; plusieurs fichiers par commande, analysés indépendamment (ADR-0015) ; format réel transmis par le processus de travail, option de désactivation des modules (ADR-0063) ; décisions : ADR-0070 à ADR-0075 (chaque format d'un polyglotte analysé, texte collé reporté à T80) | F-01 à F-05 |
+| T14 | Sécurité d'exécution : limites taille/temps/mémoire, bombes de décompression, processus restreint par fichier (ADR-0028), mécanismes par système (ADR-0035) dont le Job Object sous Windows, lanceur de l'environnement virtuel compris (ADR-0065), valeurs des limites et du délai provisoires de T12, aucune trace sur le poste (ES-15), fuzzing des analyseurs (ES-19) dont l'identification (ADR-0070), rapport partiel en cas d'échec, refus « hors limites » (F-04, ADR-0075) | NF-01, NF-02, NF-03, NF-08, F-04 |
 | T15 | Catalogue de règles versionné et daté, séparé du moteur, avec schéma de validation, livré avec l'outil, version et empreinte au rapport (ADR-0029) ; fichiers TOML et JSON Schema (ADR-0038), expressions RE2 (ADR-0039) | F-26, NF-06, NF-07 |
 | T16 | Génération du rapport : résumé sans verdict (ADR-0018), rubriques §6, exports HTML autonome et JSON avec schéma (ADR-0025), masquage par défaut des données identifiantes, empreinte comprise (ADR-0031), protection du HTML contre l'injection (ES-12), avertissement | F-83, §6, NF-11, NF-12, NF-14, NF-18 |
 | T17 | Banc d'évaluation : corpus séparé calibrage / évaluation (ADR-0016), calcul FP / FN / non analysables par technique et catégorie, taux de FP par fichier et bornes des niveaux d'indice (ADR-0018) ; matrice exigence → méthode de vérification → résultat (ADR-0024), exigences ES-xx comprises ; analyse exécutée sans réseau (ES-11) | §8, NF-09 |
@@ -123,7 +123,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 
 | ID | Tâche | Exigences |
 | --- | --- | --- |
-| T80 | Caractères invisibles et homoglyphes | F-73 |
+| T80 | Caractères invisibles et homoglyphes ; saisie du texte collé et analyses qui s'y appliquent (A-29, ADR-0074) | F-73 |
 | T81 | Historique d'édition DOCX/ODT (absence = neutre) | F-71 |
 | T82 | Stylométrie | F-70 |
 | T83 | Existence des références (DOI, titres) dans des bases publiques | F-72, NF-16 |
@@ -191,3 +191,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-10-26 | 0.9 | T10 précisée : nom du projet, outillage, CI et surveillance des failles (ADR-0045 à ADR-0052) | T10 |
 | 2026-10-26 | 0.10 | T11 renvoie à son livrable, schémas et glossaire ajoutés (ADR-0054 à ADR-0059) | T11 |
 | 2026-10-26 | 0.11 | T12 renvoie à ses décisions (ADR-0060 à ADR-0065) ; T13 reçoit la transmission du format et l'option de désactivation, T14 le Job Object et les valeurs provisoires (ADR-0063, ADR-0065) | T12 |
+| 2026-10-27 | 0.12 | T13 renvoie à ses décisions (ADR-0070 à ADR-0075) ; T14 reçoit le refus « hors limites » et le fuzzing de l'identification ; T80 la saisie du texte collé (ADR-0074) | T13 |

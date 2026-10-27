@@ -49,3 +49,4 @@ L'empreinte est **toujours calculée** et inscrite au rapport, mais traitée com
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Renvoi : résumé du terminal sans nom ni empreinte avant le masquage de T16 (ADR-0073) |

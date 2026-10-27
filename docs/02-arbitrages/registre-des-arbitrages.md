@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.4** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 proposée dans la PR de T11. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.5** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 proposée dans la PR de T13. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -112,6 +112,14 @@ Constats de l'analyse adressés à T04 :
 | A-30 Algorithme d'empreinte | ADR-0040 : SHA-256 du fichier entier |
 | A-53 Niveau d'isolation | ADR-0035 : mécanismes par système |
 
+Constats de l'analyse adressés à T13 :
+
+| Constat | Traitement |
+| --- | --- |
+| A-25 Fichiers à contenus multiples | Formats mis bout à bout (photo animée, JPEG à plusieurs images) : parties analysées chacune (ADR-0071). Contenus internes à un format (images d'un HEIC, pistes) : à chaque module, `format_partiel` avec localisation |
+| A-29 Texte collé | Reporté à T80, avec une exigence de saisie de texte (§4, ADR-0074) |
+| A-31 Fichiers polyglottes | Traité en T03 par ES-07 ; réalisé en T13 : chaque format reconnu du périmètre analysé, les autres déclarés non analysés (ADR-0070, ADR-0071) |
+
 ## 4. Exigences du cahier reformulées pour le projet
 
 Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent au projet et sont soumises à l'auteur du cahier.
@@ -135,6 +143,8 @@ Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent 
 | §8, couverture | Chaque exigence couverte par un test | Chaque exigence a une méthode de vérification et un résultat consigné | ADR-0024 |
 | §8, étude d'usage | Critère d'acceptation | Hors V1 | ADR-0026 |
 | §8, ajout | — | Taux de faux positifs par fichier mesuré et publié | ADR-0018 |
+| F-01, texte collé (§3) | Soumettre un fichier ; le texte collé est un média du périmètre | Ajout : une exigence de saisie de texte, rédigée avec T80 ; d'ici là, seul un fichier est soumis (un texte enregistré dans un fichier est identifié comme texte) | ADR-0074 |
+| ES-07, fichiers polyglottes | Chaque format reconnu est analysé, ou déclaré non analysé avec la raison | Chaque format du périmètre est analysé ; un format hors périmètre est déclaré non analysé (`hors_perimetre`) | ADR-0071 |
 
 ## 5. En attente de l'auteur du cahier
 
@@ -157,6 +167,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 - [Architecture](../architecture/architecture.md) (T04) : points 9 et 10 du §3, nom du projet (§2), constats adressés à T04 (§3) ; découpage v0.8.
 - T10 : nom du projet tranché (§2, ADR-0045) ; architecture v1.1.
 - T11 : F-81 et glossaire reformulés (§4, ADR-0055) ; [modèle de données](../modele-de-donnees/modele-de-donnees.md) et [glossaire du projet](../glossaire.md) créés ; architecture v1.2, découpage v0.10.
+- T13 : constats A-25, A-29, A-31 (§3) ; saisie de texte et portée d'ES-07 (§4) ; architecture v1.6, modèle de données v1.2, glossaire v1.2, découpage v0.12.
 
 ## 7. Historique
 
@@ -167,3 +178,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-10-26 | 1.2 | Choix de T04 : nom du projet désormais nécessaire avant T10 (§2), points 9 et 10, constats adressés à T04 (§3), effets (§6) | T04 |
 | 2026-10-26 | 1.3 | Nom du projet tranché : Voight-Kampff (§2, ADR-0045) ; effets (§6) | T10 |
 | 2026-10-26 | 1.4 | Reformulations de F-81 et du glossaire (§4, ADR-0055) ; effets (§6) | T11 |
+| 2026-10-27 | 1.5 | Constats adressés à T13 (§3) ; saisie de texte et portée d'ES-07 (§4, ADR-0071, ADR-0074) ; effets (§6) | T13 |

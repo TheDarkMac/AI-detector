@@ -49,3 +49,4 @@ F-05 demande l'empreinte cryptographique du fichier sans préciser l'algorithme 
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Réalisé en T13 : empreinte du principal à l'ouverture, recalculée par le travail après les modules, à défaut de nouveau par le principal (ADR-0075) |

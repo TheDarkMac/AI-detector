@@ -52,3 +52,4 @@ Le §10 laisse ouverts l'analyse par lots, l'analyse de flux en direct et l'anal
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Réalisé en T13 : plusieurs fichiers par commande, un processus de travail chacun, un refus n'arrête pas les suivants (ADR-0073, ADR-0075) |
