@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.5** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 proposée dans la PR de T13. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.5** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 proposée dans la PR de T14. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -69,7 +69,7 @@ Statuts : **Tranché** (ADR cité), **Reporté** (tâche citée), **Non tranché
 
 | Point | Statut | Décision ou raison du report | Référence |
 | --- | --- | --- | --- |
-| Limites de taille, de durée, temps d'analyse | Reporté | Isolation tranchée en T03 (ADR-0028) ; valeurs dépendant de mesures sur le socle | T14 |
+| Limites de taille, de durée, temps d'analyse | Tranché | Budget mixte : limites comptées identiques partout, mémoire et temps du système hors garantie (ADR-0076) ; 1 Gio par fichier, 2 Gio de mémoire, 120 s, fixes en V1 (ADR-0077) | ADR-0076, ADR-0077, ADR-0078 |
 | Seuils d'acceptation | Reporté en partie | Principe tranché : taux par technique et taux par fichier, publiés avec effectif et intervalle (A-54). Valeurs fixées avant l'acceptation de la première technique. | ADR-0018, T17 |
 | Constitution du corpus | Reporté en partie | Séparation calibrage / évaluation tranchée ; sources, volume et droits en T100 | ADR-0016, T100 |
 | Références des modules comparatifs | Tranché | F-35 et F-64 hors V1 (références fournies par l'utilisateur, comme le prévoit le cahier) ; F-42 hors V1 faute de base de référence | ADR-0012 |
@@ -120,6 +120,13 @@ Constats de l'analyse adressés à T13 :
 | A-29 Texte collé | Reporté à T80, avec une exigence de saisie de texte (§4, ADR-0074) |
 | A-31 Fichiers polyglottes | Traité en T03 par ES-07 ; réalisé en T13 : chaque format reconnu du périmètre analysé, les autres déclarés non analysés (ADR-0070, ADR-0071) |
 
+Constats de l'analyse adressés à T14 :
+
+| Constat | Traitement |
+| --- | --- |
+| A-05 Reproductibilité contre limite de temps | Budget mixte (ADR-0076) : seules la mémoire et le temps du système sortent une analyse de la garantie |
+| A-53 Niveau d'isolation | Réalisé : ADR-0079 (Linux, isolation complète), ADR-0080 (macOS, complète), ADR-0081 (Windows, réduite : réseau, lecture, vidages) |
+
 ## 4. Exigences du cahier reformulées pour le projet
 
 Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent au projet et sont soumises à l'auteur du cahier.
@@ -168,6 +175,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 - T10 : nom du projet tranché (§2, ADR-0045) ; architecture v1.1.
 - T11 : F-81 et glossaire reformulés (§4, ADR-0055) ; [modèle de données](../modele-de-donnees/modele-de-donnees.md) et [glossaire du projet](../glossaire.md) créés ; architecture v1.2, découpage v0.10.
 - T13 : constats A-25, A-29, A-31 (§3) ; saisie de texte et portée d'ES-07 (§4) ; architecture v1.6, modèle de données v1.2, glossaire v1.2, découpage v0.12.
+- T14 : limites tranchées (§2), constats A-05 et A-53 (§3) ; architecture v1.7, modèle de données v1.3, découpage v0.13.
 
 ## 7. Historique
 
@@ -179,3 +187,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-10-26 | 1.3 | Nom du projet tranché : Voight-Kampff (§2, ADR-0045) ; effets (§6) | T10 |
 | 2026-10-26 | 1.4 | Reformulations de F-81 et du glossaire (§4, ADR-0055) ; effets (§6) | T11 |
 | 2026-10-27 | 1.5 | Constats adressés à T13 (§3) ; saisie de texte et portée d'ES-07 (§4, ADR-0071, ADR-0074) ; effets (§6) | T13 |
+| 2026-10-27 | 1.6 | Limites tranchées (§2, ADR-0076 à ADR-0078) ; constats adressés à T14 (§3) ; effets (§6) | T14 |

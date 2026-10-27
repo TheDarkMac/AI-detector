@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.2** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 proposée dans la PR de T13. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.3** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 proposée dans la PR de T14. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -237,9 +237,10 @@ Les observations `c2pa/1` à `c2pa/3` portent l'état de la signature, le signat
 | `hors_v1`, `module_desactive`, `reference_manquante`, `reseau_desactive`, `erreur_module` | Oui | Non |
 | `hors_perimetre` (partie obligatoire, jamais de module) | Non | Non |
 | `format_partiel`, `fichier_tronque` | Non | Non |
+| `limite_depassee` : limite comptée par le moteur, identique sur toutes les machines (ADR-0076, ADR-0078) | Non | Non |
+| `memoire_depassee`, `delai_depasse`, `arret_processus`, `message_invalide` | Non | Oui |
 
 Le processus principal tire de l'identification trois sortes d'analyses non menées, sans module (ADR-0071) : `hors_perimetre` pour chaque partie hors périmètre, `fichier_tronque` pour chaque partie tronquée, `format_partiel` pour chaque plage non reconnue, avec la plage en localisation. Le modèle exige leur présence.
-| `limite_depassee`, `delai_depasse`, `arret_processus`, `message_invalide` | Non | Oui |
 
 **Couverture** (ADR-0059) : la liste des techniques, une fois par partie du périmètre (ADR-0071), chacune avec sa version et son état (`appliquee`, `partielle`, `non_menee`, `non_applicable`), et les identifiants des marquages recherchés (F-25). Une technique hors de cette version de l'outil y figure sans version, à l'état non menée, avec la seule raison `hors_v1` (ADR-0012).
 
@@ -292,7 +293,7 @@ Une ligne JSON par message (ADR-0036), validée par `messages.schema.json` :
 | `versions` | `dependances` | Versions réelles des bibliothèques chargées dans P2 |
 | `fin` | `empreinte` recalculée par P2 après les modules (ES-08, ADR-0075) | Dernier message |
 
-L'ordre des messages, les contrôles du processus principal et la conversion des échecs en analyses non menées sont fixés par ADR-0062 et ADR-0065 (T12). Les tailles maximales et le délai y sont provisoires ; T14 les fixe.
+L'ordre des messages, les contrôles du processus principal et la conversion des échecs en analyses non menées sont fixés par ADR-0062 et ADR-0065 (T12). Les tailles maximales et le délai sont fixés par ADR-0077 (T14) ; une ligne ou une sortie trop longue donne `message_invalide` (ADR-0078).
 
 ## 9. Exigences réalisées
 
@@ -300,10 +301,10 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | --- | --- | --- |
 | F-80 | Catégorie de chaque constat | Rédaction des phrases (T16) |
 | F-81 | Direction parmi cinq (ADR-0055) | Directions permises par règle (T15) |
-| F-82 | Analyses non menées et raisons fermées ; techniques hors V1 dans la couverture ; T12 produit `erreur_module`, `module_desactive`, `arret_processus`, `message_invalide`, et provisoirement `limite_depassee` et `delai_depasse` ; T13 `hors_perimetre`, `fichier_tronque` et `format_partiel` à partir de l'identification | Valeurs des limites (T14) ; `hors_v1` (T15) ; `format_partiel` des modules pour les contenus multiples (A-25) |
+| F-82 | Analyses non menées et raisons fermées ; techniques hors V1 dans la couverture ; T12 produit `erreur_module`, `module_desactive`, `arret_processus`, `message_invalide` ; T13 `hors_perimetre`, `fichier_tronque` et `format_partiel` à partir de l'identification ; T14 `limite_depassee`, `memoire_depassee` et `delai_depasse`, valeurs fixées (ADR-0077, ADR-0078) | `hors_v1` (T15) ; `format_partiel` des modules pour les contenus multiples (A-25) |
 | F-02, F-03, ES-07 | Format réel par le contenu, parties d'un polyglotte, extension et concordance, octets non reconnus (T13, ADR-0070 à ADR-0072) | Gabarits des signalements (T16) |
 | §6 | Constat à cinq éléments, plus règle versionnée, technique, fondement, niveau, localisation (A-46, A-47) ; rubriques Identification, Versions, Couverture | Résumé, avertissement, masquage (T16) |
-| ES-04 | Données simples, bornées, validées par schéma puis par le modèle ; erreurs sans contenu ; lecture bornée et délai (T12) | Valeurs des limites et du délai (T14) |
+| ES-04 | Données simples, bornées, validées par schéma puis par le modèle ; erreurs sans contenu ; lecture bornée et délai (T12), valeurs fixées (T14, ADR-0077) | — |
 | ES-20 | Une preuve exige un fondement de vérification ; une déclaration ne peut être qu'un indice ou une information | Rédaction « le fichier déclare » (T22, T30) |
 | A-10 | Glossaire du projet | Glossaire utilisateur (T103) |
 | A-23 | Couverture : état « non applicable », produit par T12 d'après les formats des manifestes ; techniques hors V1 | Matrice format × technique (T15) |
@@ -315,3 +316,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-10-26 | 1.0 | Création | T11 |
 | 2026-10-26 | 1.1 | Message `module` (§8, ADR-0062) ; décodage strict et réception réalisés (§1, §7) ; exigences mises à jour (§9) | T12 |
 | 2026-10-27 | 1.2 | Parties et champs `partie` (§2 à §6, ADR-0071) ; raison `hors_perimetre` et non menées tirées de l'identification (§5) ; signalements de l'identification (§6, ADR-0072) ; contrôles du modèle (§7) ; message `identification` et partie du message `module` (§8) ; exigences (§9) | T13 |
+| 2026-10-27 | 1.3 | Raison `memoire_depassee` ; `limite_depassee` n'interrompt plus (§5, ADR-0078) ; paragraphe des non menées tirées de l'identification sorti du tableau, où il avait été inséré (§5) ; limites fixées (§8, §9) | T14 |

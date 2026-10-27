@@ -60,3 +60,4 @@ ADR-0028 impose un processus de travail par fichier et des résultats validés p
 | 2026-10-26 | Renvoi : schéma des messages et version commune avec le rapport (ADR-0054, modèle de données §8) (T11) |
 | 2026-10-26 | Réalisé en T12. Précisé par ADR-0065 : `-B` ajouté à la commande (point 2), Job Object reporté à T14 (point 2), sortie d'erreur envoyée vers le néant au lieu d'être lue (point 6) ; message « module » ajouté (ADR-0062) |
 | 2026-10-27 | Précisé en T13 : message `identification` après l'état de l'isolation (ADR-0071), empreinte recalculée après les modules (ADR-0075) |
+| 2026-10-27 | Précisé en T14 : restrictions appliquées avant l'isolation annoncée (ADR-0079 à ADR-0081) ; coût de démarrage mesuré : 0,35 s par fichier, restrictions comprises (journal de T14) |

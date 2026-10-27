@@ -77,3 +77,4 @@ Option A, dans le déroulé suivant (`_orchestration/soumission.py`) :
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
 | 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T13 : statut « Accepté » |
+| 2026-10-27 | Complété par ADR-0077 (T14) : refus `hors_limites` au-delà de 1 Gio, avant toute lecture |

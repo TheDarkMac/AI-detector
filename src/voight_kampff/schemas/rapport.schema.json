@@ -140,6 +140,7 @@
         "reseau_desactive",
         "erreur_module",
         "limite_depassee",
+        "memoire_depassee",
         "delai_depasse",
         "arret_processus",
         "message_invalide"

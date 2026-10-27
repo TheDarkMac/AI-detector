@@ -1,16 +1,18 @@
 """Déroulé du processus de travail (ADR-0036) et acheminement vers les modules (ADR-0042).
 
 1. Importer les modules livrés, tant que le système de fichiers est accessible.
-2. Appliquer les restrictions (T14), se déclarer verrouillé, envoyer l'état de l'isolation :
-   aucun octet du fichier n'a encore été lu.
+2. Appliquer les restrictions du système (ADR-0035, ADR-0079 à ADR-0081), se déclarer
+   verrouillé, envoyer l'état de l'isolation : aucun octet du fichier n'a encore été lu.
 3. Lire la configuration : modules actifs, dans l'ordre d'exécution.
 4. Identifier les formats et envoyer les parties reconnues (ADR-0070, ADR-0071).
 5. Pour chaque partie du périmètre, exécuter chaque module actif, envoyer ses résultats puis
    son message « module » (ADR-0062).
 6. Envoyer les versions, puis l'empreinte du fichier recalculée en fin d'analyse (ES-08).
 
-Une exception dans un module ne touche que ce module (NF-03, ADR-0060) ; toute autre erreur
-arrête le processus, et le processus principal en fait une analyse non menée.
+Une exception dans un module ne touche que ce module (NF-03, ADR-0060) ; une limite comptée
+dépassée le rend non mené pour ``limite_depassee``, la mémoire du système épuisée pour
+``memoire_depassee`` (ADR-0078). Toute autre erreur arrête le processus, et le processus
+principal en fait une analyse non menée.
 """
 
 import argparse
@@ -28,15 +30,13 @@ from voight_kampff._protocole import (
     TAILLE_MAX_SORTIE,
     encoder,
 )
-from voight_kampff._travail import garde, identification
+from voight_kampff._travail import garde, identification, restrictions
 from voight_kampff._travail.contexte import Contexte, LimiteDepassee
 from voight_kampff._travail.fichier import Fichier, ouvrir_herite
 from voight_kampff.rapport.modele import (
     VERSION_SCHEMA,
     Direction,
     EtatIsolation,
-    ManqueIsolation,
-    NiveauIsolation,
     NonMenee,
     Partie,
     RaisonNonMenee,
@@ -46,6 +46,7 @@ __all__ = [
     "Analyseur",
     "Identifieur",
     "ModuleConfigure",
+    "Restricteur",
     "canal_du_protocole",
     "importer",
     "lire_configuration",
@@ -54,6 +55,7 @@ __all__ = [
 
 type Analyseur = Callable[[Contexte], None]
 type Identifieur = Callable[[Fichier, int], tuple[Partie, ...]]
+type Restricteur = Callable[[], EtatIsolation]
 
 _RESERVE = 64 << 10
 """Part de la sortie gardée pour les messages du moteur après le dernier module."""
@@ -83,7 +85,8 @@ def canal_du_protocole() -> BinaryIO:
 def importer() -> tuple[dict[str, Analyseur], frozenset[str]]:
     """Importe les modules livrés ; renvoie leurs analyseurs et ceux qui n'ont pas pu l'être.
 
-    Appelé avant les restrictions : après, le code ne peut plus être lu sur le disque.
+    Appelé avant les restrictions : après, le code ne peut plus être lu sur le disque. Un
+    module importe donc à son chargement tout ce dont il aura besoin (ADR-0079).
     """
     analyseurs: dict[str, Analyseur] = {}
     echecs: set[str] = set()
@@ -160,6 +163,8 @@ def _executer(
             analyseur(contexte)
         except LimiteDepassee:
             raison = RaisonNonMenee.LIMITE_DEPASSEE
+        except MemoryError:  # limite du système (ADR-0077) : hors garantie (ADR-0078)
+            raison = RaisonNonMenee.MEMOIRE_DEPASSEE
         except Exception:  # NF-03 : seul ce module est touché
             raison = RaisonNonMenee.ERREUR_MODULE
         else:
@@ -181,11 +186,13 @@ def principal(
     *,
     analyseurs: Mapping[str, Analyseur] | None = None,
     identifier: Identifieur = identification.identifier,
+    restreindre: Restricteur = restrictions.appliquer,
 ) -> int:
     """Analyse le fichier transmis par le processus principal ; renvoie le code de sortie.
 
     ``analyseurs`` et ``identifier`` remplacent, pour les tests, les modules livrés et
-    l'identification du format.
+    l'identification du format ; ``restreindre``, les restrictions, que les tests du
+    déroulé ne peuvent pas appliquer à leur propre processus.
     """
     arguments = argparse.ArgumentParser(prog="voight_kampff._travail")
     arguments.add_argument("--descripteur", type=int, required=True)
@@ -195,8 +202,7 @@ def principal(
     if analyseurs is None:
         analyseurs, echecs = importer()
 
-    # Restrictions du système : T14. Jusque-là, aucune n'est appliquée et le rapport le dit.
-    isolation = EtatIsolation(NiveauIsolation.REDUITE, tuple(ManqueIsolation))
+    isolation = restreindre()
     garde.verrouiller()
     canal = _Canal(sortie)
     canal.message(

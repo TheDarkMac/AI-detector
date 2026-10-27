@@ -1,8 +1,10 @@
-"""Objets communs aux tests du modèle de données et des schémas (T11)."""
+"""Objets communs aux tests du modèle de données et des schémas (T11) ; profils du fuzzing (T14)."""
 
+import os
 from datetime import UTC, date, datetime
 
 import pytest
+from hypothesis import settings
 
 from voight_kampff.rapport.modele import (
     Categorie,
@@ -34,6 +36,15 @@ from voight_kampff.rapport.modele import (
     Versions,
     Zone,
 )
+
+# Fuzzing (ES-19, ADR-0082). « defaut » : exemples tirés d'une graine fixe, identiques à chaque
+# passage et sur chaque système, pour une CI reproductible ; aucune base d'exemples écrite sur
+# le disque. « campagne » : recherche longue et aléatoire, lancée à la main.
+settings.register_profile(
+    "defaut", max_examples=300, derandomize=True, database=None, deadline=None, print_blob=True
+)
+settings.register_profile("campagne", max_examples=200_000, database=None, deadline=None)
+settings.load_profile(os.environ.get("VK_FUZZING", "defaut"))
 
 EMPREINTE = "3f" * 32
 TAILLE = 2_048_576

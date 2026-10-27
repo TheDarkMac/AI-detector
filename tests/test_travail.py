@@ -1,7 +1,9 @@
 """Tests du processus de travail exécuté dans le processus des tests (T12, T13).
 
 Le déroulé est appelé avec des flux en mémoire : on lit ce qu'il enverrait au processus
-principal. La garde (ES-17) est remise à zéro avant chaque test.
+principal. La garde (ES-17) est remise à zéro avant chaque test. Les restrictions ne sont pas
+appliquées : elles verrouilleraient le processus des tests ; ``test_isolation.py`` les vérifie
+dans un processus de travail.
 """
 
 import contextlib
@@ -27,8 +29,11 @@ from voight_kampff.rapport.modele import (
     VERSION_SCHEMA,
     Categorie,
     Direction,
+    EtatIsolation,
     Fondement,
     Localisation,
+    ManqueIsolation,
+    NiveauIsolation,
     Partie,
     Phrase,
     Plage,
@@ -38,6 +43,11 @@ from voight_kampff.rapport.modele import (
 
 CONTENU = b"0123456789"
 PARTIE = Partie(1, "jpeg", Plage(0, len(CONTENU)), fin_connue=True)
+SANS_RESTRICTION = EtatIsolation(NiveauIsolation.REDUITE, (ManqueIsolation.RESEAU,))
+
+
+def sans_restriction() -> EtatIsolation:
+    return SANS_RESTRICTION
 
 
 @pytest.fixture(autouse=True)
@@ -90,6 +100,7 @@ def derouler(
         sortie,
         analyseurs=analyseurs,
         identifier=lambda _fichier, _taille: parties,
+        restreindre=sans_restriction,
     )
     assert code == 0
     messages = [json.loads(ligne) for ligne in sortie.getvalue().splitlines()]
@@ -134,7 +145,12 @@ def test_garde_posee_avant_l_isolation(descripteur: int) -> None:
 
 def test_identification_par_defaut(descripteur: int) -> None:
     sortie = io.BytesIO()
-    principal.principal(["--descripteur", transmis(descripteur)], configuration("alpha"), sortie)
+    principal.principal(
+        ["--descripteur", transmis(descripteur)],
+        configuration("alpha"),
+        sortie,
+        restreindre=sans_restriction,
+    )
     identification, module = (json.loads(ligne) for ligne in sortie.getvalue().splitlines()[1:3])
     # Dix chiffres ASCII : du texte brut, que alpha (JPEG, PDF) ne traite pas.
     assert [partie["format"] for partie in identification["parties"]] == ["texte"]

@@ -54,3 +54,4 @@ NF-01 exige que l'analyse s'exécute « de façon isolée » sans fixer le nivea
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : mécanismes par système fixés par ADR-0035, processus de travail par ADR-0036 (T04) |
+| 2026-10-27 | Réalisé en T14 : ADR-0079 (Linux), ADR-0080 (macOS), ADR-0081 (Windows) ; valeurs des limites fixées par ADR-0077 |

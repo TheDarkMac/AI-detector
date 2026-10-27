@@ -66,3 +66,4 @@ Les trois systèmes sont pris en charge en V1. Linux sert de référence : c'est
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-27 | Réalisé en T14 : ADR-0079 à ADR-0081. Points « à confirmer » : mémoire sous macOS surveillée par le principal (ADR-0080) ; niveau d'intégrité bas confirmé ; vidages sous Windows non garantis, déclarés manquants (ADR-0081). Sous macOS, Seatbelt laisse créer une socket et refuse la connexion |

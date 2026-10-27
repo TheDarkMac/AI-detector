@@ -7,11 +7,26 @@ vérifient leurs invariants, et numérote les observations ``<module>/<n>``.
 Un module analyse une partie du fichier à la fois (ADR-0071) : il la lit comme un fichier
 autonome, positions comptées depuis son début, et le contexte ramène les plages d'octets de
 ses localisations à des positions dans le fichier entier.
+
+Le contexte tient aussi le budget du module sur sa partie (ES-03, ADR-0076, ADR-0078) : octets
+décompressés, objets parcourus, dimensions déclarées, imbrication. Ces limites sont comptées,
+pas chronométrées : un même fichier les dépasse ou non sur toutes les machines.
 """
 
+import contextlib
 import dataclasses
-from collections.abc import Collection, Mapping, Sequence
+import zlib
+from collections.abc import Collection, Iterator, Mapping, Sequence
+from typing import Literal
 
+from voight_kampff._limites import (
+    OBJETS_MAX,
+    PIXELS_MAX,
+    PROFONDEUR_MAX,
+    RAPPORT_COMPRESSION_MAX,
+    SEUIL_RAPPORT_COMPRESSION,
+    TAILLE_MAX_DECOMPRESSEE,
+)
 from voight_kampff._protocole import TAILLE_MAX_LECTURE, TAILLE_MAX_MESSAGE, encoder
 from voight_kampff._travail import garde
 from voight_kampff._travail.fichier import Fichier
@@ -33,7 +48,13 @@ from voight_kampff.rapport.modele import (
     Scalaire,
 )
 
-__all__ = ["RAISONS_D_UN_MODULE", "Contexte", "LimiteDepassee"]
+__all__ = ["RAISONS_D_UN_MODULE", "Compression", "Contexte", "LimiteDepassee"]
+
+type Compression = Literal["zlib", "deflate", "gzip"]
+"""Flux que :meth:`Contexte.decompresser` sait lire : zlib, deflate brut (ZIP), gzip."""
+
+_FENETRES: dict[Compression, int] = {"zlib": 15, "deflate": -15, "gzip": 31}
+_BLOC = 1 << 20
 
 RAISONS_D_UN_MODULE = frozenset(
     {
@@ -47,7 +68,7 @@ RAISONS_D_UN_MODULE = frozenset(
 
 
 class LimiteDepassee(Exception):
-    """Résultats d'un module au-delà des tailles permises par le protocole."""
+    """Module au-delà d'une limite comptée : taille des résultats ou budget (ES-03)."""
 
 
 class Contexte:
@@ -55,13 +76,17 @@ class Contexte:
 
     __slots__ = (
         "_budget",
+        "_compresses",
         "_debut",
+        "_decompresses",
         "_depasse",
         "_directions",
         "_fichier",
         "_lignes",
         "_numero",
+        "_objets",
         "_observations",
+        "_profondeur",
         "_taille_lignes",
         "format_reel",
         "module",
@@ -95,6 +120,10 @@ class Contexte:
         self._numero = numero
         self._observations: set[str] = set()
         self._depasse = False
+        self._compresses = 0
+        self._decompresses = 0
+        self._objets = 0
+        self._profondeur = 0
 
     # Lecture
 
@@ -104,6 +133,73 @@ class Contexte:
             raise ValueError("lecture : position ou taille hors bornes")
         taille = min(taille, max(0, self.taille - position))
         return self._fichier.lire(self._debut + position, taille)
+
+    # Budget (ES-03, ADR-0078)
+
+    def compter_objets(self, nombre: int = 1) -> None:
+        """Compte des objets parcourus : entrées d'archive, objets PDF, blocs, balises."""
+        if nombre < 0:
+            raise ValueError("objets : nombre négatif")
+        self._objets += nombre
+        if self._objets > OBJETS_MAX:
+            self._depasser()
+
+    def verifier_dimensions(self, largeur: int, hauteur: int) -> None:
+        """Refuse une image déclarée trop grande, avant de la décoder."""
+        if largeur < 0 or hauteur < 0:
+            raise ValueError("dimensions : valeur négative")
+        if largeur * hauteur > PIXELS_MAX:
+            self._depasser()
+
+    @contextlib.contextmanager
+    def imbrication(self) -> Iterator[None]:
+        """Un niveau d'imbrication de plus, le temps du bloc ``with``."""
+        self._profondeur += 1
+        try:
+            if self._profondeur > PROFONDEUR_MAX:
+                self._depasser()
+            yield
+        finally:
+            self._profondeur -= 1
+
+    def compter_decompression(self, compresses: int, decompresses: int) -> None:
+        """Déclare des octets décompressés par une bibliothèque, à mesure qu'ils sortent.
+
+        Le cumul est borné, et au-delà d'un seuil, le rapport entre octets décompressés et
+        compressés aussi : une bombe de décompression est arrêtée avant d'occuper la mémoire.
+        """
+        if compresses < 0 or decompresses < 0:
+            raise ValueError("décompression : nombre d'octets négatif")
+        self._compresses += compresses
+        self._decompresses += decompresses
+        if self._decompresses > TAILLE_MAX_DECOMPRESSEE or (
+            self._decompresses > SEUIL_RAPPORT_COMPRESSION
+            and self._decompresses > RAPPORT_COMPRESSION_MAX * max(self._compresses, 1)
+        ):
+            self._depasser()
+
+    def decompresser(self, donnees: bytes, methode: Compression) -> bytes:
+        """Décompresse un flux par blocs, en comptant chaque bloc contre le budget.
+
+        Lève ``zlib.error`` si le flux est invalide ou incomplet ; les octets qui suivent la fin
+        du flux sont ignorés.
+        """
+        flux = zlib.decompressobj(_FENETRES[methode])
+        morceaux: list[bytes] = []
+        entree = donnees
+        while True:
+            morceau = flux.decompress(entree, _BLOC)
+            self.compter_decompression(len(entree) - len(flux.unconsumed_tail), len(morceau))
+            morceaux.append(morceau)
+            entree = flux.unconsumed_tail
+            if flux.eof:
+                return b"".join(morceaux)
+            if not entree and len(morceau) < _BLOC:
+                raise zlib.error("flux compressé incomplet")
+
+    def _depasser(self) -> None:
+        self._depasse = True
+        raise LimiteDepassee
 
     # Résultats
 
@@ -202,7 +298,6 @@ class Contexte:
             raise LimiteDepassee
         ligne = encoder(message)
         if len(ligne) > TAILLE_MAX_MESSAGE or self._taille_lignes + len(ligne) > self._budget:
-            self._depasse = True
-            raise LimiteDepassee
+            self._depasser()
         self._lignes.append(ligne)
         self._taille_lignes += len(ligne)

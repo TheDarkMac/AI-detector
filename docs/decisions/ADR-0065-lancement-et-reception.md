@@ -94,3 +94,4 @@ Ligne : 1 Mio ; sortie totale : 64 Mio ; configuration : 16 Mio ; lecture du fic
 | 2026-10-26 | Création, statut « Proposé » |
 | 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T12 : statut « Accepté » |
 | 2026-10-27 | Précisé par ADR-0071 (T13) : message `identification` en deuxième, parties contrôlées contre la taille hachée par le principal |
+| 2026-10-27 | Précisé en T14 : valeurs fixées par ADR-0077 (délai porté à 120 s, tailles inchangées), sans passer par la configuration ; ligne ou sortie trop longue : `message_invalide` au lieu de `limite_depassee` (ADR-0078) ; Job Object posé par le travail lui-même, lanceur vérifié (ADR-0081) |

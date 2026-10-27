@@ -10,12 +10,13 @@ périmètre ; une partie hors périmètre est déclarée non analysée ici, pas 
 
 Tout écart arrête le processus de travail. Les modules terminés gardent leurs résultats ; les
 autres deviennent des analyses non menées, avec la raison de l'arrêt, et l'analyse est
-interrompue (ADR-0056). Un délai et des tailles **provisoires** bornent l'échange ; T14 fixe
-les valeurs.
+interrompue (ADR-0056). Un délai et des tailles, fixés par ADR-0077, bornent l'échange ; sous
+macOS, la mémoire du travail est surveillée pendant l'attente (ADR-0080).
 """
 
 import os
 import queue
+import signal
 import subprocess
 import sys
 import threading
@@ -25,6 +26,8 @@ from dataclasses import dataclass, field
 from typing import IO, Any
 
 from voight_kampff import schemas
+from voight_kampff._limites import DELAI, DELAI_ARRET
+from voight_kampff._orchestration import surveillance
 from voight_kampff._orchestration.manifestes import Manifeste, selectionner
 from voight_kampff._protocole import (
     TAILLE_MAX_CONFIGURATION,
@@ -56,18 +59,18 @@ from voight_kampff.rapport.modele import (
 
 __all__ = ["DELAI", "ResultatTravail", "commande_travail", "executer"]
 
-DELAI = 60.0
-"""Délai total d'une analyse en secondes, provisoire (T14)."""
-
-_DELAI_ARRET = 5.0
-"""Attente de la fin du processus de travail après son dernier message ou son arrêt forcé."""
-
 _RAISONS_DU_FICHIER = frozenset(
     {RaisonNonMenee.FORMAT_PARTIEL, RaisonNonMenee.FICHIER_TRONQUE, RaisonNonMenee.LIMITE_DEPASSEE}
 )
 """Raisons qu'une analyse non menée sans module peut porter quand elle vient du travail."""
 
-_RAISONS_DU_MOTEUR = frozenset({RaisonNonMenee.ERREUR_MODULE, RaisonNonMenee.LIMITE_DEPASSEE})
+_RAISONS_DU_MOTEUR = frozenset(
+    {
+        RaisonNonMenee.ERREUR_MODULE,
+        RaisonNonMenee.LIMITE_DEPASSEE,
+        RaisonNonMenee.MEMOIRE_DEPASSEE,
+    }
+)
 """Raisons posées par le moteur à la place des résultats d'un module (ADR-0060)."""
 
 _RAISONS_D_UN_MODULE = _RAISONS_DU_MOTEUR | {
@@ -79,6 +82,29 @@ _RAISONS_D_UN_MODULE = _RAISONS_DU_MOTEUR | {
 
 _ISOLATION_INCONNUE = EtatIsolation(NiveauIsolation.REDUITE, tuple(ManqueIsolation))
 """Retenue si le processus de travail s'arrête avant d'annoncer son isolation."""
+
+
+def _avec_manque(isolation: EtatIsolation, manque: ManqueIsolation) -> EtatIsolation:
+    manques = {*isolation.manques, manque}
+    return EtatIsolation(NiveauIsolation.REDUITE, tuple(m for m in ManqueIsolation if m in manques))
+
+
+def _arret_par_le_temps(code: int) -> bool:
+    """Processus tué par sa limite de temps processeur (``SIGXCPU``, ADR-0078)."""
+    return sys.platform != "win32" and code == -signal.SIGXCPU
+
+
+def _raison_de_l_arret(processus: "subprocess.Popen[bytes]", echeance: float) -> RaisonNonMenee:
+    """Raison d'un flux fermé avant la fin : limite de temps processeur, ou arrêt anormal."""
+    try:
+        code = processus.wait(max(0.0, min(DELAI_ARRET, echeance - time.monotonic())))
+    except subprocess.TimeoutExpired:
+        return RaisonNonMenee.ARRET_PROCESSUS
+    return (
+        RaisonNonMenee.DELAI_DEPASSE
+        if _arret_par_le_temps(code)
+        else RaisonNonMenee.ARRET_PROCESSUS
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -155,13 +181,14 @@ def executer(
     echeance = time.monotonic() + delai
     with _lancer(descripteur, commande) as processus:
         try:
+            reception.surveiller(surveillance.memoire_depassee(processus.pid))
             reception.recevoir(processus, configuration, echeance)
         except _Interruption as interruption:
             reception.interrompre(interruption.raison)
         finally:
             if processus.poll() is None:
                 processus.kill()
-            processus.wait(_DELAI_ARRET)
+            processus.wait(DELAI_ARRET)
     return reception.resultat(manifestes, {manifeste.identifiant for manifeste in eteints})
 
 
@@ -221,7 +248,9 @@ def _lire(flux: IO[bytes], file: "queue.Queue[_Evenement]") -> None:
     while ligne := flux.readline(TAILLE_MAX_MESSAGE + 1):
         total += len(ligne)
         if len(ligne) > TAILLE_MAX_MESSAGE or total > TAILLE_MAX_SORTIE:
-            file.put(_Evenement(raison=RaisonNonMenee.LIMITE_DEPASSEE))
+            # Le contexte d'un module refuse ces tailles avant l'envoi : seul un travail
+            # défaillant ou compromis les dépasse (ADR-0078).
+            file.put(_Evenement(raison=RaisonNonMenee.MESSAGE_INVALIDE))
             return
         if not ligne.endswith(b"\n"):
             file.put(_Evenement(raison=RaisonNonMenee.MESSAGE_INVALIDE))
@@ -298,6 +327,13 @@ class _Reception:
         self._non_menees_du_fichier: list[NonMenee] = []
         self._empreinte: str | None = None
         self._interruption: RaisonNonMenee | None = None
+        self._memoire_depassee: Callable[[], bool] | None = None
+        self._memoire_non_surveillee = False
+
+    def surveiller(self, memoire_depassee: Callable[[], bool] | None) -> None:
+        """Sous macOS, mesure la mémoire du travail pendant l'attente (ADR-0080)."""
+        self._memoire_depassee = memoire_depassee
+        self._memoire_non_surveillee = sys.platform == "darwin" and memoire_depassee is None
 
     # Déroulé
 
@@ -312,6 +348,8 @@ class _Reception:
         premier = self._message(evenements, processus, echeance)
         _invalide(premier["type"] == "isolation")
         self._isolation = EtatIsolation.depuis_dict(premier["isolation"])
+        if self._memoire_non_surveillee:  # pragma: no cover - exécuté par la CI macOS
+            self._isolation = _avec_manque(self._isolation, ManqueIsolation.MEMOIRE)
         # La configuration part seulement maintenant : le travail a fini de se verrouiller.
         ecriture = threading.Thread(
             target=_ecrire, args=(processus.stdin, configuration), daemon=True
@@ -333,10 +371,16 @@ class _Reception:
             raise _Interruption(RaisonNonMenee.ARRET_PROCESSUS)
 
     def _evenement(self, evenements: "queue.Queue[_Evenement]", echeance: float) -> _Evenement:
-        try:
-            return evenements.get(timeout=max(0.0, echeance - time.monotonic()))
-        except queue.Empty:
-            raise _Interruption(RaisonNonMenee.DELAI_DEPASSE) from None
+        while True:
+            reste = max(0.0, echeance - time.monotonic())
+            attente = reste if self._memoire_depassee is None else min(reste, surveillance.PERIODE)
+            try:
+                return evenements.get(timeout=attente)
+            except queue.Empty:
+                if attente >= reste:
+                    raise _Interruption(RaisonNonMenee.DELAI_DEPASSE) from None
+                if self._memoire_depassee is not None and self._memoire_depassee():
+                    raise _Interruption(RaisonNonMenee.MEMOIRE_DEPASSEE) from None
 
     def _message(
         self,
@@ -348,7 +392,7 @@ class _Reception:
         if evenement.raison is not None:
             raise _Interruption(evenement.raison)
         if evenement.ligne is None:  # flux fermé avant le message de fin
-            raise _Interruption(RaisonNonMenee.ARRET_PROCESSUS)
+            raise _Interruption(_raison_de_l_arret(processus, echeance))
         try:
             message = decoder(evenement.ligne)
             schemas.valider("messages", message)
