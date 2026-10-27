@@ -1,8 +1,8 @@
 # ADR-0075 — Soumission : ouverture, empreinte vérifiée en fin d'analyse, refus, codes de sortie
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
-- **Décideur** : l'assistant, soumis à TheDarkMac dans la PR de T13
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T13, validée pendant la revue de la PR de T13
 - **Tâche** : T13
 - **Exigences liées** : F-01, F-04, F-05, NF-03, ES-01, ES-08, ES-14 ; M-06, M-30 ; ADR-0036, ADR-0040, ADR-0059, ADR-0073
 
@@ -76,3 +76,4 @@ Option A, dans le déroulé suivant (`_orchestration/soumission.py`) :
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T13 : statut « Accepté » |

@@ -1,8 +1,8 @@
 # ADR-0070 — Identification du format par le contenu : vocabulaire, signatures, fin logique
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-27
-- **Décideur** : l'assistant, soumis à TheDarkMac dans la PR de T13
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T13, validée pendant la revue de la PR de T13
 - **Tâche** : T13
 - **Exigences liées** : F-01, F-02, F-03, ES-07 ; M-08 ; A-25, A-31 ; ADR-0012, ADR-0036, ADR-0043, ADR-0064, ADR-0071
 
@@ -96,3 +96,4 @@ La fin d'une partie a trois états : **établie** ; **non établie** (structure 
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
+| 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T13 : statut « Accepté » |

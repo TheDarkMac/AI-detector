@@ -46,7 +46,8 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : format réel par signat
 11. CI : étape « Commande d'analyse depuis le wheel (T13) » ajoutée au job `paquet`. Job rejoué en local : deux constructions identiques ; le wheel contient les nouveaux fichiers ; depuis le wheel installé, `vk` identifie un PDF et refuse un fichier vide (code 1) ; toujours aucun `.pyc` dans `_travail/`.
 12. Vérification finale : 626 tests verts, couverture 100 % (lignes et branches) ; Ruff et mypy sans remarque.
 13. Documentation : ADR-0070 à ADR-0075 ; renvois dans ADR-0012, ADR-0013, ADR-0015, ADR-0031, ADR-0036, ADR-0040, ADR-0056, ADR-0059, ADR-0061 à ADR-0065 ; architecture v1.6, modèle de données v1.2, glossaire v1.2, découpage v0.12, registre des arbitrages v1.5 ; `README.md` ; index des ADR et du journal.
-14. Lint Markdown en local, vérification des fichiers interdits, commits ; branche poussée et PR ouverte vers `detector`.
+14. Lint Markdown en local, vérification des fichiers interdits, commits ; branche poussée et PR [#13](https://github.com/TheDarkMac/AI-detector/pull/13) ouverte vers `detector`.
+15. Pendant la revue, TheDarkMac a validé ADR-0070 et ADR-0075 : statut « Accepté ».
 
 ## Problèmes rencontrés
 
@@ -84,7 +85,6 @@ Aucun de ces problèmes n'est une erreur d'une analyse ou d'une décision antér
 
 ## Reste à faire
 
-- Validation par TheDarkMac d'ADR-0070 et ADR-0075, au statut « Proposé ».
 - T14 : limites, refus « hors limites », fuzzing des analyseurs dont l'identification ; restrictions et Job Object.
 - T15 : catalogue, règles citées par les manifestes, techniques hors V1 par format.
 - T16 : rapport à partir d'une analyse, exports, masquage, gabarits des raisons et des signalements.
