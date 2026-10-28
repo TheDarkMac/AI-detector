@@ -1,8 +1,8 @@
 # ADR-0106 — Contenu et contrôles de la matrice : principes numérotés, cas d'usage, états
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
-- **Décideur** : Assistant, proposition non posée en question pendant T17, soumise à la revue de la PR de T17
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T17, validée pendant la revue de la PR de T17
 - **Tâche** : T17
 - **Exigences liées** : §2, §4, §8 du cahier ; ADR-0024, ADR-0102 ; A-11, A-27, A-58
 
@@ -51,3 +51,4 @@ Option A, et :
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T17 : statut « Accepté » |

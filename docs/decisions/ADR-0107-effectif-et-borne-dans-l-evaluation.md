@@ -1,8 +1,8 @@
 # ADR-0107 — Évaluation d'une règle : effectif et borne supérieure au catalogue, niveau contrôlé
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
-- **Décideur** : Assistant, proposition non posée en question pendant T17, soumise à la revue de la PR de T17
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T17, validée pendant la revue de la PR de T17
 - **Tâche** : T17
 - **Exigences liées** : F-80, NF-07, NF-14 ; ADR-0018, ADR-0084, ADR-0085, ADR-0101 ; A-54
 
@@ -53,3 +53,4 @@ Option A :
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T17 : statut « Accepté » |

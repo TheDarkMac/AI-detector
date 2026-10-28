@@ -1,8 +1,8 @@
 # ADR-0105 — Rapport d'évaluation, codes de sortie et corpus d'essai
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
-- **Décideur** : Assistant, proposition non posée en question pendant T17, soumise à la revue de la PR de T17
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T17, validée pendant la revue de la PR de T17
 - **Tâche** : T17
 - **Exigences liées** : §8 du cahier, NF-06, NF-09, ES-11, ES-22 ; ADR-0016, ADR-0092, ADR-0099 à ADR-0104
 
@@ -56,3 +56,4 @@ Option A :
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T17 : statut « Accepté » |

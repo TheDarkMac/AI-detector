@@ -1,8 +1,8 @@
 # ADR-0104 — Définition des mesures : par technique et catégorie, par règle, par fichier
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
-- **Décideur** : Assistant, proposition non posée en question pendant T17, soumise à la revue de la PR de T17
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T17, validée pendant la revue de la PR de T17
 - **Tâche** : T17
 - **Exigences liées** : §8 du cahier, NF-03, NF-09 ; ADR-0016, ADR-0018, ADR-0055, ADR-0101 ; A-07, A-54, A-55
 
@@ -65,3 +65,4 @@ Chaque taux est publié avec son effectif et l'intervalle de Wilson à 95 % (ADR
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T17 : statut « Accepté » |
