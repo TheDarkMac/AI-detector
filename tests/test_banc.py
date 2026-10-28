@@ -770,6 +770,8 @@ def lancer(*arguments: str, prefixe: list[str] = []) -> subprocess.CompletedProc
         text=True,
         encoding="utf-8",
         cwd=RACINE,
+        # Sortie en UTF-8 sur tous les systèmes : sous Windows, elle suit sinon la page de code.
+        env=os.environ | {"PYTHONUTF8": "1"},
         check=False,
     )
 

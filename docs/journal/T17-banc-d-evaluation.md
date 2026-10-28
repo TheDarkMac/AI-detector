@@ -41,6 +41,8 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : corpus séparé calibra
 10. Relecture : les règles d'un module désactivé auraient été mesurées sur zéro fichier, donc signalées à tort ; elles sont exclues des mesures (ADR-0104).
 11. Vérification locale : `uv lock --check` ; Ruff (format et analyse) et mypy sans remarque ; pip-audit, aucune faille connue ; matrice vérifiée ; lint Markdown (`npx --yes markdownlint-cli2@0.23.2`) sans remarque ; 977 tests verts, un sauté (lanceur de Windows), couverture 100 % lignes et branches. Un premier passage, lancé pendant que le code changeait encore, donnait 99 % ; relancé seul sur l'état final, 100 %.
 12. Documentation : ADR-0099 à ADR-0107 ; renvois dans ADR-0016, ADR-0018, ADR-0024, ADR-0027, ADR-0083, ADR-0084, ADR-0086 ; découpage v0.16, architecture v1.10, modèle de menace v1.2, registre des arbitrages v1.9, guide du catalogue v1.2, glossaire v1.6 ; `docs/verification/README.md` ; `CONTRIBUTING.md` (§1, §5), `docs/README.md` ; index des ADR et du journal.
+13. Commits, branche poussée, PR [#17](https://github.com/TheDarkMac/AI-detector/pull/17) ouverte vers `detector` ; Auto-fix activé à la demande de TheDarkMac.
+14. CI de la PR sur `10e6bda` (code 40632314546) : verte sous Linux et macOS (Python 3.12 à 3.14), `qualite`, `paquet` (banc depuis le wheel, sous `unshare -rn`) et `audit-dependances` verts ; en échec sous Windows (3.12 à 3.14) sur `test_banc_refuse_de_demarrer_avec_le_reseau` (voir ci-dessous). Le banc était juste ; test corrigé.
 
 ## Problèmes rencontrés
 
@@ -52,6 +54,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : corpus séparé calibra
 | Une `ReseauInterdit` levée sans événement noté aurait laissé la commande sans résultat | Cas impossible par le crochet, possible par une bibliothèque qui la lèverait elle-même | La commande rend le code 3 dans les deux cas, et cite l'exception si aucun événement n'est noté |
 | Une analyse factice « partielle » refusée par le modèle | Une technique partielle exige une analyse non menée qui l'explique | Le test ajoute `format_partiel` pour une technique partielle, `erreur_module` pour une non menée |
 | Cellules vides de la matrice refusées par le lint Markdown (MD060) | « `\|  \|` » n'a pas le style de tableau attendu | Remarque vide rendue « — » |
+| CI Windows : `test_banc_refuse_de_demarrer_avec_le_reseau` en échec | Le banc lancé en sous-processus écrit sa sortie d'erreur dans la page de code de Windows (cp1252) ; le test la lisait en UTF-8 | Le test lance le banc avec `PYTHONUTF8=1` ; le message affiché à l'utilisateur suit toujours l'encodage de sa console |
 | Le corpus d'essai ne peut pas atteindre la cible par fichier | Il faudrait 73 authentiques sans faux positif (ADR-0101) | Code 1 attendu par la CI, avec cet unique écart ; le chemin du code 0 est testé avec 73 fichiers et une analyse factice |
 
 Aucun de ces problèmes n'est une erreur d'une analyse ou d'une décision antérieure : pas d'erratum.
