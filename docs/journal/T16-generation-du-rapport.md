@@ -44,6 +44,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : génération du rapport
 15. Documentation : ADR-0091 à ADR-0098 ; renvois dans ADR-0018, ADR-0020, ADR-0025, ADR-0031, ADR-0054, ADR-0056, ADR-0057, ADR-0059, ADR-0068, ADR-0072, ADR-0073, ADR-0084, ADR-0086, ADR-0090 ; architecture v1.9, modèle de données v1.5, glossaire v1.5, découpage v0.15, registre des arbitrages v1.8, guide du catalogue v1.1 ; `README.md`, `CONTRIBUTING.md` (§5, §9), `docs/README.md` ; index des ADR et du journal.
 16. Lint Markdown en local (`npx --yes markdownlint-cli2@0.23.2`) ; aucun fichier interdit suivi. Commits, branche poussée, PR [#16](https://github.com/TheDarkMac/AI-detector/pull/16) ouverte vers `detector`.
 17. Pendant la revue, TheDarkMac a validé ADR-0095 à ADR-0098 et les textes du rapport (`rapport/textes.toml`) : statut « Accepté ».
+18. CI de la PR sur `c95b774` : `docs` 40620995330 verte ; `code` 40620995388 verte sous Linux et macOS (`qualite`, `paquet` avec la nouvelle étape des rapports, tests), en échec sous Windows (Python 3.12 à 3.14) sur deux tests, `test_resume_d_un_polyglotte` et `test_lot_avec_un_refus` (voir ci-dessous). Le code était juste ; tests corrigés, et vérifiés en local avec une isolation réduite simulée. TheDarkMac avait demandé de merger une fois la CI verte : le merge attend la CI du correctif.
 
 ## Problèmes rencontrés
 
@@ -56,6 +57,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : génération du rapport
 | Test d'échappement : nom `<b>nom</b>.jpg` refusé par le modèle | Une barre oblique fait d'un nom un chemin (ES-14) | Nom `<i>nom.jpg` |
 | Test d'une règle non conforme : la règle modifiée était elle-même invalide | Une information neutre ne peut pas pointer vers l'origine IA | Fondement changé (vérification déterministe au lieu de cryptographique) : règle valide, constat non conforme |
 | Un nom de fichier avec ESC ne peut pas être créé sous Windows | Windows interdit les caractères de contrôle dans un nom | Le test de la commande emploie U+202E ; ESC et les autres contrôles sont vérifiés par les tests unitaires de la neutralisation |
+| CI Windows : deux tests du résumé en échec | Sous Windows, l'isolation est toujours réduite (ADR-0081) : le résumé ajoute, comme prévu, une alerte en deuxième ligne, et dit « isolation : réduite » ; les tests supposaient une isolation complète | Aide `sans_isolation` dans `test_cli.py` : elle vérifie la ligne d'isolation et l'alerte qui l'accompagne, puis compare le reste |
 | « voir la rubrique Analyses non menées » au terminal | Phrase du résumé commune au terminal et au HTML, alors que le terminal n'a pas de rubrique | Phrase réduite au nombre d'analyses non menées |
 
 Aucun de ces problèmes n'est une erreur d'une analyse ou d'une décision antérieure : pas d'erratum.

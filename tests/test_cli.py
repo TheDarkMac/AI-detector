@@ -83,6 +83,24 @@ def test_lancement_par_module() -> None:
 # Commande d'analyse (T13, ADR-0073, ADR-0075)
 
 
+def sans_isolation(sortie: str) -> list[str]:
+    """Lignes de la sortie sans celles de l'isolation, qui dépend du système.
+
+    Sous Windows, l'isolation est toujours réduite (ADR-0081) : une alerte s'ajoute en tête du
+    résumé (ADR-0098). Ailleurs, elle l'est sans Landlock ou sans Seatbelt.
+    """
+    lignes = sortie.splitlines()
+    isolation = [ligne for ligne in lignes if ligne.startswith("  isolation : ")]
+    assert isolation in (["  isolation : complète"], ["  isolation : réduite"])
+    if isolation == ["  isolation : réduite"]:
+        assert any(ligne.startswith("  attention : Isolation réduite") for ligne in lignes)
+    return [
+        ligne
+        for ligne in lignes
+        if not ligne.startswith(("  isolation : ", "  attention : Isolation réduite"))
+    ]
+
+
 def test_resume_d_un_polyglotte(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     contenu = jpeg() + archive(("a.txt", b"a")) + b"\x00\x00"
     chemin = tmp_path / "SOURCE-photo.png"
@@ -90,7 +108,7 @@ def test_resume_d_un_polyglotte(tmp_path: Path, capsys: pytest.CaptureFixture[st
     assert main([str(chemin)]) == 0
     sortie = capsys.readouterr().out
     fin_jpeg = len(jpeg()) - 1
-    assert sortie.splitlines()[:10] == [
+    assert sans_isolation(sortie)[:9] == [
         "[1/1] format réel : jpeg",
         "  nom : [masqué : nom du fichier]",
         "  empreinte : [masqué : empreinte du fichier]",
@@ -104,7 +122,6 @@ def test_resume_d_un_polyglotte(tmp_path: Path, capsys: pytest.CaptureFixture[st
         f"  partie 1 : jpeg, octets 0 à {fin_jpeg}, analysée",
         f"  partie 2 : zip, octets {fin_jpeg + 1} à {len(contenu) - 3}, "
         "non analysée : hors du périmètre de l'outil",
-        "  isolation : complète",
     ]
     assert "  technique ela, partie 1 : hors de cette version" in sortie
     assert "non livrée" not in sortie  # dit une fois, avec la technique
@@ -127,7 +144,10 @@ def test_lot_avec_un_refus(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -
     assert main([str(vide), str(document)]) == 1
     sorties = capsys.readouterr()
     assert sorties.err == "[1/2] refusé : fichier vide : aucun format à identifier\n"
-    assert sorties.out.startswith("[2/2] format réel : pdf\n  nom : [masqué : nom du fichier]\n")
+    assert sans_isolation(sorties.out)[:2] == [
+        "[2/2] format réel : pdf",
+        "  nom : [masqué : nom du fichier]",
+    ]
     assert "  L'extension « pdf » correspond au format réel.\n" in sorties.out
     assert sorties.out.count("Ce rapport ne délivre aucun verdict") == 1
     # Aucun fichier analysé : aucun avertissement à rappeler.
