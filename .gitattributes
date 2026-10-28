@@ -1,3 +1,7 @@
 # Fichiers du catalogue de règles : octets livrés tels quels sur tous les systèmes, sans
 # conversion des fins de ligne, pour que leur empreinte soit la même partout (ADR-0088).
 src/voight_kampff/donnees/catalogue/** -text
+
+# Corpus d'essai du banc : empreintes inscrites au manifeste, octets identiques sur tous les
+# systèmes (ADR-0105).
+banc/essai/** -text

@@ -1,0 +1,91 @@
+# Corpus d'essai du banc d'évaluation (ADR-0105) : de quoi éprouver le banc, rien de plus.
+#
+# Fichiers fabriqués pour l'occasion ; aucun taux mesuré sur ce corpus n'est publiable. Le
+# corpus de référence est constitué en T100.
+
+format = 1
+nom = "essai"
+version = "0.1.0"
+date = "2026-10-28"
+nature = "essai"
+description = "Fichiers minimaux de chaque catégorie, fabriqués pour éprouver le banc."
+
+[[fichiers]]
+chemin = "authentiques/note.txt"
+empreinte = "3efc3fcfcc9753db77065e2c9576a939e9eab8b28abcb1e00b8ea1370b71230b"
+categorie = "authentique"
+partie = "evaluation"
+groupe = "note"
+origine = "authentique"
+provenance = { source = "Fabriqué pour le banc (T17)", licence = "Apache-2.0", date = "2026-10-28" }
+
+[[fichiers]]
+chemin = "authentiques/facture.pdf"
+empreinte = "fe9a7d44f4318fec2635607dcacc6755fafe3b997406abe640db9cec5f28ab08"
+categorie = "authentique"
+partie = "evaluation"
+groupe = "facture"
+origine = "authentique"
+provenance = { source = "Fabriqué pour le banc (T17)", licence = "Apache-2.0", date = "2026-10-28" }
+
+[[fichiers]]
+chemin = "authentiques/photo.jpg"
+empreinte = "09b1fbcaac804fce8365fbc08337b6063894a3cf89330c1756186071eeeaebeb"
+categorie = "authentique"
+partie = "evaluation"
+groupe = "photo"
+origine = "authentique"
+provenance = { source = "Fabriqué pour le banc (T17)", licence = "Apache-2.0", date = "2026-10-28" }
+
+[[fichiers]]
+chemin = "authentiques/schema.png"
+empreinte = "5d391a713be2da043376fc4c1840f6edbcd6c68f26b7eebfc563dd0015cdda72"
+categorie = "authentique"
+partie = "evaluation"
+groupe = "schema"
+origine = "authentique"
+provenance = { source = "Fabriqué pour le banc (T17)", licence = "Apache-2.0", date = "2026-10-28" }
+
+[[fichiers]]
+chemin = "generes/image.png"
+empreinte = "4f1bc5975b706523b266dbc4de816cefaa3f9cdce6db8dc24007d8b3ffad5cf0"
+categorie = "genere"
+partie = "evaluation"
+groupe = "image"
+origine = "ia"
+provenance = { source = "Fabriqué pour le banc (T17)", licence = "Apache-2.0", date = "2026-10-28", generateur = "Générateur fictif 1.0 (fichier d'essai)" }
+
+[[fichiers]]
+chemin = "transformes/photo-messagerie.jpg"
+empreinte = "46e50859ec4b4b101bd50a31e1a9e8d33ea64850112298c342278dfc5b41e5ef"
+categorie = "transforme"
+partie = "evaluation"
+groupe = "photo"
+origine = "authentique"
+transformation = "messagerie"
+provenance = { source = "Fabriqué pour le banc (T17)", licence = "Apache-2.0", date = "2026-10-28" }
+
+[[fichiers]]
+chemin = "retouches/facture-modifiee.pdf"
+empreinte = "62f3d6ed597d28bc7461d2f199cda319421221d42b8820b62b2b7a9773e09875"
+categorie = "retouche"
+partie = "evaluation"
+groupe = "facture"
+origine = "retouche"
+provenance = { source = "Fabriqué pour le banc (T17)", licence = "Apache-2.0", date = "2026-10-28" }
+
+[[fichiers]]
+chemin = "malformes/tronque.pdf"
+empreinte = "93fb28e2e00e8237b3bd05c2434b47fda1ec6b6b64732e2c2c9599bb7dfe355f"
+categorie = "malforme"
+partie = "evaluation"
+groupe = "tronque"
+provenance = { source = "Fabriqué pour le banc (T17)", licence = "Apache-2.0", date = "2026-10-28" }
+
+[[fichiers]]
+chemin = "malformes/vide.bin"
+empreinte = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+categorie = "malforme"
+partie = "evaluation"
+groupe = "vide"
+provenance = { source = "Fabriqué pour le banc (T17)", licence = "Apache-2.0", date = "2026-10-28" }
