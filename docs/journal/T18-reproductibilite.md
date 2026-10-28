@@ -40,6 +40,9 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : deux analyses identique
 9. Vérification locale : `uv lock --check` ; Ruff (format et analyse) et mypy sans remarque ; pip-audit, aucune faille connue ; matrice vérifiée ; lint Markdown (`npx --yes markdownlint-cli2@0.23.2`) sans remarque ; 1 008 tests verts, un sauté (lanceur de Windows), couverture 100 % lignes et branches.
 10. Documentation : ADR-0108 à ADR-0113 ; renvois dans ADR-0023, ADR-0037, ADR-0054, ADR-0059, ADR-0097, ADR-0105 ; matrice (NF-06 et P-05 réalisées) ; découpage v0.17, architecture v1.11, modèle de données v1.6, registre des arbitrages v1.10, glossaire v1.7, vérification v1.1 ; `CONTRIBUTING.md` (§5), `README.md` ; index des ADR et du journal.
 
+11. Commits, branche poussée, PR [#18](https://github.com/TheDarkMac/AI-detector/pull/18) ouverte vers `detector` ; Auto-fix activé à la demande de TheDarkMac. CodeRabbit n'a pas relu la PR (dépôt de moins de 10 étoiles) : rien à traiter.
+12. CI de la PR sur `1bd7905` (code 40691605652) : verte sous Linux et macOS (Python 3.12 à 3.14), `qualite`, `paquet` et `audit-dependances` verts ; en échec sous Windows (3.12 à 3.14) sur `test_commande_defaut_de_reproductibilite` (voir ci-dessous), donc `reproductibilite` sauté et `code-ok` en échec. La comparaison était juste ; test corrigé.
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |
@@ -52,6 +55,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : deux analyses identique
 | Le HTML contient deux dates, d'une autre forme que le JSON | En-tête et identification, « AAAA-MM-JJ HH:MM:SS » | Neutralisation des deux formes, nombre attendu par format |
 | `test_commande_tentative_de_reseau` en échec | Chaque fichier étant analysé deux fois, la tentative de la fausse analyse est notée deux fois | Message attendu avec les deux tentatives (ADR-0113) |
 | Une ligne de la comparaison hors couverture | Une valeur `null` n'arrive jamais d'un rapport valide | Cas ajouté au test des types |
+| CI Windows : `test_commande_defaut_de_reproductibilite` en échec | Le test ne fixait l'isolation que d'un des deux rapports ; sous Windows, celle de l'analyse de référence est réduite (plusieurs restrictions manquent), d'où d'autres écarts d'isolation que ceux attendus | Isolation fixée dans les deux rapports du test |
 | Matrice périmée au premier passage complet | Les tests ont été lancés avant de régénérer la matrice | Relancés après régénération |
 
 Aucun de ces problèmes n'est une erreur d'une analyse ou d'une décision antérieure : pas d'erratum. L'absence de l'interpréteur dans la rubrique Versions (ADR-0023) est complétée par ADR-0111.
