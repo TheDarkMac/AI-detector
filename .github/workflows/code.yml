@@ -69,11 +69,23 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Installation depuis le verrou
         run: uv sync --locked
+      - name: Espaces de noms permis sans privilège, pour le banc sans réseau (ADR-0100)
+        if: runner.os == 'Linux'
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Tests et couverture
         run: |
-          uv run --locked coverage run -m pytest
+          uv run --locked coverage run -m pytest --junitxml="$RUNNER_TEMP/junit.xml"
           uv run --locked coverage combine
           uv run --locked coverage report
+      - name: Matrice de vérification remplie par ce passage (ADR-0102)
+        if: ${{ !cancelled() }}
+        run: uv run --locked python -m banc.matrice --resultats "$RUNNER_TEMP/junit.xml" --sortie "$RUNNER_TEMP/matrice.md"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ !cancelled() }}
+        with:
+          name: matrice-${{ matrix.os }}-${{ matrix.python }}
+          path: ${{ runner.temp }}/matrice.md
+          if-no-files-found: error
 
   audit-dependances:
     runs-on: ubuntu-latest
@@ -178,6 +190,32 @@ jobs:
           if "Content-Security-Policy" not in html or "<script" in html:
               sys.exit("rapport HTML sans politique de sécurité, ou avec un script")
           ' "$RUNNER_TEMP/rapports"
+
+      - name: Banc d'évaluation sans réseau depuis le wheel (T17)
+        run: |
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          # Avec le réseau, le banc refuse de démarrer (code 2) et n'écrit rien.
+          code=0
+          "$RUNNER_TEMP/essai/bin/python" -m banc banc/essai/corpus.toml --sortie "$RUNNER_TEMP/banc-refus" || code=$?
+          if [ "$code" -ne 2 ] || [ -e "$RUNNER_TEMP/banc-refus" ]; then
+            echo "::error::Le banc doit refuser de démarrer avec le réseau (code 2, obtenu $code)"
+            exit 1
+          fi
+          # Dans un espace de noms réseau vide : seul écart attendu, la cible par fichier, que
+          # quatre authentiques ne suffisent pas à établir (code 1).
+          code=0
+          unshare -rn "$RUNNER_TEMP/essai/bin/python" -m banc banc/essai/corpus.toml --sortie "$RUNNER_TEMP/banc" || code=$?
+          cat "$RUNNER_TEMP/banc/evaluation.md"
+          "$RUNNER_TEMP/essai/bin/python" -I -c '
+          import json, sys
+          doc = json.load(open(sys.argv[1], encoding="utf-8"))
+          if int(sys.argv[2]) != 1 or doc["reseau"] != {"interfaces": ["lo"], "tentatives": 0}:
+              sys.exit("banc : code ou état du réseau inattendus")
+          if [e.split(" :")[0] for e in doc["ecarts"]] != ["taux par fichier"]:
+              sys.exit("banc : écarts inattendus")
+          if doc["fichiers"]["arrets_brutaux"] or doc["publiable"]:
+              sys.exit("banc : arrêt brutal, ou corpus d'\''essai déclaré publiable")
+          ' "$RUNNER_TEMP/banc/evaluation.json" "$code"
 
   # Seule vérification à rendre obligatoire sur detector : elle résume toutes les autres.
   code-ok:
