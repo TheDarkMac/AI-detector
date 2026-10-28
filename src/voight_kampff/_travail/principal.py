@@ -8,7 +8,8 @@
 4. Identifier les formats et envoyer les parties reconnues (ADR-0070, ADR-0071).
 5. Pour chaque partie du périmètre, exécuter chaque module actif, lui appliquer ses règles
    « moteur », envoyer ses résultats puis son message « module » (ADR-0062).
-6. Envoyer les versions, puis l'empreinte du fichier recalculée en fin d'analyse (ES-08).
+6. Envoyer les versions des bibliothèques des modules actifs, puis l'empreinte du fichier
+   recalculée en fin d'analyse (ES-08).
 
 Une exception dans un module ne touche que ce module (NF-03, ADR-0060) ; une limite comptée
 dépassée le rend non mené pour ``limite_depassee``, la mémoire du système épuisée pour
@@ -24,6 +25,7 @@ import sys
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import BinaryIO
+from xml.parsers import expat
 
 from voight_kampff import modules
 from voight_kampff._protocole import (
@@ -53,6 +55,7 @@ __all__ = [
     "importer",
     "lire_configuration",
     "principal",
+    "versions_des_bibliotheques",
 ]
 
 type Analyseur = Callable[[Contexte], None]
@@ -72,6 +75,16 @@ class ModuleConfigure:
     directions: frozenset[Direction]
     regles: tuple[Regle, ...] = ()
     """Règles du catalogue qui relèvent du module, dans l'ordre de leurs identifiants."""
+    bibliotheques: frozenset[str] = frozenset()
+    """Bibliothèques qui lisent le fichier pour le module (ADR-0120)."""
+
+
+def versions_des_bibliotheques() -> dict[str, str]:
+    """Version réelle de chaque bibliothèque qu'un manifeste peut citer (ADR-0120).
+
+    Lue avant les restrictions, comme les modules : après, rien n'est plus chargé du disque.
+    """
+    return {"expat": ".".join(str(n) for n in expat.version_info)}
 
 
 def canal_du_protocole() -> BinaryIO:
@@ -130,6 +143,7 @@ def lire_configuration(entree: BinaryIO) -> tuple[ModuleConfigure, ...]:
             formats=frozenset(str(f) for f in module["formats"]),
             directions=frozenset(Direction(d) for d in module["directions"]),
             regles=tuple(regles.get(str(module["identifiant"]), ())),
+            bibliotheques=frozenset(str(b) for b in module["bibliotheques"]),
         )
         for module in document["modules"]
     )
@@ -213,6 +227,7 @@ def principal(
     echecs: frozenset[str] = frozenset()
     if analyseurs is None:
         analyseurs, echecs = importer()
+    bibliotheques = versions_des_bibliotheques()
 
     isolation = restreindre()
     garde.verrouiller()
@@ -246,8 +261,10 @@ def principal(
                     "applicable": applicable,
                 }
             )
-    # Versions des bibliothèques qui lisent le fichier : avec le premier module qui en emploie.
-    canal.message({"type": "versions", "dependances": []})
+    # Versions des bibliothèques des modules actifs, dans l'ordre de leurs noms (ADR-0120).
+    noms = sorted({nom for module in configures for nom in module.bibliotheques})
+    dependances = [{"nom": nom, "version": bibliotheques[nom]} for nom in noms]
+    canal.message({"type": "versions", "dependances": dependances})
     # Empreinte de ce qui a été analysé, recalculée après les modules (ES-08).
     empreinte, _taille = fichier.empreinte()
     canal.message({"type": "fin", "empreinte": empreinte})

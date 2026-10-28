@@ -186,6 +186,7 @@ def executer(
                     "identifiant": manifeste.identifiant,
                     "formats": list(manifeste.formats),
                     "directions": list(manifeste.directions),
+                    "bibliotheques": list(manifeste.bibliotheques),
                 }
                 for manifeste in actifs
             ],
@@ -509,7 +510,9 @@ class _Reception:
 
     def _versions(self, dependances: list[dict[str, Any]]) -> None:
         lues = tuple(Dependance.depuis_dict(dependance) for dependance in dependances)
-        _invalide(len({dependance.nom for dependance in lues}) == len(lues))
+        # Exactement les bibliothèques des modules actifs, dans l'ordre de leurs noms (ADR-0120).
+        attendues = sorted({nom for m in self._actifs for nom in m.bibliotheques})
+        _invalide([dependance.nom for dependance in lues] == attendues)
         self._dependances = lues
 
     # Résultat

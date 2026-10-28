@@ -16,6 +16,7 @@ import sys
 from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
 from typing import Any
+from xml.parsers import expat
 
 import pytest
 from catalogues import moteur, regle, regle_dict
@@ -86,9 +87,15 @@ def configuration(
     *identifiants: str,
     formats: tuple[str, ...] = ("jpeg", "pdf"),
     regles: Sequence[dict[str, Any]] = (),
+    bibliotheques: Sequence[str] = (),
 ) -> io.BytesIO:
     modules_actifs = [
-        {"identifiant": i, "formats": list(formats), "directions": ["rien_de_particulier"]}
+        {
+            "identifiant": i,
+            "formats": list(formats),
+            "directions": ["rien_de_particulier"],
+            "bibliotheques": list(bibliotheques),
+        }
         for i in identifiants
     ]
     document = {"version_schema": VERSION_SCHEMA, "modules": modules_actifs, "regles": list(regles)}
@@ -146,6 +153,25 @@ def test_empreinte_calculee_apres_les_modules(chemin: Path, descripteur: int) ->
 
     messages = derouler(descripteur, "alpha", analyseurs={"alpha": modifie_le_fichier})
     assert messages[-1]["empreinte"] == hashlib.sha256(b"X" + CONTENU[1:]).hexdigest()
+
+
+@pytest.mark.exigence("NF-06")
+def test_versions_des_bibliotheques_des_modules_actifs(descripteur: int) -> None:
+    # ADR-0120 : une seule fois chaque bibliothèque, même déclarée par deux modules.
+    sortie = io.BytesIO()
+    principal.principal(
+        ["--descripteur", transmis(descripteur)],
+        configuration("alpha", "beta", bibliotheques=("expat",)),
+        sortie,
+        analyseurs={"alpha": lambda _c: None, "beta": lambda _c: None},
+        identifier=lambda _fichier, _taille: (PARTIE,),
+        restreindre=sans_restriction,
+    )
+    messages = [json.loads(ligne) for ligne in sortie.getvalue().splitlines()]
+    [versions] = [m for m in messages if m["type"] == "versions"]
+    version = ".".join(str(n) for n in expat.version_info)
+    assert versions["dependances"] == [{"nom": "expat", "version": version}]
+    assert principal.versions_des_bibliotheques() == {"expat": version}
 
 
 def test_garde_posee_avant_l_isolation(descripteur: int) -> None:
@@ -482,8 +508,9 @@ def test_configuration_avec_ses_regles() -> None:
 
 
 def test_import_des_modules_livres() -> None:
-    # Aucun module n'est livré en T12 ni en T13.
-    assert principal.importer() == ({}, frozenset())
+    analyseurs, echecs = principal.importer()
+    assert sorted(analyseurs) == ["exif", "iptc", "textepng", "xmp"]
+    assert echecs == frozenset()
 
 
 def test_import_en_echec(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

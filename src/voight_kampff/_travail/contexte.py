@@ -9,8 +9,9 @@ autonome, positions comptées depuis son début, et le contexte ramène les plag
 ses localisations à des positions dans le fichier entier.
 
 Le contexte tient aussi le budget du module sur sa partie (ES-03, ADR-0076, ADR-0078) : octets
-décompressés, objets parcourus, dimensions déclarées, imbrication. Ces limites sont comptées,
-pas chronométrées : un même fichier les dépasse ou non sur toutes les machines.
+décompressés, objets parcourus, dimensions déclarées, imbrication, nombre de résultats
+(ADR-0121). Ces limites sont comptées, pas chronométrées : un même fichier les dépasse ou non
+sur toutes les machines.
 
 Il porte enfin les règles du catalogue qui relèvent du module (ADR-0084, ADR-0090) : le module
 cite une règle « module » par son identifiant, et le catalogue fixe ce que dit le constat ; après
@@ -28,6 +29,7 @@ from voight_kampff._limites import (
     PIXELS_MAX,
     PROFONDEUR_MAX,
     RAPPORT_COMPRESSION_MAX,
+    RESULTATS_MAX,
     SEUIL_RAPPORT_COMPRESSION,
     TAILLE_MAX_DECOMPRESSEE,
 )
@@ -331,7 +333,11 @@ class Contexte:
         if self._depasse:
             raise LimiteDepassee
         ligne = encoder(message)
-        if len(ligne) > TAILLE_MAX_MESSAGE or self._taille_lignes + len(ligne) > self._budget:
+        if (
+            len(ligne) > TAILLE_MAX_MESSAGE
+            or self._taille_lignes + len(ligne) > self._budget
+            or len(self._lignes) == RESULTATS_MAX
+        ):
             self._depasser()
         self._lignes.append(ligne)
         self._taille_lignes += len(ligne)

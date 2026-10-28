@@ -306,6 +306,10 @@ HOSTILES: dict[str, list[Ligne]] = {
     "dependance_double": [
         {"type": "versions", "dependances": [{"nom": "x", "version": "1"}] * 2},
     ],
+    # Bibliothèque qu'aucun manifeste actif ne déclare (ADR-0120).
+    "dependance_non_declaree": [
+        {"type": "versions", "dependances": [{"nom": "expat", "version": "2.9.0"}]},
+    ],
     "ligne_apres_fin": [*FINS, VERSIONS],
     "ligne_trop_longue": [b" " * (1 << 20) + b"\n"],
 }

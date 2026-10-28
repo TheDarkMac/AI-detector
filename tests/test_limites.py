@@ -51,6 +51,16 @@ def contexte() -> Contexte:
     return Contexte("alpha", {Direction.RIEN_DE_PARTICULIER}, Fichier(-1), PARTIE, 1 << 20)
 
 
+@pytest.mark.exigence("ES-03")
+def test_nombre_de_resultats_borne(contexte: Contexte) -> None:
+    # ADR-0121 : au-delà de RESULTATS_MAX résultats, le module est arrêté.
+    for _ in range(_limites.RESULTATS_MAX):
+        contexte.observer("a", 1)
+    with pytest.raises(LimiteDepassee):
+        contexte.observer("a", 1)
+    assert contexte.depasse
+
+
 @pytest.fixture
 def descripteur(tmp_path: Path) -> Iterator[int]:
     chemin = tmp_path / "analyse.bin"
@@ -183,6 +193,7 @@ def deroule(descripteur: int, analyseur: Callable[[Contexte], None]) -> list[str
                 "identifiant": "alpha",
                 "formats": ["jpeg"],
                 "directions": [Direction.RIEN_DE_PARTICULIER],
+                "bibliotheques": [],
             }
         ],
         "regles": [],
