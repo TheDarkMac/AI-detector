@@ -16,6 +16,8 @@ from voight_kampff._regles import (
     Seuil,
     appliquer,
     conforme,
+    emplacements,
+    remplir,
 )
 from voight_kampff.rapport.modele import (
     Categorie,
@@ -216,6 +218,24 @@ def test_regle_lue_et_reecrite() -> None:
             "taux",
             id="taux-hors-bornes",
         ),
+        pytest.param({"phrase": {"en": "Test."}}, "français", id="phrase-sans-francais"),
+        pytest.param(
+            {"phrase": {"fr": "Test.", "en": "Test."}}, "français", id="phrase-autre-langue"
+        ),
+        pytest.param({"phrase": {"fr": ""}}, "vide", id="phrase-vide"),
+        pytest.param({"phrase": {"fr": "x" * 1025}}, "trop long", id="phrase-trop-longue"),
+        pytest.param(
+            {"phrase": {"fr": "Valeur {absent}."}}, "emplacements", id="emplacement-inconnu"
+        ),
+        pytest.param(
+            {"parametres": ["a"], "phrase": {"fr": "Sans emplacement."}},
+            "emplacements",
+            id="parametre-non-cite",
+        ),
+        pytest.param({"phrase": {"fr": "Accolade { seule."}}, "accolade", id="accolade-ouvrante"),
+        pytest.param({"phrase": {"fr": "Accolade } seule."}}, "accolade", id="accolade-fermante"),
+        pytest.param({"phrase": {"fr": "{{double}}"}}, "accolade", id="accolades-doublees"),
+        pytest.param({"phrase": {"fr": "Nom {a b}."}}, "regle.phrase", id="emplacement-invalide"),
     ],
 )
 def test_regle_refusee(champs: dict[str, Any], attendu: str) -> None:
@@ -291,3 +311,25 @@ def test_conforme() -> None:
         assert not conforme(indice, dataclasses.replace(constat, **ecart))
     neutre = regle("R-TEST-001", parametres=["valeur"])
     assert not conforme(neutre, constat)
+
+
+# Phrase de la règle (T16, ADR-0091)
+
+
+def test_phrase_et_ses_emplacements() -> None:
+    lue = regle(parametres=["a.b", "c"], phrase={"fr": "« {a.b} » puis {c}, encore {a.b}."})
+    assert lue.textes == {"fr": "« {a.b} » puis {c}, encore {a.b}."}
+    assert emplacements(lue.textes["fr"]) == ("a.b", "c", "a.b")
+    assert lue.vers_dict()["phrase"] == {"fr": "« {a.b} » puis {c}, encore {a.b}."}
+    # Remplacement littéral : ni attribut suivi (« a.b »), ni accolade d'une valeur interprétée.
+    rendu = remplir(lue.textes["fr"], {"a.b": "{c}", "c": "{0.__class__}"})
+    assert rendu == "« {c} » puis {0.__class__}, encore {c}."
+
+
+def test_phrase_figee() -> None:
+    textes = {"fr": "Phrase de test"}
+    lue = Regle.depuis_dict(regle_dict(phrase=textes))
+    textes["fr"] = "modifiée"
+    assert lue.textes["fr"] == "Phrase de test"
+    with pytest.raises(TypeError):
+        lue.textes["fr"] = "modifiée"  # type: ignore[index]
