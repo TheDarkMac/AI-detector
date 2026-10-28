@@ -1,17 +1,20 @@
 """Interface publique d'analyse : un fichier, analysé par un processus de travail (ES-17).
 
-Avant le rapport (T16), une analyse rend l'identification, les résultats validés et la version
-du catalogue employé, sans rapport complet ni masquage (ADR-0073). Ce module n'importe le
-processus principal qu'à l'appel de :func:`analyser` : le processus de travail, qui importe
-le paquet, n'en charge rien.
+Une analyse rend l'identification, les résultats validés, la version du catalogue employé et
+les règles que citent ses constats (ADR-0073, ADR-0097) ; le rapport en est construit par
+:meth:`Analyse.rapport`, et exporté, masqué par défaut, par :mod:`voight_kampff.rapport.export`
+(T16). Ce module n'importe le processus principal qu'à l'appel de :func:`analyser` : le
+processus de travail, qui importe le paquet, n'en charge rien.
 """
 
 import os
 from collections.abc import Collection
 from dataclasses import dataclass
 from enum import StrEnum
+from importlib.metadata import version
 
 from voight_kampff._limites import TAILLE_MAX_FICHIER
+from voight_kampff._regles import Regle, conforme
 from voight_kampff.rapport.modele import (
     RAISONS_D_INTERRUPTION,
     Constat,
@@ -22,7 +25,9 @@ from voight_kampff.rapport.modele import (
     NonMenee,
     Observation,
     RaisonNonMenee,
+    Rapport,
     VersionCatalogue,
+    Versions,
     verifier_resultats,
 )
 
@@ -105,6 +110,9 @@ class Analyse:
     """Bibliothèques qui ont lu le fichier, avec leur version réelle (ADR-0023)."""
     catalogue: VersionCatalogue
     """Catalogue de règles employé : version, date, empreinte, livré ou fourni (ADR-0029)."""
+    regles: tuple[Regle, ...] = ()
+    """Règles du catalogue que citent les constats : titre, phrase, limites, évaluation, lus
+    par l'export (ADR-0097). Chaque constat est conforme à la sienne."""
 
     def __post_init__(self) -> None:
         verifier_resultats(
@@ -113,6 +121,37 @@ class Analyse:
             self.observations,
             self.constats,
             self.non_menees,
+        )
+        par_reference = {regle.reference: regle for regle in self.regles}
+        if len(par_reference) != len(self.regles):
+            raise ValueError("analyse.regles : doublon")
+        for constat in self.constats:
+            regle = par_reference.get(constat.regle)
+            if regle is None or not conforme(regle, constat):
+                raise ValueError("analyse.regles : règle d'un constat absente ou non conforme")
+
+    def regle(self, constat: Constat) -> Regle:
+        """Règle du catalogue qui a produit ce constat."""
+        return next(regle for regle in self.regles if regle.reference == constat.regle)
+
+    def rapport(self) -> Rapport:
+        """Rapport de l'analyse : données complètes, sans masquage (ADR-0059).
+
+        Le masquage est fait à l'export (:mod:`voight_kampff.rapport.export`) : ce rapport porte
+        le nom et l'empreinte du fichier, et ne doit pas être affiché ni transmis tel quel.
+        """
+        return Rapport(
+            identification=self.identification,
+            versions=Versions(
+                outil=version("voight-kampff-forensics"),
+                catalogue=self.catalogue,
+                dependances=self.dependances,
+            ),
+            isolation=self.isolation,
+            couverture=self.couverture,
+            observations=self.observations,
+            constats=self.constats,
+            non_menees=self.non_menees,
         )
 
     @property

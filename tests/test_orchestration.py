@@ -135,6 +135,7 @@ def analyse_de(resultat: ResultatTravail, taille: int = len(CONTENU)) -> Analyse
         non_menees=resultat.non_menees,
         dependances=resultat.dependances,
         catalogue=CATALOGUE.version,
+        regles=CATALOGUE.regles,
     )
 
 
