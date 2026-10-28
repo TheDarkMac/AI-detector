@@ -52,3 +52,4 @@ Le §10 laisse ouverts les formats d'export et le niveau d'accessibilité visé 
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-28 | Réalisé en T16 : HTML autonome sans script (ADR-0094), JSON au schéma du rapport 0.2.0 (ADR-0095), masquage par défaut et levée par catégorie (ADR-0093), écriture par `--rapport` (ADR-0092) |

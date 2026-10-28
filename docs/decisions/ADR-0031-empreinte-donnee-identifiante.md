@@ -50,3 +50,4 @@ L'empreinte est **toujours calculée** et inscrite au rapport, mais traitée com
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-27 | Renvoi : résumé du terminal sans nom ni empreinte avant le masquage de T16 (ADR-0073) |
+| 2026-10-28 | Réalisé en T16 : empreinte masquée par défaut au terminal et dans les exports, levée par `--reveler empreinte`, annoncée en tête (ADR-0093, ADR-0095) |

@@ -25,4 +25,5 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T10 (complément 2)](T10-versions-et-publication.md) | Numérotation des versions et contrôles de la publication | `tache/T10-versions-et-publication` | [#12](https://github.com/TheDarkMac/AI-detector/pull/12) |
 | [T13](T13-soumission-et-identification.md) | Soumission et identification | `tache/T13-soumission-et-identification` | [#13](https://github.com/TheDarkMac/AI-detector/pull/13) |
 | [T14](T14-securite-d-execution.md) | Sécurité d'exécution | `tache/T14-securite-d-execution` | [#14](https://github.com/TheDarkMac/AI-detector/pull/14) |
-| [T15](T15-catalogue-de-regles.md) | Catalogue de règles versionné et daté | `tache/T15-catalogue-de-regles` | à venir |
+| [T15](T15-catalogue-de-regles.md) | Catalogue de règles versionné et daté | `tache/T15-catalogue-de-regles` | [#15](https://github.com/TheDarkMac/AI-detector/pull/15) |
+| [T16](T16-generation-du-rapport.md) | Génération du rapport | `tache/T16-generation-du-rapport` | à venir |

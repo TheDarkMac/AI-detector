@@ -62,3 +62,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création |
+| 2026-10-28 | Complété en T16 : la règle porte aussi le texte de sa phrase, `phrase.fr` (ADR-0091) |

@@ -73,3 +73,4 @@ La première publication peut être `0.1.0.dev0`, la version actuelle, sans PR d
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » ; choix attendu de TheDarkMac |
 | 2026-10-27 | Options A et D retenues par TheDarkMac pendant la revue de la PR : statut « Accepté » |
+| 2026-10-28 | Renvoi : options `--rapport`, `--reveler` et fonctions `exporter_json`, `exporter_html` ajoutées à l'interface publique avant toute version stable (ADR-0092, ADR-0093, ADR-0097, T16) |

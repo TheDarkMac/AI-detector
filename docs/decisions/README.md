@@ -105,3 +105,11 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0088](ADR-0088-fichiers-et-empreinte-du-catalogue.md) | Fichiers, empreinte et limites du catalogue | Accepté | 2026-10-27 |
 | [ADR-0089](ADR-0089-motifs-re2-et-evaluation.md) | Motifs RE2 admis et évaluation des conditions | Accepté | 2026-10-27 |
 | [ADR-0090](ADR-0090-constat-d-une-regle.md) | Constat d'une règle : cité par son identifiant, contrôlé par le processus principal | Accepté | 2026-10-27 |
+| [ADR-0091](ADR-0091-texte-des-phrases-dans-la-regle.md) | Texte des phrases de constat dans la règle du catalogue | Accepté | 2026-10-28 |
+| [ADR-0092](ADR-0092-ecriture-des-rapports.md) | Écriture des rapports par la commande : `--rapport DOSSIER`, nommés par le rang | Accepté | 2026-10-28 |
+| [ADR-0093](ADR-0093-levee-du-masquage.md) | Levée du masquage : `--reveler CATEGORIE`, une catégorie à la fois | Accepté | 2026-10-28 |
+| [ADR-0094](ADR-0094-html-par-la-bibliotheque-standard.md) | Rapport HTML écrit par la bibliothèque standard, sans script, sous politique stricte | Accepté | 2026-10-28 |
+| [ADR-0095](ADR-0095-export-json-masque.md) | Export JSON : schéma du rapport 0.2.0, données masquées absentes, `masquage` en tête | Proposé | 2026-10-28 |
+| [ADR-0096](ADR-0096-neutralisation-des-caracteres-invisibles.md) | Neutralisation des caractères de contrôle et bidirectionnels, à l'écriture de chaque sortie | Proposé | 2026-10-28 |
+| [ADR-0097](ADR-0097-regles-citees-et-interface-d-export.md) | L'analyse porte les règles qu'elle cite ; interface publique d'export | Proposé | 2026-10-28 |
+| [ADR-0098](ADR-0098-contenu-ordre-et-textes-du-rapport.md) | Contenu, ordre et textes du rapport et du résumé du terminal | Proposé | 2026-10-28 |

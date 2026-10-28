@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.7** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 proposée dans la PR de T15. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.8** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 proposée dans la PR de T16. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -135,6 +135,15 @@ Constats de l'analyse adressés à T15 :
 | A-37 Contenu et authentification du catalogue | Signatures, règles, seuils, calibrage, niveaux, évaluations et limites connues dans le catalogue (ADR-0084) ; livré avec l'outil, version, date et empreinte au rapport et au registre, contrôlées par la CI (ADR-0029, ADR-0085, ADR-0088) |
 | A-47 Identifiant de règle | `R-<MODULE>-<NNN>`, distinct d'une exigence, avec une version entière citée par chaque constat (ADR-0084, ADR-0085) |
 
+Constats de l'analyse adressés à T16 :
+
+| Constat | Traitement |
+| --- | --- |
+| A-44 Visualisations accessibles | Aucune visualisation livrée en T16 ; le rapport HTML est structuré pour WCAG 2.2 AA, et l'intégration d'une image demandera un nouvel ADR (ADR-0094) |
+| A-48 Nom et empreinte identifiants | Masqués par défaut au terminal et dans les exports, absents des fichiers produits ; levée par catégorie (ADR-0093, ADR-0095) |
+| A-49 Masquage contre vérification par un expert | Levée explicite, par catégorie, annoncée en tête du rapport et du terminal (ADR-0093) ; la trace dans un journal de conservation reste à T91 (NF-17, ADR-0030) |
+| « Absence ≠ authenticité » (§7 de l'analyse) | Avertissement du rapport : l'absence de constat ne vaut que pour la couverture (ADR-0098) |
+
 ## 4. Exigences du cahier reformulées pour le projet
 
 Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent au projet et sont soumises à l'auteur du cahier.
@@ -185,6 +194,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 - T13 : constats A-25, A-29, A-31 (§3) ; saisie de texte et portée d'ES-07 (§4) ; architecture v1.6, modèle de données v1.2, glossaire v1.2, découpage v0.12.
 - T14 : limites tranchées (§2), constats A-05 et A-53 (§3) ; architecture v1.7, modèle de données v1.3, découpage v0.13.
 - T15 : constats A-23, A-32, A-37, A-47 (§3), question 5 (§5) ; [guide du catalogue](../catalogue/README.md) créé ; architecture v1.8, modèle de données v1.4, glossaire v1.4, découpage v0.14.
+- T16 : constats A-44, A-48, A-49 et « absence ≠ authenticité » (§3) ; architecture v1.9, modèle de données v1.5, glossaire v1.5, découpage v0.15, guide du catalogue v1.1.
 
 ## 7. Historique
 
@@ -198,3 +208,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-10-27 | 1.5 | Constats adressés à T13 (§3) ; saisie de texte et portée d'ES-07 (§4, ADR-0071, ADR-0074) ; effets (§6) | T13 |
 | 2026-10-27 | 1.6 | Limites tranchées (§2, ADR-0076 à ADR-0078) ; constats adressés à T14 (§3) ; effets (§6) | T14 |
 | 2026-10-27 | 1.7 | Constats adressés à T15 (§3) ; question 5 (§5) ; effets (§6) | T15 |
+| 2026-10-28 | 1.8 | Constats adressés à T16 (§3) ; effets (§6) | T16 |
