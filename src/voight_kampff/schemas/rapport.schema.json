@@ -17,7 +17,7 @@
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.2.0" },
+    "version_schema": { "const": "0.3.0" },
     "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
@@ -515,9 +515,13 @@
     "versions": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["outil", "catalogue", "dependances"],
+      "required": ["outil", "interpreteur", "catalogue", "dependances"],
       "properties": {
         "outil": { "$ref": "#/$defs/version" },
+        "interpreteur": {
+          "description": "Interpréteur qui a mené l'analyse : implémentation (sys.implementation.name) et version (ADR-0111).",
+          "$ref": "#/$defs/dependance"
+        },
         "catalogue": { "$ref": "#/$defs/version_catalogue" },
         "dependances": { "type": "array", "items": { "$ref": "#/$defs/dependance" } }
       }

@@ -77,6 +77,7 @@ empreinte = "Empreinte SHA-256"
 date_analyse = "Date de l'analyse (UTC)"
 parties = "Parties reconnues"
 outil = "Outil"
+interpreteur = "Interpréteur Python"
 catalogue = "Catalogue de règles"
 dependances = "Bibliothèques qui ont lu le fichier"
 niveau_isolation = "Niveau"
@@ -139,6 +140,32 @@ non_menee = "non menée : {raison}"
 non_menee_precisee = "non menée : {raison} ({precision})"
 catalogue = "catalogue : {catalogue}"
 rapport = "rapport : {html} et {json}"
+
+# Comparaison de deux rapports du même fichier (vk --comparer, ADR-0112).
+[comparaison]
+identiques = "Résultats identiques : mêmes parties, couverture, observations, constats et analyses non menées, à la date et au nom du fichier près."
+differents = "Résultats différents : {nombre} écart(s)."
+garantie = "Conditions de la garantie de reproductibilité réunies : même fichier, même extension, mêmes versions, analyses non interrompues."
+hors_garantie = "Hors garantie de reproductibilité : {raisons}. Des résultats différents s'expliquent alors."
+defaut = "Défaut de reproductibilité : dans les conditions de la garantie, les résultats devraient être identiques. À signaler au projet, avec les deux rapports."
+environnement = "Isolation différente d'un poste à l'autre : elle ne doit changer aucun résultat."
+non_comparees = "Non comparées, car masquées dans au moins un rapport : {categories}."
+empreinte_masquee = "Empreinte masquée : rien n'établit qu'il s'agit du même fichier ; écrire les rapports avec --reveler empreinte."
+ecart = "écart ({nature}) : {chemin}"
+autres = "… et {nombre} autre(s) écart(s)."
+illisible = "rapport {rang} : {erreur}"
+
+[comparaison.raisons]
+empreinte = "fichiers différents (empreinte)"
+extension = "extensions différentes"
+empreinte_masquee = "même fichier non établi (empreinte masquée)"
+versions = "versions différentes (outil, interpréteur, catalogue ou dépendances)"
+interrompue = "analyse interrompue"
+
+[comparaison.natures]
+condition = "condition"
+environnement = "environnement"
+resultat = "résultat"
 
 [signalements]
 extension_absente = "Le nom du fichier n'a pas d'extension."

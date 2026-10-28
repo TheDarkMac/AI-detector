@@ -22,6 +22,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, BinaryIO
 
+from voight_kampff._limites import OBJETS_MAX
 from voight_kampff._travail.contexte import Contexte
 from voight_kampff._travail.fichier import Fichier, ouvrir_herite
 from voight_kampff._travail.principal import Identifieur, canal_du_protocole, principal
@@ -80,6 +81,17 @@ def delta(contexte: Contexte) -> None:
     contexte.non_mener(RaisonNonMenee.FORMAT_PARTIEL, localisation=Localisation(octets=Plage(1, 1)))
 
 
+def theta(contexte: Contexte) -> None:
+    """Dépasse une limite comptée : non mené, de façon déterministe (ADR-0076)."""
+    contexte.observer("avant.limite", 1)
+    contexte.compter_objets(OBJETS_MAX + 1)
+
+
+def kappa(contexte: Contexte) -> None:
+    """Observe ce qui change d'une exécution à l'autre : un module non reproductible (T18)."""
+    contexte.observer("processus", os.getpid())
+
+
 def epsilon(_contexte: Contexte) -> None:
     sys.exit(3)
 
@@ -131,7 +143,8 @@ def memoire(_contexte: Contexte) -> None:
 
 
 ANALYSEURS = {
-    f.__name__: f for f in (alpha, beta, gamma, delta, epsilon, zeta, eta, sonde, memoire)
+    f.__name__: f
+    for f in (alpha, beta, gamma, delta, theta, kappa, epsilon, zeta, eta, sonde, memoire)
 }
 
 
@@ -143,7 +156,7 @@ def sans_restriction() -> EtatIsolation:
 
 ISOLATION = {
     "type": "isolation",
-    "version_schema": "0.2.0",
+    "version_schema": "0.3.0",
     "isolation": {"niveau": "reduite", "manques": ["reseau"]},
 }
 

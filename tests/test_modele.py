@@ -511,7 +511,12 @@ def test_signalement_incoherent_refuse_a_la_lecture(
 
 def test_dependance_en_double_refusee(rapport: Rapport) -> None:
     with pytest.raises(ValueError, match="doublon"):
-        Versions("0.1.0", rapport.versions.catalogue, (Dependance("a", "1"), Dependance("a", "2")))
+        Versions(
+            "0.1.0",
+            rapport.versions.interpreteur,
+            rapport.versions.catalogue,
+            (Dependance("a", "1"), Dependance("a", "2")),
+        )
 
 
 def test_catalogue_a_empreinte_invalide_refuse(rapport: Rapport) -> None:

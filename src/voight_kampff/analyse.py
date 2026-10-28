@@ -8,6 +8,8 @@ processus de travail, qui importe le paquet, n'en charge rien.
 """
 
 import os
+import platform
+import sys
 from collections.abc import Collection
 from dataclasses import dataclass
 from enum import StrEnum
@@ -31,7 +33,7 @@ from voight_kampff.rapport.modele import (
     verifier_resultats,
 )
 
-__all__ = ["Analyse", "AnalyseRefusee", "MotifRefus", "analyser"]
+__all__ = ["Analyse", "AnalyseRefusee", "MotifRefus", "analyser", "interpreteur"]
 
 
 class MotifRefus(StrEnum):
@@ -96,6 +98,15 @@ class AnalyseRefusee(Exception):
         super().__init__(message)
 
 
+def interpreteur() -> Dependance:
+    """Interpréteur de ce processus, qui lance le processus de travail (ADR-0111).
+
+    Le processus de travail est lancé par ``sys.executable`` (ADR-0036) : c'est le même
+    interpréteur, implémentation et version.
+    """
+    return Dependance(sys.implementation.name, platform.python_version())
+
+
 @dataclass(frozen=True, slots=True)
 class Analyse:
     """Ce qu'une analyse établit pour un fichier, vérifié comme le serait un rapport."""
@@ -144,6 +155,7 @@ class Analyse:
             identification=self.identification,
             versions=Versions(
                 outil=version("voight-kampff-forensics"),
+                interpreteur=interpreteur(),
                 catalogue=self.catalogue,
                 dependances=self.dependances,
             ),
