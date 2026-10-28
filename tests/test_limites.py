@@ -36,6 +36,8 @@ from voight_kampff.rapport.modele import (
     RaisonNonMenee,
 )
 
+pytestmark = pytest.mark.exigence("NF-02", "NF-08", "ES-03")
+
 FACTICE = Path(__file__).with_name("travail_factice.py")
 PARTIE = Partie(1, "jpeg", Plage(0, 10), fin_connue=True)
 MODULE = Manifeste(
@@ -220,6 +222,7 @@ def test_memoire_epuisee(descripteur: int) -> None:
 # Refus « hors limites » (F-04)
 
 
+@pytest.mark.exigence("F-04")
 def test_fichier_trop_grand_refuse_sans_etre_lu(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

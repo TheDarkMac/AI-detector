@@ -43,6 +43,8 @@ from voight_kampff.rapport.modele import (
     TechniqueCouverte,
 )
 
+pytestmark = pytest.mark.exigence("F-83", "NF-18", "ES-12", "ES-13")
+
 NOM = "photo virale.jpg"
 ARTISTE = "Jeanne Martin"
 
@@ -133,6 +135,7 @@ def test_regle_d_un_constat_exigee(analyse: Analyse) -> None:
 # JSON (ADR-0095)
 
 
+@pytest.mark.exigence("F-05")
 def test_json_masque_par_defaut(analyse: Analyse) -> None:
     texte = exporter_json(analyse)
     document = json.loads(texte)
@@ -321,6 +324,7 @@ def test_html_politique_de_securite(analyse: Analyse) -> None:
     assert document.index("Content-Security-Policy") < document.index("<title>")
 
 
+@pytest.mark.exigence("NF-12")
 def test_html_structure_accessible(analyse: Analyse) -> None:
     lecteur = lire(exporter_html(analyse))
     assert lecteur.titres.count("h1") == 1
@@ -330,6 +334,7 @@ def test_html_structure_accessible(analyse: Analyse) -> None:
     assert "main" in lecteur.balises
 
 
+@pytest.mark.exigence("NF-11", "P-03", "P-04", "F-25")
 def test_html_ordre_des_rubriques(analyse: Analyse) -> None:
     document = exporter_html(analyse)
     rubriques = re.findall(r'<section id="([a-z_]+)"', document)
@@ -402,6 +407,7 @@ def test_html_aucune_valeur_ne_cree_de_balise(valeur: str) -> None:
     assert neutraliser(document.replace("\n", "")) == document.replace("\n", "")
 
 
+@pytest.mark.exigence("F-80", "F-81", "P-02")
 def test_html_contenu_des_constats(analyse: Analyse) -> None:
     document = exporter_html(analyse)
     # Phrase de la règle, paramètres remplacés par la valeur de leur observation.
@@ -469,6 +475,7 @@ def test_un_libelle_par_valeur(table: str, enumeration: type[Any]) -> None:
     assert set(textes()[table]) == {valeur.value for valeur in enumeration}
 
 
+@pytest.mark.exigence("NF-14", "P-04")
 def test_textes_sans_verdict() -> None:
     # NF-14 : aucun texte de l'outil ne présente un indice comme une certitude.
     tout = json.dumps(textes(), ensure_ascii=False).lower()
@@ -484,6 +491,7 @@ def test_textes_sans_verdict() -> None:
         assert terme in textes()["glossaire"]
 
 
+@pytest.mark.exigence("F-82")
 def test_toutes_les_analyses_menees(analyse: Analyse) -> None:
     identification = dataclasses.replace(
         analyse.identification,

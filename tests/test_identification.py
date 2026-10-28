@@ -34,6 +34,8 @@ from voight_kampff._travail.fichier import Fichier
 from voight_kampff._travail.identification import identifier
 from voight_kampff.rapport.modele import NOMBRE_MAX_PARTIES
 
+pytestmark = pytest.mark.exigence("F-02", "F-03", "ES-07")
+
 type Attendu = list[tuple[str, int, int, bool, bool]]
 """Format, début, longueur, fin connue, tronquée."""
 
@@ -410,6 +412,7 @@ def test_texte_raccourci_pendant_la_lecture(tmp_path: Path) -> None:
         assert identification._texte(Fichier(fichier.fileno()), 10)
 
 
+@pytest.mark.exigence("ES-17")
 def test_identification_reservee_au_processus_de_travail(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(garde, "_verrouille", False)
     with pytest.raises(garde.HorsProcessusDeTravail):

@@ -48,6 +48,8 @@ from voight_kampff._travail.fichier import Fichier
 from voight_kampff._travail.identification import identifier
 from voight_kampff.rapport.modele import Direction, Partie, RaisonNonMenee, verifier_parties
 
+pytestmark = pytest.mark.exigence("ES-19", "NF-02", "NF-03")
+
 ECHANTILLONS = (
     jpeg(),
     png(),

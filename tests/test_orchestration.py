@@ -40,6 +40,8 @@ from voight_kampff.rapport.modele import (
     RaisonNonMenee,
 )
 
+pytestmark = pytest.mark.exigence("ES-01", "ES-04", "NF-03")
+
 FACTICE = Path(__file__).with_name("travail_factice.py")
 PYPROJECT = Path(__file__).resolve().parents[1] / "pyproject.toml"
 CONTENU = b"VKFT" + bytes(range(256)) * 4
@@ -212,6 +214,7 @@ def test_vrai_processus_module_d_un_autre_format(pdf: int) -> None:
 # Déroulé réel avec des analyseurs de test
 
 
+@pytest.mark.exigence("NF-10", "P-06")
 def test_modules_isoles_les_uns_des_autres(descripteur: int) -> None:
     actifs = [manifeste("alpha"), manifeste("beta"), manifeste("gamma", ("png",))]
     resultat = executer(
@@ -245,6 +248,7 @@ def test_modules_isoles_les_uns_des_autres(descripteur: int) -> None:
     analyse_de(resultat)
 
 
+@pytest.mark.exigence("ES-07")
 def test_polyglotte_chaque_format_du_perimetre_analyse(descripteur: int) -> None:
     livres = (manifeste("alpha", ("jpeg", "pdf")), manifeste("delta", ("pdf",)))
     resultat = executer(descripteur, livres, commande=factice("polyglotte", mesure_couverture=True))
@@ -285,6 +289,7 @@ def test_polyglotte_chaque_format_du_perimetre_analyse(descripteur: int) -> None
     ]
 
 
+@pytest.mark.exigence("NF-10", "P-06")
 def test_module_desactive_et_ceux_qui_le_requierent(descripteur: int) -> None:
     livres = (manifeste("alpha"), manifeste("beta"), manifeste("delta", requiert=("beta",)))
     resultat = executer(
@@ -308,6 +313,7 @@ def test_module_inconnu_a_desactiver(descripteur: int) -> None:
 
 
 @pytest.mark.parametrize("arret", ["epsilon", "eta"], ids=["sys.exit", "os._exit"])
+@pytest.mark.exigence("F-82", "NF-08")
 def test_arret_du_processus_pendant_un_module(descripteur: int, arret: str) -> None:
     livres = (manifeste("alpha"), manifeste(arret), manifeste("delta"))
     resultat = executer(descripteur, livres, commande=factice("modules"))
@@ -327,6 +333,7 @@ def test_arret_du_processus_pendant_un_module(descripteur: int, arret: str) -> N
     assert analyse_de(resultat).interrompue
 
 
+@pytest.mark.exigence("NF-08")
 def test_delai_depasse(descripteur: int) -> None:
     debut = time.monotonic()
     resultat = executer(

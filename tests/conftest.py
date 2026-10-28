@@ -1,4 +1,5 @@
-"""Objets communs aux tests du modèle de données et des schémas (T11) ; profils du fuzzing (T14)."""
+"""Objets communs aux tests du modèle de données et des schémas (T11) ; profils du fuzzing (T14) ;
+contrôle des marqueurs d'exigence (T17, ADR-0102)."""
 
 import os
 from datetime import UTC, date, datetime
@@ -6,6 +7,7 @@ from datetime import UTC, date, datetime
 import pytest
 from hypothesis import settings
 
+from banc import matrice
 from voight_kampff.rapport.modele import (
     Categorie,
     CategorieIdentifiante,
@@ -45,6 +47,17 @@ settings.register_profile(
 )
 settings.register_profile("campagne", max_examples=200_000, database=None, deadline=None)
 settings.load_profile(os.environ.get("VK_FUZZING", "defaut"))
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """Refuse un marqueur ``exigence`` vide ou qui cite une exigence absente de la matrice."""
+    connues = matrice.identifiants()
+    for item in items:
+        for marqueur in item.iter_markers("exigence"):
+            inconnues = sorted(set(marqueur.args) - connues) if marqueur.args else ["(aucune)"]
+            if inconnues:
+                raise pytest.UsageError(f"{item.nodeid} : exigence inconnue {', '.join(inconnues)}")
+
 
 EMPREINTE = "3f" * 32
 TAILLE = 2_048_576

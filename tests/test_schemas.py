@@ -13,6 +13,8 @@ from voight_kampff import formats, schemas
 from voight_kampff.rapport import modele
 from voight_kampff.rapport.modele import Rapport
 
+pytestmark = pytest.mark.exigence("ES-04", "F-83")
+
 type Document = dict[str, Any]
 
 
@@ -432,6 +434,7 @@ def test_erreur_sans_la_valeur_recue(rapport: Rapport) -> None:
         assert fragment not in message
 
 
+@pytest.mark.exigence("NF-16")
 def test_registre_sans_recuperation_reseau() -> None:
     # Un renvoi vers une ressource inconnue échoue au lieu de la télécharger.
     with pytest.raises(NoSuchResource):

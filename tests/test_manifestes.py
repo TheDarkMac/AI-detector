@@ -16,6 +16,8 @@ from voight_kampff._orchestration.manifestes import (
 from voight_kampff.formats import PERIMETRE
 from voight_kampff.rapport.modele import Direction
 
+pytestmark = pytest.mark.exigence("NF-10", "P-06")
+
 RACINE_DU_DEPOT = Path(__file__).resolve().parents[1]
 
 

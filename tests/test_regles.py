@@ -33,6 +33,8 @@ from voight_kampff.rapport.modele import (
     Valeur,
 )
 
+pytestmark = pytest.mark.exigence("F-26", "ES-09", "P-02")
+
 
 def condition(**test: Any) -> Condition:
     return Condition.depuis_dict({"observation": "n"} | test)
