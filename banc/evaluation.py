@@ -8,8 +8,12 @@ calcule à partir de ces résultats :
 - par règle d'indice ou de preuve : taux de faux positifs et niveau qu'il permet ;
 - le taux de faux positifs par fichier, critère d'acceptation d'ADR-0018 ;
 - les écarts qui font échouer l'évaluation.
+
+Chaque fichier est analysé deux fois : deux rapports différents dans les conditions de la
+garantie sont un défaut de reproductibilité, compté comme un écart (NF-06, ADR-0113).
 """
 
+import dataclasses
 from collections import Counter
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -23,7 +27,14 @@ from banc.mesures import Taux
 from banc.reseau import ReseauInterdit
 from voight_kampff import Analyse, AnalyseRefusee
 from voight_kampff._regles import BORNE_MODERE, Regle, niveau_permis
-from voight_kampff.rapport.modele import Categorie, Direction, EtatTechnique, Niveau
+from voight_kampff.rapport import comparaison, export
+from voight_kampff.rapport.modele import (
+    Categorie,
+    CategorieIdentifiante,
+    Direction,
+    EtatTechnique,
+    Niveau,
+)
 
 __all__ = [
     "CIBLE_PAR_FICHIER",
@@ -33,6 +44,7 @@ __all__ = [
     "ResultatFichier",
     "analyser_corpus",
     "mesurer",
+    "reproduction",
 ]
 
 CIBLE_PAR_FICHIER = BORNE_MODERE
@@ -54,6 +66,15 @@ _CONFONDUE: dict[Origine | None, Direction] = {
 """Direction qui prend une génération pour une retouche, ou l'inverse (§8 : « Retouchés »)."""
 
 _RANG = {Niveau.FAIBLE: 0, Niveau.MODERE: 1, Niveau.FORT: 2}
+
+
+_CITES = 5
+"""Écarts de reproduction cités par fichier ; le reste est compté."""
+
+
+def _cites(ecarts: Sequence[str]) -> str:
+    cites = ", ".join(ecarts[:_CITES])
+    return cites if len(ecarts) <= _CITES else f"{cites}… {len(ecarts)} écarts"
 
 
 def _pourcent(valeur: float) -> str:
@@ -105,6 +126,9 @@ class ResultatFichier:
     erreur: str | None = None
     """Nom de l'exception d'une analyse qui s'est arrêtée brutalement (critère du §8)."""
     interrompue: bool = False
+    non_reproduit: tuple[str, ...] = ()
+    """Ce qui diffère entre les deux analyses du fichier, dans les conditions de la garantie :
+    chemins des champs du rapport, ou issues différentes (ADR-0113)."""
 
     @property
     def analyse(self) -> bool:
@@ -141,32 +165,70 @@ def depuis_analyse(entree: Entree, analyse: Analyse, modules: Iterable[str]) -> 
     return ResultatFichier(entree, techniques, constats, interrompue=analyse.interrompue)
 
 
+type Issue = Analyse | AnalyseRefusee
+
+
+def _issue(analyser_fichier: Callable[[Path], Analyse], chemin: Path) -> Issue:
+    try:
+        return analyser_fichier(chemin)
+    except AnalyseRefusee as refus:
+        return refus
+
+
+def reproduction(premiere: Issue, seconde: Issue) -> tuple[str, ...]:
+    """Ce qui diffère entre deux analyses du même fichier, dans la garantie (ADR-0113).
+
+    Deux refus doivent avoir le même motif ; deux analyses, le même rapport, comparé en entier,
+    masquage levé (ADR-0108). Hors garantie (analyse interrompue), rien n'est relevé.
+    """
+    match premiere, seconde:
+        case AnalyseRefusee(), AnalyseRefusee():
+            if premiere.motif is seconde.motif:
+                return ()
+            return (f"refus « {premiere.motif.value} » puis « {seconde.motif.value} »",)
+        case Analyse(), Analyse():
+            tout = list(CategorieIdentifiante)
+            resultat = comparaison.comparer(
+                export.document(premiere, tout), export.document(seconde, tout)
+            )
+            if not resultat.defaut:
+                return ()
+            return tuple(ecart.chemin for ecart in resultat.nature(comparaison.Nature.RESULTAT))
+        case _:
+            return ("analysé une fois, refusé l'autre",)
+
+
 def analyser_corpus(
     corpus: Corpus,
     partie: Partie,
     analyser_fichier: Callable[[Path], Analyse],
     modules: Sequence[str],
 ) -> list[ResultatFichier]:
-    """Analyse chaque fichier de la partie, dans l'ordre du manifeste.
+    """Analyse chaque fichier de la partie deux fois, dans l'ordre du manifeste.
 
     Un fichier absent ou modifié arrête tout (``CorpusInvalide``) ; une tentative d'accès au
     réseau aussi (:class:`ReseauInterdit`). Un refus est un résultat ; toute autre exception est
-    un arrêt brutal, noté par son seul nom, et l'évaluation continue.
+    un arrêt brutal, noté par son seul nom, et l'évaluation continue. Le résultat retenu est
+    celui de la première analyse ; la seconde n'est comparée qu'à elle (ADR-0113).
     """
     sans_analyse = dict.fromkeys(modules, EtatFichier.NON_ANALYSABLE)
     resultats = []
     for entree in corpus.partie(partie):
         chemin = corpus.verifier(entree)
         try:
-            analyse = analyser_fichier(chemin)
-        except AnalyseRefusee as refus:
-            resultats.append(ResultatFichier(entree, sans_analyse, refus=refus.motif.value))
+            premiere = _issue(analyser_fichier, chemin)
+            seconde = _issue(analyser_fichier, chemin)
         except ReseauInterdit:
             raise
         except Exception as erreur:  # arrêt brutal : c'est ce que le §8 demande de compter
             resultats.append(ResultatFichier(entree, sans_analyse, erreur=type(erreur).__name__))
+            continue
+        ecarts = reproduction(premiere, seconde)
+        if isinstance(premiere, AnalyseRefusee):
+            resultat = ResultatFichier(entree, sans_analyse, refus=premiere.motif.value)
         else:
-            resultats.append(depuis_analyse(entree, analyse, modules))
+            resultat = depuis_analyse(entree, premiere, modules)
+        resultats.append(dataclasses.replace(resultat, non_reproduit=ecarts))
     return resultats
 
 
@@ -282,6 +344,7 @@ class Evaluation:
                     sorted(Counter(r.erreur for r in self.resultats if r.erreur).items())
                 ),
                 "interrompues": sum(r.interrompue for r in self.resultats),
+                "non_reproduits": sum(bool(r.non_reproduit) for r in self.resultats),
             },
             "techniques": [mesure.vers_dict() for mesure in self.techniques],
             "regles": [mesure.vers_dict() for mesure in self.regles],
@@ -386,6 +449,11 @@ def mesurer(
         f"{r.entree.chemin} : arrêt brutal de l'analyse ({r.erreur})"
         for r in resultats
         if r.erreur is not None
+    ]
+    ecarts += [
+        f"{r.entree.chemin} : deux analyses différentes ({_cites(r.non_reproduit)})"
+        for r in resultats
+        if r.non_reproduit
     ]
     evaluation = Evaluation(partie, tuple(resultats), techniques, mesures_regles, par_fichier)
     if partie is Partie.EVALUATION:
