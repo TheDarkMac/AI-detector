@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.8** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 proposée dans la PR de T16. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.9** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 proposée dans la PR de T17. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -70,7 +70,7 @@ Statuts : **Tranché** (ADR cité), **Reporté** (tâche citée), **Non tranché
 | Point | Statut | Décision ou raison du report | Référence |
 | --- | --- | --- | --- |
 | Limites de taille, de durée, temps d'analyse | Tranché | Budget mixte : limites comptées identiques partout, mémoire et temps du système hors garantie (ADR-0076) ; 1 Gio par fichier, 2 Gio de mémoire, 120 s, fixes en V1 (ADR-0077) | ADR-0076, ADR-0077, ADR-0078 |
-| Seuils d'acceptation | Reporté en partie | Principe tranché : taux par technique et taux par fichier, publiés avec effectif et intervalle (A-54). Valeurs fixées avant l'acceptation de la première technique. | ADR-0018, T17 |
+| Seuils d'acceptation | Tranché | Taux par technique et taux par fichier, publiés avec effectif et intervalle de Wilson à 95 % (A-54) ; niveaux « fort » et « modéré » jusqu'à une borne supérieure de 1 % et 5 % ; cible par fichier : borne supérieure au plus 5 %. Valeurs fixées avant toute mesure. | ADR-0018, ADR-0101 |
 | Constitution du corpus | Reporté en partie | Séparation calibrage / évaluation tranchée ; sources, volume et droits en T100 | ADR-0016, T100 |
 | Références des modules comparatifs | Tranché | F-35 et F-64 hors V1 (références fournies par l'utilisateur, comme le prévoit le cahier) ; F-42 hors V1 faute de base de référence | ADR-0012 |
 | Niveau d'accessibilité | Tranché | WCAG 2.2 AA pour le rapport HTML | ADR-0025 |
@@ -144,6 +144,19 @@ Constats de l'analyse adressés à T16 :
 | A-49 Masquage contre vérification par un expert | Levée explicite, par catégorie, annoncée en tête du rapport et du terminal (ADR-0093) ; la trace dans un journal de conservation reste à T91 (NF-17, ADR-0030) |
 | « Absence ≠ authenticité » (§7 de l'analyse) | Avertissement du rapport : l'absence de constat ne vaut que pour la couverture (ADR-0098) |
 
+Constats de l'analyse adressés à T17 :
+
+| Constat | Traitement |
+| --- | --- |
+| A-07 Taux par technique contre erreur du rapport | Taux par fichier mesuré sur les preuves et les indices modérés ou forts, cible de 5 % sur la borne supérieure (ADR-0101, ADR-0104) |
+| A-08 Méthode de vérification | Matrice de vérification, méthode et résultat par exigence (ADR-0102, ADR-0106) |
+| A-11 Principes sans identifiant | P-01 à P-06, dans la matrice (ADR-0106) |
+| A-27 Cas d'usage reliés aux exigences | CU-1 à CU-5 reliés dans la matrice (ADR-0106) |
+| A-52 Vérification de NF-16 | Banc sans réseau : espace de noms vide, crochet d'audit, code 3 à toute tentative (ADR-0100) |
+| A-54 Effectif et intervalle | Chaque taux publié avec son effectif et l'intervalle de Wilson à 95 %, au rapport d'évaluation et au catalogue (ADR-0101, ADR-0107) |
+| A-55 Contrôles déterministes | Taux mesuré comme pour les autres, mais un seul faux positif d'une preuve est un écart ; la vérification de fond reste le test de conformité de la technique (ADR-0104) |
+| A-58 Matrice absente des livrables | `docs/verification/matrice.md`, tenue à jour à chaque tâche (ADR-0106) |
+
 ## 4. Exigences du cahier reformulées pour le projet
 
 Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent au projet et sont soumises à l'auteur du cahier.
@@ -209,3 +222,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-10-27 | 1.6 | Limites tranchées (§2, ADR-0076 à ADR-0078) ; constats adressés à T14 (§3) ; effets (§6) | T14 |
 | 2026-10-27 | 1.7 | Constats adressés à T15 (§3) ; question 5 (§5) ; effets (§6) | T15 |
 | 2026-10-28 | 1.8 | Constats adressés à T16 (§3) ; effets (§6) | T16 |
+| 2026-10-28 | 1.9 | Seuils d'acceptation tranchés (§2) ; constats adressés à T17 (§3) | T17 |

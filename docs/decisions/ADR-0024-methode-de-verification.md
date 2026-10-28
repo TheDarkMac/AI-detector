@@ -41,3 +41,4 @@ Chaque exigence reçoit une **méthode de vérification** parmi quatre : **inspe
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-28 | Réalisé en T17 : matrice `docs/verification/` (ADR-0102, ADR-0106) |

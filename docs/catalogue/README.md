@@ -1,6 +1,6 @@
 # Catalogue de règles
 
-> Statut : **v1.1** ; v1.0 mergée avec T15, v1.1 proposée dans la PR de T16. Document vivant : toute modification est inscrite à l'historique (§6).
+> Statut : **v1.2** ; v1.0 mergée avec T15, v1.1 avec T16, v1.2 proposée dans la PR de T17. Document vivant : toute modification est inscrite à l'historique (§6).
 > Exigences : F-12, F-24, F-26, NF-06, NF-07 ; ES-09 du [modèle de menace](../modele-de-menace/modele-de-menace.md).
 > Décisions : [ADR-0029](../decisions/ADR-0029-integrite-du-catalogue.md), [ADR-0038](../decisions/ADR-0038-format-du-catalogue.md), [ADR-0039](../decisions/ADR-0039-expressions-regulieres-re2.md), [ADR-0084](../decisions/ADR-0084-langage-des-regles.md) à [ADR-0091](../decisions/ADR-0091-texte-des-phrases-dans-la-regle.md).
 
@@ -66,7 +66,7 @@ parametre = "logiciel"
 | `phrase` | Texte de la phrase du constat, par langue : `fr` seul en V1, de 1 à 1 024 caractères. Chaque `{nom}` est un paramètre de la règle, remplacé à l'export par la valeur de son observation, ou par la mention de son masquage ; les emplacements sont exactement les paramètres déclarés ; aucune autre accolade ([ADR-0091](../decisions/ADR-0091-texte-des-phrases-dans-la-regle.md)) |
 | `application` | `moteur` : conditions évaluées par le moteur ; `module` : appliquée par le code du module, qui la cite par son identifiant et déclare ses `parametres` ([ADR-0084](../decisions/ADR-0084-langage-des-regles.md), [ADR-0090](../decisions/ADR-0090-constat-d-une-regle.md)) |
 | `condition` | De 1 à 16, toutes requises ; chacune nomme une observation et porte un seul test : `egal`, `parmi` (1 à 4 096 valeurs), `motif` (RE2), `seuil` (`operateur` et `valeur`), `presente = true` ; `parametre` facultatif |
-| `evaluation` | `taux_faux_positifs` (0 à 1), `corpus`, `date` : présente seulement si le taux est mesuré ; elle seule permet un niveau autre que « faible » (ADR-0018) |
+| `evaluation` | `taux_faux_positifs` (0 à 1), `effectif` (fichiers mesurés), `borne_superieure` (borne supérieure de l'intervalle de Wilson à 95 %), `corpus`, `date` : présente seulement si le taux est mesuré, par le banc d'évaluation sur la partie évaluation du corpus ; elle seule permet un niveau autre que « faible », jusqu'à « fort » si la borne est au plus 1 %, « modéré » si elle est au plus 5 % (ADR-0018, [ADR-0101](../decisions/ADR-0101-bornes-des-niveaux-et-cible.md), [ADR-0107](../decisions/ADR-0107-effectif-et-borne-dans-l-evaluation.md)) |
 | `calibrage` | `methode` (`manuelle` ou `corpus`), `procedure`, `corpus` si calibré : obligatoire pour une règle à seuil (ADR-0016) |
 
 Évaluation ([ADR-0089](../decisions/ADR-0089-motifs-re2-et-evaluation.md)) : un motif est cherché n'importe où dans un texte (`^` et `$` l'ancrent) ; un booléen n'est égal qu'à un booléen ; une valeur en liste satisfait la condition si l'un de ses éléments la satisfait ; pour chaque condition, la première observation qui la satisfait est retenue ; une règle donne au plus un constat par module et par partie.
@@ -78,7 +78,7 @@ Un catalogue invalide arrête l'analyse avant toute lecture de fichier, avec un 
 - forme du dossier : en-tête présent, aucun autre fichier que les règles des modules ;
 - 8 Mio, 256 fichiers et 4 096 règles au plus ;
 - chaque fichier : TOML en UTF-8, conforme à son schéma ; date existante ;
-- chaque règle : du module de son fichier, identifiant unique, motifs acceptés par RE2 (1 024 caractères et 5 000 instructions au plus), catégorie, fondement, direction et niveau formant un constat possible, phrase dont les emplacements sont ses paramètres ;
+- chaque règle : du module de son fichier, identifiant unique, motifs acceptés par RE2 (1 024 caractères et 5 000 instructions au plus), catégorie, fondement, direction et niveau formant un constat possible, niveau permis par son évaluation, phrase dont les emplacements sont ses paramètres ;
 - cohérence avec les modules livrés : module existant, direction permise par son manifeste, règles « module » citées par le manifeste et elles seules.
 
 ## 4. Vérifier une empreinte
@@ -99,6 +99,7 @@ Dans la PR qui change un fichier du catalogue :
 2. Changer la `version` et la `date` de l'en-tête : `Y` si un constat peut changer (règle ajoutée, retirée, condition, seuil, liste, catégorie, direction, fondement, niveau, évaluation, gabarit, paramètres), `Z` pour un texte seul (titre, description, limites, phrase), `X` pour un nouveau `format`.
 3. Calculer l'empreinte (§4) et ajouter une entrée à la fin de [`versions.toml`](versions.toml) ; ne modifier aucune entrée existante.
 4. Vérifier avec `vk --catalogue src/voight_kampff/donnees/catalogue --regles`, puis `uv run --locked pytest tests/test_catalogue.py`.
+5. Pour un niveau ou une évaluation : lancer le banc sur la partie évaluation du corpus de référence avec ce catalogue (`--catalogue`, [procédure](../verification/README.md)), recopier le taux, l'effectif et la borne supérieure de chaque règle mesurée, et vérifier que le banc ne signale aucun écart.
 
 La CI refuse une PR qui modifie une entrée du registre déjà sur `detector`, ou une règle sans changer sa version ([ADR-0085](../decisions/ADR-0085-version-date-et-registre-du-catalogue.md)).
 
@@ -108,3 +109,4 @@ La CI refuse une PR qui modifie une entrée du registre déjà sur `detector`, o
 | --- | --- | --- | --- |
 | 2026-10-27 | 1.0 | Création | T15 |
 | 2026-10-28 | 1.1 | Champ `phrase` des règles (§2, §3, §5, ADR-0091) | T16 |
+| 2026-10-28 | 1.2 | Évaluation : effectif, borne supérieure, niveau contrôlé (§2, §3) ; mesure par le banc (§5) ; ADR-0101, ADR-0107 | T17 |

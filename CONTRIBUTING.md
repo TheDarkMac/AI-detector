@@ -64,6 +64,14 @@ VK_FUZZING=campagne uv run --locked pytest tests/test_fuzzing.py
 
 Les tests d'isolation (ADR-0083) vérifient l'effet des restrictions depuis un vrai processus de travail ; leurs attentes par système sont dans `tests/systeme.py`.
 
+Un test qui vérifie une exigence la cite par le marqueur `exigence` ; après un test ajouté, retiré ou déplacé, ou un état d'exigence changé, régénérer la matrice de vérification (ADR-0102, procédure : [`docs/verification/`](docs/verification/README.md)) :
+
+```bash
+uv run --locked python -m banc.matrice
+```
+
+Sous Linux, le test du banc complet s'exécute dans un espace de noms réseau vide (`unshare -rn`) ; il est sauté si le système le refuse, sauf sur la CI (ADR-0100).
+
 Ajouter ou mettre à jour une dépendance : `uv add` ou `uv lock --upgrade-package <nom>`, puis commiter `uv.lock` avec `pyproject.toml`. Les critères d'admission d'une bibliothèque (ADR-0043) sont consignés dans la PR.
 
 ## 2. Branches — ADR-0001, ADR-0005, ADR-0053
@@ -106,9 +114,9 @@ Types : `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`, `build`, `perf
 | `docs` | `lint-markdown` | Forme du Markdown (markdownlint-cli2, configuration `.markdownlint-cli2.jsonc`) |
 | `docs` | `fichiers-interdits` | Aucun `CLAUDE.md`, `CLAUDE.local.md` ni `.claude/` suivi par git |
 | `code` | `qualite` | Verrou à jour, Ruff, mypy (ADR-0047) ; versions publiées du catalogue inchangées face à la branche cible (ADR-0085) |
-| `code` | `tests` | pytest et couverture, Linux, macOS et Windows × Python 3.12 à 3.14 (ADR-0048, ADR-0051) |
+| `code` | `tests` | pytest et couverture, Linux, macOS et Windows × Python 3.12 à 3.14 (ADR-0048, ADR-0051) ; matrice de vérification à jour, et jointe remplie avec le résultat de chaque test (ADR-0102) |
 | `code` | `audit-dependances` | Aucune faille connue dans les dépendances verrouillées (ADR-0052) |
-| `code` | `paquet` | Construction reproductible et installable (ADR-0049) ; catalogue du wheel inscrit au registre (ADR-0085) ; rapports HTML et JSON écrits depuis le wheel, JSON conforme à son schéma, nom et empreinte masqués (ADR-0092, ADR-0095) |
+| `code` | `paquet` | Construction reproductible et installable (ADR-0049) ; catalogue du wheel inscrit au registre (ADR-0085) ; rapports HTML et JSON écrits depuis le wheel, JSON conforme à son schéma, nom et empreinte masqués (ADR-0092, ADR-0095) ; banc d'évaluation depuis le wheel : refus avec le réseau, corpus d'essai évalué sans réseau (ADR-0100, ADR-0105) |
 | `code` | `code-ok` | Résume les quatre jobs précédents |
 
 Vérifications obligatoires pour merger dans `detector` : `lint-markdown`, `fichiers-interdits` et `code-ok` (ADR-0001, ADR-0051).

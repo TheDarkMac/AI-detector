@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.5** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 proposée dans la PR de T16. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.6** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 proposée dans la PR de T17. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -72,6 +72,22 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Empreinte d'outil | Trace laissée par un outil de génération (paramètres, nom du logiciel) ; le cahier dit « signature » (F-12). | A-10 |
 | Empreinte (du fichier) | SHA-256 du fichier entier ; donnée identifiante. | ADR-0031, ADR-0040 |
 
+## Termes de l'évaluation
+
+| Terme | Définition | Référence |
+| --- | --- | --- |
+| Corpus | Ensemble versionné de fichiers dont on connaît l'origine réelle, décrit par un manifeste (catégorie, partie, groupe, provenance, empreinte). | §8 du cahier, ES-22, ADR-0103 |
+| Partie (du corpus) | Calibrage, qui sert à régler les seuils, ou évaluation, sur laquelle seule sont mesurés les taux publiés. | ADR-0016 |
+| Groupe (du corpus) | Fichiers qui dérivent d'un même original ; tous dans la même partie. | A-12, ADR-0103 |
+| Faux positif | Constat dirigé vers l'origine IA ou la retouche sur un fichier authentique ; pour une règle d'authenticité, son constat sur un fichier généré ou retouché. | ADR-0104 |
+| Faux négatif | Fichier généré ou retouché sans constat dirigé vers son origine réelle. | ADR-0104 |
+| Non analysable | Fichier sur lequel une technique concernée n'a pas été menée : refus, erreur, limite, partie tronquée. | §8 du cahier, ADR-0104 |
+| Taux par fichier | Part des fichiers authentiques dont le rapport porte une preuve, ou un indice modéré ou fort, dirigé vers l'origine IA ou la retouche. | ADR-0018, ADR-0104 |
+| Intervalle de Wilson | Intervalle de confiance d'un taux, publié à 95 % ; sa borne supérieure fixe le niveau permis d'une règle. | A-54, ADR-0101 |
+| Niveau permis | Niveau le plus élevé que permet l'évaluation d'une règle : « fort » jusqu'à 1 %, « modéré » jusqu'à 5 % de borne supérieure. | ADR-0101, ADR-0107 |
+| Écart (d'évaluation) | Ce qui fait échouer une évaluation : arrêt brutal, niveau non permis par la mesure, preuve fautive, cible par fichier non atteinte ou non mesurable. | ADR-0104 |
+| Matrice de vérification | Tableau qui relie chaque exigence à son état, à ses méthodes de vérification et à leur résultat. | ADR-0024, ADR-0102 |
+
 ## Historique
 
 | Date | Version | Modification | Origine |
@@ -82,3 +98,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-10-27 | 1.3 | Limite comptée, limite du système, budget ajoutés ; isolation réduite et refus précisés | T14 |
 | 2026-10-27 | 1.4 | Règle précisée ; règle du moteur, règle du module, condition, catalogue, empreinte du catalogue, registre des versions, technique hors V1 ajoutés | T15 |
 | 2026-10-28 | 1.5 | Gabarit précisé ; masquage, export, alerte, neutralisation ajoutés | T16 |
+| 2026-10-28 | 1.6 | Termes de l'évaluation ajoutés | T17 |

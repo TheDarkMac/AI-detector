@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.15** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 proposée dans la PR de T16. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.16** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 proposée dans la PR de T17. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -59,7 +59,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 | T14 | Sécurité d'exécution : limites taille/temps/mémoire, bombes de décompression, processus restreint par fichier (ADR-0028), mécanismes par système (ADR-0035) dont le Job Object sous Windows, lanceur de l'environnement virtuel compris (ADR-0065), valeurs des limites et du délai provisoires de T12, aucune trace sur le poste (ES-15), fuzzing des analyseurs (ES-19) dont l'identification (ADR-0070), rapport partiel en cas d'échec, refus « hors limites » (F-04, ADR-0075) ; décisions : ADR-0076 à ADR-0083 (budget mixte, limites fixes, fuzzing par Hypothesis) | NF-01, NF-02, NF-03, NF-08, F-04 |
 | T15 | Catalogue de règles versionné et daté, séparé du moteur, avec schéma de validation, livré avec l'outil, version et empreinte au rapport (ADR-0029) ; fichiers TOML et JSON Schema (ADR-0038), expressions RE2 (ADR-0039) ; règles citées par les manifestes, techniques hors V1 par format (ADR-0059, ADR-0064) ; décisions : ADR-0084 à ADR-0090 (conditions fermées, version propre et registre, catalogue utilisateur en remplacement, techniques hors V1 dans l'outil) ; guide : [`docs/catalogue/`](../catalogue/README.md) | F-26, NF-06, NF-07, ES-09 |
 | T16 | Génération du rapport : résumé sans verdict (ADR-0018), rubriques §6, exports HTML autonome et JSON avec schéma (ADR-0025), masquage par défaut des données identifiantes, empreinte comprise (ADR-0031), protection du HTML contre l'injection (ES-12), avertissement ; décisions : ADR-0091 à ADR-0098 (phrases dans les règles, `--rapport DOSSIER`, `--reveler CATEGORIE`, HTML par la bibliothèque standard) | F-83, §6, NF-11, NF-12, NF-14, NF-18 |
-| T17 | Banc d'évaluation : corpus séparé calibrage / évaluation (ADR-0016), calcul FP / FN / non analysables par technique et catégorie, taux de FP par fichier et bornes des niveaux d'indice (ADR-0018) ; matrice exigence → méthode de vérification → résultat (ADR-0024), exigences ES-xx comprises ; analyse exécutée sans réseau (ES-11) | §8, NF-09 |
+| T17 | Banc d'évaluation : corpus séparé calibrage / évaluation (ADR-0016), calcul FP / FN / non analysables par technique et catégorie, taux de FP par fichier et bornes des niveaux d'indice (ADR-0018) ; matrice exigence → méthode de vérification → résultat (ADR-0024), exigences ES-xx comprises ; analyse exécutée sans réseau (ES-11) ; décisions : ADR-0099 à ADR-0107 (banc du dépôt, espace de noms réseau vide, bornes 1 % et 5 % sur la borne de Wilson, matrice par marqueurs et TOML) ; matrice : [`verification/`](../verification/matrice.md) | §8, NF-09 |
 | T18 | Test de reproductibilité : deux analyses identiques donnent des constats identiques | NF-06, critère §8 |
 
 ### P2 — Métadonnées
@@ -195,3 +195,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-10-27 | 0.13 | T14 renvoie à ses décisions (ADR-0076 à ADR-0083) | T14 |
 | 2026-10-27 | 0.14 | T15 renvoie à ses décisions (ADR-0084 à ADR-0090) et au guide du catalogue ; T23 reçoit la comparaison de deux observations (ADR-0084) | T15 |
 | 2026-10-28 | 0.15 | T16 renvoie à ses décisions (ADR-0091 à ADR-0098) | T16 |
+| 2026-10-28 | 0.16 | T17 renvoie à ses décisions (ADR-0099 à ADR-0107) et à la matrice de vérification | T17 |
