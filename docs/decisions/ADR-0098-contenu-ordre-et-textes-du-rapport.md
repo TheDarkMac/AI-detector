@@ -1,8 +1,8 @@
 # ADR-0098 — Contenu, ordre et textes du rapport et du résumé du terminal
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
-- **Décideur** : l'assistant, choix soumis dans la PR de T16 ; textes à relire par TheDarkMac
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T16, validée avec ses textes pendant la revue de la PR de T16
 - **Tâche** : T16
 - **Exigences liées** : §6 du cahier, F-80 à F-83, NF-11, NF-14, NF-18 ; ES-13, ES-14 ; ADR-0018, ADR-0020, ADR-0021, ADR-0056, ADR-0059, ADR-0072, ADR-0073, ADR-0086
 
@@ -43,7 +43,7 @@ Option A.
 
 ## Conséquences
 
-- Les textes sont proposés dans la PR pour relecture ; les mentions définitives destinées aux utilisateurs restent à T103.
+- Les textes ont été relus et validés par TheDarkMac pendant la revue de la PR ; les mentions définitives destinées aux utilisateurs restent à T103.
 - `tests/test_rapport.py` vérifie qu'il y a un libellé pour chaque valeur des énumérations, et qu'aucun texte ne contient une tournure de certitude.
 - Le terminal n'affiche plus le nombre brut d'observations ni les codes des raisons : il dit leurs phrases.
 
@@ -52,3 +52,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac, textes du rapport compris, pendant la revue de la PR de T16 : statut « Accepté » |

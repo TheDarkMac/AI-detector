@@ -1,8 +1,8 @@
 # ADR-0095 — Export JSON : schéma du rapport 0.2.0, données masquées absentes, `masquage` en tête
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
-- **Décideur** : l'assistant, choix soumis dans la PR de T16
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T16, validée pendant la revue de la PR de T16
 - **Tâche** : T16
 - **Exigences liées** : F-83, NF-18 ; ES-12, ES-13 ; ADR-0025, ADR-0054, ADR-0057, ADR-0059, ADR-0093
 
@@ -56,3 +56,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T16 : statut « Accepté » |

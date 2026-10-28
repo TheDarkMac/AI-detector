@@ -1,8 +1,8 @@
 # ADR-0097 — L'analyse porte les règles qu'elle cite ; interface publique d'export
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
-- **Décideur** : l'assistant, choix soumis dans la PR de T16
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T16, validée pendant la revue de la PR de T16
 - **Tâche** : T16
 - **Exigences liées** : §6 du cahier (« Indices » : règle, valeur observée, limites connues), F-83, NF-06 ; ES-17 ; ADR-0059, ADR-0068, ADR-0073, ADR-0090
 
@@ -54,3 +54,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T16 : statut « Accepté » |

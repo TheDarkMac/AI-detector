@@ -1,8 +1,8 @@
 # ADR-0096 — Neutralisation des caractères de contrôle et bidirectionnels, à l'écriture de chaque sortie
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
-- **Décideur** : l'assistant, choix soumis dans la PR de T16
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T16, validée pendant la revue de la PR de T16
 - **Tâche** : T16
 - **Exigences liées** : ES-12 ; menace M-21 ; ADR-0025, ADR-0094
 
@@ -53,3 +53,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T16 : statut « Accepté » |

@@ -42,7 +42,8 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : génération du rapport
 13. Contrastes calculés (formule WCAG) pour chaque couple de couleurs de la feuille de style : texte de 7,2:1 à 17,2:1, traits de 5,3:1 à 8,8:1, en mode clair et sombre.
 14. Vérification locale : `uv lock --check` ; Ruff (format et analyse) et mypy sans remarque ; pip-audit, aucune faille connue ; 889 tests verts, un sauté (lanceur de Windows), couverture 100 % lignes et branches. Un premier passage de la couverture, lancé pendant qu'un autre tournait, donnait 99 % : les deux partageaient les fichiers de mesure des sous-processus ; relancé seul, 100 %.
 15. Documentation : ADR-0091 à ADR-0098 ; renvois dans ADR-0018, ADR-0020, ADR-0025, ADR-0031, ADR-0054, ADR-0056, ADR-0057, ADR-0059, ADR-0068, ADR-0072, ADR-0073, ADR-0084, ADR-0086, ADR-0090 ; architecture v1.9, modèle de données v1.5, glossaire v1.5, découpage v0.15, registre des arbitrages v1.8, guide du catalogue v1.1 ; `README.md`, `CONTRIBUTING.md` (§5, §9), `docs/README.md` ; index des ADR et du journal.
-16. Lint Markdown en local (`npx --yes markdownlint-cli2@0.23.2`) ; aucun fichier interdit suivi. Commits, branche poussée, PR ouverte vers `detector`.
+16. Lint Markdown en local (`npx --yes markdownlint-cli2@0.23.2`) ; aucun fichier interdit suivi. Commits, branche poussée, PR [#16](https://github.com/TheDarkMac/AI-detector/pull/16) ouverte vers `detector`.
+17. Pendant la revue, TheDarkMac a validé ADR-0095 à ADR-0098 et les textes du rapport (`rapport/textes.toml`) : statut « Accepté ».
 
 ## Problèmes rencontrés
 
@@ -76,7 +77,6 @@ Aucun de ces problèmes n'est une erreur d'une analyse ou d'une décision antér
 
 ## Reste à faire
 
-- Relecture par TheDarkMac des textes du rapport (`rapport/textes.toml`) et des ADR proposés (ADR-0095 à ADR-0098).
 - T17 : banc d'évaluation ; T18 : reproductibilité, à partir de `Analyse.rapport()`.
 - T20, T22 : premières règles, avec leur phrase ; premier marquage de données identifiantes.
 - T91 : trace de la levée du masquage (NF-17) ; T103 : mentions définitives.
