@@ -7,8 +7,8 @@ la configuration et applique celles du moteur aux observations d'un module, apr�
 
 Une règle « moteur » est une conjonction de conditions, chacune sur une observation nommée ;
 une règle « module » est appliquée par le code de son module, qui la cite par son identifiant.
-Dans les deux cas, c'est le catalogue qui fixe ce que dit le constat : gabarit, catégorie,
-direction, fondement et niveau (ADR-0090).
+Dans les deux cas, c'est le catalogue qui fixe ce que dit le constat : gabarit et texte de la
+phrase, catégorie, direction, fondement et niveau (ADR-0090, ADR-0091).
 """
 
 import math
@@ -17,6 +17,7 @@ from collections.abc import Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from enum import StrEnum
+from types import MappingProxyType
 from typing import Any
 
 import re2
@@ -50,13 +51,18 @@ __all__ = [
     "Seuil",
     "appliquer",
     "conforme",
+    "emplacements",
+    "remplir",
 ]
 
 type Document = dict[str, Any]
 
 LONGUEUR_MAX_MOTIF = 1024
+LONGUEUR_MAX_PHRASE = 1024
 CONDITIONS_MAX = 16
 LIMITES_MAX = 32
+LANGUES = ("fr",)
+"""Langues des phrases : le français seul en V1 (ADR-0020) ; en ajouter une change le format."""
 
 # Expressions du code, fixes, sans répétition imbriquée : temps linéaire (ADR-0039).
 _IDENTIFIANT_REGLE = re.compile(r"R-[A-Z][A-Z0-9]*-[0-9]{3}")
@@ -65,6 +71,7 @@ _MODULE = re.compile(r"[a-z][a-z0-9]*")
 _GABARIT = re.compile(r"[a-z0-9]+(?:[.-][a-z0-9]+)*")
 _NOM = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]*")
 _VERSION_CORPUS = re.compile(r"[A-Za-z0-9][A-Za-z0-9.+!_-]*")
+_EMPLACEMENT = re.compile(r"\{([^{}]*)\}")
 
 
 class Application(StrEnum):
@@ -114,6 +121,30 @@ def _scalaire(valeur: object, champ: str) -> None:
             raise ValueError(f"{champ} : nombre fini attendu")
     else:
         raise ValueError(f"{champ} : texte, nombre ou booléen attendu")
+
+
+def emplacements(texte: str) -> tuple[str, ...]:
+    """Noms des paramètres d'un texte de phrase, dans l'ordre : ``{nom}`` (ADR-0091).
+
+    Une accolade hors d'un emplacement ``{nom}`` rend le texte invalide : le texte n'a aucun
+    moyen d'en écrire une littéralement.
+    """
+    noms = _EMPLACEMENT.findall(texte)
+    reste = _EMPLACEMENT.sub("", texte)
+    if "{" in reste or "}" in reste:
+        raise ValueError("regle.phrase : accolade hors d'un emplacement {parametre}")
+    for nom in noms:
+        _verifier(_NOM, nom, 128, "regle.phrase")
+    return tuple(noms)
+
+
+def remplir(texte: str, valeurs: Mapping[str, str]) -> str:
+    """Texte de phrase dont chaque ``{nom}`` est remplacé par ``valeurs[nom]``.
+
+    Remplacement littéral, sans interprétation de la valeur ni du nom (pas de ``str.format``,
+    qui suivrait un attribut écrit ``{a.b}``).
+    """
+    return _EMPLACEMENT.sub(lambda emplacement: valeurs[emplacement.group(1)], texte)
 
 
 def _cle(valeur: Scalaire) -> tuple[str, Scalaire]:
@@ -321,6 +352,9 @@ class Regle:
     titre: str
     description: str
     gabarit: str
+    textes: Mapping[str, str]
+    """Texte de la phrase par langue (``phrase`` dans le catalogue, ADR-0091) : les ``{nom}``
+    sont les paramètres, remplacés par la valeur de leur observation à l'export (T16)."""
     categorie: Categorie
     direction: Direction
     fondement: Fondement
@@ -343,6 +377,8 @@ class Regle:
         _texte(self.titre, "regle.titre", 120)
         _texte(self.description, "regle.description")
         _verifier(_GABARIT, self.gabarit, 128, "regle.gabarit")
+        if set(self.textes) != set(LANGUES):
+            raise ValueError("regle.phrase : une phrase en français attendue (ADR-0020)")
         if not 0 < len(self.limites) <= LIMITES_MAX:
             raise ValueError("regle.limites : de 1 à 32 limites connues attendues (ADR-0019)")
         for limite in self.limites:
@@ -359,6 +395,12 @@ class Regle:
             raise ValueError("regle.parametres : 32 au plus, sans doublon")
         for nom in self.parametres:
             _verifier(_NOM, nom, 128, "regle.parametres")
+        for texte in self.textes.values():
+            _texte(texte, "regle.phrase", LONGUEUR_MAX_PHRASE)
+            if set(emplacements(texte)) != set(noms):
+                raise ValueError("regle.phrase : emplacements différents des paramètres déclarés")
+        # Copie figée : la règle reste immuable même si l'appelant modifie son dictionnaire.
+        object.__setattr__(self, "textes", MappingProxyType(dict(self.textes)))
         if self.categorie is not Categorie.INDICE and (self.niveau or self.evaluation):
             raise ValueError("regle.niveau : réservé aux indices (ADR-0018)")
         seuils = any(condition.seuil is not None for condition in self.conditions)
@@ -406,6 +448,7 @@ class Regle:
             "titre": self.titre,
             "description": self.description,
             "gabarit": self.gabarit,
+            "phrase": dict(self.textes),
             "categorie": self.categorie,
             "direction": self.direction,
             "fondement": self.fondement,
@@ -437,6 +480,7 @@ class Regle:
             titre=document["titre"],
             description=document["description"],
             gabarit=document["gabarit"],
+            textes=dict(document["phrase"]),
             categorie=Categorie(document["categorie"]),
             direction=Direction(document["direction"]),
             fondement=Fondement(document["fondement"]),

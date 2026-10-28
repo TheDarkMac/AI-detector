@@ -83,6 +83,8 @@ select = [
 [tool.ruff.lint.per-file-ignores]
 # assert est l'outil des tests ; les tests lancent l'interpréteur courant, sans entrée externe.
 "tests/**" = ["S101", "S603"]
+# Caractères invisibles et espaces ambigus écrits exprès : c'est ce que la neutralisation vérifie.
+"tests/test_rapport.py" = ["RUF001"]
 
 [tool.mypy]
 python_version = "3.12"

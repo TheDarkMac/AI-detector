@@ -45,3 +45,4 @@ ES-13 impose de masquer par défaut, dans tous les exports et dans le terminal, 
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-28 | Réalisé en T16 : masquage par catégorie, valeur absente de l'export, levée par `--reveler` (ADR-0093, ADR-0095) ; la liste de garde par nom d'observation n'est pas ajoutée, faute de module qui produise une donnée identifiante |

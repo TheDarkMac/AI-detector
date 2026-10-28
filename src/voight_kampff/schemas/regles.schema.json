@@ -75,6 +75,7 @@
         "titre",
         "description",
         "gabarit",
+        "phrase",
         "categorie",
         "direction",
         "fondement",
@@ -102,6 +103,13 @@
           "type": "string",
           "maxLength": 128,
           "pattern": "^[a-z0-9]+([.-][a-z0-9]+)*$(?!\\n)"
+        },
+        "phrase": {
+          "description": "Texte de la phrase par langue, le français seul en V1 (ADR-0020, ADR-0091) ; chaque {parametre} est remplacé par la valeur de son observation à l'export. Le code vérifie que les emplacements sont les paramètres déclarés.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fr"],
+          "properties": { "fr": { "type": "string", "minLength": 1, "maxLength": 1024 } }
         },
         "categorie": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/categorie" },
         "direction": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/direction" },

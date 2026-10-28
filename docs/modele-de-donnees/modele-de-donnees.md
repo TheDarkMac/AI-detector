@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.4** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 proposée dans la PR de T15. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.5** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 proposée dans la PR de T16. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -36,6 +36,14 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0087](../decisions/ADR-0087-techniques-hors-v1.md) | Technique sans version : non menée (`hors_v1`) ou non applicable ; `Analyse` porte la version du catalogue |
 | [ADR-0090](../decisions/ADR-0090-constat-d-une-regle.md) | Constat conforme à sa règle, vérifié par le processus principal |
 
+### Décisions de T16 qui touchent le modèle
+
+| ADR | Décision |
+| --- | --- |
+| [ADR-0091](../decisions/ADR-0091-texte-des-phrases-dans-la-regle.md) | Le texte de la phrase est dans la règle ; ses emplacements sont les paramètres du constat |
+| [ADR-0095](../decisions/ADR-0095-export-json-masque.md) | Export JSON : `VERSION_SCHEMA` 0.2.0, données masquées absentes, objet `masquage` |
+| [ADR-0097](../decisions/ADR-0097-regles-citees-et-interface-d-export.md) | `Analyse` porte les règles que citent ses constats et construit son `Rapport` |
+
 ### Où se trouve le code
 
 | Élément | Fichier |
@@ -49,9 +57,10 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Règles du catalogue (T15) | `src/voight_kampff/_regles.py` ; guide : [`docs/catalogue/`](../catalogue/README.md) |
 | Décodage strict d'une ligne de message (T12) | `src/voight_kampff/_protocole.py` |
 | Réception et validation des messages (T12) | `src/voight_kampff/_orchestration/travail.py` |
-| Tests | `tests/test_modele.py`, `tests/test_schemas.py` |
+| Exports JSON et HTML, masquage (T16) | `src/voight_kampff/rapport/export.py`, `rapport/_html.py`, `rapport/_presentation.py`, `rapport/textes.toml` |
+| Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py` |
 
-Version commune : `0.1.0` (`VERSION_SCHEMA`).
+Version commune : `0.2.0` (`VERSION_SCHEMA`, ADR-0095).
 
 ## 2. Vue d'ensemble
 
@@ -287,6 +296,10 @@ Chaque ligne est couverte par `tests/test_schemas.py` : une liste d'altérations
 
 Les expressions des schémas sont des classes de caractères ancrées, linéaires, accompagnées d'une longueur maximale (ADR-0054). Les messages d'erreur ne citent jamais une valeur reçue (ES-15).
 
+### Export JSON (T16)
+
+Un export est le document du rapport dont les données des catégories masquées sont retirées : `nom` et `empreinte` de l'identification, `valeur` des observations identifiantes. L'objet `masquage`, juste après `version_schema`, liste les catégories `masquees` et `levees`, les cinq une fois chacune (ADR-0095). Le schéma vérifie que le nom et l'empreinte manquent si et seulement si `masquage` les masque, et qu'une observation non identifiante a sa valeur ; le code (`rapport.export.valider`) vérifie la partition des catégories et l'absence de la valeur de chaque observation masquée. `Rapport.depuis_dict` refuse un export masqué ; un export où tout est levé se relit à l'identique.
+
 ## 8. Messages du processus de travail
 
 Une ligne JSON par message (ADR-0036), validée par `messages.schema.json` :
@@ -308,11 +321,12 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 
 | Exigence | Réalisation | Reste |
 | --- | --- | --- |
-| F-80 | Catégorie de chaque constat | Rédaction des phrases (T16) |
+| F-80 | Catégorie de chaque constat ; phrase rédigée dans sa règle, remplie à l'export (T16, ADR-0091) | Phrases des premières règles (T20 et suivantes) |
 | F-81 | Direction parmi cinq (ADR-0055) ; fixée par la règle, permise par le manifeste (T15, ADR-0084) | — |
 | F-82 | Analyses non menées et raisons fermées ; techniques hors V1 dans la couverture ; T12 produit `erreur_module`, `module_desactive`, `arret_processus`, `message_invalide` ; T13 `hors_perimetre`, `fichier_tronque` et `format_partiel` à partir de l'identification ; T14 `limite_depassee`, `memoire_depassee` et `delai_depasse`, valeurs fixées (ADR-0077, ADR-0078) ; T15 `hors_v1` (ADR-0087) | `format_partiel` des modules pour les contenus multiples (A-25) |
-| F-02, F-03, ES-07 | Format réel par le contenu, parties d'un polyglotte, extension et concordance, octets non reconnus (T13, ADR-0070 à ADR-0072) | Gabarits des signalements (T16) |
-| §6 | Constat à cinq éléments, plus règle versionnée, technique, fondement, niveau, localisation (A-46, A-47) ; rubriques Identification, Versions, Couverture | Résumé, avertissement, masquage (T16) |
+| F-02, F-03, ES-07 | Format réel par le contenu, parties d'un polyglotte, extension et concordance, octets non reconnus (T13, ADR-0070 à ADR-0072) ; phrases des signalements (T16, ADR-0098) | — |
+| §6 | Constat à cinq éléments, plus règle versionnée, technique, fondement, niveau, localisation (A-46, A-47) ; rubriques Identification, Versions, Couverture ; résumé, avertissement, masquage produits à l'export (T16, ADR-0093, ADR-0095, ADR-0098) | — |
+| ES-13, NF-18 | Catégorie identifiante de l'observation (ADR-0057) ; nom et empreinte identifiants d'office ; masqués par défaut, absents de l'export, levée par catégorie (T16, ADR-0093, ADR-0095) | Marquage par chaque module (T20 et suivantes) |
 | ES-04 | Données simples, bornées, validées par schéma puis par le modèle ; erreurs sans contenu ; lecture bornée et délai (T12), valeurs fixées (T14, ADR-0077) | — |
 | ES-20 | Une preuve exige un fondement de vérification ; une déclaration ne peut être qu'un indice ou une information | Rédaction « le fichier déclare » (T22, T30) |
 | A-10 | Glossaire du projet | Glossaire utilisateur (T103) |
@@ -327,3 +341,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-10-27 | 1.2 | Parties et champs `partie` (§2 à §6, ADR-0071) ; raison `hors_perimetre` et non menées tirées de l'identification (§5) ; signalements de l'identification (§6, ADR-0072) ; contrôles du modèle (§7) ; message `identification` et partie du message `module` (§8) ; exigences (§9) | T13 |
 | 2026-10-27 | 1.3 | Raison `memoire_depassee` ; `limite_depassee` n'interrompt plus (§5, ADR-0078) ; paragraphe des non menées tirées de l'identification sorti du tableau, où il avait été inséré (§5) ; limites fixées (§8, §9) | T14 |
 | 2026-10-27 | 1.4 | Décisions de T15 (§1) ; constat conforme à sa règle (§4) ; techniques hors V1 et technique sans version non applicable (§5, §7, ADR-0087) ; exigences (§9) | T15 |
+| 2026-10-28 | 1.5 | Décisions de T16 et emplacement des exports (§1) ; `VERSION_SCHEMA` 0.2.0 ; export JSON masqué (§7, ADR-0095) ; exigences (§9) | T16 |

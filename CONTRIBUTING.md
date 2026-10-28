@@ -108,7 +108,7 @@ Types : `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`, `build`, `perf
 | `code` | `qualite` | Verrou à jour, Ruff, mypy (ADR-0047) ; versions publiées du catalogue inchangées face à la branche cible (ADR-0085) |
 | `code` | `tests` | pytest et couverture, Linux, macOS et Windows × Python 3.12 à 3.14 (ADR-0048, ADR-0051) |
 | `code` | `audit-dependances` | Aucune faille connue dans les dépendances verrouillées (ADR-0052) |
-| `code` | `paquet` | Construction reproductible et installable (ADR-0049) ; catalogue du wheel inscrit au registre (ADR-0085) |
+| `code` | `paquet` | Construction reproductible et installable (ADR-0049) ; catalogue du wheel inscrit au registre (ADR-0085) ; rapports HTML et JSON écrits depuis le wheel, JSON conforme à son schéma, nom et empreinte masqués (ADR-0092, ADR-0095) |
 | `code` | `code-ok` | Résume les quatre jobs précédents |
 
 Vérifications obligatoires pour merger dans `detector` : `lint-markdown`, `fichiers-interdits` et `code-ok` (ADR-0001, ADR-0051).
@@ -167,3 +167,5 @@ find . -type f -printf '%P\n' | LC_ALL=C sort | xargs sha256sum | sha256sum
 ```
 
 Une entrée du registre déjà sur `detector` ne se modifie jamais. Détail du format et de la procédure : [`docs/catalogue/README.md`](docs/catalogue/README.md).
+
+La phrase d'une règle (`phrase.fr`) et les textes du rapport (`src/voight_kampff/rapport/textes.toml`) sont lus par l'utilisateur : ils ne présentent jamais un indice comme une certitude (NF-14), et les textes de l'outil ont un libellé pour chaque valeur des énumérations du modèle (`tests/test_rapport.py`) — ADR-0091, ADR-0098.

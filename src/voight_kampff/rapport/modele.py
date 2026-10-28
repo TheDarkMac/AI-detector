@@ -66,11 +66,12 @@ __all__ = [
     "Versions",
     "Zone",
     "plages_non_reconnues",
+    "verifier_masquage",
     "verifier_parties",
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.1.0"
+VERSION_SCHEMA = "0.2.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -1052,6 +1053,17 @@ class EtatIsolation:
 
 # Rapport (§6 du cahier, ADR-0059)
 
+
+def verifier_masquage(masquage: Mapping[str, Any]) -> frozenset[CategorieIdentifiante]:
+    """Catégories masquées d'un export, chacune masquée ou levée une fois (ES-13, ADR-0095)."""
+    masquees = [CategorieIdentifiante(categorie) for categorie in masquage["masquees"]]
+    levees = [CategorieIdentifiante(categorie) for categorie in masquage["levees"]]
+    toutes = masquees + levees
+    if len(toutes) != len(set(toutes)) or set(toutes) != set(CategorieIdentifiante):
+        raise ValueError("masquage : chaque catégorie masquée ou levée, une seule fois")
+    return frozenset(masquees)
+
+
 _ETATS_AVEC_RESULTATS = frozenset({EtatTechnique.APPLIQUEE, EtatTechnique.PARTIELLE})
 _ETATS_AVEC_NON_MENEE = frozenset({EtatTechnique.PARTIELLE, EtatTechnique.NON_MENEE})
 
@@ -1140,10 +1152,10 @@ def verifier_resultats(
 
 @dataclass(frozen=True, slots=True)
 class Rapport:
-    """Rapport d'analyse d'un fichier : données, sans mise en forme ni masquage (T16).
+    """Rapport d'analyse d'un fichier : données, sans mise en forme ni masquage.
 
     Le résumé, l'avertissement et le masquage sont produits à l'export à partir de ces
-    données ; ils ne sont pas stockés ici.
+    données (T16, :mod:`voight_kampff.rapport.export`) ; ils ne sont pas stockés ici.
     """
 
     identification: Identification
@@ -1183,9 +1195,15 @@ class Rapport:
 
     @classmethod
     def depuis_dict(cls, document: Mapping[str, Any]) -> "Rapport":
-        """Reconstruit un rapport à partir d'un document déjà validé par son schéma."""
+        """Reconstruit un rapport à partir d'un document déjà validé par son schéma.
+
+        Un export masqué n'a plus toutes ses données : il est refusé (ADR-0095).
+        """
         if document["version_schema"] != VERSION_SCHEMA:
             raise ValueError("rapport : version de schéma non prise en charge")
+        masquage = document.get("masquage")
+        if masquage is not None and verifier_masquage(masquage):
+            raise ValueError("rapport : export masqué, ses données identifiantes manquent")
         rapport = cls(
             identification=Identification.depuis_dict(document["identification"]),
             versions=Versions.depuis_dict(document["versions"]),

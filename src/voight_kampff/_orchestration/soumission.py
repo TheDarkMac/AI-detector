@@ -10,8 +10,9 @@ Le principal ne lit le fichier que pour le hacher : l'identification se fait dan
 Un fichier de plus de 1 Gio est refusé « hors limites » avant d'être lu (F-04, ADR-0077).
 
 Le catalogue, livré ou fourni par l'utilisateur, est validé avant l'ouverture du fichier
-(ADR-0029, ADR-0086) ; sa version est jointe à l'analyse. Les techniques hors de cette version
-sont inscrites non menées pour chaque partie d'un de leurs formats (ADR-0087).
+(ADR-0029, ADR-0086) ; sa version et les règles que citent les constats sont jointes à
+l'analyse (ADR-0097). Les techniques hors de cette version sont inscrites non menées pour
+chaque partie d'un de leurs formats (ADR-0087).
 """
 
 import hashlib
@@ -158,6 +159,11 @@ def soumettre(
         non_menees=resultat.non_menees + non_menees,
         dependances=resultat.dependances,
         catalogue=catalogue.version,
+        regles=tuple(
+            regle
+            for regle in catalogue.regles
+            if any(constat.regle == regle.reference for constat in resultat.constats)
+        ),
     )
 
 

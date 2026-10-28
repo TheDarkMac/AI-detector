@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.4** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 proposée dans la PR de T15. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.5** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 proposée dans la PR de T16. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -19,7 +19,7 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Empreinte du catalogue | SHA-256 de la liste `sha256sum` de ses fichiers, triée par chemin ; inscrite au rapport, au registre et à la release. | ADR-0088 |
 | Registre des versions du catalogue | `docs/catalogue/versions.toml` : version, date et empreinte de chaque version, dans l'ordre ; une entrée ne change plus une fois sur `detector`. | NF-07, ADR-0085 |
 | Technique hors V1 | Technique que cette version de l'outil ne livre pas ; inscrite à la couverture, sans version, non menée (`hors_v1`) sur les parties de ses formats. | ADR-0012, ADR-0087 |
-| Gabarit | Phrase rédigée hors du code, identifiée, dont les paramètres sont remplacés par des observations au moment de l'export. | ADR-0020 |
+| Gabarit | Identifiant de la phrase d'un constat, fixé par sa règle. Le texte de la phrase est dans la règle (`phrase.fr`) ; ses emplacements `{nom}` sont remplacés par la valeur des observations au moment de l'export. | ADR-0020, ADR-0091 |
 | Fondement | Ce sur quoi repose un constat : vérification cryptographique, vérification déterministe, déclaration du fichier, ou mesure. | ES-20, ADR-0058 |
 | Preuve | Fait établi par une vérification cryptographique ou déterministe, accompagné de l'énoncé exact de ce qu'il établit. Remplace la définition du cahier. | ADR-0021 |
 | Indice | Constat compatible avec une hypothèse, sans l'établir ; il pointe toujours vers une hypothèse et porte un niveau. | §11 du cahier, ADR-0018 |
@@ -34,6 +34,10 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Technique, module | Une technique d'analyse est livrée sous la forme d'un module, sous-paquet de `modules/` avec son manifeste. Les deux mots désignent la même unité dans le modèle. | ADR-0042 |
 | Localisation | Endroit du fichier où se trouve ce qui a été observé : chemin dans la structure, plage d'octets, page, zone d'image, intervalle de temps. | A-46 |
 | Donnée identifiante | Donnée qui peut désigner une source : métadonnée nominative, numéro de série, coordonnées GPS, nom du fichier, empreinte. Masquée par défaut. | ES-13, ADR-0057 |
+| Masquage, levée du masquage | Une donnée identifiante masquée est absente de la sortie (terminal, HTML, JSON), remplacée par une mention ; la levée nomme une catégorie à la fois (`--reveler`) et s'annonce en tête du rapport. | ES-13, ADR-0093, ADR-0095 |
+| Export | Rapport écrit pour être lu ou transmis : HTML autonome ou JSON conforme au schéma du rapport ; masqué par défaut. Le rapport du modèle, complet, n'est pas un export. | F-83, ADR-0025, ADR-0095 |
+| Alerte (du rapport) | Ce qui change la portée de tout le rapport, annoncé avant l'avertissement : masquage levé, catalogue fourni par l'utilisateur, isolation réduite, analyse interrompue. | ADR-0098 |
+| Neutralisation | Écriture visible (`⟨U+XXXX⟩`, ou échappement `\uXXXX` en JSON) des caractères de contrôle, de mise en forme et des séparateurs de ligne, au moment d'écrire une sortie. | ES-12, ADR-0096 |
 | Format réel | Format identifié par le contenu du fichier, non par son extension : celui de la partie 1. | F-02, ADR-0070 |
 | Partie (d'un fichier) | Format reconnu dans le fichier et plage d'octets qu'il occupe, du début à sa fin logique. Un fichier en a une ou plusieurs ; chaque partie du périmètre est analysée. | ADR-0071 |
 | Fichier polyglotte | Fichier reconnu dans plusieurs formats à la fois : un JPEG suivi d'une archive ZIP, un PDF caché dans un JPEG. | A-31, ES-07 |
@@ -77,3 +81,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-10-27 | 1.2 | Format réel, partie, fichier polyglotte, fin logique, octets non reconnus, formats du périmètre, concordance de l'extension, analyse, refus ajoutés ; contexte et module applicable précisés | T13 |
 | 2026-10-27 | 1.3 | Limite comptée, limite du système, budget ajoutés ; isolation réduite et refus précisés | T14 |
 | 2026-10-27 | 1.4 | Règle précisée ; règle du moteur, règle du module, condition, catalogue, empreinte du catalogue, registre des versions, technique hors V1 ajoutés | T15 |
+| 2026-10-28 | 1.5 | Gabarit précisé ; masquage, export, alerte, neutralisation ajoutés | T16 |

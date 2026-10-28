@@ -50,3 +50,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création |
+| 2026-10-28 | Complété en T16 : l'analyse porte les règles qu'elle cite et construit son rapport (ADR-0097) ; résumé du terminal revu, nom et empreinte masqués et levables (ADR-0093, ADR-0098) |

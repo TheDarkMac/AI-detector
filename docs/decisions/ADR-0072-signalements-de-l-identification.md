@@ -54,3 +54,4 @@ Option A. La rubrique Identification porte :
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création |
+| 2026-10-28 | Réalisé en T16 : une phrase par signalement dans `rapport/textes.toml`, au résumé et au rapport (ADR-0098) |

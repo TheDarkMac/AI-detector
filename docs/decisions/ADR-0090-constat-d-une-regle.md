@@ -57,3 +57,4 @@ Option A.
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T15 : statut « Accepté » |
+| 2026-10-28 | Renvoi : la règle conforme d'un constat est jointe à l'analyse et lue par l'export (ADR-0097, T16) |

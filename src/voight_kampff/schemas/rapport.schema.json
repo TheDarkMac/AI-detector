@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:voight-kampff:schema:rapport",
   "title": "Rapport d'analyse Voight-Kampff",
-  "description": "Données du rapport d'un fichier (T11, ADR-0054 à ADR-0059). Les renvois entre objets (paramètres de phrase, observations citées, couverture) sont vérifiés par le code, pas par ce schéma.",
+  "description": "Données du rapport d'un fichier (T11, ADR-0054 à ADR-0059), et rapport exporté par l'outil (T16, ADR-0095) : un export porte « masquage », et les données identifiantes masquées en sont absentes. Les renvois entre objets (paramètres de phrase, observations citées, couverture) et l'absence des valeurs masquées sont vérifiés par le code, pas par ce schéma.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -17,7 +17,8 @@
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.1.0" },
+    "version_schema": { "const": "0.2.0" },
+    "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
     "isolation": { "$ref": "#/$defs/isolation" },
@@ -27,7 +28,53 @@
     "non_menees": { "type": "array", "items": { "$ref": "#/$defs/non_menee" } },
     "interrompue": { "type": "boolean" }
   },
+  "allOf": [
+    {
+      "description": "Nom du fichier : absent si et seulement si le masquage de l'export le cache (ES-13).",
+      "if": { "$ref": "#/$defs/nom_masque" },
+      "then": { "properties": { "identification": { "not": { "required": ["nom"] } } } },
+      "else": { "properties": { "identification": { "required": ["nom"] } } }
+    },
+    {
+      "description": "Empreinte du fichier : absente si et seulement si le masquage de l'export la cache (ADR-0031).",
+      "if": { "$ref": "#/$defs/empreinte_masquee" },
+      "then": { "properties": { "identification": { "not": { "required": ["empreinte"] } } } },
+      "else": { "properties": { "identification": { "required": ["empreinte"] } } }
+    }
+  ],
   "$defs": {
+    "masquage": {
+      "description": "État du masquage d'un export (ES-13, ADR-0093, ADR-0095) : catégories masquées et catégories levées par l'utilisateur ; ensemble, les cinq catégories, chacune une fois (vérifié par le code).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["masquees", "levees"],
+      "properties": {
+        "masquees": {
+          "type": "array",
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/categorie_identifiante" }
+        },
+        "levees": {
+          "type": "array",
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/categorie_identifiante" }
+        }
+      }
+    },
+    "nom_masque": {
+      "required": ["masquage"],
+      "properties": {
+        "masquage": { "properties": { "masquees": { "contains": { "const": "nom_de_fichier" } } } }
+      }
+    },
+    "empreinte_masquee": {
+      "required": ["masquage"],
+      "properties": {
+        "masquage": { "properties": { "masquees": { "contains": { "const": "empreinte" } } } }
+      }
+    },
     "identifiant": {
       "type": "string",
       "minLength": 1,
@@ -214,7 +261,10 @@
     "observation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["identifiant", "module", "nom", "valeur", "partie"],
+      "required": ["identifiant", "module", "nom", "partie"],
+      "description": "Une valeur ne manque que dans un export, pour une observation identifiante d'une catégorie masquée (ADR-0095).",
+      "if": { "not": { "required": ["identifiante"] } },
+      "then": { "required": ["valeur"] },
       "properties": {
         "identifiant": { "$ref": "#/$defs/identifiant" },
         "module": { "$ref": "#/$defs/identifiant" },
@@ -399,11 +449,10 @@
     "identification": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Nom et empreinte sont exigés par le schéma racine, sauf masquage (ADR-0095).",
       "required": [
-        "nom",
         "format_reel",
         "taille",
-        "empreinte",
         "date_analyse",
         "parties",
         "octets_non_reconnus"

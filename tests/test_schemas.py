@@ -334,6 +334,17 @@ ALTERATIONS_REFUSEES_PARTOUT: list[Any] = [
     pytest.param(
         modifier(lambda d: d["versions"]["catalogue"], date="26/10/2026"), id="date-catalogue"
     ),
+    # Données absentes : seul un export masqué le peut (T16, ADR-0095).
+    pytest.param(modifier(IDENTIFICATION, nom=...), id="nom-absent-sans-masquage"),
+    pytest.param(modifier(IDENTIFICATION, empreinte=...), id="empreinte-absente-sans-masquage"),
+    pytest.param(modifier(observation(0), valeur=...), id="valeur-absente-non-identifiante"),
+    pytest.param(
+        modifier(racine, masquage={"masquees": ["nom_de_fichier"], "levees": []}),
+        id="nom-present-mais-masque",
+    ),
+    pytest.param(
+        modifier(racine, masquage={"masquees": ["tout"], "levees": []}), id="categorie-inconnue"
+    ),
 ]
 
 
@@ -390,6 +401,9 @@ ALTERATIONS_REFUSEES_PAR_LE_MODELE_SEUL: list[Any] = [
     pytest.param(modifier(IDENTIFICATION, octets_non_reconnus=[]), id="non-reconnus-omis"),
     pytest.param(modifier(observation(0), partie=2), id="observation-partie-hors-perimetre"),
     pytest.param(modifier(HORS_PERIMETRE, partie=1), id="hors-perimetre-partie-analysee"),
+    pytest.param(
+        modifier(racine, masquage={"masquees": [], "levees": []}), id="masquage-incomplet"
+    ),
 ]
 
 

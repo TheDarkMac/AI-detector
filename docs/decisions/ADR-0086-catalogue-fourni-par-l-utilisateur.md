@@ -60,3 +60,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création |
+| 2026-10-28 | Réalisé en T16 : catalogue fourni annoncé parmi les alertes en tête du résumé et du rapport (ADR-0098) |

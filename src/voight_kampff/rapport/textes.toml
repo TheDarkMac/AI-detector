@@ -1,0 +1,235 @@
+# Textes du rapport destinés à l'utilisateur, en français (ADR-0020, ADR-0098).
+#
+# Séparés du code pour être relus et traduits. Les phrases des constats ne sont pas ici : elles
+# sont dans les règles du catalogue (ADR-0091). Un {nom} est remplacé par le code ; aucun texte
+# ne présente un indice comme une certitude (NF-14).
+
+titre = "Rapport d'analyse"
+evitement = "Aller au résumé"
+
+avertissement = [
+    "Ce rapport ne délivre aucun verdict : l'outil ne sait pas dire avec certitude si un fichier a été généré ou retouché par IA.",
+    "Une preuve n'établit que ce que son énoncé dit, rien de plus. Un indice est compatible avec une hypothèse sans l'établir : il peut apparaître sur un fichier authentique.",
+    "L'absence de constat ne prouve pas l'authenticité : elle ne vaut que pour les techniques appliquées et les marquages recherchés, listés à la rubrique Couverture.",
+]
+
+masque = "[masqué : {categorie}]"
+texte_vide = "(texte vide)"
+liste_vide = "(liste vide)"
+aucun = "aucun"
+aucune = "aucune"
+oui = "oui"
+non = "non"
+vrai = "vrai"
+faux = "faux"
+
+[alertes]
+masquage_leve = "Masquage levé à la demande de l'utilisateur pour : {categories}. Ce rapport contient des données qui peuvent identifier une source : vérifiez à qui vous le transmettez."
+catalogue_fourni = "Catalogue de règles fourni par l'utilisateur, à la place du catalogue livré avec l'outil : les constats dépendent de ses règles, qui n'ont pas été relues par le projet."
+isolation_reduite = "Isolation réduite : le processus qui a lu le fichier n'avait pas toutes ses restrictions ({manques})."
+interrompue = "Analyse interrompue : les résultats sont partiels et hors garantie de reproductibilité."
+
+[resume]
+preuve = "Preuve, vers {direction} : {phrase}"
+preuves_aucune = "Aucune preuve."
+indices = "{nombre} indice(s) :"
+indices_aucun = "Aucun indice."
+indice_par_direction = "vers {direction} : {detail}"
+indice_par_niveau = "{nombre} {niveau}"
+informations = "{nombre} information(s) neutre(s)."
+techniques = "Techniques : {appliquees} appliquée(s), {partielles} partielle(s), {non_menees} non menée(s), {non_applicables} non applicable(s)."
+non_menees = "{nombre} analyse(s) non menée(s)."
+non_menees_aucune = "Toutes les analyses prévues ont été menées."
+
+[rubriques]
+alertes = "Attention"
+avertissement = "Avertissement"
+resume = "Résumé"
+identification = "Identification"
+versions = "Versions"
+isolation = "Isolation"
+preuves = "Preuves"
+indices = "Indices"
+informations = "Informations neutres"
+non_menees = "Analyses non menées"
+couverture = "Couverture"
+donnees_identifiantes = "Données identifiantes"
+observations = "Observations"
+glossaire = "Glossaire"
+
+# Introductions et légendes des tableaux.
+[intros]
+couverture = "Un résultat négatif ne vaut que pour les techniques appliquées et les marquages recherchés ci-dessous."
+donnees_identifiantes = "Les données qui peuvent désigner une source sont masquées par défaut : elles sont absentes de ce rapport, pas seulement cachées."
+observations = "Toutes les données relevées dans le fichier, sans interprétation ; les constats y renvoient."
+legende_couverture = "Techniques, par partie du fichier"
+legende_non_menees = "Analyses non menées, avec leur raison"
+legende_identifiantes = "Masquage, par catégorie de données identifiantes"
+legende_observations = "Observations"
+
+[champs]
+nom = "Nom du fichier"
+format_reel = "Format réel"
+format = "Format"
+extension = "Extension"
+taille = "Taille"
+empreinte = "Empreinte SHA-256"
+date_analyse = "Date de l'analyse (UTC)"
+parties = "Parties reconnues"
+outil = "Outil"
+catalogue = "Catalogue de règles"
+dependances = "Bibliothèques qui ont lu le fichier"
+niveau_isolation = "Niveau"
+manques = "Restrictions manquantes"
+phrase = "Constat"
+categorie = "Catégorie"
+direction = "Direction"
+niveau = "Niveau"
+regle = "Règle"
+fondement = "Fondement"
+donnees = "Données observées"
+limites = "Limites connues"
+evaluation = "Évaluation"
+localisation = "Localisation"
+partie = "Partie"
+technique = "Technique"
+version = "Version"
+etat = "État"
+raison = "Raison"
+marquages = "Marquages recherchés"
+identifiant = "Identifiant"
+nom_observation = "Donnée"
+valeur = "Valeur"
+categorie_identifiante = "Catégorie identifiante"
+masquage = "Masquage"
+octets = "Octets"
+
+[formes]
+taille = "{octets} octets"
+octets = "octets {debut} à {fin}"
+catalogue = "{version} du {date}, empreinte {empreinte}"
+catalogue_fourni = "{version} du {date}, empreinte {empreinte}, fourni par l'utilisateur"
+regle = "{identifiant}, version {version} : {titre}"
+evaluee = "taux de faux positifs mesuré : {taux} (corpus {corpus}, {date})"
+non_evaluee = "règle non évaluée : taux de faux positifs non mesuré, niveau faible imposé"
+partie = "partie {rang} : {format}, {octets}"
+hors_version = "hors de cette version"
+page = "page {page}"
+zone = "zone x {x}, y {y}, {largeur} × {hauteur} px"
+intervalle = "de {debut} s à {fin} s"
+chemin = "chemin {chemin}"
+analysee = "analysée"
+non_analysee = "non analysée : hors du périmètre de l'outil"
+tronquee = "tronquée ou corrompue"
+fin_inconnue = "fin logique non établie"
+masquee = "masquée"
+levee = "levée par l'utilisateur"
+lever = "Pour lever le masquage d'une catégorie : vk --reveler CATEGORIE (option répétable)."
+
+# Lignes du résumé affiché par la commande vk (ADR-0098).
+[terminal]
+format_reel = "format réel : {format}"
+alerte = "attention : {alerte}"
+nom = "nom : {nom}"
+empreinte = "empreinte : {empreinte}"
+partie = "partie {rang} : {format}, {octets}, {etat}"
+isolation = "isolation : {niveau}"
+technique = "technique {module}, partie {partie} : {etat}"
+non_menee = "non menée : {raison}"
+non_menee_precisee = "non menée : {raison} ({precision})"
+catalogue = "catalogue : {catalogue}"
+rapport = "rapport : {html} et {json}"
+
+[signalements]
+extension_absente = "Le nom du fichier n'a pas d'extension."
+extension_concordante = "L'extension « {extension} » correspond au format réel."
+extension_discordante = "L'extension « {extension} » ne correspond pas au format réel ({format}) : le fichier a pu être renommé."
+polyglotte = "Le fichier est reconnu dans {nombre} formats : chaque partie du périmètre est analysée séparément."
+tronquee = "La partie {rang} ({format}) s'interrompt avant sa fin : fichier tronqué ou corrompu."
+fin_non_etablie = "La fin logique de la partie {rang} ({format}) n'a pas pu être établie."
+hors_perimetre = "La partie {rang} ({format}) est dans un format que l'outil reconnaît sans l'analyser."
+non_reconnus = "Les {octets} ne relèvent d'aucun format reconnu et ne sont pas analysés."
+apres_fin = "Les {octets} suivent la fin logique du fichier : des données y ont pu être ajoutées ; elles ne sont pas analysées."
+
+[categories]
+preuve = "preuve"
+indice = "indice"
+information_neutre = "information neutre"
+
+[directions]
+origine_ia = "origine IA"
+retouche = "retouche"
+transformation = "transformation"
+authenticite = "authenticité"
+rien_de_particulier = "rien de particulier"
+
+[niveaux]
+faible = "faible"
+modere = "modéré"
+fort = "fort"
+
+[fondements]
+verification_cryptographique = "vérification cryptographique"
+verification_deterministe = "vérification déterministe"
+declaration = "déclaration contenue dans le fichier"
+mesure = "mesure"
+
+[etats]
+appliquee = "appliquée"
+partielle = "partielle"
+non_menee = "non menée"
+non_applicable = "non applicable"
+
+[isolation]
+complete = "complète"
+reduite = "réduite"
+
+[manques]
+reseau = "réseau non bloqué"
+ecriture = "écriture sur le disque non bloquée"
+lecture = "lecture d'autres fichiers non bloquée"
+nouveaux_programmes = "lancement de programmes non bloqué"
+memoire = "mémoire non limitée par le système"
+temps = "temps de calcul non limité par le système"
+vidage_memoire = "vidage de la mémoire sur le disque possible en cas de plantage"
+
+[identifiantes]
+metadonnee_nominative = "métadonnées nominatives"
+numero_de_serie = "numéros de série"
+gps = "coordonnées GPS"
+nom_de_fichier = "nom du fichier"
+empreinte = "empreinte du fichier"
+
+[raisons]
+hors_v1 = "Technique non livrée dans cette version de l'outil."
+hors_perimetre = "Partie dans un format que l'outil reconnaît sans l'analyser."
+module_desactive = "Technique désactivée à la demande de l'utilisateur."
+format_partiel = "Portion du fichier que l'outil ne sait pas lire."
+fichier_tronque = "Structure interrompue avant sa fin : fichier tronqué ou corrompu."
+reference_manquante = "Référence nécessaire non fournie (par exemple, des photos du même appareil)."
+reseau_desactive = "Vérification qui demande une requête réseau, désactivée."
+erreur_module = "La technique a échoué sur ce fichier ; ses résultats sont écartés."
+limite_depassee = "Une limite de l'outil (taille, décompression, nombre d'objets) a été atteinte ; la technique s'est arrêtée."
+memoire_depassee = "Mémoire épuisée : l'analyse a été interrompue."
+delai_depasse = "Délai dépassé : l'analyse a été interrompue."
+arret_processus = "Le processus qui lisait le fichier s'est arrêté anormalement : l'analyse a été interrompue."
+message_invalide = "Le processus qui lisait le fichier a envoyé un message non conforme : l'analyse a été interrompue."
+
+# Termes du rapport, repris du glossaire du projet (docs/glossaire.md) en langage courant (NF-11).
+[glossaire]
+preuve = ["Preuve", "Fait établi par une vérification cryptographique ou déterministe, accompagné de l'énoncé exact de ce qu'il établit, et seulement cela."]
+indice = ["Indice", "Constat compatible avec une hypothèse, sans l'établir. Il porte un niveau (faible, modéré, fort) fixé par sa règle d'après son taux de faux positifs mesuré."]
+information_neutre = ["Information neutre", "Constat sans valeur probante, par exemple l'absence de métadonnées : il ne pointe vers aucune hypothèse."]
+direction = ["Direction", "Hypothèse vers laquelle pointe un constat : origine IA, retouche, transformation (recompression, capture d'écran, messagerie), authenticité, ou rien de particulier."]
+niveau = ["Niveau", "Faible, modéré ou fort : propriété fixe de la règle d'un indice. Une règle dont le taux de faux positifs n'est pas mesuré est au niveau faible."]
+fondement = ["Fondement", "Ce sur quoi repose un constat : vérification cryptographique, vérification déterministe, déclaration contenue dans le fichier, ou mesure. Une déclaration se réécrit librement."]
+regle = ["Règle", "Élément public et versionné du catalogue qui tire un constat d'observations ; elle dit ses limites connues."]
+observation = ["Observation", "Donnée relevée dans le fichier (valeur d'un champ, mesure), sans interprétation."]
+couverture = ["Couverture", "Techniques appliquées ou non au fichier et marquages recherchés : un résultat négatif ne vaut que pour eux."]
+non_menee = ["Analyse non menée", "Analyse qui aurait pu s'appliquer au fichier et ne l'a pas été, avec sa raison."]
+interrompue = ["Analyse interrompue", "Analyse dont une partie n'a pas abouti pour une raison qui dépend de la machine (délai, mémoire, arrêt) : ses résultats ne sont pas garantis reproductibles."]
+format_reel = ["Format réel", "Format identifié par le contenu du fichier, non par son extension."]
+partie = ["Partie", "Format reconnu dans le fichier et plage d'octets qu'il occupe. Un fichier polyglotte en a plusieurs."]
+empreinte = ["Empreinte", "Résumé cryptographique (SHA-256) du fichier entier : qui détient le même fichier obtient la même empreinte. Elle peut donc désigner une source, et elle est masquée par défaut."]
+donnee_identifiante = ["Donnée identifiante", "Donnée qui peut désigner une source : métadonnée nominative, numéro de série, coordonnées GPS, nom du fichier, empreinte. Masquée par défaut."]
+isolation = ["Isolation", "Restrictions imposées au processus qui lit le fichier : sans réseau, sans écriture, sans lancement de programmes. Réduite, elle protège moins le poste."]

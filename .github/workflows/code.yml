@@ -162,6 +162,22 @@ jobs:
             echo "::error::Un fichier vide doit être refusé (code 1)"
             exit 1
           fi
+      - name: Rapports HTML et JSON depuis le wheel (T16)
+        run: |
+          "$RUNNER_TEMP/essai/bin/vk" --rapport "$RUNNER_TEMP/rapports" "$RUNNER_TEMP/essai.pdf"
+          "$RUNNER_TEMP/essai/bin/python" -I -c '
+          import json, sys
+          from pathlib import Path
+          from voight_kampff.rapport import export
+          dossier = Path(sys.argv[1])
+          document = json.loads((dossier / "1.json").read_text(encoding="utf-8"))
+          export.valider(document)
+          if {"nom", "empreinte"} & set(document["identification"]):
+              sys.exit("nom ou empreinte non masqués dans le rapport JSON")
+          html = (dossier / "1.html").read_text(encoding="utf-8")
+          if "Content-Security-Policy" not in html or "<script" in html:
+              sys.exit("rapport HTML sans politique de sécurité, ou avec un script")
+          ' "$RUNNER_TEMP/rapports"
 
   # Seule vérification à rendre obligatoire sur detector : elle résume toutes les autres.
   code-ok:

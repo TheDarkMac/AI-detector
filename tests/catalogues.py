@@ -20,7 +20,8 @@ def regle_dict(
 ) -> dict[str, Any]:
     """Règle « module » d'information neutre, sous la forme du catalogue ; ``champs`` la modifie.
 
-    Un champ qui vaut ``None`` est retiré.
+    Un champ qui vaut ``None`` est retiré. Sans ``phrase``, la phrase cite chaque paramètre
+    déclaré, par la règle ou par ses conditions (ADR-0091).
     """
     document: dict[str, Any] = {
         "identifiant": identifiant,
@@ -35,6 +36,11 @@ def regle_dict(
         "limites": ["Aucune : règle de test."],
         "application": "module",
     } | champs
+    if "phrase" not in champs:
+        noms = champs.get("parametres", []) + [
+            c["parametre"] for c in champs.get("condition", []) if "parametre" in c
+        ]
+        document["phrase"] = {"fr": " ".join(["Phrase de test", *(f"{{{n}}}" for n in noms)])}
     return {cle: valeur for cle, valeur in document.items() if valeur is not None}
 
 
