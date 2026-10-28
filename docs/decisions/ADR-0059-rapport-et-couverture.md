@@ -77,3 +77,4 @@ Hors du modèle de T11 :
 | 2026-10-27 | Précisé en T13 : couverture par technique et par partie (ADR-0071), signalements de l'identification (ADR-0072), empreinte finale du travail ou à défaut du principal (ADR-0075) |
 | 2026-10-27 | Point 4 précisé par ADR-0087 (T15) : une technique sans version est non menée pour la seule raison `hors_v1`, ou non applicable sur une autre partie d'un polyglotte ; liste des techniques hors V1 tenue par T15 |
 | 2026-10-28 | Réalisé en T16 : résumé, avertissement et masquage produits à l'export, non stockés (ADR-0095, ADR-0098) ; `Analyse.rapport()` construit le rapport (ADR-0097) |
+| 2026-10-28 | Renvoi : la rubrique Versions inscrit aussi l'interpréteur (ADR-0111) ; T18 compare le rapport entier (ADR-0108) |

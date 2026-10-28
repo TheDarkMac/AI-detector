@@ -11,9 +11,9 @@ Le résultat des tests est celui de chaque passage de la CI, qui joint cette mat
 | Famille | réalisée | partielle | à venir | hors V1 | Total |
 | --- | --- | --- | --- | --- | --- |
 | Exigences fonctionnelles (cahier, §5) | 9 | 2 | 21 | 16 | 48 |
-| Exigences non fonctionnelles (cahier, §7) | 9 | 7 | 3 | 0 | 19 |
+| Exigences non fonctionnelles (cahier, §7) | 10 | 6 | 3 | 0 | 19 |
 | Exigences de sécurité (modèle de menace, §8) | 13 | 4 | 4 | 1 | 22 |
-| Principes directeurs (cahier, §2 ; A-11) | 4 | 2 | 0 | 0 | 6 |
+| Principes directeurs (cahier, §2 ; A-11) | 5 | 1 | 0 | 0 | 6 |
 
 ## Exigences fonctionnelles (cahier, §5)
 
@@ -77,7 +77,7 @@ Le résultat des tests est celui de chaque passage de la CI, qui joint cette mat
 | NF-03 | Un fichier corrompu ou partiellement lisible produit un rapport partiel, jamais un arrêt brutal. | réalisée | T12, T14, T17 | test | tests : `test_banc.py`, `test_fuzzing.py`, `test_orchestration.py`, `test_soumission.py` | tests : CI | Le banc compte aussi les arrêts brutaux sur la catégorie « malformés » du corpus (ADR-0104). |
 | NF-04 | Un fichier ne sert qu’à l’analyse demandée : ni réutilisation, ni transmission à un tiers sans consentement explicite. | réalisée | T04, T14 | test, analyse | tests : `test_isolation.py`, `test_traces.py` ; preuve : [architecture.md](../../docs/architecture/architecture.md), [ADR-0010-distribution-et-traitement-local.md](../../docs/decisions/ADR-0010-distribution-et-traitement-local.md) ; justification : « Ni réutilisation ni transmission » est une absence : elle s'établit par l'architecture, et les tests en vérifient les moyens. | tests : CI ; Analyse locale, sans service ni requête sortante en V1 ; processus de travail sans réseau et sans trace (2026-10-28, T17). | — |
 | NF-05 | La durée et le lieu de conservation des fichiers et des rapports sont affichés à l’utilisateur. | à venir | T92 | inspection | justification : Un affichage destiné à l'utilisateur se vérifie à la relecture de l'interface. | — | — |
-| NF-06 | Même fichier, même version de l’outil et du catalogue : mêmes constats. | partielle | T15, T18 | test | tests : `test_catalogue.py` | tests : CI | Versions et empreinte du catalogue au rapport ; le test de reproductibilité est T18. Reformulée (ADR-0023). |
+| NF-06 | Même fichier, même version de l’outil et du catalogue : mêmes constats. | réalisée | T15, T18 | test | tests : `test_banc.py`, `test_catalogue.py`, `test_reproductibilite.py` | tests : CI | Rapport entier comparé, à la date et au nom près (ADR-0108) ; aussi entre systèmes et versions de Python en CI (ADR-0110). Reformulée (ADR-0023). |
 | NF-07 | Chaque version du catalogue de règles est datée, versionnée et consultable. | réalisée | T15 | test | tests : `test_catalogue.py`, `test_cli.py` | tests : CI | — |
 | NF-08 | Le temps d’analyse est borné ; au-delà, l’outil livre les résultats obtenus et signale les analyses interrompues. | réalisée | T14 | test | tests : `test_limites.py`, `test_modele.py`, `test_orchestration.py` | tests : CI | — |
 | NF-09 | Chaque technique est documentée : principe, entrées, sorties, limites connues, taux d’erreur mesurés. | partielle | T17, T20 | test, inspection | tests : `test_banc.py` ; justification : Les fiches techniques se relisent ; les taux qu'elles publient sont mesurés par le banc, testé. | tests : CI | Banc d'évaluation livré (T17) ; chaque fiche arrive avec sa technique. |
@@ -109,7 +109,7 @@ Le résultat des tests est celui de chaque passage de la CI, qui joint cette mat
 | ES-11 | Le banc d'évaluation exécute l'analyse **sans réseau** et échoue à toute tentative de connexion (A-52). | réalisée | T14, T17 | test | tests : `test_banc.py`, `test_isolation.py` | tests : CI | Banc lancé dans un espace de noms réseau vide, crochet d'audit dans son processus (ADR-0100) ; le processus de travail refuse lui-même le réseau (ADR-0083). |
 | ES-12 | Rapport HTML : tout texte issu du fichier est échappé ; politique de sécurité du contenu interdisant toute ressource externe et tout script non prévu par l'outil ; aucune ressource externe (ADR-0025). Toute sortie (HTML, JSON, terminal) neutralise les caractères de contrôle et bidirectionnels, en les montrant sous forme visible. | réalisée | T16 | test | tests : `test_cli.py`, `test_rapport.py` | tests : CI | — |
 | ES-13 | Données identifiantes masquées par défaut dans **tous** les exports et la sortie du terminal : métadonnées nominatives, numéros de série, GPS, nom du fichier (ADR-0014) et **empreinte** (ADR-0031). Levée explicite, par catégorie ; un rapport démasqué l'annonce en tête. | réalisée | T16 | test | tests : `test_cli.py`, `test_rapport.py` | tests : CI | — |
-| ES-14 | Le rapport n'inscrit ni chemin, ni nom de machine, ni utilisateur du système ; les heures sont en UTC. | réalisée | T16 | test | tests : `test_modele.py`, `test_soumission.py` | tests : CI | — |
+| ES-14 | Le rapport n'inscrit ni chemin, ni nom de machine, ni utilisateur du système ; les heures sont en UTC. | réalisée | T16 | test | tests : `test_modele.py`, `test_reproductibilite.py`, `test_soumission.py` | tests : CI | — |
 | ES-15 | **Aucune trace par défaut** : ni cache, ni journal, ni télémétrie ; fichiers temporaires dans un répertoire privé effacé en fin d'analyse, ou en mémoire ; messages d'erreur sans contenu du fichier ni chemin ; vidages mémoire désactivés pour le processus de travail. | réalisée | T14 | test | tests : `test_traces.py` | tests : CI | Journal optionnel de T91 à venir, désactivé par défaut. |
 | ES-16 | NF-17 en local : journal optionnel, chaîné, sans noms de fichier, avec avertissement à l'activation ; « qui » déclaratif ; horodatage RFC 3161 optionnel de l'empreinte du rapport ; heure du poste toujours inscrite, marquée « non certifiée ». | à venir | T91 | test | — | — | — |
 | ES-17 | La bibliothèque n'expose **aucune fonction qui analyse dans le processus appelant** ; toute analyse passe par ES-01. | réalisée | T12 | test | tests : `test_identification.py`, `test_travail.py` | tests : CI | — |
@@ -127,7 +127,7 @@ Le résultat des tests est celui de chaque passage de la CI, qui joint cette mat
 | P-02 | Explicabilité : Chaque constat cite la règle qui l'a produit et la donnée observée. | réalisée | T11, T15, T16 | test | tests : `test_modele.py`, `test_rapport.py`, `test_regles.py` | tests : CI | — |
 | P-03 | Preuve ≠ indice : Ce qui est vérifié n'est jamais mélangé avec ce qui est seulement suggéré. | réalisée | T11, T16 | test | tests : `test_modele.py`, `test_rapport.py` | tests : CI | — |
 | P-04 | Absence ≠ authenticité : Ne rien trouver n'est jamais présenté comme une garantie. | partielle | T16, T23 | test | tests : `test_rapport.py` | tests : CI | Avertissement et couverture au rapport ; absence de métadonnées neutre à T23 (F-14). |
-| P-05 | Reproductibilité : Même fichier et même version des règles donnent les mêmes constats. | partielle | T15, T18 | test | tests : `test_catalogue.py` | tests : CI | Comme NF-06. |
+| P-05 | Reproductibilité : Même fichier et même version des règles donnent les mêmes constats. | réalisée | T15, T18 | test | tests : `test_banc.py`, `test_catalogue.py`, `test_reproductibilite.py` | tests : CI | Comme NF-06. |
 | P-06 | Modularité : Chaque technique s'ajoute, se retire ou se désactive sans toucher aux autres. | réalisée | T12 | test | tests : `test_cli.py`, `test_manifestes.py`, `test_orchestration.py` | tests : CI | Comme NF-10. |
 
 ## Cas d'usage (cahier, §4 ; A-27)

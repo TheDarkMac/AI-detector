@@ -55,3 +55,4 @@ Option A.
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T16 : statut « Accepté » |
+| 2026-10-28 | Réalisé en T18 : la comparaison lit les exports JSON (`export.document`, `comparaison.lire`), pas `Analyse.rapport()` directement (ADR-0112) |

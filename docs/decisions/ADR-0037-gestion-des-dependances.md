@@ -59,3 +59,4 @@ ADR-0023 demande à T04 de figer les versions des dépendances ; ES-18 demande d
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : mis en place en T10 ; construction épinglée (ADR-0049), surveillance des failles (ADR-0052), fichier d'installation verrouillé produit par le workflow de publication (T10) |
+| 2026-10-28 | Réalisé en T18 : reproductibilité testée avec l'installation verrouillée, en CI sur trois systèmes et trois versions de Python (ADR-0110) |

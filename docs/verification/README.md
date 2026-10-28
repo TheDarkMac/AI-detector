@@ -1,6 +1,6 @@
 # Vérification : banc d'évaluation et matrice
 
-> Statut : **v1.0** proposée dans la PR de T17. Document vivant : toute modification est inscrite à l'historique (§5).
+> Statut : **v1.1** ; v1.0 mergée avec T17, v1.1 proposée dans la PR de T18. Document vivant : toute modification est inscrite à l'historique (§5).
 
 Ce dossier tient la [matrice de vérification](matrice.md) : chaque exigence du cahier, de sécurité et chaque principe directeur, avec son état, ses méthodes de vérification et leur résultat ([ADR-0024](../decisions/ADR-0024-methode-de-verification.md)). Les taux d'erreur des techniques sont mesurés par le banc d'évaluation, paquet `banc/` du dépôt ([ADR-0099](../decisions/ADR-0099-banc-outil-du-depot.md)).
 
@@ -63,7 +63,7 @@ Options : `--partie calibrage` (aucun taux publiable), `--catalogue DOSSIER` (ca
 | Code | Sens |
 | --- | --- |
 | 0 | Évaluation menée, aucun écart |
-| 1 | Évaluation menée, au moins un écart : arrêt brutal, niveau du catalogue non permis par la mesure, preuve fautive, cible par fichier non atteinte ou non mesurable |
+| 1 | Évaluation menée, au moins un écart : arrêt brutal, deux analyses différentes d'un même fichier, niveau du catalogue non permis par la mesure, preuve fautive, cible par fichier non atteinte ou non mesurable |
 | 2 | Rien n'est évalué : réseau présent, corpus invalide ou modifié, dossier inutilisable, catalogue invalide, module inconnu |
 | 3 | Tentative d'accès au réseau pendant l'évaluation : aucun rapport écrit |
 
@@ -79,8 +79,19 @@ Définitions : [ADR-0104](../decisions/ADR-0104-definition-des-mesures.md) ; bor
 
 Chaque taux est donné avec son effectif et l'intervalle de Wilson à 95 % : « 2/40 : 5,0 % [1,4 % ; 16,5 %] ».
 
-## 5. Historique
+## 5. Reproductibilité
+
+Le banc analyse chaque fichier deux fois et compare les deux rapports en entier ; un défaut de reproductibilité est un écart ([ADR-0113](../decisions/ADR-0113-deux-analyses-par-fichier-au-banc.md)). Deux rapports JSON du même fichier, écrits sur deux postes ou à deux dates, se comparent par la commande de l'outil ([ADR-0112](../decisions/ADR-0112-comparaison-de-deux-rapports.md)) :
+
+```bash
+uv run --locked vk --comparer A.json B.json
+```
+
+Code 0 : aucun écart de résultat ; 1 : résultats différents ; 2 : rapport illisible. La commande dit si la garantie s'applique (même empreinte, même extension, mêmes versions, interpréteur compris, aucune analyse interrompue) ; écrire les rapports avec `--reveler empreinte` pour établir qu'il s'agit du même fichier. La CI compare les rapports du corpus d'essai entre Linux, macOS et Windows, sous Python 3.12 à 3.14 (job `reproductibilite`, [ADR-0110](../decisions/ADR-0110-variations-locales-et-entre-systemes.md)).
+
+## 6. Historique
 
 | Date | Version | Modification | Origine |
 | --- | --- | --- | --- |
 | 2026-10-28 | 1.0 | Création | T17 |
+| 2026-10-28 | 1.1 | Double analyse au banc (§3), reproductibilité et `vk --comparer` (§5) | T18 |

@@ -433,10 +433,10 @@ justification = "Un affichage destiné à l'utilisateur se vérifie à la relect
 
 [[exigence]]
 id = "NF-06"
-etat = "partielle"
+etat = "realisee"
 taches = ["T15", "T18"]
 methodes = ["test"]
-note = "Versions et empreinte du catalogue au rapport ; le test de reproductibilité est T18. Reformulée (ADR-0023)."
+note = "Rapport entier comparé, à la date et au nom près (ADR-0108) ; aussi entre systèmes et versions de Python en CI (ADR-0110). Reformulée (ADR-0023)."
 
 [[exigence]]
 id = "NF-07"
@@ -725,7 +725,7 @@ note = "Avertissement et couverture au rapport ; absence de métadonnées neutre
 
 [[exigence]]
 id = "P-05"
-etat = "partielle"
+etat = "realisee"
 taches = ["T15", "T18"]
 methodes = ["test"]
 note = "Comme NF-06."

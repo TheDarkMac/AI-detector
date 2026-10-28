@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.5** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 proposée dans la PR de T16. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.6** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 proposée dans la PR de T18. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -43,6 +43,8 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0091](../decisions/ADR-0091-texte-des-phrases-dans-la-regle.md) | Le texte de la phrase est dans la règle ; ses emplacements sont les paramètres du constat |
 | [ADR-0095](../decisions/ADR-0095-export-json-masque.md) | Export JSON : `VERSION_SCHEMA` 0.2.0, données masquées absentes, objet `masquage` |
 | [ADR-0097](../decisions/ADR-0097-regles-citees-et-interface-d-export.md) | `Analyse` porte les règles que citent ses constats et construit son `Rapport` |
+| [ADR-0111](../decisions/ADR-0111-interpreteur-dans-les-versions.md) | `Versions.interpreteur` ; `VERSION_SCHEMA` 0.3.0 |
+| [ADR-0112](../decisions/ADR-0112-comparaison-de-deux-rapports.md) | Comparaison de deux exports : écarts de condition, d'environnement, de résultat |
 
 ### Où se trouve le code
 
@@ -60,7 +62,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Exports JSON et HTML, masquage (T16) | `src/voight_kampff/rapport/export.py`, `rapport/_html.py`, `rapport/_presentation.py`, `rapport/textes.toml` |
 | Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py` |
 
-Version commune : `0.2.0` (`VERSION_SCHEMA`, ADR-0095).
+Version commune : `0.3.0` (`VERSION_SCHEMA`, ADR-0111 ; 0.2.0 depuis ADR-0095).
 
 ## 2. Vue d'ensemble
 
@@ -88,6 +90,7 @@ classDiagram
   }
   class Versions {
     outil
+    interpreteur
   }
   class VersionCatalogue {
     version
@@ -278,7 +281,7 @@ Le processus principal tire de l'identification trois sortes d'analyses non men�
 
 **Partie** (ADR-0070, ADR-0071) : `rang` de 1 à 16, dans l'ordre des débuts ; `format`, pris dans le vocabulaire de `formats.py` ; `octets`, du début à la fin logique, ou à la fin du fichier si elle n'est pas connue ; `fin_connue` ; `tronquee` (structure interrompue avant sa fin, jamais avec une fin connue). Les plages peuvent se chevaucher. Au moins une partie est dans le périmètre : sinon le fichier est refusé, sans rapport (ADR-0075).
 
-**Versions** : `outil` ; `catalogue` (`version`, `date`, `empreinte`, `fourni_par_utilisateur`, ADR-0029) ; `dependances` (`nom`, `version`, sans doublon, ADR-0023).
+**Versions** : `outil` ; `interpreteur` (`nom`, `version` : implémentation et version de Python, lues dans P1, qui lance P2 par le même interpréteur, ADR-0111) ; `catalogue` (`version`, `date`, `empreinte`, `fourni_par_utilisateur`, ADR-0029) ; `dependances` (`nom`, `version`, sans doublon, ADR-0023).
 
 **Isolation** : `niveau` `complete` ou `reduite` ; `manques`, vide si et seulement si l'isolation est complète, pris dans `reseau`, `ecriture`, `lecture`, `nouveaux_programmes`, `memoire`, `temps`, `vidage_memoire` (architecture §5).
 
@@ -342,3 +345,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-10-27 | 1.3 | Raison `memoire_depassee` ; `limite_depassee` n'interrompt plus (§5, ADR-0078) ; paragraphe des non menées tirées de l'identification sorti du tableau, où il avait été inséré (§5) ; limites fixées (§8, §9) | T14 |
 | 2026-10-27 | 1.4 | Décisions de T15 (§1) ; constat conforme à sa règle (§4) ; techniques hors V1 et technique sans version non applicable (§5, §7, ADR-0087) ; exigences (§9) | T15 |
 | 2026-10-28 | 1.5 | Décisions de T16 et emplacement des exports (§1) ; `VERSION_SCHEMA` 0.2.0 ; export JSON masqué (§7, ADR-0095) ; exigences (§9) | T16 |
+| 2026-10-28 | 1.6 | Interpréteur dans la rubrique Versions, `VERSION_SCHEMA` 0.3.0 (§1, §2, §6, ADR-0111) ; comparaison de deux rapports (§1, ADR-0112) | T18 |

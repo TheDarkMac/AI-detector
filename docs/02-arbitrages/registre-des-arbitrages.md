@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.9** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 proposée dans la PR de T17. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.10** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 avec T17, v1.10 proposée dans la PR de T18. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -157,13 +157,19 @@ Constats de l'analyse adressés à T17 :
 | A-55 Contrôles déterministes | Taux mesuré comme pour les autres, mais un seul faux positif d'une preuve est un écart ; la vérification de fond reste le test de conformité de la technique (ADR-0104) |
 | A-58 Matrice absente des livrables | `docs/verification/matrice.md`, tenue à jour à chaque tâche (ADR-0106) |
 
+Constats de l'analyse adressés à T18 :
+
+| Constat | Traitement |
+| --- | --- |
+| A-05 Reproductibilité : vérification | Rapport entier comparé à la date et au nom près (ADR-0108) ; conditions variées sur un poste, et comparaison entre trois systèmes et trois versions de Python en CI (ADR-0110) ; interpréteur au rapport, condition de la garantie (ADR-0111) ; comparaison classée en conditions, environnement et résultats, `vk --comparer` (ADR-0109, ADR-0112) ; double analyse au banc (ADR-0113) |
+
 ## 4. Exigences du cahier reformulées pour le projet
 
 Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent au projet et sont soumises à l'auteur du cahier.
 
 | Exigence | Formulation du cahier (résumée) | Formulation retenue pour le projet | ADR |
 | --- | --- | --- | --- |
-| NF-06 | Même fichier, même version de l'outil et du catalogue : mêmes constats | Même fichier ; mêmes versions de l'outil, du catalogue et des dépendances ; mêmes données externes ; analyse non interrompue : mêmes constats | ADR-0023 |
+| NF-06 | Même fichier, même version de l'outil et du catalogue : mêmes constats | Même fichier ; mêmes versions de l'outil, du catalogue et des dépendances, interpréteur compris (ADR-0111) ; mêmes données externes ; analyse non interrompue : mêmes constats | ADR-0023, ADR-0111 |
 | NF-13 | Réglementation des pays où l'outil est proposé | Réglementation de l'Union européenne, dont le RGPD | ADR-0020 |
 | NF-16 | Aucune requête sortante n'emporte le fichier | Aucune n'emporte le fichier, **son contenu** ni ses données identifiantes, sauf service tiers activé explicitement par l'utilisateur, avec son consentement pour ce fichier | ADR-0017, ADR-0033 |
 | NF-17 | Journal « qui, quand » de chaque soumission, consultation, export ; horodatage fiable | Heure du poste, non certifiée, toujours au rapport ; journal (« qui » déclaratif) et horodatage RFC 3161 sur activation explicite | ADR-0030 |
@@ -208,6 +214,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 - T14 : limites tranchées (§2), constats A-05 et A-53 (§3) ; architecture v1.7, modèle de données v1.3, découpage v0.13.
 - T15 : constats A-23, A-32, A-37, A-47 (§3), question 5 (§5) ; [guide du catalogue](../catalogue/README.md) créé ; architecture v1.8, modèle de données v1.4, glossaire v1.4, découpage v0.14.
 - T16 : constats A-44, A-48, A-49 et « absence ≠ authenticité » (§3) ; architecture v1.9, modèle de données v1.5, glossaire v1.5, découpage v0.15, guide du catalogue v1.1.
+- T18 : constat A-05 (§3) ; reformulation de NF-06 complétée par l'interpréteur (§4) ; architecture v1.11, modèle de données v1.6, glossaire v1.7, découpage v0.17, vérification v1.1.
 
 ## 7. Historique
 
@@ -223,3 +230,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-10-27 | 1.7 | Constats adressés à T15 (§3) ; question 5 (§5) ; effets (§6) | T15 |
 | 2026-10-28 | 1.8 | Constats adressés à T16 (§3) ; effets (§6) | T16 |
 | 2026-10-28 | 1.9 | Seuils d'acceptation tranchés (§2) ; constats adressés à T17 (§3) | T17 |
+| 2026-10-28 | 1.10 | Constat A-05 adressé à T18 (§3) ; NF-06 : interpréteur parmi les versions (§4) ; effets (§6) | T18 |
