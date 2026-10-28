@@ -1,0 +1,12 @@
+# Module iptc : métadonnées IPTC-IIM d'un JPEG (ADR-0114). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "iptc"
+version = "0.1.0"
+formats = ["jpeg"]
+exigences = ["F-10", "ES-13"]
+regles = []
+fiche = "metadonnees-iptc"
+# Extraction seule : aucun constat, donc aucune direction autre que « rien de particulier ».
+directions = ["rien_de_particulier"]
+requiert = []
+bibliotheques = []

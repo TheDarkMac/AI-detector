@@ -51,6 +51,14 @@ def test_sans_argument_affiche_l_aide(capsys: pytest.CaptureFixture[str]) -> Non
 
 def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--modules"]) == 0
+    assert capsys.readouterr().out == "exif 0.1.0\niptc 0.1.0\ntextepng 0.1.0\nxmp 0.1.0\n"
+
+
+def test_liste_des_modules_vide(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(manifestes, "decouvrir", lambda: ())
+    assert main(["--modules"]) == 0
     assert capsys.readouterr().out == "Aucun module d'analyse livré dans cette version.\n"
 
 
@@ -163,7 +171,8 @@ def test_desactiver_un_module_inconnu(capsys: pytest.CaptureFixture[str]) -> Non
     with pytest.raises(SystemExit) as sortie:
         main(["--desactiver", "omega", "f.pdf"])
     assert sortie.value.code == 2
-    assert "module inconnu : omega ; modules livrés : aucun" in capsys.readouterr().err
+    erreur = capsys.readouterr().err
+    assert "module inconnu : omega ; modules livrés : exif, iptc, textepng, xmp" in erreur
 
 
 @pytest.mark.exigence("NF-10", "P-06")

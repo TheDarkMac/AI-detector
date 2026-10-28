@@ -1,0 +1,12 @@
+# Module xmp : métadonnées XMP d'une image (ADR-0114). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "xmp"
+version = "0.1.0"
+formats = ["jpeg", "png", "webp", "heic"]
+exigences = ["F-10", "ES-05", "ES-13"]
+regles = []
+fiche = "metadonnees-xmp"
+# Extraction seule : aucun constat, donc aucune direction autre que « rien de particulier ».
+directions = ["rien_de_particulier"]
+requiert = []
+bibliotheques = ["expat"]
