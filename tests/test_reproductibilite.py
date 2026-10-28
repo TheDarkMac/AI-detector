@@ -460,6 +460,8 @@ def test_commande_defaut_de_reproductibilite(
     tmp_path: Path, reference: Analyse, capsys: pytest.CaptureFixture[str]
 ) -> None:
     a = document(reference)
+    # Isolation fixée des deux côtés : celle de l'analyse dépend du système (réduite sous Windows).
+    a["isolation"] = {"niveau": "complete", "manques": []}
     b = json.loads(json.dumps(a))
     b["observations"][0]["valeur"] = "autre"
     b["isolation"] = {"niveau": "reduite", "manques": ["reseau"]}
