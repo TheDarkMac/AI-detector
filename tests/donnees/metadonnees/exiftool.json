@@ -1,0 +1,680 @@
+[{
+  "SourceFile": "photo.jpg",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "JFIF:JFIFVersion": {
+    "id": 0,
+    "val": "1 1"
+  },
+  "JFIF:ResolutionUnit": {
+    "id": 2,
+    "val": 0
+  },
+  "JFIF:XResolution": {
+    "id": 3,
+    "val": 1
+  },
+  "JFIF:YResolution": {
+    "id": 5,
+    "val": 1
+  },
+  "IFD0:Make": {
+    "id": 271,
+    "val": "Fabricant"
+  },
+  "IFD0:Model": {
+    "id": 272,
+    "val": "Modèle 1"
+  },
+  "IFD0:XResolution": {
+    "id": 282,
+    "val": 1
+  },
+  "IFD0:YResolution": {
+    "id": 283,
+    "val": 1
+  },
+  "IFD0:ResolutionUnit": {
+    "id": 296,
+    "val": 1
+  },
+  "IFD0:Software": {
+    "id": 305,
+    "val": "Logiciel 2.1"
+  },
+  "IFD0:Artist": {
+    "id": 315,
+    "val": "Jeanne Exemple"
+  },
+  "IFD0:YCbCrPositioning": {
+    "id": 531,
+    "val": 1
+  },
+  "IFD0:Copyright": {
+    "id": 33432,
+    "val": "© Exemple"
+  },
+  "ExifIFD:ExposureTime": {
+    "id": 33434,
+    "val": 0.004
+  },
+  "ExifIFD:FNumber": {
+    "id": 33437,
+    "val": 2.8
+  },
+  "ExifIFD:ISO": {
+    "id": 34855,
+    "val": 200
+  },
+  "ExifIFD:ExifVersion": {
+    "id": 36864,
+    "val": "0232"
+  },
+  "ExifIFD:DateTimeOriginal": {
+    "id": 36867,
+    "val": "2026:10:28 10:00:00"
+  },
+  "ExifIFD:ComponentsConfiguration": {
+    "id": 37121,
+    "val": "1 2 3 0"
+  },
+  "ExifIFD:UserComment": {
+    "id": 37510,
+    "val": "Commentaire"
+  },
+  "ExifIFD:ColorSpace": {
+    "id": 40961,
+    "val": 65535
+  },
+  "ExifIFD:SerialNumber": {
+    "id": 42033,
+    "val": "SN0001"
+  },
+  "GPS:GPSVersionID": {
+    "id": 0,
+    "val": "2 3 0 0"
+  },
+  "GPS:GPSLatitudeRef": {
+    "id": 1,
+    "val": "N"
+  },
+  "GPS:GPSLatitude": {
+    "id": 2,
+    "val": 48.8566
+  },
+  "GPS:GPSLongitudeRef": {
+    "id": 3,
+    "val": "E"
+  },
+  "GPS:GPSLongitude": {
+    "id": 4,
+    "val": 2.3522
+  },
+  "IPTC:ObjectName": {
+    "id": 5,
+    "val": "Objet"
+  },
+  "IPTC:Keywords": {
+    "id": 25,
+    "val": ["mot1","mot2"]
+  },
+  "IPTC:By-line": {
+    "id": 80,
+    "val": "Jeanne Exemple"
+  },
+  "IPTC:City": {
+    "id": 90,
+    "val": "Paris"
+  },
+  "IPTC:CopyrightNotice": {
+    "id": 116,
+    "val": "© Exemple"
+  },
+  "IPTC:ApplicationRecordVersion": {
+    "id": 0,
+    "val": 4
+  },
+  "XMP-x:XMPToolkit": {
+    "id": "xmptk",
+    "val": "Image::ExifTool 13.25"
+  },
+  "XMP-iptcExt:DigitalSourceType": {
+    "id": "DigitalSourceType",
+    "val": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "XMP-dc:Creator": {
+    "id": "creator",
+    "val": ["Jeanne Exemple"]
+  },
+  "XMP-dc:Subject": {
+    "id": "subject",
+    "val": ["un","deux"]
+  },
+  "XMP-dc:Title": {
+    "id": "title",
+    "val": "Titre"
+  },
+  "XMP-photoshop:Credit": {
+    "id": "Credit",
+    "val": "Agence"
+  },
+  "XMP-xmp:CreatorTool": {
+    "id": "CreatorTool",
+    "val": "Outil 3"
+  }
+},
+{
+  "SourceFile": "image.png",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "PNG:ImageWidth": {
+    "id": 0,
+    "val": 8
+  },
+  "PNG:ImageHeight": {
+    "id": 4,
+    "val": 8
+  },
+  "PNG:BitDepth": {
+    "id": 8,
+    "val": 1
+  },
+  "PNG:ColorType": {
+    "id": 9,
+    "val": 3
+  },
+  "PNG:Compression": {
+    "id": 10,
+    "val": 0
+  },
+  "PNG:Filter": {
+    "id": 11,
+    "val": 0
+  },
+  "PNG:Interlace": {
+    "id": 12,
+    "val": 0
+  },
+  "PNG:Palette": {
+    "id": "PLTE",
+    "val": "51 102 153"
+  },
+  "PNG:Author": {
+    "id": "Author",
+    "val": "Jeanne Exemple"
+  },
+  "PNG:Comment": {
+    "id": "Comment",
+    "val": "Un commentaire"
+  },
+  "PNG:Software": {
+    "id": "Software",
+    "val": "Logiciel PNG"
+  },
+  "XMP-x:XMPToolkit": {
+    "id": "xmptk",
+    "val": "Image::ExifTool 13.25"
+  },
+  "XMP-iptcExt:DigitalSourceType": {
+    "id": "DigitalSourceType",
+    "val": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "XMP-dc:Creator": {
+    "id": "creator",
+    "val": ["Jeanne Exemple"]
+  },
+  "XMP-dc:Subject": {
+    "id": "subject",
+    "val": ["un","deux"]
+  },
+  "XMP-dc:Title": {
+    "id": "title",
+    "val": "Titre"
+  },
+  "XMP-photoshop:Credit": {
+    "id": "Credit",
+    "val": "Agence"
+  },
+  "XMP-xmp:CreatorTool": {
+    "id": "CreatorTool",
+    "val": "Outil 3"
+  },
+  "IFD0:Make": {
+    "id": 271,
+    "val": "Fabricant"
+  },
+  "IFD0:Model": {
+    "id": 272,
+    "val": "Modèle 1"
+  },
+  "IFD0:Software": {
+    "id": 305,
+    "val": "Logiciel 2.1"
+  },
+  "IFD0:Artist": {
+    "id": 315,
+    "val": "Jeanne Exemple"
+  },
+  "IFD0:YCbCrPositioning": {
+    "id": 531,
+    "val": 1
+  },
+  "IFD0:Copyright": {
+    "id": 33432,
+    "val": "© Exemple"
+  },
+  "ExifIFD:ExposureTime": {
+    "id": 33434,
+    "val": 0.004
+  },
+  "ExifIFD:FNumber": {
+    "id": 33437,
+    "val": 2.8
+  },
+  "ExifIFD:ISO": {
+    "id": 34855,
+    "val": 200
+  },
+  "ExifIFD:ExifVersion": {
+    "id": 36864,
+    "val": "0232"
+  },
+  "ExifIFD:DateTimeOriginal": {
+    "id": 36867,
+    "val": "2026:10:28 10:00:00"
+  },
+  "ExifIFD:ComponentsConfiguration": {
+    "id": 37121,
+    "val": "1 2 3 0"
+  },
+  "ExifIFD:UserComment": {
+    "id": 37510,
+    "val": "Commentaire"
+  },
+  "ExifIFD:ColorSpace": {
+    "id": 40961,
+    "val": 65535
+  },
+  "ExifIFD:SerialNumber": {
+    "id": 42033,
+    "val": "SN0001"
+  },
+  "GPS:GPSVersionID": {
+    "id": 0,
+    "val": "2 3 0 0"
+  },
+  "GPS:GPSLatitudeRef": {
+    "id": 1,
+    "val": "N"
+  },
+  "GPS:GPSLatitude": {
+    "id": 2,
+    "val": 48.8566
+  },
+  "GPS:GPSLongitudeRef": {
+    "id": 3,
+    "val": "E"
+  },
+  "GPS:GPSLongitude": {
+    "id": 4,
+    "val": 2.3522
+  }
+},
+{
+  "SourceFile": "image.webp",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "RIFF:WebP_Flags": {
+    "id": 0,
+    "val": 12
+  },
+  "RIFF:ImageWidth": {
+    "id": 4,
+    "val": 8
+  },
+  "RIFF:ImageHeight": {
+    "id": 6,
+    "val": 8
+  },
+  "RIFF:VP8Version": {
+    "id": 0,
+    "val": 0
+  },
+  "RIFF:HorizontalScale": {
+    "id": 6.1,
+    "val": 0
+  },
+  "RIFF:VerticalScale": {
+    "id": 8.1,
+    "val": 0
+  },
+  "IFD0:Make": {
+    "id": 271,
+    "val": "Fabricant"
+  },
+  "IFD0:Model": {
+    "id": 272,
+    "val": "Modèle 1"
+  },
+  "IFD0:Software": {
+    "id": 305,
+    "val": "Logiciel 2.1"
+  },
+  "IFD0:Artist": {
+    "id": 315,
+    "val": "Jeanne Exemple"
+  },
+  "IFD0:YCbCrPositioning": {
+    "id": 531,
+    "val": 1
+  },
+  "IFD0:Copyright": {
+    "id": 33432,
+    "val": "© Exemple"
+  },
+  "ExifIFD:ExposureTime": {
+    "id": 33434,
+    "val": 0.004
+  },
+  "ExifIFD:FNumber": {
+    "id": 33437,
+    "val": 2.8
+  },
+  "ExifIFD:ISO": {
+    "id": 34855,
+    "val": 200
+  },
+  "ExifIFD:ExifVersion": {
+    "id": 36864,
+    "val": "0232"
+  },
+  "ExifIFD:DateTimeOriginal": {
+    "id": 36867,
+    "val": "2026:10:28 10:00:00"
+  },
+  "ExifIFD:ComponentsConfiguration": {
+    "id": 37121,
+    "val": "1 2 3 0"
+  },
+  "ExifIFD:UserComment": {
+    "id": 37510,
+    "val": "Commentaire"
+  },
+  "ExifIFD:ColorSpace": {
+    "id": 40961,
+    "val": 65535
+  },
+  "ExifIFD:SerialNumber": {
+    "id": 42033,
+    "val": "SN0001"
+  },
+  "GPS:GPSVersionID": {
+    "id": 0,
+    "val": "2 3 0 0"
+  },
+  "GPS:GPSLatitudeRef": {
+    "id": 1,
+    "val": "N"
+  },
+  "GPS:GPSLatitude": {
+    "id": 2,
+    "val": 48.8566
+  },
+  "GPS:GPSLongitudeRef": {
+    "id": 3,
+    "val": "E"
+  },
+  "GPS:GPSLongitude": {
+    "id": 4,
+    "val": 2.3522
+  },
+  "XMP-x:XMPToolkit": {
+    "id": "xmptk",
+    "val": "Image::ExifTool 13.25"
+  },
+  "XMP-iptcExt:DigitalSourceType": {
+    "id": "DigitalSourceType",
+    "val": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "XMP-dc:Creator": {
+    "id": "creator",
+    "val": ["Jeanne Exemple"]
+  },
+  "XMP-dc:Subject": {
+    "id": "subject",
+    "val": ["un","deux"]
+  },
+  "XMP-dc:Title": {
+    "id": "title",
+    "val": "Titre"
+  },
+  "XMP-photoshop:Credit": {
+    "id": "Credit",
+    "val": "Agence"
+  },
+  "XMP-xmp:CreatorTool": {
+    "id": "CreatorTool",
+    "val": "Outil 3"
+  }
+},
+{
+  "SourceFile": "image.heic",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "QuickTime:MajorBrand": {
+    "id": 0,
+    "val": "heix"
+  },
+  "QuickTime:MinorVersion": {
+    "id": 1,
+    "val": "0.0.0"
+  },
+  "QuickTime:CompatibleBrands": {
+    "id": 2,
+    "val": ["mif1","heix"]
+  },
+  "QuickTime:HandlerType": {
+    "id": 8,
+    "val": "pict"
+  },
+  "QuickTime:HEVCConfigurationVersion": {
+    "id": 0,
+    "val": 1
+  },
+  "QuickTime:GeneralProfileSpace": {
+    "id": 1,
+    "val": 0
+  },
+  "QuickTime:GeneralTierFlag": {
+    "id": 1.1,
+    "val": 0
+  },
+  "QuickTime:GeneralProfileIDC": {
+    "id": 1.2,
+    "val": 4
+  },
+  "QuickTime:GenProfileCompatibilityFlags": {
+    "id": 2,
+    "val": 134217728
+  },
+  "QuickTime:ConstraintIndicatorFlags": {
+    "id": 6,
+    "val": "153 184 0 0 0 0"
+  },
+  "QuickTime:GeneralLevelIDC": {
+    "id": 12,
+    "val": 30
+  },
+  "QuickTime:MinSpatialSegmentationIDC": {
+    "id": 13,
+    "val": 0
+  },
+  "QuickTime:ParallelismType": {
+    "id": 15,
+    "val": 0
+  },
+  "QuickTime:ChromaFormat": {
+    "id": 16,
+    "val": 1
+  },
+  "QuickTime:BitDepthLuma": {
+    "id": 17,
+    "val": 12
+  },
+  "QuickTime:BitDepthChroma": {
+    "id": 18,
+    "val": 12
+  },
+  "QuickTime:AverageFrameRate": {
+    "id": 19,
+    "val": 0
+  },
+  "QuickTime:ConstantFrameRate": {
+    "id": 21,
+    "val": 0
+  },
+  "QuickTime:NumTemporalLayers": {
+    "id": 21.1,
+    "val": 1
+  },
+  "QuickTime:TemporalIDNested": {
+    "id": 21.2,
+    "val": 1
+  },
+  "QuickTime:ImageSpatialExtent": {
+    "id": "ispe",
+    "val": "64 64"
+  },
+  "QuickTime:ImagePixelDepth": {
+    "id": "pixi",
+    "val": "12 12 12"
+  },
+  "QuickTime:MediaDataSize": {
+    "id": "mdat-size",
+    "val": 4111
+  },
+  "QuickTime:MediaDataOffset": {
+    "id": "mdat-offset",
+    "val": 491
+  },
+  "Meta:PrimaryItemReference": {
+    "id": "pitm",
+    "val": 1
+  },
+  "IFD0:Make": {
+    "id": 271,
+    "val": "Fabricant"
+  },
+  "IFD0:Model": {
+    "id": 272,
+    "val": "Modèle 1"
+  },
+  "IFD0:Software": {
+    "id": 305,
+    "val": "Logiciel 2.1"
+  },
+  "IFD0:Artist": {
+    "id": 315,
+    "val": "Jeanne Exemple"
+  },
+  "IFD0:YCbCrPositioning": {
+    "id": 531,
+    "val": 1
+  },
+  "IFD0:Copyright": {
+    "id": 33432,
+    "val": "© Exemple"
+  },
+  "ExifIFD:ExposureTime": {
+    "id": 33434,
+    "val": 0.004
+  },
+  "ExifIFD:FNumber": {
+    "id": 33437,
+    "val": 2.8
+  },
+  "ExifIFD:ISO": {
+    "id": 34855,
+    "val": 200
+  },
+  "ExifIFD:ExifVersion": {
+    "id": 36864,
+    "val": "0232"
+  },
+  "ExifIFD:DateTimeOriginal": {
+    "id": 36867,
+    "val": "2026:10:28 10:00:00"
+  },
+  "ExifIFD:ComponentsConfiguration": {
+    "id": 37121,
+    "val": "1 2 3 0"
+  },
+  "ExifIFD:UserComment": {
+    "id": 37510,
+    "val": "Commentaire"
+  },
+  "ExifIFD:ColorSpace": {
+    "id": 40961,
+    "val": 65535
+  },
+  "ExifIFD:SerialNumber": {
+    "id": 42033,
+    "val": "SN0001"
+  },
+  "GPS:GPSVersionID": {
+    "id": 0,
+    "val": "2 3 0 0"
+  },
+  "GPS:GPSLatitudeRef": {
+    "id": 1,
+    "val": "N"
+  },
+  "GPS:GPSLatitude": {
+    "id": 2,
+    "val": 48.8566
+  },
+  "GPS:GPSLongitudeRef": {
+    "id": 3,
+    "val": "E"
+  },
+  "GPS:GPSLongitude": {
+    "id": 4,
+    "val": 2.3522
+  },
+  "XMP-x:XMPToolkit": {
+    "id": "xmptk",
+    "val": "Image::ExifTool 13.25"
+  },
+  "XMP-iptcExt:DigitalSourceType": {
+    "id": "DigitalSourceType",
+    "val": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "XMP-dc:Creator": {
+    "id": "creator",
+    "val": ["Jeanne Exemple"]
+  },
+  "XMP-dc:Subject": {
+    "id": "subject",
+    "val": ["un","deux"]
+  },
+  "XMP-dc:Title": {
+    "id": "title",
+    "val": "Titre"
+  },
+  "XMP-photoshop:Credit": {
+    "id": "Credit",
+    "val": "Agence"
+  },
+  "XMP-xmp:CreatorTool": {
+    "id": "CreatorTool",
+    "val": "Outil 3"
+  }
+}]

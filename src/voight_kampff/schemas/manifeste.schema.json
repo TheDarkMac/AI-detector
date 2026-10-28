@@ -5,7 +5,7 @@
   "description": "Fichier manifeste.toml d'un sous-paquet de voight_kampff.modules, lu par le processus principal sans importer le code du module (ADR-0042, ADR-0064). Le code vérifie en plus que l'identifiant est le nom du dossier et que les modules requis existent, sans cycle.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["identifiant", "version", "formats", "exigences", "regles", "fiche", "directions", "requiert"],
+  "required": ["identifiant", "version", "formats", "exigences", "regles", "fiche", "directions", "requiert", "bibliotheques"],
   "properties": {
     "identifiant": {
       "description": "Nom du dossier du module, donc nom d'import : minuscules et chiffres seulement.",
@@ -58,6 +58,13 @@
       "maxItems": 32,
       "uniqueItems": true,
       "items": { "$ref": "#/properties/identifiant" }
+    },
+    "bibliotheques": {
+      "description": "Bibliothèques qui lisent le fichier pour ce module ; leur version réelle figure à la rubrique Versions du rapport (ADR-0120).",
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": { "enum": ["expat"] }
     }
   }
 }

@@ -64,3 +64,4 @@ Option A. Champs de `manifeste.toml`, validés par `schemas/manifeste.schema.jso
 | 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T12 : statut « Accepté » |
 | 2026-10-27 | Vocabulaire des formats fixé par ADR-0070 (T13) : seuls les formats du périmètre sont admis |
 | 2026-10-27 | Précisé par ADR-0084 (T15) : `regles` cite les règles « module » du module, et elles seules ; existence, module et directions vérifiés au chargement du catalogue |
+| 2026-10-28 | Précisé par ADR-0120 (T20) : champ `bibliotheques` ; concordance des fiches et des manifestes testée |

@@ -16,6 +16,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, cast
+from xml.parsers import expat
 
 import pytest
 from catalogues import CATALOGUE
@@ -27,6 +28,7 @@ from voight_kampff._orchestration.manifestes import Manifeste, ModuleInconnu
 from voight_kampff._orchestration.travail import ResultatTravail
 from voight_kampff.analyse import Analyse
 from voight_kampff.rapport.modele import (
+    Dependance,
     Direction,
     EtatIsolation,
     EtatTechnique,
@@ -159,9 +161,41 @@ def test_vrai_processus_identifie_le_format(pdf: int) -> None:
     assert resultat.empreinte == hashlib.sha256(PDF).hexdigest()
     assert set(resultat.isolation.manques) == MANQUES_ATTENDUS
     assert (resultat.isolation.niveau is NiveauIsolation.COMPLETE) == (not MANQUES_ATTENDUS)
-    assert resultat.couverture.techniques == ()
+    # Les modules livrés sont tous des modules d'image : non applicables au PDF.
+    assert {t.etat for t in resultat.couverture.techniques} == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(PDF))
+
+
+@pytest.mark.exigence("F-10", "ES-05")
+def test_vrai_processus_extrait_les_metadonnees(tmp_path: Path) -> None:
+    # Modules livrés, dans un vrai processus de travail, sur l'échantillon de l'oracle (T20).
+    contenu = (Path(__file__).parent / "donnees" / "metadonnees" / "photo.jpg").read_bytes()
+    ouvert = ouvrir(tmp_path / "photo.jpg", contenu)
+    try:
+        resultat = executer(ouvert, manifestes.decouvrir())
+    finally:
+        os.close(ouvert)
+    noms = {o.nom for o in resultat.observations}
+    assert {"exif.ifd0.Make", "xmp.dc:creator", "iptc.Keywords"} <= noms
+    assert "textepng.present" not in noms  # module non applicable au JPEG
+    version = ".".join(str(n) for n in expat.version_info)
+    assert resultat.dependances == (Dependance("expat", version),)
+    assert {t.etat for t in resultat.couverture.techniques if t.module == "iptc"} == {
+        EtatTechnique.APPLIQUEE
+    }
+    assert not resultat.interrompue
+    analyse_de(resultat, len(contenu))
+
+
+def test_vrai_processus_bibliotheques_des_seuls_modules_actifs(tmp_path: Path) -> None:
+    contenu = (Path(__file__).parent / "donnees" / "metadonnees" / "photo.jpg").read_bytes()
+    ouvert = ouvrir(tmp_path / "photo.jpg", contenu)
+    try:
+        resultat = executer(ouvert, manifestes.decouvrir(), desactives={"xmp"})
+    finally:
+        os.close(ouvert)
+    assert resultat.dependances == ()
 
 
 def test_vrai_processus_format_non_reconnu(descripteur: int) -> None:
@@ -458,6 +492,7 @@ MESSAGE_INVALIDE = [
     "fin_sans_versions",
     "versions_double",
     "dependance_double",
+    "dependance_non_declaree",
     "ligne_apres_fin",
     "ligne_coupee",
 ]

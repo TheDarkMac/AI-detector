@@ -74,3 +74,4 @@ Ce qui n'est pas dans le constat :
 | --- | --- |
 | 2026-10-26 | Création, statut « Proposé » |
 | 2026-10-26 | Validé par TheDarkMac pendant la revue de la PR de T11 : statut « Accepté » |
+| 2026-10-28 | Renvoi : premiers noms d'observation, métadonnées d'image (ADR-0117, T20) |

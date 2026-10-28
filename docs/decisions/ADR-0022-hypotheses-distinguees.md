@@ -44,3 +44,4 @@ F-81 demande d'indiquer vers quoi pointe chaque constat. La plupart des analyses
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : une direction par hypothèse, dont « transformation » (ADR-0055) (T11) |
+| 2026-10-28 | Renvoi : gabarit de fiche et dossier `docs/techniques/` créés avec les premières techniques (T20) |

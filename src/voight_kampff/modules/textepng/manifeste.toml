@@ -1,0 +1,12 @@
+# Module textepng : blocs texte d'un PNG (ADR-0114). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "textepng"
+version = "0.1.0"
+formats = ["png"]
+exigences = ["F-10", "ES-13"]
+regles = []
+fiche = "metadonnees-texte-png"
+# Extraction seule : aucun constat, donc aucune direction autre que « rien de particulier ».
+directions = ["rien_de_particulier"]
+requiert = []
+bibliotheques = []

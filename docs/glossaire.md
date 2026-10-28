@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.7** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 proposée dans la PR de T18. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.8** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 proposée dans la PR de T20. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -54,12 +54,15 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Processus de travail (P2) | Processus restreint, un par fichier, qui lit et analyse le fichier. | ADR-0028, ADR-0036 |
 | Exécution isolée | Analyse menée dans un processus de travail auquel le système retire réseau, écriture et lancement de programmes. | NF-01, ADR-0028 |
 | Isolation réduite | État d'un processus de travail auquel manque au moins une restriction ; le rapport liste lesquelles. Sous Windows, elle l'est toujours (réseau, lecture, vidages). | ADR-0035, ADR-0059, ADR-0081 |
-| Limite comptée | Limite que le moteur compte (octets décompressés, objets, dimensions, imbrication, taille des résultats) : un fichier la dépasse ou non sur toutes les machines. Dépassée, elle rend le module non mené (`limite_depassee`) sans sortir l'analyse de la garantie de reproductibilité. | ADR-0076, ADR-0078 |
+| Limite comptée | Limite que le moteur compte (octets décompressés, objets, dimensions, imbrication, taille et nombre des résultats) : un fichier la dépasse ou non sur toutes les machines. Dépassée, elle rend le module non mené (`limite_depassee`) sans sortir l'analyse de la garantie de reproductibilité. | ADR-0076, ADR-0078, ADR-0121 |
 | Limite du système | Garde-fou posé par le système ou le processus principal : mémoire, temps. Dépassée, elle interrompt l'analyse (`memoire_depassee`, `delai_depasse`), hors garantie. | ADR-0076, ADR-0077 |
 | Budget (d'un module) | Ensemble des limites comptées d'un module sur une partie, tenu par son contexte. | ADR-0078 |
 | Arrêt brutal | Fin de l'outil sans rapport, par exception non traitée ou plantage ; NF-03 l'interdit : un échec donne un rapport partiel. | NF-03 |
 | Manifeste (C2PA) | Structure signée, intégrée au fichier, qui déclare son origine et ses transformations. | §11 du cahier, T30 |
-| Manifeste (module) | Fichier TOML qui décrit un module sans exécuter son code : identifiant, version, formats, exigences, règles, fiche technique, directions permises, modules requis. | ADR-0042, ADR-0064 |
+| Manifeste (module) | Fichier TOML qui décrit un module sans exécuter son code : identifiant, version, formats, exigences, règles, fiche technique, directions permises, modules requis, bibliothèques qui lisent le fichier. | ADR-0042, ADR-0064, ADR-0120 |
+| Fiche technique | Document qui décrit une technique : question, principe, entrées, observations, hypothèses distinguées, taux d'erreur, limites ; une par module, dans `docs/techniques/`. | NF-09, ADR-0022 |
+| Famille de métadonnées | Ensemble de métadonnées d'une même norme, lu par un module : EXIF (structure TIFF), XMP (RDF en XML), IPTC-IIM (ressource Photoshop d'un JPEG), blocs texte PNG. | F-10, ADR-0114 |
+| Lecteur de structure | Code du projet qui parcourt un conteneur ou une structure (segments JPEG, blocs PNG et WebP, boîtes HEIC, répertoires TIFF, XML) sans rien décoder de l'image, pour le compte d'un module. | ADR-0043, ADR-0114 |
 | Contexte (d'un module) | Objet remis à un module par le moteur : lecture de la partie analysée par position, réception des observations, constats et analyses non menées. | ADR-0061, ADR-0071 |
 | Module actif, désactivé | Un module actif est exécuté ; un module désactivé par l'utilisateur, ou qui en requiert un désactivé, ne l'est pas et figure au rapport comme non mené. | ADR-0063 |
 | Module applicable | Module actif dont les formats comprennent le format de la partie analysée ; sinon, il est « non applicable » pour cette partie dans la couverture. | ADR-0059, ADR-0062, ADR-0071 |
@@ -103,3 +106,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-10-28 | 1.5 | Gabarit précisé ; masquage, export, alerte, neutralisation ajoutés | T16 |
 | 2026-10-28 | 1.6 | Termes de l'évaluation ajoutés | T17 |
 | 2026-10-28 | 1.7 | Garantie de reproductibilité, écart de comparaison, défaut de reproductibilité ajoutés ; écart d'évaluation précisé | T18 |
+| 2026-10-28 | 1.8 | Fiche technique, famille de métadonnées, lecteur de structure ; limite comptée et manifeste complétés | T20 |

@@ -51,3 +51,4 @@ NF-06 est reformulée pour le projet : « Même fichier ; mêmes versions de l'o
 | 2026-10-26 | Renvoi : versions des dépendances figées par ADR-0037 (T04) |
 | 2026-10-27 | Tranché par ADR-0076 (T14) : budget mixte ; limites comptées dans la garantie, mémoire et temps du système hors garantie |
 | 2026-10-28 | Réalisé en T18 : rapport entier comparé à la date et au nom près (ADR-0108), interpréteur ajouté aux versions (ADR-0111), comparaison et `vk --comparer` (ADR-0112), banc et CI entre systèmes (ADR-0110, ADR-0113) |
+| 2026-10-28 | Renvoi : bibliothèques des modules actifs dans les versions, expat le premier (ADR-0120, T20) |

@@ -90,3 +90,4 @@ Le contexte refuse, avant l'envoi, toute ligne de plus de 1 Mio et toute sortie 
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
 | 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T14 : statut « Accepté » |
+| 2026-10-28 | Précisé par ADR-0121 (T20) : 4 096 résultats au plus par module et par partie |

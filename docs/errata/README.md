@@ -19,3 +19,4 @@ Toute erreur constatée — d'analyse, de documentation, de décision ou d'exéc
 | [ERR-0004](ERR-0004-points-de-tracage-rattaches-a-l-ocr.md) | Points de traçage d'imprimante rattachés à tort à la frontière « OCR » | `00-plan/decoupage-taches.md` | T01 | 2026-10-26 |
 | [ERR-0005](ERR-0005-branche-par-defaut-ignoree.md) | Branche par défaut ignorée : Dependabot et l'audit hebdomadaire inactifs | `decisions/ADR-0051-…`, `decisions/ADR-0052-…` | après T10 | 2026-10-26 |
 | [ERR-0006](ERR-0006-annulation-des-lancements-de-ci.md) | La CI du code annulait ses propres lancements sur `detector` | `.github/workflows/code.yml` | après T10 | 2026-10-26 |
+| [ERR-0007](ERR-0007-merge-de-la-pr-18.md) | PR #18 mergée sans titre fixé ni validation des ADR proposés | commit `4526ccd`, `decisions/ADR-0112-…`, `decisions/ADR-0113-…` | T20 | 2026-10-28 |

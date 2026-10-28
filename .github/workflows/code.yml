@@ -129,8 +129,8 @@ jobs:
             diff <(ls "$reference") <(ls "$jeu")
             for rapport in "$reference"/*.json; do
               echo "== $jeu/${rapport##*/}"
-              # Code 0 : aucun écart de résultat ; seules l'isolation et la version de
-              # l'interpréteur peuvent différer (ADR-0110).
+              # Code 0 : aucun écart de résultat ; seules l'isolation, la version de
+              # l'interpréteur et celle d'expat peuvent différer (ADR-0110, ADR-0120).
               uv run --locked --project "$GITHUB_WORKSPACE" vk --comparer "$rapport" "$jeu/${rapport##*/}"
             done
           done

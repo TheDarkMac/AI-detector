@@ -460,3 +460,39 @@ def _paires(objet: object) -> list[tuple[str, object]]:
     if isinstance(objet, list):
         return [p for element in objet for p in _paires(element)]
     return []
+
+
+# Valideurs aux références résolues (ADR-0121)
+
+
+@pytest.mark.parametrize("nom", schemas.NOMS)
+def test_valideurs_rapides_sans_reference(nom: schemas.NomSchema) -> None:
+    for valideur in schemas._valideurs_rapides(nom).values():
+        assert '"$ref"' not in json.dumps(valideur.schema)
+
+
+def test_reference_avec_voisins_et_reference_circulaire() -> None:
+    documents = {
+        "urn:a": {"$id": "urn:a", "$defs": {"t": {"type": "string"}, "r": {"$ref": "#/$defs/r"}}}
+    }
+    resolue = schemas._resoudre({"$ref": "#/$defs/t", "maxLength": 2}, "urn:a", documents, ())
+    assert resolue == {"allOf": [{"type": "string"}], "maxLength": 2}
+    with pytest.raises(ValueError, match="récursif"):
+        schemas._resoudre({"$ref": "#/$defs/r"}, "urn:a", documents, ())
+
+
+@pytest.mark.parametrize(
+    "message",
+    [{"type": "inconnu"}, {"type": 3}, [1], {"type": "fin", "empreinte": "x"}],
+    ids=["nature-inconnue", "nature-non-texte", "liste", "branche-choisie"],
+)
+def test_message_refuse_par_le_valideur_rapide(message: object) -> None:
+    with pytest.raises(schemas.DocumentInvalide, match="messages"):
+        schemas.valider("messages", message)
+
+
+def test_desaccord_des_valideurs_refuse(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Le valideur rapide refuse, le valideur livré ne trouve rien : le document est refusé.
+    monkeypatch.setattr(schemas, "_conforme", lambda _nom, _document: False)
+    with pytest.raises(schemas.DocumentInvalide, match="références résolues"):
+        schemas.valider("messages", {"type": "fin", "empreinte": "0" * 64})

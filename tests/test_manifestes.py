@@ -1,5 +1,6 @@
 """Tests des manifestes des modules : lecture, validation, ordre, désactivation (T12)."""
 
+import re
 from pathlib import Path
 
 import pytest
@@ -31,6 +32,7 @@ def toml(nom: str, requiert: tuple[str, ...] = (), **remplacements: str) -> str:
         "fiche": '"metadonnees-image"',
         "directions": '["origine_ia", "rien_de_particulier"]',
         "requiert": "[" + ", ".join(f'"{r}"' for r in requiert) + "]",
+        "bibliotheques": "[]",
     } | remplacements
     return "".join(f"{cle} = {valeur}\n" for cle, valeur in champs.items() if valeur)
 
@@ -90,6 +92,7 @@ def test_ordre_d_execution(tmp_path: Path) -> None:
         pytest.param(toml("m", exigences='["X-1"]'), "pattern", id="exigence"),
         pytest.param(toml("m", directions='["inconnue"]'), "enum", id="direction"),
         pytest.param(toml("m", fiche='"Fiche/../x"'), "pattern", id="fiche"),
+        pytest.param(toml("m", bibliotheques='["zlib"]'), "enum", id="bibliotheque"),
         pytest.param(toml("m", formats='["a", "a"]'), "uniqueItems", id="doublon"),
         pytest.param(toml("m", identifiant='"autre"'), "nom du dossier", id="identifiant"),
         pytest.param(toml("m", requiert=("m",)), "requis", id="se-requiert"),
@@ -147,9 +150,40 @@ def test_modules_livres_valides() -> None:
         assert fiche.is_file(), manifeste.identifiant
 
 
-def test_aucun_module_livre_en_t12() -> None:
-    # À retirer avec le premier module (T13) : il rappelle que la couverture est vide.
-    assert decouvrir() == ()
+def entete_de_fiche(fiche: str) -> dict[str, str]:
+    """Champs « - **Nom** : valeur » de l'en-tête d'une fiche technique."""
+    texte = (RACINE_DU_DEPOT / "docs" / "techniques" / f"{fiche}.md").read_text(encoding="utf-8")
+    champs = re.findall(r"^- \*\*(.+?)\*\* : (.+)$", texte.split("\n## ", 1)[0], re.MULTILINE)
+    return dict(champs)
+
+
+def liste(valeur: str) -> tuple[str, ...]:
+    return () if valeur == "aucune" else tuple(v.strip(" `") for v in valeur.split(","))
+
+
+@pytest.mark.exigence("NF-09")
+def test_fiche_et_manifeste_concordent() -> None:
+    # ADR-0064 : la fiche répète le manifeste ; ce test vérifie qu'ils disent la même chose.
+    for manifeste in decouvrir():
+        entete = entete_de_fiche(manifeste.fiche)
+        assert entete["Module"] == f"`{manifeste.identifiant}` (version {manifeste.version})"
+        assert liste(entete["Exigences"]) == manifeste.exigences
+        assert liste(entete["Formats"]) == manifeste.formats
+        assert liste(entete["Directions permises"]) == manifeste.directions
+        assert liste(entete["Règles"]) == manifeste.regles
+        assert liste(entete["Bibliothèques"]) == manifeste.bibliotheques
+
+
+def test_modules_de_metadonnees_livres() -> None:
+    # T20 : un module par famille de métadonnées d'image (ADR-0114).
+    livres = {manifeste.identifiant: manifeste for manifeste in decouvrir()}
+    assert sorted(livres) == ["exif", "iptc", "textepng", "xmp"]
+    assert livres["iptc"].formats == ("jpeg",)
+    assert livres["textepng"].formats == ("png",)
+    assert livres["xmp"].bibliotheques == ("expat",)
+    for manifeste in livres.values():
+        assert "F-10" in manifeste.exigences
+        assert manifeste.directions == (Direction.RIEN_DE_PARTICULIER,)
 
 
 # Techniques hors de cette version (T15, ADR-0087)

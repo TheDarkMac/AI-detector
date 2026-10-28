@@ -1,8 +1,9 @@
 """Fuzzing des analyseurs (ES-19, ADR-0082), avec Hypothesis.
 
-Trois analyseurs lisent aujourd'hui des données hostiles :
+Quatre familles d'analyseurs lisent aujourd'hui des données hostiles :
 
 - l'identification, dans le processus de travail, lit le fichier (ADR-0070) ;
+- les modules de métadonnées d'image et leurs lecteurs de structure (T20, ADR-0114) ;
 - le décodage strict des lignes, dans le processus principal, lit ce qu'envoie un processus de
   travail peut-être compromis (ES-04) ;
 - la réception, qui valide chaque message par le schéma puis par le modèle (ADR-0065).
@@ -15,8 +16,10 @@ Le profil ``defaut`` (``conftest.py``) tire 300 exemples d'une graine fixe ; ``V
 lance une recherche longue (``CONTRIBUTING.md``).
 """
 
+import importlib
 import json
 import tempfile
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -38,12 +41,36 @@ from echantillons import (
 )
 from hypothesis import given
 from hypothesis import strategies as st
+from metadonnees import (
+    Element,
+    Sous,
+    app1_etendu,
+    app1_exif,
+    app1_xmp,
+    app13,
+    ascii_,
+    bloc_riff,
+    contexte,
+    fractions,
+    heic_meta,
+    jeu,
+    jpeg_meta,
+    png_meta,
+    ressource,
+    texte,
+    texte_compresse,
+    texte_international,
+    tiff,
+    webp_meta,
+    xmp,
+)
 
 from voight_kampff import schemas
 from voight_kampff._orchestration import travail
 from voight_kampff._orchestration.manifestes import Manifeste
 from voight_kampff._protocole import MessageInvalide, decoder, encoder
 from voight_kampff._travail import garde
+from voight_kampff._travail.contexte import LimiteDepassee
 from voight_kampff._travail.fichier import Fichier
 from voight_kampff._travail.identification import identifier
 from voight_kampff.rapport.modele import Direction, Partie, RaisonNonMenee, verifier_parties
@@ -227,3 +254,102 @@ def test_reception_messages_mutes(suite: list[dict[str, Any]]) -> None:
     assert raison is RaisonNonMenee.MESSAGE_INVALIDE  # seul refus possible d'un message
     reception.interrompre(raison)
     reception.resultat((MODULE,), set())  # le résultat se construit quoi qu'il soit arrivé
+
+
+# Modules de métadonnées d'image (T20)
+
+_TIFF = tiff(
+    (
+        ascii_(0x010F, "Fabricant"),
+        Sous(0x8769, (fractions(0x829A, (1, 250)), Sous(0xA005, (ascii_(0x0001, "R98"),)))),
+        Sous(0x8825, (fractions(0x0002, (48, 1), (51, 1), (0, 1)),)),
+    ),
+    (ascii_(0x0131, "Logiciel"),),
+)
+_XMP = xmp(
+    "<dc:creator><rdf:Seq><rdf:li>A</rdf:li></rdf:Seq></dc:creator>"
+    '<dc:title><rdf:Alt><rdf:li xml:lang="x-default">T</rdf:li></rdf:Alt></dc:title>'
+    '<dc:source rdf:parseType="Resource"><dc:x>1</dc:x></dc:source>'
+)
+_ORACLE = Path(__file__).parent / "donnees" / "metadonnees"
+ECHANTILLONS_METADONNEES = (
+    ("jpeg", jpeg_meta(app1_exif(_TIFF), app1_xmp(_XMP), app1_etendu(b"G" * 32, 4, 0, b"abcd"))),
+    ("jpeg", jpeg_meta(app13(ressource(0x0404, jeu(1, 90, b"\x1b%G") + jeu(2, 25, b"mot"))))),
+    (
+        "png",
+        png_meta(
+            texte(b"parameters", b"Steps: 20"),
+            texte_compresse(b"Comment", b"abc"),
+            texte_international(b"XML:com.adobe.xmp", _XMP, compresse=True),
+            texte_international(b"Title", b"t", langue=b"fr"),
+        ),
+    ),
+    ("webp", webp_meta(bloc_riff(b"EXIF", _TIFF), bloc_riff(b"XMP ", _XMP))),
+    (
+        "heic",
+        heic_meta(
+            Element(1, b"Exif", b"\x00" * 4 + _TIFF),
+            Element(2, b"mime", _XMP, b"application/rdf+xml"),
+        ),
+    ),
+    ("heic", heic_meta(Element(1, b"Exif", b"\x00" * 4 + _TIFF, morceaux=2), methode=1)),
+    ("jpeg", (_ORACLE / "photo.jpg").read_bytes()),
+    ("png", (_ORACLE / "image.png").read_bytes()),
+    ("webp", (_ORACLE / "image.webp").read_bytes()),
+    ("heic", (_ORACLE / "image.heic").read_bytes()),
+)
+"""Échantillons par format : toutes les familles, toutes les formes de conteneur lues."""
+_MODULES: dict[str, tuple[str, ...]] = {
+    "jpeg": ("exif", "xmp", "iptc"),
+    "png": ("exif", "xmp", "textepng"),
+    "webp": ("exif", "xmp"),
+    "heic": ("exif", "xmp"),
+}
+
+
+@st.composite
+def metadonnees_mutees(draw: st.DrawFn) -> tuple[str, bytes]:
+    format_, octets = draw(st.sampled_from(ECHANTILLONS_METADONNEES))
+    tampon = bytearray(octets)
+    for _ in range(draw(st.integers(0, 6))):
+        position = draw(st.integers(0, len(tampon)))
+        match draw(st.sampled_from(("remplacer", "inserer", "supprimer", "couper"))):
+            case "remplacer" if position < len(tampon):
+                tampon[position] = draw(st.integers(0, 255))
+            case "inserer":
+                tampon[position:position] = draw(st.binary(min_size=1, max_size=16))
+            case "supprimer":
+                del tampon[position : position + draw(st.integers(1, 16))]
+            case "couper":
+                del tampon[position:]
+    return format_, bytes(tampon)
+
+
+def executer_module(module: str, format_: str, contenu: bytes) -> tuple[bytes, ...] | None:
+    """Lignes du module, chacune conforme au schéma des messages ; ``None`` si limite dépassée."""
+    with tempfile.TemporaryFile() as fichier:
+        c = contexte(fichier, contenu, format_, module)
+        try:
+            importlib.import_module(f"voight_kampff.modules.{module}").analyser(c)
+        except LimiteDepassee:
+            assert c.depasse
+            return None
+    for ligne in c.lignes:
+        schemas.valider("messages", decoder(ligne))
+    return c.lignes
+
+
+@given(metadonnees_mutees())
+def test_modules_de_metadonnees_echantillons_mutes(echantillon: tuple[str, bytes]) -> None:
+    format_, contenu = echantillon
+    if not contenu:
+        return  # une partie a au moins un octet
+    for module in _MODULES[format_]:
+        lignes = executer_module(module, format_, contenu)
+        assert executer_module(module, format_, contenu) == lignes  # même entrée, mêmes résultats
+
+
+@given(st.sampled_from(sorted(_MODULES)), st.binary(min_size=1, max_size=2048))
+def test_modules_de_metadonnees_octets_quelconques(format_: str, contenu: bytes) -> None:
+    for module in _MODULES[format_]:
+        executer_module(module, format_, contenu)

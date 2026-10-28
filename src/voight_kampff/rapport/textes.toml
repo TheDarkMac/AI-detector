@@ -252,6 +252,7 @@ niveau = ["Niveau", "Faible, modéré ou fort : propriété fixe de la règle d'
 fondement = ["Fondement", "Ce sur quoi repose un constat : vérification cryptographique, vérification déterministe, déclaration contenue dans le fichier, ou mesure. Une déclaration se réécrit librement."]
 regle = ["Règle", "Élément public et versionné du catalogue qui tire un constat d'observations ; elle dit ses limites connues."]
 observation = ["Observation", "Donnée relevée dans le fichier (valeur d'un champ, mesure), sans interprétation."]
+metadonnees = ["Métadonnées", "Données qu'un fichier déclare sur lui-même (appareil, logiciel, dates, auteur, position), écrites selon une norme : EXIF, XMP, IPTC, blocs texte PNG. Elles se réécrivent librement : l'outil les relève telles qu'elles sont écrites."]
 couverture = ["Couverture", "Techniques appliquées ou non au fichier et marquages recherchés : un résultat négatif ne vaut que pour eux."]
 non_menee = ["Analyse non menée", "Analyse qui aurait pu s'appliquer au fichier et ne l'a pas été, avec sa raison."]
 interrompue = ["Analyse interrompue", "Analyse dont une partie n'a pas abouti pour une raison qui dépend de la machine (délai, mémoire, arrêt) : ses résultats ne sont pas garantis reproductibles."]

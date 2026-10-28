@@ -110,9 +110,10 @@ methodes = ["test"]
 
 [[exigence]]
 id = "F-10"
-etat = "a_venir"
+etat = "partielle"
 taches = ["T20", "T21"]
 methodes = ["test"]
+note = "Images (JPEG, PNG, WebP, HEIC) : EXIF, XMP, IPTC-IIM et blocs texte PNG, vérifiés contre exiftool (T20, ADR-0122) ; PDF, conteneurs audio et vidéo, documents bureautiques à T21."
 
 [[exigence]]
 id = "F-11"
@@ -134,9 +135,10 @@ methodes = ["test"]
 
 [[exigence]]
 id = "F-14"
-etat = "a_venir"
-taches = ["T23"]
+etat = "partielle"
+taches = ["T20", "T23"]
 methodes = ["test"]
+note = "Absence de métadonnées observée par chaque module (`<famille>.present`), jamais un constat (T20) ; règles et présentation à T23."
 
 # 5.3 Provenance et marquages
 
@@ -381,10 +383,10 @@ note = "Chronologie des révisions PDF en V1 (T50) ; les autres visualisations a
 
 [[exigence]]
 id = "F-90"
-etat = "a_venir"
-taches = ["T25", "T94"]
+etat = "partielle"
+taches = ["T20", "T25", "T94"]
 methodes = ["test"]
-note = "Métadonnées en V1 (T25, ADR-0014) ; points de traçage candidats V2 (T94, ADR-0032)."
+note = "Champs identifiants des métadonnées d'image marqués par leurs modules (T20, ADR-0119) ; contrôle avant publication en V1 (T25, ADR-0014) ; points de traçage candidats V2 (T94, ADR-0032)."
 
 [[exigence]]
 id = "F-91"
@@ -456,7 +458,7 @@ etat = "partielle"
 taches = ["T17", "T20"]
 methodes = ["test", "inspection"]
 justification = "Les fiches techniques se relisent ; les taux qu'elles publient sont mesurés par le banc, testé."
-note = "Banc d'évaluation livré (T17) ; chaque fiche arrive avec sa technique."
+note = "Banc d'évaluation livré (T17) ; fiches des quatre modules de métadonnées et gabarit (T20, docs/techniques/), concordance avec les manifestes testée ; chaque fiche arrive avec sa technique."
 
 [[exigence]]
 id = "NF-10"
@@ -562,7 +564,7 @@ note = "Vérifiée depuis un module dans un vrai processus de travail, sur les t
 [[exigence]]
 id = "ES-03"
 etat = "realisee"
-taches = ["T14"]
+taches = ["T14", "T20"]
 methodes = ["test"]
 
 [[exigence]]
@@ -573,10 +575,10 @@ methodes = ["test"]
 
 [[exigence]]
 id = "ES-05"
-etat = "a_venir"
+etat = "partielle"
 taches = ["T20", "T21"]
 methodes = ["test"]
-note = "Aucun XML ni archive lu par un module avant T20."
+note = "XML de XMP lu par expat, DOCTYPE et entités refusés (T20, ADR-0116) ; XML et archives de DOCX et ODT à T21."
 
 [[exigence]]
 id = "ES-06"
@@ -625,7 +627,7 @@ methodes = ["test"]
 [[exigence]]
 id = "ES-13"
 etat = "realisee"
-taches = ["T16"]
+taches = ["T16", "T20"]
 methodes = ["test"]
 
 [[exigence]]
@@ -665,9 +667,9 @@ resultat = "Deux dépendances directes ; verrou à empreintes vérifié par la C
 [[exigence]]
 id = "ES-19"
 etat = "partielle"
-taches = ["T14", "T100", "T102"]
+taches = ["T14", "T20", "T100", "T102"]
 methodes = ["test"]
-note = "Fuzzing des analyseurs livrés ; catégorie « malformés » du corpus de référence à T100."
+note = "Fuzzing des analyseurs livrés, dont les modules de métadonnées et leurs lecteurs (T20) ; catégorie « malformés » du corpus de référence à T100."
 
 [[exigence]]
 id = "ES-20"

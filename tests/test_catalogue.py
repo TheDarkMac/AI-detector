@@ -53,7 +53,7 @@ def fichiers(dossier: Path) -> list[tuple[str, bytes]]:
 def test_catalogue_livre_valide() -> None:
     livre = charger(manifestes.decouvrir())
     assert not livre.version.fourni_par_utilisateur
-    assert livre.regles == ()  # aucun module livré : aucune règle
+    assert livre.regles == ()  # aucune règle avant T22 : les modules de T20 extraient seulement
     assert livre.version.empreinte == empreinte(fichiers(Path(str(catalogues.livre()))))
 
 

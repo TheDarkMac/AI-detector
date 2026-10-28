@@ -1,8 +1,8 @@
 # ADR-0113 — Banc : deux analyses par fichier, un défaut de reproductibilité est un écart
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
-- **Décideur** : assistant, proposition non posée en question pendant T18, à valider pendant la revue de la PR de T18
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T18, validée au début de T20 (PR de T18 mergée avant la validation)
 - **Tâche** : T18
 - **Exigences liées** : NF-06, P-05, critère du §8 ; ADR-0104, ADR-0105, ADR-0108, ADR-0109, ADR-0112
 
@@ -47,3 +47,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac au début de T20, la PR de T18 ayant été mergée sans changement de statut (ERR-0007) : statut « Accepté » |

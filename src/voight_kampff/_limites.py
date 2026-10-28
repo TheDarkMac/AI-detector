@@ -25,6 +25,7 @@ __all__ = [
     "PROGRAMME_MAX_MOTIF",
     "RAPPORT_COMPRESSION_MAX",
     "REGLES_MAX",
+    "RESULTATS_MAX",
     "SEUIL_RAPPORT_COMPRESSION",
     "TAILLE_MAX_CATALOGUE",
     "TAILLE_MAX_CONFIGURATION",
@@ -78,6 +79,9 @@ PROFONDEUR_MAX = 64
 """Profondeur d'imbrication des structures parcourues."""
 OBJETS_MAX = 1 << 20
 """Objets parcourus : entrées d'une archive, objets d'un PDF, blocs, balises."""
+RESULTATS_MAX = 1 << 12
+"""Résultats envoyés (observations, constats, analyses non menées) : chacun coûte au
+processus principal sa validation et son export (ADR-0121)."""
 
 # Catalogue de règles : comptées, contrôlées au chargement (ES-09, ADR-0088, ADR-0089)
 

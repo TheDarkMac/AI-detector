@@ -1,8 +1,8 @@
 # ADR-0112 — Comparaison de deux rapports : natures des écarts, garantie, sortie et codes
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
-- **Décideur** : assistant, proposition non posée en question pendant T18, à valider pendant la revue de la PR de T18
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T18, validée au début de T20 (PR de T18 mergée avant la validation)
 - **Tâche** : T18
 - **Exigences liées** : NF-06, P-05 ; ES-12, ES-13, ES-14, ES-15 ; ADR-0023, ADR-0095, ADR-0096, ADR-0108, ADR-0109, ADR-0111
 
@@ -58,3 +58,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-10-28 | Validé par TheDarkMac au début de T20, la PR de T18 ayant été mergée sans changement de statut (ERR-0007) : statut « Accepté » |

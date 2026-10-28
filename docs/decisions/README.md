@@ -126,5 +126,14 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0109](ADR-0109-forme-du-test-de-reproductibilite.md) | Forme du test de reproductibilité : tests, banc et commande `vk --comparer` | Accepté | 2026-10-28 |
 | [ADR-0110](ADR-0110-variations-locales-et-entre-systemes.md) | Conditions variées : sur un poste, et entre systèmes et versions de Python en CI | Accepté | 2026-10-28 |
 | [ADR-0111](ADR-0111-interpreteur-dans-les-versions.md) | Interpréteur Python dans la rubrique Versions ; schéma du rapport 0.3.0 | Accepté | 2026-10-28 |
-| [ADR-0112](ADR-0112-comparaison-de-deux-rapports.md) | Comparaison de deux rapports : natures des écarts, garantie, sortie et codes | Proposé | 2026-10-28 |
-| [ADR-0113](ADR-0113-deux-analyses-par-fichier-au-banc.md) | Banc : deux analyses par fichier, un défaut de reproductibilité est un écart | Proposé | 2026-10-28 |
+| [ADR-0112](ADR-0112-comparaison-de-deux-rapports.md) | Comparaison de deux rapports : natures des écarts, garantie, sortie et codes | Accepté | 2026-10-28 |
+| [ADR-0113](ADR-0113-deux-analyses-par-fichier-au-banc.md) | Banc : deux analyses par fichier, un défaut de reproductibilité est un écart | Accepté | 2026-10-28 |
+| [ADR-0114](ADR-0114-un-module-par-famille-de-metadonnees.md) | Un module par famille de métadonnées, lecteurs de structure communs | Accepté | 2026-10-28 |
+| [ADR-0115](ADR-0115-formats-et-emplacements-lus.md) | Formats couverts et emplacements lus : JPEG, PNG, WebP et HEIC | Accepté | 2026-10-28 |
+| [ADR-0116](ADR-0116-xml-par-expat-sans-dtd.md) | XML de XMP lu par expat, DTD refusée ; `defusedxml` écarté | Accepté | 2026-10-28 |
+| [ADR-0117](ADR-0117-vocabulaire-des-observations.md) | Vocabulaire des observations de métadonnées | Proposé | 2026-10-28 |
+| [ADR-0118](ADR-0118-valeurs-tirees-du-fichier.md) | Valeurs tirées du fichier : types, textes et listes coupés, données binaires | Proposé | 2026-10-28 |
+| [ADR-0119](ADR-0119-donnees-identifiantes-des-metadonnees.md) | Données identifiantes des métadonnées : champs marqués par chaque module | Proposé | 2026-10-28 |
+| [ADR-0120](ADR-0120-bibliotheques-au-manifeste.md) | Bibliothèques au manifeste, versions lues avant le verrouillage | Proposé | 2026-10-28 |
+| [ADR-0121](ADR-0121-cout-de-la-validation.md) | Coût de la validation : références résolues, branche choisie par nature, résultats bornés | Proposé | 2026-10-28 |
+| [ADR-0122](ADR-0122-oracle-exiftool.md) | Oracle exiftool : échantillons générés, sortie enregistrée, comparaison dans les deux sens | Proposé | 2026-10-28 |

@@ -14,7 +14,7 @@ Toute règle, convention, étape, décision et erreur du projet est consignée i
 
 [`01-analyse/`](01-analyse/) contient l'analyse critique du cahier des charges (T01) ; [`02-arbitrages/`](02-arbitrages/) le registre des arbitrages des points ouverts (T02), qui renvoie aux ADR ; [`modele-de-menace/`](modele-de-menace/) le modèle de menace (T03, NF-15, livrable 7) ; [`architecture/`](architecture/) l'architecture et ses schémas (T04) ; [`modele-de-donnees/`](modele-de-donnees/) le modèle de données du rapport et de ses exports (T11, T16) ; [`catalogue/`](catalogue/README.md) le guide du catalogue de règles et le registre de ses versions (T15) ; [`verification/`](verification/README.md) la matrice de vérification et le mode d'emploi du banc d'évaluation (T17). Le [glossaire du projet](glossaire.md) fixe le vocabulaire (T11).
 
-Le dossier `techniques/` (fiches par technique, NF-09) sera créé par la première technique livrée.
+[`techniques/`](techniques/README.md) contient les fiches techniques, une par module d'analyse (NF-09, livrable 4), depuis T20.
 
 ## Distinction entre les trois registres
 

@@ -74,10 +74,13 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
     assert identification.empreinte == hashlib.sha256(PDF).hexdigest()
     assert identification.extension_concordante is True
     assert identification.date_analyse.microsecond == 0
-    # Aucun module livré : seules figurent les techniques hors V1 qui s'appliquent au PDF.
+    # Modules d'image non applicables ; techniques hors V1 qui s'appliquent au PDF.
     assert {(t.module, t.etat, t.version) for t in analyse.couverture.techniques} == {
         (technique, EtatTechnique.NON_MENEE, None)
         for technique in ("referencepdf", "references", "pointstracage")
+    } | {
+        (module, EtatTechnique.NON_APPLICABLE, "0.1.0")
+        for module in ("exif", "iptc", "textepng", "xmp")
     }
     assert {n.raison for n in analyse.non_menees} == {RaisonNonMenee.HORS_V1}
     assert analyse.catalogue == catalogue.charger(manifestes.decouvrir()).version
