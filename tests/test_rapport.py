@@ -68,7 +68,9 @@ def regle_de(constat: Constat, **champs: Any) -> Regle:
         document["niveau"] = constat.graduation.niveau.value
         if constat.graduation.evaluee:
             document["evaluation"] = {
-                "taux_faux_positifs": 0.015,
+                "taux_faux_positifs": 0.002,
+                "effectif": 1500,
+                "borne_superieure": 0.00586,
                 "corpus": "2026.1",
                 "date": "2026-10-01",
             }
@@ -408,7 +410,10 @@ def test_html_contenu_des_constats(analyse: Analyse) -> None:
     # Règle, limites et évaluation, lues dans le catalogue (§6 du cahier).
     assert "R-META-001, version 2 : Règle R-META-001" in document
     assert "Limite de R-META-001." in document
-    assert "taux de faux positifs mesuré : 1.5 % (corpus 2026.1, 2026-10-01)" in document
+    assert (
+        "taux de faux positifs mesuré : 0.2 % sur 1\u202f500 fichiers, au plus 0.586 % avec une "
+        "confiance de 95 % (corpus 2026.1, 2026-10-01)"
+    ) in document
     assert "règle non évaluée" in document
     # Indices comptés par direction et niveau, sans conclusion (ADR-0018).
     assert "2 indice(s) :" in document

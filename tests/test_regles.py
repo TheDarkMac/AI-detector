@@ -17,6 +17,7 @@ from voight_kampff._regles import (
     appliquer,
     conforme,
     emplacements,
+    niveau_permis,
     remplir,
 )
 from voight_kampff.rapport.modele import (
@@ -136,6 +137,32 @@ def test_motif_refuse_sans_ecrire_sur_la_sortie_d_erreur() -> None:
 # Règles
 
 
+def evaluee(niveau: str, **evaluation: Any) -> dict[str, Any]:
+    """Champs d'un indice évalué, au niveau donné ; ``evaluation`` modifie son évaluation."""
+    return {
+        "categorie": "indice",
+        "direction": "origine_ia",
+        "niveau": niveau,
+        "evaluation": {
+            "taux_faux_positifs": 0.002,
+            "effectif": 1500,
+            "borne_superieure": 0.0059,
+            "corpus": "1",
+            "date": "2026-10-01",
+        }
+        | evaluation,
+    }
+
+
+@pytest.mark.parametrize(
+    ("borne", "niveau"),
+    [(0.0, "fort"), (0.01, "fort"), (0.0101, "modere"), (0.05, "modere"), (0.0501, "faible")],
+)
+def test_niveau_permis_par_la_borne(borne: float, niveau: str) -> None:
+    assert niveau_permis(borne) is Niveau(niveau)
+    regle(**evaluee(niveau, taux_faux_positifs=0.0, borne_superieure=borne))
+
+
 def test_regle_lue_et_reecrite() -> None:
     document = regle_dict(
         "R-META-001",
@@ -144,7 +171,13 @@ def test_regle_lue_et_reecrite() -> None:
         direction="origine_ia",
         fondement="declaration",
         niveau="modere",
-        evaluation={"taux_faux_positifs": 0.004, "corpus": "2026.1", "date": "2026-10-01"},
+        evaluation={
+            "taux_faux_positifs": 0.004,
+            "effectif": 500,
+            "borne_superieure": 0.0145,
+            "corpus": "2026.1",
+            "date": "2026-10-01",
+        },
         calibrage={"methode": "corpus", "procedure": "Seuil au 99e centile.", "corpus": "2026.1"},
         **moteur(
             {"observation": "exif.ifd0.Software", "motif": "^Midjourney", "parametre": "logiciel"},
@@ -208,15 +241,14 @@ def test_regle_lue_et_reecrite() -> None:
             id="preuve-sur-declaration",
         ),
         pytest.param({"direction": "origine_ia"}, "information neutre", id="neutre-dirigee"),
+        pytest.param(evaluee("faible", taux_faux_positifs=1.5), "taux", id="taux-hors-bornes"),
+        pytest.param(evaluee("faible", borne_superieure=0.001), "borne", id="borne-sous-le-taux"),
+        pytest.param(evaluee("faible", borne_superieure="0.1"), "borne", id="borne-en-texte"),
+        pytest.param(evaluee("faible", effectif=0), "effectif", id="effectif-nul"),
+        pytest.param(evaluee("faible", effectif=True), "effectif", id="effectif-booleen"),
+        pytest.param(evaluee("fort", borne_superieure=0.0101), "plus élevé", id="fort-trop-haut"),
         pytest.param(
-            {
-                "categorie": "indice",
-                "direction": "origine_ia",
-                "niveau": "faible",
-                "evaluation": {"taux_faux_positifs": 1.5, "corpus": "1", "date": "2026-10-01"},
-            },
-            "taux",
-            id="taux-hors-bornes",
+            evaluee("modere", borne_superieure=0.051), "plus élevé", id="modere-trop-haut"
         ),
         pytest.param({"phrase": {"en": "Test."}}, "français", id="phrase-sans-francais"),
         pytest.param(
