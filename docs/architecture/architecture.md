@@ -1,6 +1,6 @@
 # Architecture
 
-> Statut : **v1.11** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 avec T15, v1.9 avec T16, v1.10 avec T17, v1.11 proposée dans la PR de T18. Document vivant : toute modification est inscrite à l'historique (§13).
+> Statut : **v1.12** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 avec T15, v1.9 avec T16, v1.10 avec T17, v1.11 avec T18, v1.12 proposée dans la PR de T20. Document vivant : toute modification est inscrite à l'historique (§13).
 > Exigences : NF-01, NF-06, NF-10 ; exigences de sécurité ES-01, ES-02, ES-05, ES-10, ES-17, ES-18 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-05, A-16, A-30, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T04. Date de rédaction : 2026-10-26.
 
@@ -108,7 +108,7 @@ Dans un lot (ADR-0015), ces étapes se répètent pour chaque fichier, avec un n
 
 ## 4. Composants et organisation du code
 
-Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; T11 a créé `rapport/modele.py` et `schemas/` (schémas du rapport et des messages) ; T12 a créé `_protocole.py`, `_orchestration/`, `_travail/`, `modules/` (vide) et le schéma des manifestes ; T13 a créé `formats.py`, `analyse.py`, `_orchestration/soumission.py` et `_travail/identification.py` ; T14 a créé `_limites.py`, `_orchestration/surveillance.py` et `_travail/restrictions/` ; T15 a créé `_regles.py`, `_orchestration/catalogue.py`, `donnees/catalogue/` et `modules/hors_v1.toml` ; T16 a créé `rapport/export.py` (exports et masquage), `rapport/_html.py` (document HTML), `rapport/_presentation.py` (textes, valeurs, résumé) et `rapport/textes.toml` (textes du rapport) ; T18 a créé `rapport/comparaison.py` (comparaison de deux rapports, `vk --comparer`, ADR-0112) ; les autres éléments arrivent avec leurs tâches.
+Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; T11 a créé `rapport/modele.py` et `schemas/` (schémas du rapport et des messages) ; T12 a créé `_protocole.py`, `_orchestration/`, `_travail/`, `modules/` (vide) et le schéma des manifestes ; T13 a créé `formats.py`, `analyse.py`, `_orchestration/soumission.py` et `_travail/identification.py` ; T14 a créé `_limites.py`, `_orchestration/surveillance.py` et `_travail/restrictions/` ; T15 a créé `_regles.py`, `_orchestration/catalogue.py`, `donnees/catalogue/` et `modules/hors_v1.toml` ; T16 a créé `rapport/export.py` (exports et masquage), `rapport/_html.py` (document HTML), `rapport/_presentation.py` (textes, valeurs, résumé) et `rapport/textes.toml` (textes du rapport) ; T18 a créé `rapport/comparaison.py` (comparaison de deux rapports, `vk --comparer`, ADR-0112) ; T20 a créé les modules `modules/exif/`, `modules/xmp/`, `modules/iptc/`, `modules/textepng/` et leurs lecteurs communs `modules/_lecture/` (ADR-0114) ; les autres éléments arrivent avec leurs tâches.
 
 Hors du paquet, à la racine du dépôt, T17 a créé `banc/` : le banc d'évaluation et la matrice de vérification, outils de développement qui ne sont ni dans le wheel ni dans le paquet source ([ADR-0099](../decisions/ADR-0099-banc-outil-du-depot.md)). Le banc analyse un corpus par l'interface publique, dans un espace de noms réseau vide (ADR-0100), et mesure les taux du §8 du cahier (ADR-0104) ; la matrice relie chaque exigence à sa vérification (ADR-0102). T18 y ajoute la double analyse de chaque fichier (ADR-0113).
 
@@ -126,6 +126,7 @@ src/voight_kampff/
   _travail/restrictions/  restrictions par système : linux, macos, windows (ADR-0079 à ADR-0081)
   _regles.py         règles du catalogue : forme, motifs RE2, évaluation (P1 et P2 ; ADR-0084, ADR-0089)
   modules/           une technique par sous-paquet, avec son manifeste (ADR-0042) ; techniques hors V1 (hors_v1.toml, ADR-0087)
+  modules/_lecture/  lecteurs de structure communs aux modules de métadonnées, sans manifeste (T20, ADR-0114)
   rapport/           modèle du rapport (T11) ; exports HTML et JSON, masquage, textes du rapport (T16) ; comparaison (T18)
   schemas/           JSON Schema : messages de P2, catalogue et règles, manifestes, techniques hors V1, rapport
   donnees/           catalogue TOML (T15, ADR-0088) ; liste de confiance C2PA (T30)
@@ -165,7 +166,7 @@ Le rapport porte l'état de l'isolation : complète, ou réduite avec la liste d
 
 Ce qui ne passe par aucun de ces mécanismes, sur tous les systèmes :
 
-- le XML est lu sans DTD ni entité externe (`defusedxml`), les archives en mémoire, jamais extraites (ES-05) ;
+- le XML est lu par expat, DOCTYPE et entités refusés ([ADR-0116](../decisions/ADR-0116-xml-par-expat-sans-dtd.md)), les archives en mémoire, jamais extraites (ES-05) ;
 - aucune URL issue du fichier n'est résolue (ES-06, ADR-0033) ;
 - P2 n'écrit rien sur disque ; ES-02 autorise un répertoire temporaire privé, la V1 n'en prévoit pas.
 
@@ -185,7 +186,7 @@ Les règles sont évaluées dans P2 : une donnée hostile n'est jamais confront�
 
 ## 7. Modules et extension (NF-10)
 
-- Un module est un sous-paquet de `modules/`, avec un manifeste TOML : identifiant, version, formats, exigences, règles employées, fiche technique, dépendances envers d'autres modules ([ADR-0042](../decisions/ADR-0042-modules-et-extension.md)).
+- Un module est un sous-paquet de `modules/`, avec un manifeste TOML : identifiant, version, formats, exigences, règles employées, fiche technique, dépendances envers d'autres modules, bibliothèques qui lisent le fichier ([ADR-0042](../decisions/ADR-0042-modules-et-extension.md), [ADR-0120](../decisions/ADR-0120-bibliotheques-au-manifeste.md)). Les fiches sont dans [`docs/techniques/`](../techniques/README.md).
 - P1 lit les manifestes sans importer le code, et en tire la couverture du rapport (F-25, F-82). P2 importe le code.
 - Ajouter une technique ou un format, c'est ajouter un sous-paquet, ses règles au catalogue et sa fiche : aucun autre module n'est modifié.
 - Un module expose `analyser(contexte)` ; le contexte lit le fichier par position et reçoit observations, constats et analyses non menées ([ADR-0061](../decisions/ADR-0061-interface-d-un-module.md)). Le manifeste est validé par schéma ; un module s'exécute après ceux qu'il requiert ([ADR-0064](../decisions/ADR-0064-manifeste-des-modules.md)).
@@ -209,15 +210,15 @@ Politique : [ADR-0043](../decisions/ADR-0043-politique-des-bibliotheques.md) ; g
 
 | Dépendance | Licence | Où elle s'exécute | Pourquoi |
 | --- | --- | --- | --- |
-| Bibliothèque standard Python | PSF-2.0 | P1 et P2 | `hashlib`, `tomllib`, `json`, `zipfile`, `struct`, `argparse`, `ctypes` |
+| Bibliothèque standard Python | PSF-2.0 | P1 et P2 | `hashlib`, `tomllib`, `json`, `zipfile`, `struct`, `argparse`, `ctypes` ; expat (`xml.parsers.expat`) pour XMP depuis T20 (ADR-0116), version au rapport (ADR-0120) |
 | `c2pa-python` | Apache-2.0 ou MIT | P2 | C2PA (T30) |
-| `defusedxml` | PSF-2.0 | P2 | XMP, DOCX, ODT (ES-05) |
+| ~~`defusedxml`~~ | PSF-2.0 | — | Écartée en T20 au profit d'expat, DTD refusée (ADR-0116) |
 | `pypdf` | BSD-3-Clause | P2 | Objets PDF (T50 à T53) |
 | `google-re2` | BSD-3-Clause | P1 (compilation), P2 | Expressions du catalogue (ES-09) ; dépendance depuis T15 (ADR-0039, ADR-0089) |
 | `jsonschema` | MIT | P1 | Validation des messages, du catalogue, des manifestes ; dépendance depuis T11 (ADR-0054) |
 | `numpy` | BSD-3-Clause | P2 | Analyses JPEG (T40, T41) |
 | uv | Apache-2.0 ou MIT | Développement, CI | Verrou à empreintes |
-| exiftool | Perl (Artistic ou GPL) | Tests seulement | Oracle de test des métadonnées (T20, T21) |
+| exiftool | Perl (Artistic ou GPL) | Tests seulement | Oracle de test des métadonnées (T20, T21) : sortie enregistrée avec les échantillons, relancé s'il est installé (ADR-0122) |
 
 Cette liste est une liste de candidates : chaque tâche confirme ou remplace la sienne selon les critères d'ADR-0043. Exclues : GPL et AGPL, lecteurs qui résolvent des entités externes ou suivent des liens.
 
@@ -232,7 +233,7 @@ Fait le 2026-10-26 à partir des métadonnées publiées sur PyPI. Aucune de ces
 | `jsonschema` | 4.26.0 | Python pur | `attrs`, `jsonschema-specifications`, `referencing`, `rpds-py` | `rpds-py` est écrit en Rust (sûr pour la mémoire), paquets pour les trois systèmes ; s'exécute dans P1. Toutes MIT |
 | `numpy` | 2.5.4 | Python 3.12 à 3.15, trois systèmes | Aucune | Licence composée, toutes permissives (BSD-3-Clause, 0BSD, MIT, Zlib, CC0-1.0) |
 | `pypdf` | 6.21.2 | Python pur | Aucune obligatoire | Les PDF chiffrés demandent l'option `crypto` (`cryptography`) : à trancher en T50 |
-| `defusedxml` | 0.7.1 (mars 2021) | Python pur | Aucune | Plus de version depuis 2021 (critère « maintenue ») ; T20 compare avec les protections actuelles de la bibliothèque standard |
+| `defusedxml` | 0.7.1 (mars 2021) | Python pur | Aucune | Plus de version depuis 2021 (critère « maintenue ») ; T20 compare avec les protections actuelles de la bibliothèque standard (fait : écartée, ADR-0116) |
 
 Outillage de développement verrouillé en T10 (41 paquets dans `uv.lock`, avec empreintes) : Ruff 0.17.2, mypy 2.4.0, pytest 9.1.1, coverage.py 7.17.0, pip-audit 2.10.1 et leurs dépendances ; pip-audit n'y signale aucune faille connue. Outil de construction : `uv_build` 0.13.5, épinglé avec empreintes (ADR-0049).
 
@@ -262,7 +263,7 @@ Reformulée par ADR-0023 : mêmes fichier, versions de l'outil, du catalogue et 
 | --- | --- | --- |
 | ES-01 | Un P2 par fichier ; P1 ne lit le fichier que pour l'empreinte (§3) | T12 (lancement) ; T13 (ouverture et empreinte, ADR-0075) |
 | ES-02 | Restrictions par système, état de l'isolation au rapport (§5) | T14 (ADR-0079 à ADR-0081) |
-| ES-05 | `defusedxml` ; archives en mémoire ; aucune écriture de P2 (§5) | T20, T21 |
+| ES-05 | expat, DOCTYPE et entités refusés (ADR-0116) ; archives en mémoire ; aucune écriture de P2 (§5) | T20 (XMP), T21 |
 | ES-10 | P2 sans réseau ; toute requête sortante part de P1, désactivée par défaut, selon ADR-0033 ; inventaire du modèle de menace inchangé | T30 |
 | ES-17 | Interface publique limitée à l'analyse par P2 ; garde dans les analyseurs (§4) | T12 (garde, ADR-0061) ; T13 (`analyser`, ADR-0073) |
 | ES-18 | Verrou à empreintes, canal unique, attestations, peu de dépendances, Python pur d'abord (§9, §11) | T10 |
@@ -279,7 +280,7 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | ~~Schéma et découpage du catalogue ; syntaxe RE2 admise~~ | Fixés en T15 : ADR-0084, ADR-0088, ADR-0089 |
 | ~~Gabarit HTML et moyen d'échappement~~ | Fixés en T16 : ADR-0094, ADR-0096 |
 | Paquets binaires de `c2pa-python` sous Windows ; `requests` et `toml` parmi ses dépendances (§9) | T30 |
-| Maintenance de `defusedxml` (dernière version en 2021) (§9) | T20 |
+| ~~Maintenance de `defusedxml` (dernière version en 2021) (§9)~~ | Tranché en T20 : écartée, ADR-0116 |
 | Python 3.15, dès que `google-re2` le prend en charge (ADR-0051) | Nouvelle PR |
 | Moyen de lire les coefficients DCT | T41 |
 | Mode d'exécution d'un service tiers | Nouvel ADR, avec le premier service |
@@ -289,9 +290,9 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | Visualisation intégrée au rapport HTML (F-84) : image `data:` et politique `img-src` | Première technique qui en produit une, nouvel ADR (ADR-0094) |
 | Saisie de texte collé (A-29) | T80 (ADR-0074) |
 | ~~Job Object sous Windows, lanceur de l'environnement virtuel compris ; valeurs des tailles et du délai, provisoires en T12 (ADR-0065)~~ | Fixés en T14 : ADR-0077, ADR-0081 |
-| Coût de la validation des messages par P1 (environ 1,5 ms par message, compté dans le délai de 120 s) | Premier module à produire beaucoup d'observations (T20) |
+| ~~Coût de la validation des messages par P1 (environ 1,5 ms par message, compté dans le délai de 120 s)~~ | Fixé en T20 : 1,6 à 3,5 ms mesurées, quatre à cinq fois moins après résolution des références ; 4 096 résultats par module et par partie (ADR-0121) |
 | Conteneur d'application (AppContainer) sous Windows, pour bloquer réseau et lecture | Nouvel ADR (ADR-0035, ADR-0081) |
-| Versions des bibliothèques employées par un module, lues avant le verrouillage (ADR-0064) | Premier module qui en emploie une |
+| ~~Versions des bibliothèques employées par un module, lues avant le verrouillage (ADR-0064)~~ | Fixé en T20 : champ `bibliotheques` du manifeste (ADR-0120) |
 | ~~Liste des techniques hors V1 par format (`hors_v1`)~~ | Fixée en T15 : ADR-0087 |
 | Règle qui compare deux observations (F-13, incohérences de dates) | T23, nouveau format du catalogue ou règle « module » (ADR-0084) |
 | Marquages recherchés (F-25) inscrits au catalogue | T31 |
@@ -313,3 +314,4 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | 2026-10-28 | 1.9 | Génération du rapport : déroulé (§3), fichiers créés et composant Rapport (§4), points fixés et visualisation transmise à sa technique (§12) | T16 |
 | 2026-10-28 | 1.10 | Banc d'évaluation et matrice de vérification, hors du paquet (§4) | T17 |
 | 2026-10-28 | 1.11 | Reproductibilité : `rapport/comparaison.py` et double analyse du banc (§4) | T18 |
+| 2026-10-28 | 1.12 | Premiers modules : métadonnées d'image et lecteurs communs (§4), XML par expat (§5, §9, §11), bibliothèques au manifeste (§7), `defusedxml` écarté et oracle exiftool (§9), points tranchés (§12) | T20 |

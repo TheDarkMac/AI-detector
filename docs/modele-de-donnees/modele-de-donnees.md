@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.6** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 proposée dans la PR de T18. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.7** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 proposée dans la PR de T20. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -191,7 +191,7 @@ Donnée relevée par un module : valeur d'un champ ou mesure, sans interprétati
 | --- | --- | --- | --- |
 | `identifiant` | Identifiant | Oui | Unique dans le rapport ; forme conseillée `<module>/<n>` |
 | `module` | Identifiant | Oui | Technique qui a relevé la donnée |
-| `nom` | Identifiant | Oui | Vocabulaire du module, par exemple `exif.ifd0.Make` ; documenté dans sa fiche |
+| `nom` | Identifiant | Oui | Vocabulaire du module, par exemple `exif.ifd0.Make` ; documenté dans sa fiche ; règles communes aux modules de métadonnées : [ADR-0117](../decisions/ADR-0117-vocabulaire-des-observations.md) |
 | `valeur` | Texte, nombre, booléen, ou liste d'au plus 4 096 de ceux-ci | Oui | Texte d'au plus 4 096 caractères, encodable en UTF-8 ; nombre fini, entre −2⁶³ et 2⁶³ − 1 |
 | `unite` | Texte de 1 à 32 caractères | Non | `px`, `s`, `ratio`… |
 | `localisation` | Localisation | Non | §6 |
@@ -281,7 +281,7 @@ Le processus principal tire de l'identification trois sortes d'analyses non men�
 
 **Partie** (ADR-0070, ADR-0071) : `rang` de 1 à 16, dans l'ordre des débuts ; `format`, pris dans le vocabulaire de `formats.py` ; `octets`, du début à la fin logique, ou à la fin du fichier si elle n'est pas connue ; `fin_connue` ; `tronquee` (structure interrompue avant sa fin, jamais avec une fin connue). Les plages peuvent se chevaucher. Au moins une partie est dans le périmètre : sinon le fichier est refusé, sans rapport (ADR-0075).
 
-**Versions** : `outil` ; `interpreteur` (`nom`, `version` : implémentation et version de Python, lues dans P1, qui lance P2 par le même interpréteur, ADR-0111) ; `catalogue` (`version`, `date`, `empreinte`, `fourni_par_utilisateur`, ADR-0029) ; `dependances` (`nom`, `version`, sans doublon, ADR-0023).
+**Versions** : `outil` ; `interpreteur` (`nom`, `version` : implémentation et version de Python, lues dans P1, qui lance P2 par le même interpréteur, ADR-0111) ; `catalogue` (`version`, `date`, `empreinte`, `fourni_par_utilisateur`, ADR-0029) ; `dependances` (`nom`, `version`, sans doublon, ADR-0023 ; bibliothèques des modules actifs, ADR-0120).
 
 **Isolation** : `niveau` `complete` ou `reduite` ; `manques`, vide si et seulement si l'isolation est complète, pris dans `reseau`, `ecriture`, `lecture`, `nouveaux_programmes`, `memoire`, `temps`, `vidage_memoire` (architecture §5).
 
@@ -315,7 +315,7 @@ Une ligne JSON par message (ADR-0036), validée par `messages.schema.json` :
 | `constat` | `constat` | Pendant l'analyse |
 | `non_menee` | `non_menee` | Pendant l'analyse |
 | `module` | `module`, `partie`, `applicable` | Après les résultats de chaque module actif, dans l'ordre de la configuration, pour chaque partie du périmètre (ADR-0062, ADR-0071) |
-| `versions` | `dependances` | Versions réelles des bibliothèques chargées dans P2 |
+| `versions` | `dependances` | Versions réelles des bibliothèques des modules actifs, celles que citent leurs manifestes, une fois chacune, dans l'ordre de leurs noms ; P1 refuse toute autre liste (ADR-0120) |
 | `fin` | `empreinte` recalculée par P2 après les modules (ES-08, ADR-0075) | Dernier message |
 
 L'ordre des messages, les contrôles du processus principal et la conversion des échecs en analyses non menées sont fixés par ADR-0062 et ADR-0065 (T12). Les tailles maximales et le délai sont fixés par ADR-0077 (T14) ; une ligne ou une sortie trop longue donne `message_invalide` (ADR-0078).
@@ -324,16 +324,16 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 
 | Exigence | Réalisation | Reste |
 | --- | --- | --- |
-| F-80 | Catégorie de chaque constat ; phrase rédigée dans sa règle, remplie à l'export (T16, ADR-0091) | Phrases des premières règles (T20 et suivantes) |
+| F-80 | Catégorie de chaque constat ; phrase rédigée dans sa règle, remplie à l'export (T16, ADR-0091) | Phrases des premières règles (T22 et suivantes ; T20 n'en a pas) |
 | F-81 | Direction parmi cinq (ADR-0055) ; fixée par la règle, permise par le manifeste (T15, ADR-0084) | — |
 | F-82 | Analyses non menées et raisons fermées ; techniques hors V1 dans la couverture ; T12 produit `erreur_module`, `module_desactive`, `arret_processus`, `message_invalide` ; T13 `hors_perimetre`, `fichier_tronque` et `format_partiel` à partir de l'identification ; T14 `limite_depassee`, `memoire_depassee` et `delai_depasse`, valeurs fixées (ADR-0077, ADR-0078) ; T15 `hors_v1` (ADR-0087) | `format_partiel` des modules pour les contenus multiples (A-25) |
 | F-02, F-03, ES-07 | Format réel par le contenu, parties d'un polyglotte, extension et concordance, octets non reconnus (T13, ADR-0070 à ADR-0072) ; phrases des signalements (T16, ADR-0098) | — |
 | §6 | Constat à cinq éléments, plus règle versionnée, technique, fondement, niveau, localisation (A-46, A-47) ; rubriques Identification, Versions, Couverture ; résumé, avertissement, masquage produits à l'export (T16, ADR-0093, ADR-0095, ADR-0098) | — |
-| ES-13, NF-18 | Catégorie identifiante de l'observation (ADR-0057) ; nom et empreinte identifiants d'office ; masqués par défaut, absents de l'export, levée par catégorie (T16, ADR-0093, ADR-0095) | Marquage par chaque module (T20 et suivantes) |
+| ES-13, NF-18 | Catégorie identifiante de l'observation (ADR-0057) ; nom et empreinte identifiants d'office ; masqués par défaut, absents de l'export, levée par catégorie (T16, ADR-0093, ADR-0095) | Marquage par chaque module : métadonnées d'image en T20 (ADR-0119), puis chaque technique |
 | ES-04 | Données simples, bornées, validées par schéma puis par le modèle ; erreurs sans contenu ; lecture bornée et délai (T12), valeurs fixées (T14, ADR-0077) | — |
 | ES-20 | Une preuve exige un fondement de vérification ; une déclaration ne peut être qu'un indice ou une information | Rédaction « le fichier déclare » (T22, T30) |
 | A-10 | Glossaire du projet | Glossaire utilisateur (T103) |
-| A-23 | Couverture : état « non applicable », produit par T12 d'après les formats des manifestes ; techniques hors V1 par format (T15, ADR-0087) | Formats de chaque technique livrée, dans sa fiche (T20 et suivantes) |
+| A-23 | Couverture : état « non applicable », produit par T12 d'après les formats des manifestes ; techniques hors V1 par format (T15, ADR-0087) | Formats de chaque technique livrée, dans sa fiche : quatre modules en T20 (ADR-0115), puis chaque technique |
 
 ## 10. Historique
 
@@ -346,3 +346,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-10-27 | 1.4 | Décisions de T15 (§1) ; constat conforme à sa règle (§4) ; techniques hors V1 et technique sans version non applicable (§5, §7, ADR-0087) ; exigences (§9) | T15 |
 | 2026-10-28 | 1.5 | Décisions de T16 et emplacement des exports (§1) ; `VERSION_SCHEMA` 0.2.0 ; export JSON masqué (§7, ADR-0095) ; exigences (§9) | T16 |
 | 2026-10-28 | 1.6 | Interpréteur dans la rubrique Versions, `VERSION_SCHEMA` 0.3.0 (§1, §2, §6, ADR-0111) ; comparaison de deux rapports (§1, ADR-0112) | T18 |
+| 2026-10-28 | 1.7 | Message `versions` contrôlé par les manifestes (§6, ADR-0120) ; vocabulaire des premières observations (§4, ADR-0117) ; exigences (§9) | T20 |

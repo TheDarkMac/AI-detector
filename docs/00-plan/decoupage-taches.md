@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.17** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 proposée dans la PR de T18. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.18** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 proposée dans la PR de T20. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -66,7 +66,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 
 | ID | Tâche | Exigences |
 | --- | --- | --- |
-| T20 | Extraction image : EXIF, XMP, IPTC, blocs texte PNG | F-10 |
+| T20 | Extraction image : EXIF, XMP, IPTC, blocs texte PNG ; un module par famille, JPEG, PNG, WebP et HEIC, XML par expat sans DTD, oracle exiftool, premières fiches techniques (`docs/techniques/`) ; décisions : ADR-0114 à ADR-0122 | F-10, F-14 (absence observée), ES-05 (XMP), ES-13 |
 | T21 | Extraction PDF (dictionnaire Info, XMP), audio/vidéo (balises de conteneur), DOCX/ODT (propriétés) | F-10 |
 | T22 | Règles d'origine IA déclarée (IPTC DigitalSourceType) et catalogue des signatures de générateurs (paramètres, logiciel) | F-11, F-12 |
 | T23 | Incohérences internes (dates, logiciel/appareil, dimensions) ; absence = information neutre ; comparaison de deux observations : règle « module » ou nouveau format du catalogue (ADR-0084) | F-13, F-14 |
@@ -197,3 +197,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-10-28 | 0.15 | T16 renvoie à ses décisions (ADR-0091 à ADR-0098) | T16 |
 | 2026-10-28 | 0.16 | T17 renvoie à ses décisions (ADR-0099 à ADR-0107) et à la matrice de vérification | T17 |
 | 2026-10-28 | 0.17 | T18 renvoie à ses décisions (ADR-0108 à ADR-0113) ; la commande `vk --comparer` s'ajoute à son périmètre (ADR-0109) | T18 |
+| 2026-10-28 | 0.18 | T20 renvoie à ses décisions (ADR-0114 à ADR-0122) ; HEIC inclus (ADR-0115) | T20 |
