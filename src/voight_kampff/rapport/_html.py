@@ -192,9 +192,14 @@ def _identification(vue: Presentation) -> str:
 
 
 def _versions(vue: Presentation) -> str:
-    dependances = vue.analyse.dependances
+    versions = vue.analyse.rapport().versions  # celles de l'export JSON
+    dependances = versions.dependances
     couples = [
-        (_champ("outil"), _t(version("voight-kampff-forensics"))),
+        (_champ("outil"), _t(versions.outil)),
+        (
+            _champ("interpreteur"),
+            _t(f"{versions.interpreteur.nom} {versions.interpreteur.version}"),
+        ),
         (_champ("catalogue"), _t(vue.catalogue())),
         (
             _champ("dependances"),

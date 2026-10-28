@@ -114,10 +114,11 @@ Types : `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, `ci`, `build`, `perf
 | `docs` | `lint-markdown` | Forme du Markdown (markdownlint-cli2, configuration `.markdownlint-cli2.jsonc`) |
 | `docs` | `fichiers-interdits` | Aucun `CLAUDE.md`, `CLAUDE.local.md` ni `.claude/` suivi par git |
 | `code` | `qualite` | Verrou à jour, Ruff, mypy (ADR-0047) ; versions publiées du catalogue inchangées face à la branche cible (ADR-0085) |
-| `code` | `tests` | pytest et couverture, Linux, macOS et Windows × Python 3.12 à 3.14 (ADR-0048, ADR-0051) ; matrice de vérification à jour, et jointe remplie avec le résultat de chaque test (ADR-0102) |
+| `code` | `tests` | pytest et couverture, Linux, macOS et Windows × Python 3.12 à 3.14 (ADR-0048, ADR-0051) ; matrice de vérification à jour, et jointe remplie avec le résultat de chaque test (ADR-0102) ; rapports du corpus d'essai joints (ADR-0110) |
+| `code` | `reproductibilite` | Rapports du corpus d'essai identiques, à la date près, d'un système et d'une version de Python à l'autre (`vk --comparer`, ADR-0110, ADR-0112) |
 | `code` | `audit-dependances` | Aucune faille connue dans les dépendances verrouillées (ADR-0052) |
-| `code` | `paquet` | Construction reproductible et installable (ADR-0049) ; catalogue du wheel inscrit au registre (ADR-0085) ; rapports HTML et JSON écrits depuis le wheel, JSON conforme à son schéma, nom et empreinte masqués (ADR-0092, ADR-0095) ; banc d'évaluation depuis le wheel : refus avec le réseau, corpus d'essai évalué sans réseau (ADR-0100, ADR-0105) |
-| `code` | `code-ok` | Résume les quatre jobs précédents |
+| `code` | `paquet` | Construction reproductible et installable (ADR-0049) ; catalogue du wheel inscrit au registre (ADR-0085) ; rapports HTML et JSON écrits depuis le wheel, JSON conforme à son schéma, nom et empreinte masqués (ADR-0092, ADR-0095) ; banc d'évaluation depuis le wheel : refus avec le réseau, corpus d'essai évalué sans réseau, chaque fichier deux fois (ADR-0100, ADR-0105, ADR-0113) ; comparaison de deux rapports depuis le wheel (ADR-0112) |
+| `code` | `code-ok` | Résume les cinq jobs précédents |
 
 Vérifications obligatoires pour merger dans `detector` : `lint-markdown`, `fichiers-interdits` et `code-ok` (ADR-0001, ADR-0051).
 

@@ -162,6 +162,7 @@ def construire_rapport() -> Rapport:
         ),
         versions=Versions(
             outil="0.1.0.dev0",
+            interpreteur=Dependance("cpython", "3.13.9"),
             catalogue=VersionCatalogue("2026.10.0", date(2026, 10, 26), EMPREINTE, False),
             dependances=(Dependance("numpy", "2.5.4"), Dependance("c2pa-python", "0.38.1")),
         ),

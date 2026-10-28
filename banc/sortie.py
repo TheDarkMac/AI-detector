@@ -154,7 +154,8 @@ def markdown(doc: Mapping[str, Any]) -> str:
         + (", ".join(f"{m} ({n})" for m, n in fichiers["refus"].items()) or "aucun")
         + ". Arrêts brutaux : "
         + (", ".join(f"{e} ({n})" for e, n in fichiers["arrets_brutaux"].items()) or "aucun")
-        + f". Analyses interrompues : {fichiers['interrompues']}.",
+        + f". Analyses interrompues : {fichiers['interrompues']}. Fichiers dont les deux "
+        f"analyses diffèrent : {fichiers['non_reproduits']}.",
         "",
         "## Taux par fichier (ADR-0018)",
         "",

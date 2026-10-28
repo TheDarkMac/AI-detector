@@ -577,6 +577,79 @@ def test_tentative_de_reseau_arrete_l_analyse(tmp_path: Path) -> None:
         evaluation.analyser_corpus(corpus, Partie.EVALUATION, analyser, [])
 
 
+# Deux analyses par fichier (NF-06, ADR-0113)
+
+
+@pytest.mark.exigence("NF-06", "P-05")
+def test_deux_analyses_par_fichier(tmp_path: Path) -> None:
+    fichiers = {"a.txt": b"a", "b.txt": b"b", "c.txt": b"c", "d.txt": b"d", "e.txt": b"e"}
+    corpus = corpora.charger(ecrire_corpus(tmp_path, fichiers))
+    appels: list[str] = []
+    stable = analyse_alpha(EtatTechnique.APPLIQUEE, EtatTechnique.APPLIQUEE)
+    avec_constat = analyse_alpha(EtatTechnique.APPLIQUEE, EtatTechnique.APPLIQUEE, constat=True)
+    interrompue = dataclasses.replace(
+        stable,
+        non_menees=(*stable.non_menees, NonMenee(RaisonNonMenee.DELAI_DEPASSE)),
+    )
+
+    def analyser(chemin: Path) -> Analyse:
+        appels.append(chemin.name)
+        seconde = appels.count(chemin.name) == 2
+        match chemin.name:
+            case "b.txt":  # un constat de plus à la seconde analyse
+                return avec_constat if seconde else stable
+            case "c.txt":  # refus, puis autre refus
+                motif = MotifRefus.ILLISIBLE if seconde else MotifRefus.VIDE
+                raise AnalyseRefusee(motif)
+            case "d.txt":  # analysé, puis refusé
+                if seconde:
+                    raise AnalyseRefusee(MotifRefus.VIDE)
+                return stable
+            case "e.txt":  # interrompue une fois : hors garantie, rien n'est relevé
+                return interrompue if seconde else stable
+            case _:
+                return stable
+
+    a, b, c, d, e = evaluation.analyser_corpus(corpus, Partie.EVALUATION, analyser, ["alpha"])
+    assert appels == ["a.txt", "a.txt", "b.txt", "b.txt", "c.txt", "c.txt", "d.txt", "d.txt",
+                      "e.txt", "e.txt"]  # fmt: skip
+    assert a.non_reproduit == e.non_reproduit == ()
+    assert b.non_reproduit == ("observations[0]", "constats[0]")
+    assert b.constats == ()  # résultat retenu : celui de la première analyse
+    assert (c.refus, c.non_reproduit) == ("vide", ("refus « vide » puis « illisible »",))
+    assert d.non_reproduit == ("analysé une fois, refusé l'autre",)
+    mesures = mesurer(Partie.CALIBRAGE, [a, b, c, d, e], ["alpha"], REGLES)
+    assert mesures.ecarts == (
+        "b.txt : deux analyses différentes (observations[0], constats[0])",
+        "c.txt : deux analyses différentes (refus « vide » puis « illisible »)",
+        "d.txt : deux analyses différentes (analysé une fois, refusé l'autre)",
+    )
+    assert mesures.vers_dict()["fichiers"]["non_reproduits"] == 3
+
+
+def test_ecarts_de_reproduction_cites_en_partie() -> None:
+    ecarts = tuple(f"observations[{rang}]" for rang in range(7))
+    mesures = mesurer(
+        Partie.CALIBRAGE,
+        [resultat("a1", C.AUTHENTIQUE, Origine.AUTHENTIQUE, non_reproduit=ecarts)],
+        ["alpha"],
+        REGLES,
+    )
+    assert mesures.ecarts == (
+        "a1 : deux analyses différentes (observations[0], observations[1], observations[2], "
+        "observations[3], observations[4]… 7 écarts)",
+    )
+
+
+def test_deux_refus_identiques_reproduits() -> None:
+    refus = AnalyseRefusee(MotifRefus.VIDE)
+    assert evaluation.reproduction(refus, AnalyseRefusee(MotifRefus.VIDE)) == ()
+    assert evaluation.reproduction(
+        AnalyseRefusee(MotifRefus.VIDE),
+        analyse_alpha(EtatTechnique.APPLIQUEE, EtatTechnique.APPLIQUEE),
+    ) == ("analysé une fois, refusé l'autre",)
+
+
 # Rapport d'évaluation (ADR-0105)
 
 
@@ -626,6 +699,7 @@ def test_rapport_markdown() -> None:
         in texte
     )
     assert "- m2 : arrêt brutal de l'analyse (X)" in texte
+    assert "Fichiers dont les deux analyses diffèrent : 0." in texte
     assert "Techniques : alpha 0.1.0" in texte
 
 
@@ -702,7 +776,9 @@ def test_commande_tentative_de_reseau(
 
     monkeypatch.setattr(cli, "analyser", analyser_factice(analyser))
     assert cli.main([str(manifeste), "--sortie", str(tmp_path / "r")]) == 3
-    assert "accès au réseau pendant l'évaluation (socket.getaddrinfo)" in capsys.readouterr().err
+    # Une tentative par analyse : chaque fichier est analysé deux fois (ADR-0113).
+    erreur = capsys.readouterr().err
+    assert "accès au réseau pendant l'évaluation (socket.getaddrinfo, socket.getaddrinfo)" in erreur
     assert not (tmp_path / "r" / "evaluation.json").exists()
 
     def interdit(_chemin: Path) -> Analyse:

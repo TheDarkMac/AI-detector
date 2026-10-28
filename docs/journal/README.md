@@ -27,4 +27,5 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T14](T14-securite-d-execution.md) | Sécurité d'exécution | `tache/T14-securite-d-execution` | [#14](https://github.com/TheDarkMac/AI-detector/pull/14) |
 | [T15](T15-catalogue-de-regles.md) | Catalogue de règles versionné et daté | `tache/T15-catalogue-de-regles` | [#15](https://github.com/TheDarkMac/AI-detector/pull/15) |
 | [T16](T16-generation-du-rapport.md) | Génération du rapport | `tache/T16-generation-du-rapport` | [#16](https://github.com/TheDarkMac/AI-detector/pull/16) |
-| [T17](T17-banc-d-evaluation.md) | Banc d'évaluation | `tache/T17-banc-d-evaluation` | à venir |
+| [T17](T17-banc-d-evaluation.md) | Banc d'évaluation | `tache/T17-banc-d-evaluation` | [#17](https://github.com/TheDarkMac/AI-detector/pull/17) |
+| [T18](T18-reproductibilite.md) | Test de reproductibilité | `tache/T18-reproductibilite` | à venir |

@@ -122,3 +122,9 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0105](ADR-0105-rapport-d-evaluation-et-corpus-d-essai.md) | Rapport d'évaluation, codes de sortie et corpus d'essai | Accepté | 2026-10-28 |
 | [ADR-0106](ADR-0106-contenu-et-controles-de-la-matrice.md) | Contenu et contrôles de la matrice : principes numérotés, cas d'usage, états | Accepté | 2026-10-28 |
 | [ADR-0107](ADR-0107-effectif-et-borne-dans-l-evaluation.md) | Évaluation d'une règle : effectif et borne supérieure au catalogue, niveau contrôlé | Accepté | 2026-10-28 |
+| [ADR-0108](ADR-0108-resultats-identiques.md) | Résultats identiques : le rapport entier, à la date et au nom du fichier près | Accepté | 2026-10-28 |
+| [ADR-0109](ADR-0109-forme-du-test-de-reproductibilite.md) | Forme du test de reproductibilité : tests, banc et commande `vk --comparer` | Accepté | 2026-10-28 |
+| [ADR-0110](ADR-0110-variations-locales-et-entre-systemes.md) | Conditions variées : sur un poste, et entre systèmes et versions de Python en CI | Accepté | 2026-10-28 |
+| [ADR-0111](ADR-0111-interpreteur-dans-les-versions.md) | Interpréteur Python dans la rubrique Versions ; schéma du rapport 0.3.0 | Accepté | 2026-10-28 |
+| [ADR-0112](ADR-0112-comparaison-de-deux-rapports.md) | Comparaison de deux rapports : natures des écarts, garantie, sortie et codes | Proposé | 2026-10-28 |
+| [ADR-0113](ADR-0113-deux-analyses-par-fichier-au-banc.md) | Banc : deux analyses par fichier, un défaut de reproductibilité est un écart | Proposé | 2026-10-28 |

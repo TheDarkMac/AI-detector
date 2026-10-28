@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.6** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 proposée dans la PR de T17. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.7** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 proposée dans la PR de T18. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -85,7 +85,10 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Taux par fichier | Part des fichiers authentiques dont le rapport porte une preuve, ou un indice modéré ou fort, dirigé vers l'origine IA ou la retouche. | ADR-0018, ADR-0104 |
 | Intervalle de Wilson | Intervalle de confiance d'un taux, publié à 95 % ; sa borne supérieure fixe le niveau permis d'une règle. | A-54, ADR-0101 |
 | Niveau permis | Niveau le plus élevé que permet l'évaluation d'une règle : « fort » jusqu'à 1 %, « modéré » jusqu'à 5 % de borne supérieure. | ADR-0101, ADR-0107 |
-| Écart (d'évaluation) | Ce qui fait échouer une évaluation : arrêt brutal, niveau non permis par la mesure, preuve fautive, cible par fichier non atteinte ou non mesurable. | ADR-0104 |
+| Écart (d'évaluation) | Ce qui fait échouer une évaluation : arrêt brutal, deux analyses différentes d'un même fichier, niveau non permis par la mesure, preuve fautive, cible par fichier non atteinte ou non mesurable. | ADR-0104, ADR-0113 |
+| Garantie de reproductibilité | Conditions dans lesquelles deux analyses du même fichier doivent donner le même rapport, à la date et au nom près : même empreinte, même extension, mêmes versions de l'outil, de l'interpréteur, du catalogue et des dépendances, aucune analyse interrompue. | NF-06, ADR-0023, ADR-0108, ADR-0111 |
+| Écart (de comparaison) | Champ qui diffère entre deux rapports, désigné par son chemin ; de condition (hors garantie), d'environnement (isolation) ou de résultat. | ADR-0112 |
+| Défaut de reproductibilité | Écart de résultat entre deux rapports dans les conditions de la garantie. | ADR-0112 |
 | Matrice de vérification | Tableau qui relie chaque exigence à son état, à ses méthodes de vérification et à leur résultat. | ADR-0024, ADR-0102 |
 
 ## Historique
@@ -99,3 +102,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-10-27 | 1.4 | Règle précisée ; règle du moteur, règle du module, condition, catalogue, empreinte du catalogue, registre des versions, technique hors V1 ajoutés | T15 |
 | 2026-10-28 | 1.5 | Gabarit précisé ; masquage, export, alerte, neutralisation ajoutés | T16 |
 | 2026-10-28 | 1.6 | Termes de l'évaluation ajoutés | T17 |
+| 2026-10-28 | 1.7 | Garantie de reproductibilité, écart de comparaison, défaut de reproductibilité ajoutés ; écart d'évaluation précisé | T18 |

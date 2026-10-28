@@ -71,7 +71,7 @@ __all__ = [
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.2.0"
+VERSION_SCHEMA = "0.3.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -1005,6 +1005,8 @@ class Versions:
     """Rubrique « Versions » (§6 du cahier, ADR-0023)."""
 
     outil: str
+    interpreteur: Dependance
+    """Interpréteur qui a mené l'analyse : implémentation et version (ADR-0111)."""
     catalogue: VersionCatalogue
     dependances: tuple[Dependance, ...] = ()
 
@@ -1015,6 +1017,7 @@ class Versions:
     def vers_dict(self) -> Document:
         return {
             "outil": self.outil,
+            "interpreteur": self.interpreteur.vers_dict(),
             "catalogue": self.catalogue.vers_dict(),
             "dependances": [dependance.vers_dict() for dependance in self.dependances],
         }
@@ -1023,6 +1026,7 @@ class Versions:
     def depuis_dict(cls, document: Mapping[str, Any]) -> "Versions":
         return cls(
             outil=document["outil"],
+            interpreteur=Dependance.depuis_dict(document["interpreteur"]),
             catalogue=VersionCatalogue.depuis_dict(document["catalogue"]),
             dependances=tuple(Dependance.depuis_dict(d) for d in document["dependances"]),
         )

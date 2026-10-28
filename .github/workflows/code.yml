@@ -86,6 +86,54 @@ jobs:
           name: matrice-${{ matrix.os }}-${{ matrix.python }}
           path: ${{ runner.temp }}/matrice.md
           if-no-files-found: error
+      - name: Rapports du corpus d'essai, comparés ensuite entre systèmes (T18, ADR-0110)
+        run: |
+          # Liste fixe, même rang sur chaque système ; toutes les catégories levées, nom compris.
+          uv run --locked vk --rapport "$RUNNER_TEMP/rapports" \
+            --reveler metadonnee_nominative --reveler numero_de_serie --reveler gps \
+            --reveler nom_de_fichier --reveler empreinte \
+            banc/essai/authentiques/note.txt banc/essai/authentiques/photo.jpg \
+            banc/essai/authentiques/facture.pdf banc/essai/authentiques/schema.png \
+            banc/essai/generes/image.png banc/essai/transformes/photo-messagerie.jpg \
+            banc/essai/retouches/facture-modifiee.pdf banc/essai/malformes/tronque.pdf
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rapports-${{ matrix.os }}-${{ matrix.python }}
+          path: ${{ runner.temp }}/rapports/*.json
+          if-no-files-found: error
+
+  # Mêmes résultats sur Linux, macOS et Windows, et sous chaque version de Python (NF-06).
+  reproductibilite:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Installation depuis le verrou
+        run: uv sync --locked
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: rapports-*
+          path: ${{ runner.temp }}/rapports
+      - name: Rapports identiques, à la date près, d'un système et d'un Python à l'autre (T18)
+        run: |
+          cd "$RUNNER_TEMP/rapports"
+          reference=rapports-ubuntu-latest-3.13
+          if [ "$(ls -d rapports-* | wc -l)" -ne 9 ]; then
+            echo "::error::Neuf jeux de rapports attendus (3 systèmes, 3 versions de Python)"
+            exit 1
+          fi
+          for jeu in rapports-*; do
+            diff <(ls "$reference") <(ls "$jeu")
+            for rapport in "$reference"/*.json; do
+              echo "== $jeu/${rapport##*/}"
+              # Code 0 : aucun écart de résultat ; seules l'isolation et la version de
+              # l'interpréteur peuvent différer (ADR-0110).
+              uv run --locked --project "$GITHUB_WORKSPACE" vk --comparer "$rapport" "$jeu/${rapport##*/}"
+            done
+          done
 
   audit-dependances:
     runs-on: ubuntu-latest
@@ -215,12 +263,29 @@ jobs:
               sys.exit("banc : écarts inattendus")
           if doc["fichiers"]["arrets_brutaux"] or doc["publiable"]:
               sys.exit("banc : arrêt brutal, ou corpus d'\''essai déclaré publiable")
+          if doc["fichiers"]["non_reproduits"]:
+              sys.exit("banc : deux analyses différentes d'\''un même fichier (T18)")
           ' "$RUNNER_TEMP/banc/evaluation.json" "$code"
+      - name: Comparaison de deux rapports depuis le wheel (T18)
+        run: |
+          for dossier in deux-a deux-b; do
+            "$RUNNER_TEMP/essai/bin/vk" --rapport "$RUNNER_TEMP/$dossier" --reveler empreinte "$RUNNER_TEMP/essai.pdf"
+          done
+          "$RUNNER_TEMP/essai/bin/vk" --comparer "$RUNNER_TEMP/deux-a/1.json" "$RUNNER_TEMP/deux-b/1.json" | tee "$RUNNER_TEMP/comparaison.txt"
+          grep -q '^Conditions de la garantie de reproductibilité réunies' "$RUNNER_TEMP/comparaison.txt"
+          # Un autre fichier : résultats différents, hors garantie (code 1).
+          "$RUNNER_TEMP/essai/bin/vk" --rapport "$RUNNER_TEMP/deux-c" --reveler empreinte banc/essai/authentiques/facture.pdf
+          code=0
+          "$RUNNER_TEMP/essai/bin/vk" --comparer "$RUNNER_TEMP/deux-a/1.json" "$RUNNER_TEMP/deux-c/1.json" || code=$?
+          if [ "$code" -ne 1 ]; then
+            echo "::error::Deux fichiers différents : code 1 attendu, obtenu $code"
+            exit 1
+          fi
 
   # Seule vérification à rendre obligatoire sur detector : elle résume toutes les autres.
   code-ok:
     if: always()
-    needs: [qualite, tests, audit-dependances, paquet]
+    needs: [qualite, tests, reproductibilite, audit-dependances, paquet]
     runs-on: ubuntu-latest
     steps:
       - name: Toutes les vérifications du code ont réussi
