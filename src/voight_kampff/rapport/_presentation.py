@@ -227,6 +227,8 @@ class Presentation:
         return texte(
             "formes.evaluee",
             taux=f"{regle.evaluation.taux_faux_positifs * 100:g} %",
+            effectif=nombre(regle.evaluation.effectif),
+            borne=f"{regle.evaluation.borne_superieure * 100:.3g} %",
             corpus=regle.evaluation.corpus,
             date=regle.evaluation.date.isoformat(),
         )

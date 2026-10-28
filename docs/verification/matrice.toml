@@ -1,0 +1,738 @@
+# Matrice de vérification : exigence → méthode de vérification → résultat (ADR-0024, ADR-0102).
+#
+# Une table [[exigence]] par exigence du cahier (F, NF), exigence de sécurité (ES, modèle de
+# menace §8) et principe directeur (P, numérotés ci-dessous, A-11). Les tests qui vérifient une
+# exigence la citent par le marqueur pytest « exigence » ; ce fichier porte l'état, les tâches,
+# les autres méthodes et leur résultat. `python -m banc.matrice` en tire matrice.md et vérifie
+# la cohérence des deux (procédure : README.md de ce dossier).
+#
+# etat : realisee, partielle, a_venir, hors_v1 ; methodes : test, inspection, analyse,
+# demonstration. Une méthode autre que « test » est justifiée (ADR-0024) ; pour une exigence
+# réalisée, elle porte sa preuve (document) et son résultat consigné.
+
+format = 1
+
+# Principes directeurs du §2 du cahier, numérotés pour la matrice (A-11, ADR-0106).
+
+[[principe]]
+id = "P-01"
+nom = "Aucune IA embarquée"
+texte = "Ni réseau de neurones ni modèle entraîné ; des règles et des seuils écrits, documentés et versionnés."
+
+[[principe]]
+id = "P-02"
+nom = "Explicabilité"
+texte = "Chaque constat cite la règle qui l'a produit et la donnée observée."
+
+[[principe]]
+id = "P-03"
+nom = "Preuve ≠ indice"
+texte = "Ce qui est vérifié n'est jamais mélangé avec ce qui est seulement suggéré."
+
+[[principe]]
+id = "P-04"
+nom = "Absence ≠ authenticité"
+texte = "Ne rien trouver n'est jamais présenté comme une garantie."
+
+[[principe]]
+id = "P-05"
+nom = "Reproductibilité"
+texte = "Même fichier et même version des règles donnent les mêmes constats."
+
+[[principe]]
+id = "P-06"
+nom = "Modularité"
+texte = "Chaque technique s'ajoute, se retire ou se désactive sans toucher aux autres."
+
+# Cas d'usage du §4, reliés aux exigences (A-27).
+
+[[cas_d_usage]]
+id = "CU-1"
+exigences = ["F-01", "F-02", "F-04", "F-80", "F-81", "F-82", "NF-11"]
+
+[[cas_d_usage]]
+id = "CU-2"
+exigences = ["F-84"]
+
+[[cas_d_usage]]
+id = "CU-3"
+exigences = ["F-83", "NF-18"]
+
+[[cas_d_usage]]
+id = "CU-4"
+exigences = ["F-35", "F-42", "F-64"]
+
+[[cas_d_usage]]
+id = "CU-5"
+exigences = ["F-90", "F-91"]
+
+# 5.1 Soumission et identification
+
+[[exigence]]
+id = "F-01"
+etat = "partielle"
+taches = ["T13", "T80"]
+methodes = ["test"]
+note = "Un ou plusieurs fichiers par commande ; la saisie du texte collé est reportée à T80 (ADR-0074)."
+
+[[exigence]]
+id = "F-02"
+etat = "realisee"
+taches = ["T13"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-03"
+etat = "realisee"
+taches = ["T13"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-04"
+etat = "realisee"
+taches = ["T13", "T14"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-05"
+etat = "realisee"
+taches = ["T13", "T16"]
+methodes = ["test"]
+note = "Reformulée : empreinte masquée par défaut (ADR-0031)."
+
+[[exigence]]
+id = "F-06"
+etat = "a_venir"
+taches = ["T24"]
+methodes = ["test"]
+
+# 5.2 Métadonnées
+
+[[exigence]]
+id = "F-10"
+etat = "a_venir"
+taches = ["T20", "T21"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-11"
+etat = "a_venir"
+taches = ["T22"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-12"
+etat = "a_venir"
+taches = ["T22"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-13"
+etat = "a_venir"
+taches = ["T23"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-14"
+etat = "a_venir"
+taches = ["T23"]
+methodes = ["test"]
+
+# 5.3 Provenance et marquages
+
+[[exigence]]
+id = "F-20"
+etat = "a_venir"
+taches = ["T30"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-21"
+etat = "a_venir"
+taches = ["T30"]
+methodes = ["test"]
+note = "Contrôle déterministe : vérifié par des tests de conformité, sans taux sur corpus (A-55)."
+
+[[exigence]]
+id = "F-22"
+etat = "a_venir"
+taches = ["T30"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-23"
+etat = "a_venir"
+taches = ["T30"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-24"
+etat = "a_venir"
+taches = ["T31"]
+methodes = ["test"]
+note = "Reformulée : point d'extension, catalogue V1 éventuellement vide (ADR-0012)."
+
+[[exigence]]
+id = "F-25"
+etat = "partielle"
+taches = ["T11", "T16", "T30", "T31"]
+methodes = ["test"]
+note = "Couverture au rapport ; la liste des marquages recherchés reste vide avant T30 et T31."
+
+[[exigence]]
+id = "F-26"
+etat = "realisee"
+taches = ["T15"]
+methodes = ["test"]
+
+# 5.4 Analyses du signal
+
+[[exigence]]
+id = "F-30"
+etat = "a_venir"
+taches = ["T40"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-31"
+etat = "a_venir"
+taches = ["T41"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-32"
+etat = "hors_v1"
+taches = ["T42"]
+methodes = ["test"]
+note = "Candidate V2 (ADR-0012) : au rapport comme analyse non menée."
+
+[[exigence]]
+id = "F-33"
+etat = "hors_v1"
+taches = ["T43"]
+methodes = ["test"]
+note = "Candidate V2 (ADR-0012)."
+
+[[exigence]]
+id = "F-34"
+etat = "hors_v1"
+taches = ["T44"]
+methodes = ["test"]
+note = "Candidate V2 (ADR-0012)."
+
+[[exigence]]
+id = "F-35"
+etat = "hors_v1"
+taches = ["T45"]
+methodes = ["test"]
+note = "Candidate V2, sous les garde-fous d'ADR-0032 (ADR-0012)."
+
+[[exigence]]
+id = "F-40"
+etat = "hors_v1"
+taches = ["T60"]
+methodes = ["test"]
+note = "Candidate V2 (ADR-0012)."
+
+[[exigence]]
+id = "F-41"
+etat = "hors_v1"
+taches = ["T61"]
+methodes = ["test"]
+note = "Candidate V2 ; reformulée : silence numérique et plancher de bruit (ADR-0012)."
+
+[[exigence]]
+id = "F-42"
+etat = "hors_v1"
+taches = ["T62"]
+methodes = ["test"]
+note = "Hors V1, sans engagement (ADR-0012)."
+
+[[exigence]]
+id = "F-43"
+etat = "hors_v1"
+taches = ["T63"]
+methodes = ["test"]
+note = "Candidate V2 (ADR-0012)."
+
+[[exigence]]
+id = "F-50"
+etat = "hors_v1"
+taches = ["T70"]
+methodes = ["test"]
+note = "Candidate V2 (ADR-0012)."
+
+[[exigence]]
+id = "F-51"
+etat = "hors_v1"
+taches = ["T71"]
+methodes = ["test"]
+note = "Candidate V2 ; à réécrire avant T71 (ADR-0012)."
+
+[[exigence]]
+id = "F-52"
+etat = "hors_v1"
+taches = ["T72"]
+methodes = ["test"]
+note = "Candidate V2 (ADR-0012)."
+
+[[exigence]]
+id = "F-53"
+etat = "hors_v1"
+taches = ["T73"]
+methodes = ["test"]
+note = "Candidate V2 (ADR-0012)."
+
+[[exigence]]
+id = "F-60"
+etat = "a_venir"
+taches = ["T50"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-61"
+etat = "a_venir"
+taches = ["T51"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-62"
+etat = "a_venir"
+taches = ["T52"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-63"
+etat = "a_venir"
+taches = ["T53"]
+methodes = ["test"]
+note = "Reformulée : couche texte native seulement, document numérisé non analysé (ADR-0017)."
+
+[[exigence]]
+id = "F-64"
+etat = "hors_v1"
+taches = ["T54"]
+methodes = ["test"]
+note = "Candidate V2 (ADR-0012)."
+
+[[exigence]]
+id = "F-70"
+etat = "hors_v1"
+taches = ["T82"]
+methodes = ["test"]
+note = "Hors V1, sans engagement (ADR-0012)."
+
+[[exigence]]
+id = "F-71"
+etat = "a_venir"
+taches = ["T81"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-72"
+etat = "hors_v1"
+taches = ["T83"]
+methodes = ["test"]
+note = "Hors V1 : requête sortante (ADR-0013)."
+
+[[exigence]]
+id = "F-73"
+etat = "a_venir"
+taches = ["T80"]
+methodes = ["test"]
+note = "Contrôle déterministe : tests de conformité, sans taux sur corpus (A-55)."
+
+# 5.5 Restitution
+
+[[exigence]]
+id = "F-80"
+etat = "realisee"
+taches = ["T11", "T16"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-81"
+etat = "realisee"
+taches = ["T11", "T16"]
+methodes = ["test"]
+note = "Reformulée : cinq directions, transformation comprise (ADR-0055)."
+
+[[exigence]]
+id = "F-82"
+etat = "realisee"
+taches = ["T11", "T12", "T16"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-83"
+etat = "realisee"
+taches = ["T16"]
+methodes = ["test"]
+
+[[exigence]]
+id = "F-84"
+etat = "a_venir"
+taches = ["T50"]
+methodes = ["test", "inspection"]
+justification = "La lisibilité d'une visualisation se juge à la relecture ; sa présence et sa description textuelle se testent."
+note = "Chronologie des révisions PDF en V1 (T50) ; les autres visualisations arrivent avec leurs techniques, candidates V2."
+
+# 5.6 Contrôle avant publication
+
+[[exigence]]
+id = "F-90"
+etat = "a_venir"
+taches = ["T25", "T94"]
+methodes = ["test"]
+note = "Métadonnées en V1 (T25, ADR-0014) ; points de traçage candidats V2 (T94, ADR-0032)."
+
+[[exigence]]
+id = "F-91"
+etat = "hors_v1"
+taches = ["T93"]
+methodes = ["test"]
+note = "Candidate V2, sans attribution à un destinataire (ADR-0032)."
+
+# 7. Exigences non fonctionnelles
+
+[[exigence]]
+id = "NF-01"
+etat = "realisee"
+taches = ["T12", "T14"]
+methodes = ["test"]
+note = "Reformulée : un processus restreint par fichier ; isolation réduite signalée au rapport, toujours sous Windows (ADR-0028, ADR-0081)."
+
+[[exigence]]
+id = "NF-02"
+etat = "realisee"
+taches = ["T14"]
+methodes = ["test"]
+
+[[exigence]]
+id = "NF-03"
+etat = "realisee"
+taches = ["T12", "T14", "T17"]
+methodes = ["test"]
+note = "Le banc compte aussi les arrêts brutaux sur la catégorie « malformés » du corpus (ADR-0104)."
+
+[[exigence]]
+id = "NF-04"
+etat = "realisee"
+taches = ["T04", "T14"]
+methodes = ["test", "analyse"]
+justification = "« Ni réutilisation ni transmission » est une absence : elle s'établit par l'architecture, et les tests en vérifient les moyens."
+preuve = ["docs/architecture/architecture.md", "docs/decisions/ADR-0010-distribution-et-traitement-local.md"]
+resultat = "Analyse locale, sans service ni requête sortante en V1 ; processus de travail sans réseau et sans trace (2026-10-28, T17)."
+
+[[exigence]]
+id = "NF-05"
+etat = "a_venir"
+taches = ["T92"]
+methodes = ["inspection"]
+justification = "Un affichage destiné à l'utilisateur se vérifie à la relecture de l'interface."
+
+[[exigence]]
+id = "NF-06"
+etat = "partielle"
+taches = ["T15", "T18"]
+methodes = ["test"]
+note = "Versions et empreinte du catalogue au rapport ; le test de reproductibilité est T18. Reformulée (ADR-0023)."
+
+[[exigence]]
+id = "NF-07"
+etat = "realisee"
+taches = ["T15"]
+methodes = ["test"]
+
+[[exigence]]
+id = "NF-08"
+etat = "realisee"
+taches = ["T14"]
+methodes = ["test"]
+
+[[exigence]]
+id = "NF-09"
+etat = "partielle"
+taches = ["T17", "T20"]
+methodes = ["test", "inspection"]
+justification = "Les fiches techniques se relisent ; les taux qu'elles publient sont mesurés par le banc, testé."
+note = "Banc d'évaluation livré (T17) ; chaque fiche arrive avec sa technique."
+
+[[exigence]]
+id = "NF-10"
+etat = "realisee"
+taches = ["T12"]
+methodes = ["test"]
+
+[[exigence]]
+id = "NF-11"
+etat = "partielle"
+taches = ["T16", "T103"]
+methodes = ["test", "inspection"]
+justification = "La compréhension d'un texte se juge à la relecture ; la présence du glossaire au rapport se teste."
+preuve = ["src/voight_kampff/rapport/textes.toml"]
+resultat = "Textes du rapport validés par TheDarkMac pendant la revue de la PR #16 (2026-10-28)."
+note = "Documentation utilisateur à T103."
+
+[[exigence]]
+id = "NF-12"
+etat = "partielle"
+taches = ["T16", "T90"]
+methodes = ["test", "analyse", "inspection"]
+justification = "WCAG 2.2 AA se vérifie par inspection et démonstration (ADR-0025) ; les contrastes se calculent, la structure se teste."
+preuve = ["docs/journal/T16-generation-du-rapport.md"]
+resultat = "Rapport HTML : contrastes de 7,2:1 à 17,2:1 pour le texte et de 5,3:1 à 8,8:1 pour les traits, en mode clair et sombre (T16, étape 13)."
+note = "Interface web locale après la V1 (T90) ; audit par un outil automatique non fait."
+
+[[exigence]]
+id = "NF-13"
+etat = "a_venir"
+taches = ["T92", "T103"]
+methodes = ["analyse"]
+justification = "La conformité au RGPD s'établit par une analyse des traitements, pas par un test."
+note = "Reformulée : Union européenne, RGPD (ADR-0020)."
+
+[[exigence]]
+id = "NF-14"
+etat = "partielle"
+taches = ["T16", "T103"]
+methodes = ["test", "inspection"]
+justification = "Une documentation et une communication se relisent ; les textes de l'outil sont aussi testés contre les tournures de certitude."
+preuve = ["src/voight_kampff/rapport/textes.toml"]
+resultat = "Textes du rapport validés par TheDarkMac pendant la revue de la PR #16 (2026-10-28)."
+note = "Mentions et documentation définitives à T103."
+
+[[exigence]]
+id = "NF-15"
+etat = "realisee"
+taches = ["T03"]
+methodes = ["inspection"]
+justification = "Exigence de méthode : un document à rédiger avant les choix d'architecture."
+preuve = ["docs/modele-de-menace/modele-de-menace.md"]
+resultat = "Modèle de menace rédigé en T03 et mergé (PR #4) avant l'architecture de T04 (PR #5) ; sources et fichiers reçus parmi les biens à protéger."
+
+[[exigence]]
+id = "NF-16"
+etat = "partielle"
+taches = ["T03", "T17", "T30"]
+methodes = ["test", "inspection"]
+justification = "L'inventaire se relit ; l'absence de requête non inventoriée se teste sans réseau (ES-11)."
+preuve = ["docs/modele-de-menace/modele-de-menace.md"]
+resultat = "Inventaire RS-01 à RS-05 tenu au §6.3 du modèle de menace ; aucune n'est réalisée en V1 à ce jour."
+note = "Reformulée (ADR-0017, ADR-0033) ; premières requêtes en T30."
+
+[[exigence]]
+id = "NF-17"
+etat = "a_venir"
+taches = ["T91"]
+methodes = ["test"]
+note = "Reformulée : journal et horodatage sur activation explicite (ADR-0030)."
+
+[[exigence]]
+id = "NF-18"
+etat = "realisee"
+taches = ["T16"]
+methodes = ["test"]
+
+[[exigence]]
+id = "NF-19"
+etat = "partielle"
+taches = ["T15", "T95"]
+methodes = ["inspection"]
+justification = "Reformulée : tout est public (ADR-0019) ; la publicité se constate."
+preuve = ["src/voight_kampff/donnees/catalogue/catalogue.toml", "docs/catalogue/README.md"]
+resultat = "Catalogue, seuils et limites livrés en clair dans le paquet et dans le dépôt public (T15)."
+note = "Publication des fiches à T95."
+
+# Exigences de sécurité (modèle de menace, §8)
+
+[[exigence]]
+id = "ES-01"
+etat = "realisee"
+taches = ["T12", "T14"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-02"
+etat = "realisee"
+taches = ["T14"]
+methodes = ["test"]
+note = "Vérifiée depuis un module dans un vrai processus de travail, sur les trois systèmes (ADR-0083)."
+
+[[exigence]]
+id = "ES-03"
+etat = "realisee"
+taches = ["T14"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-04"
+etat = "realisee"
+taches = ["T11", "T12"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-05"
+etat = "a_venir"
+taches = ["T20", "T21"]
+methodes = ["test"]
+note = "Aucun XML ni archive lu par un module avant T20."
+
+[[exigence]]
+id = "ES-06"
+etat = "a_venir"
+taches = ["T21", "T30", "T52"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-07"
+etat = "realisee"
+taches = ["T13"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-08"
+etat = "realisee"
+taches = ["T13"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-09"
+etat = "partielle"
+taches = ["T15", "T30"]
+methodes = ["test"]
+note = "Catalogue réalisé ; liste de confiance C2PA à T30."
+
+[[exigence]]
+id = "ES-10"
+etat = "a_venir"
+taches = ["T30"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-11"
+etat = "realisee"
+taches = ["T14", "T17"]
+methodes = ["test"]
+note = "Banc lancé dans un espace de noms réseau vide, crochet d'audit dans son processus (ADR-0100) ; le processus de travail refuse lui-même le réseau (ADR-0083)."
+
+[[exigence]]
+id = "ES-12"
+etat = "realisee"
+taches = ["T16"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-13"
+etat = "realisee"
+taches = ["T16"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-14"
+etat = "realisee"
+taches = ["T16"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-15"
+etat = "realisee"
+taches = ["T14"]
+methodes = ["test"]
+note = "Journal optionnel de T91 à venir, désactivé par défaut."
+
+[[exigence]]
+id = "ES-16"
+etat = "a_venir"
+taches = ["T91"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-17"
+etat = "realisee"
+taches = ["T12"]
+methodes = ["test"]
+
+[[exigence]]
+id = "ES-18"
+etat = "realisee"
+taches = ["T10"]
+methodes = ["inspection"]
+justification = "Chaîne d'approvisionnement : verrou, épinglage et canal de publication se constatent dans le dépôt et la CI."
+preuve = ["uv.lock", ".github/workflows/code.yml", ".github/workflows/publication.yml", "docs/decisions/ADR-0037-gestion-des-dependances.md"]
+resultat = "Deux dépendances directes ; verrou à empreintes vérifié par la CI ; actions épinglées par empreinte de commit ; publication PyPI attestée, empreintes publiées (constaté le 2026-10-28)."
+
+[[exigence]]
+id = "ES-19"
+etat = "partielle"
+taches = ["T14", "T100", "T102"]
+methodes = ["test"]
+note = "Fuzzing des analyseurs livrés ; catégorie « malformés » du corpus de référence à T100."
+
+[[exigence]]
+id = "ES-20"
+etat = "partielle"
+taches = ["T11", "T22", "T30"]
+methodes = ["test"]
+note = "Le modèle refuse une preuve sans vérification ; premières déclarations restituées en T22 et T30."
+
+[[exigence]]
+id = "ES-21"
+etat = "hors_v1"
+taches = ["T45", "T93", "T94"]
+methodes = ["test", "inspection"]
+justification = "Les garde-fous d'ADR-0032 portent aussi sur la documentation, qui se relit."
+note = "Fonctions à double usage candidates V2 (ADR-0012, ADR-0032)."
+
+[[exigence]]
+id = "ES-22"
+etat = "partielle"
+taches = ["T17", "T100"]
+methodes = ["test", "inspection"]
+justification = "La provenance réelle des fichiers se vérifie à la relecture du corpus ; sa présence et le versionnage se testent."
+note = "Le banc exige provenance, version et empreinte de chaque fichier (ADR-0103) ; le corpus de référence est T100."
+
+# Principes directeurs
+
+[[exigence]]
+id = "P-01"
+etat = "realisee"
+taches = ["T04", "T15"]
+methodes = ["inspection"]
+justification = "Une absence de modèle appris se constate dans les dépendances et le catalogue (ADR-0016)."
+preuve = ["pyproject.toml", "docs/architecture/architecture.md"]
+resultat = "Dépendances : google-re2 et jsonschema, aucune bibliothèque d'apprentissage ; règles écrites, seuils publiés avec leur calibrage (constaté le 2026-10-28)."
+note = "À revérifier à chaque dépendance ajoutée (ADR-0043)."
+
+[[exigence]]
+id = "P-02"
+etat = "realisee"
+taches = ["T11", "T15", "T16"]
+methodes = ["test"]
+
+[[exigence]]
+id = "P-03"
+etat = "realisee"
+taches = ["T11", "T16"]
+methodes = ["test"]
+
+[[exigence]]
+id = "P-04"
+etat = "partielle"
+taches = ["T16", "T23"]
+methodes = ["test"]
+note = "Avertissement et couverture au rapport ; absence de métadonnées neutre à T23 (F-14)."
+
+[[exigence]]
+id = "P-05"
+etat = "partielle"
+taches = ["T15", "T18"]
+methodes = ["test"]
+note = "Comme NF-06."
+
+[[exigence]]
+id = "P-06"
+etat = "realisee"
+taches = ["T12"]
+methodes = ["test"]
+note = "Comme NF-10."

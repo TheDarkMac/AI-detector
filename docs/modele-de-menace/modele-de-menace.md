@@ -1,6 +1,6 @@
 # Modèle de menace
 
-> Statut : **v1.1** ; v1.0 mergée avec T03, v1.1 proposée dans la PR de T04. Document vivant : toute modification est inscrite à l'historique (§12).
+> Statut : **v1.2** ; v1.0 mergée avec T03, v1.1 avec T04, v1.2 proposée dans la PR de T17. Document vivant : toute modification est inscrite à l'historique (§12).
 > Exigences : NF-15 (livrable 7 du §9), NF-01, NF-16, NF-18 ; constats A-14, A-16, A-31, A-37, A-42, A-48, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T03. Date de rédaction : 2026-10-26.
 
@@ -263,7 +263,7 @@ Chaque exigence dérive des menaces citées ; T04 choisit les moyens, les tâche
 | ES-08 | Seuls les fichiers réguliers sont acceptés ; le processus de travail recalcule l'empreinte de ce qu'il a analysé, et un écart avec celle de P1 invalide le rapport. | M-06, M-30 | — | T13 |
 | ES-09 | Catalogue et liste de confiance livrés avec l'outil, **validés par schéma au chargement**, version et empreinte inscrites au rapport ; un catalogue fourni par l'utilisateur est signalé comme tel. Les expressions régulières du catalogue sont à temps linéaire. | M-03, M-11, M-12, M-13 | ADR-0029, ADR-0038, ADR-0039 | T15, T30 |
 | ES-10 | Requêtes sortantes : inventaire du §6.3 tenu à jour ; toutes désactivées par défaut ; état de chacune au rapport ; aucune n'emporte le fichier, son contenu ni ses données identifiantes, sauf service tiers consenti pour ce fichier ; manifeste distant sur confirmation par fichier, hôte affiché ; CRL préférées à OCSP ; TLS vérifié ; réponses vérifiées puis inscrites au rapport. Sans vérification de révocation, le rapport le dit. | M-13 à M-16, M-18 | ADR-0010, ADR-0017, ADR-0033 | T04, T30 |
-| ES-11 | Le banc d'évaluation exécute l'analyse **sans réseau** et échoue à toute tentative de connexion (A-52). | M-19 | — | T17 |
+| ES-11 | Le banc d'évaluation exécute l'analyse **sans réseau** et échoue à toute tentative de connexion (A-52). | M-19 | ADR-0100 | T17 |
 | ES-12 | Rapport HTML : tout texte issu du fichier est échappé ; politique de sécurité du contenu interdisant toute ressource externe et tout script non prévu par l'outil ; aucune ressource externe (ADR-0025). Toute sortie (HTML, JSON, terminal) neutralise les caractères de contrôle et bidirectionnels, en les montrant sous forme visible. | M-20, M-21 | — | T16, T90 |
 | ES-13 | Données identifiantes masquées par défaut dans **tous** les exports et la sortie du terminal : métadonnées nominatives, numéros de série, GPS, nom du fichier (ADR-0014) et **empreinte** (ADR-0031). Levée explicite, par catégorie ; un rapport démasqué l'annonce en tête. | M-22, C-05 | ADR-0031 | T16 |
 | ES-14 | Le rapport n'inscrit ni chemin, ni nom de machine, ni utilisateur du système ; les heures sont en UTC. | M-23 | — | T16 |
@@ -324,3 +324,4 @@ Chaque tâche qui touche une surface du §5 vérifie, dans sa PR, que ses menace
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T03 |
 | 2026-10-26 | 1.1 | Choix de T04 : canal officiel (H2), point d'extension (RS-04), ADR de T04 dans la colonne « Décision » du §8 ; aucune menace ni surface nouvelle | T04 |
+| 2026-10-28 | 1.2 | ES-11 réalisée par ADR-0100 (colonne « Décision » du §8) ; exigences ES vérifiées dans la [matrice](../verification/matrice.md) ; aucune menace ni surface nouvelle | T17 |

@@ -142,9 +142,11 @@
         "evaluation": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["taux_faux_positifs", "corpus", "date"],
+          "required": ["taux_faux_positifs", "effectif", "borne_superieure", "corpus", "date"],
           "properties": {
             "taux_faux_positifs": { "type": "number", "minimum": 0, "maximum": 1 },
+            "effectif": { "type": "integer", "minimum": 1, "maximum": 100000000 },
+            "borne_superieure": { "type": "number", "minimum": 0, "maximum": 1 },
             "corpus": { "$ref": "#/$defs/version_corpus" },
             "date": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/version_catalogue/properties/date" }
           }

@@ -32,6 +32,8 @@ from voight_kampff.rapport.modele import (
     RaisonNonMenee,
 )
 
+pytestmark = pytest.mark.exigence("F-01", "F-04", "F-05", "ES-01", "ES-08")
+
 FACTICE = Path(__file__).with_name("travail_factice.py")
 MODULES = tuple(
     Manifeste(nom, "1.0", ("jpeg",), ("F-10",), (), "test", (Direction.RIEN_DE_PARTICULIER,))
@@ -112,6 +114,7 @@ def test_partie_hors_perimetre_declaree_non_analysee(tmp_path: Path) -> None:
     ] == [(RaisonNonMenee.HORS_PERIMETRE, 2)]
 
 
+@pytest.mark.exigence("NF-03")
 def test_arret_apres_l_identification_resultat_partiel(tmp_path: Path) -> None:
     # Pas d'empreinte finale du travail : le principal hache de nouveau, à l'identique.
     analyse = soumission.soumettre(
@@ -139,6 +142,7 @@ def test_arret_apres_l_identification_resultat_partiel(tmp_path: Path) -> None:
         pytest.param(b"GIF89a" + b"\x00" * 10, MotifRefus.HORS_PERIMETRE, "(gif)", id="gif"),
     ],
 )
+@pytest.mark.exigence("ES-14")
 def test_contenu_refuse(tmp_path: Path, contenu: bytes, motif: MotifRefus, extrait: str) -> None:
     with pytest.raises(AnalyseRefusee) as refus:
         analyser(ecrire(tmp_path, "SECRET.bin", contenu))

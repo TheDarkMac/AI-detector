@@ -59,3 +59,4 @@ Option A :
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
 | 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T14 : statut « Accepté » |
+| 2026-10-28 | Réalisé en T17 : la matrice cite `test_isolation.py` pour ES-02 et ES-11, `test_traces.py` pour ES-15 (marqueurs, ADR-0102) ; le banc complète ES-11 par un espace de noms réseau vide (ADR-0100) |

@@ -36,6 +36,8 @@ from voight_kampff.rapport.modele import (
     RaisonNonMenee,
 )
 
+pytestmark = pytest.mark.exigence("NF-01", "ES-02", "ES-11")
+
 FACTICE = Path(__file__).with_name("travail_factice.py")
 ECRITURE = FACTICE.with_name("ecriture-interdite.tmp")
 
@@ -78,6 +80,7 @@ def test_isolation_annoncee(descripteur: int) -> None:
     assert (resultat.isolation.niveau is NiveauIsolation.COMPLETE) == (not MANQUES_ATTENDUS)
 
 
+@pytest.mark.exigence("NF-04", "NF-16")
 def test_ce_que_les_restrictions_refusent(descripteur: int) -> None:
     try:
         resultat = analyser_avec(descripteur, "sonde")
@@ -105,6 +108,7 @@ def test_ce_que_les_restrictions_refusent(descripteur: int) -> None:
         }
 
 
+@pytest.mark.exigence("ES-03")
 def test_memoire_limitee(descripteur: int) -> None:
     # 3 Gio remplis, pour une limite de 2 Gio : sous Linux et Windows le système refuse
     # l'allocation ; sous macOS le processus principal arrête le travail (ADR-0080).

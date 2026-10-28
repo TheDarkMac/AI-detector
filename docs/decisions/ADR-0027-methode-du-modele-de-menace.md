@@ -47,3 +47,4 @@ Option A : diagramme de flux avec frontières de confiance, STRIDE par élément
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-10-28 | Réalisé en T17 : exigences ES-01 à ES-22 dans la matrice de vérification (ADR-0102) |

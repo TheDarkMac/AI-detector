@@ -39,6 +39,8 @@ from voight_kampff.rapport.modele import (
     RaisonNonMenee,
 )
 
+pytestmark = pytest.mark.exigence("ES-04", "ES-17")
+
 CONTENU = b"0123456789"
 PARTIE = Partie(1, "jpeg", Plage(0, len(CONTENU)), fin_connue=True)
 SANS_RESTRICTION = EtatIsolation(NiveauIsolation.REDUITE, (ManqueIsolation.RESEAU,))

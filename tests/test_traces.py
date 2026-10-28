@@ -9,7 +9,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 from echantillons import PDF
+
+pytestmark = pytest.mark.exigence("ES-15", "NF-04")
 
 _VARIABLES = (
     "HOME",

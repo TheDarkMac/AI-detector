@@ -61,3 +61,4 @@ Option A.
 | --- | --- |
 | 2026-10-27 | Création |
 | 2026-10-28 | Réalisé en T16 : catalogue fourni annoncé parmi les alertes en tête du résumé et du rapport (ADR-0098) |
+| 2026-10-28 | Précisé en T17 : un catalogue fourni est refusé si un niveau dépasse ce que permet son évaluation (ADR-0107) |

@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:voight-kampff:schema:corpus",
+  "title": "Manifeste d'un corpus du banc d'évaluation (ADR-0103)",
+  "description": "Chaque fichier du corpus : catégorie du §8, partie (ADR-0016), groupe, origine réelle, provenance (ES-22), empreinte.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "nom", "version", "date", "nature", "description", "fichiers"],
+  "properties": {
+    "format": { "const": 1 },
+    "nom": { "$ref": "#/$defs/identifiant" },
+    "version": {
+      "description": "Version du corpus, citée par l'évaluation et le calibrage des règles (ADR-0016) ; même forme que dans le catalogue.",
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9.+!_-]*$"
+    },
+    "date": { "$ref": "#/$defs/date" },
+    "nature": {
+      "description": "« essai » : corpus de démonstration du banc, dont aucun taux n'est publiable ; « reference » : corpus de T100.",
+      "enum": ["essai", "reference"]
+    },
+    "description": { "$ref": "#/$defs/texte" },
+    "fichiers": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000000,
+      "items": { "$ref": "#/$defs/fichier" }
+    }
+  },
+  "$defs": {
+    "identifiant": {
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "texte": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "fichier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chemin", "empreinte", "categorie", "partie", "groupe", "provenance"],
+      "properties": {
+        "chemin": {
+          "description": "Relatif au dossier du manifeste, segments séparés par « / », sans « . » ni « .. ».",
+          "type": "string",
+          "maxLength": 512,
+          "pattern": "^[A-Za-z0-9_-][A-Za-z0-9._-]*(?:/[A-Za-z0-9_-][A-Za-z0-9._-]*)*$"
+        },
+        "empreinte": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "categorie": { "enum": ["authentique", "genere", "transforme", "retouche", "malforme"] },
+        "partie": { "enum": ["calibrage", "evaluation"] },
+        "groupe": {
+          "description": "Original dont dérive le fichier : tous les fichiers d'un groupe sont dans la même partie.",
+          "$ref": "#/$defs/identifiant"
+        },
+        "origine": {
+          "description": "Ce qu'est réellement le fichier ; absente seulement pour un fichier malformé sans original.",
+          "enum": ["authentique", "ia", "retouche"]
+        },
+        "transformation": {
+          "description": "Transformation subie (recompression, capture d'écran, messagerie…), pour un fichier transformé seulement.",
+          "$ref": "#/$defs/identifiant"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "licence", "date"],
+          "properties": {
+            "source": { "$ref": "#/$defs/texte" },
+            "licence": { "$ref": "#/$defs/texte" },
+            "date": { "$ref": "#/$defs/date" },
+            "generateur": {
+              "description": "Générateur et sa version, pour un fichier d'origine IA.",
+              "$ref": "#/$defs/texte"
+            },
+            "remarque": { "$ref": "#/$defs/texte" }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "categorie": { "const": "transforme" } } },
+          "then": { "required": ["transformation"] },
+          "else": { "not": { "required": ["transformation"] } }
+        },
+        {
+          "if": { "properties": { "categorie": { "const": "malforme" } } },
+          "else": { "required": ["origine"] }
+        },
+        {
+          "if": { "properties": { "categorie": { "const": "authentique" } } },
+          "then": { "properties": { "origine": { "const": "authentique" } } }
+        },
+        {
+          "if": { "properties": { "categorie": { "const": "genere" } } },
+          "then": { "properties": { "origine": { "const": "ia" } } }
+        },
+        {
+          "if": { "properties": { "categorie": { "const": "retouche" } } },
+          "then": { "properties": { "origine": { "const": "retouche" } } }
+        },
+        {
+          "if": { "properties": { "categorie": { "const": "transforme" } } },
+          "then": { "properties": { "origine": { "enum": ["authentique", "ia"] } } }
+        },
+        {
+          "if": { "properties": { "origine": { "const": "ia" } }, "required": ["origine"] },
+          "then": { "properties": { "provenance": { "required": ["generateur"] } } }
+        }
+      ]
+    }
+  }
+}

@@ -113,3 +113,12 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0096](ADR-0096-neutralisation-des-caracteres-invisibles.md) | Neutralisation des caractères de contrôle et bidirectionnels, à l'écriture de chaque sortie | Accepté | 2026-10-28 |
 | [ADR-0097](ADR-0097-regles-citees-et-interface-d-export.md) | L'analyse porte les règles qu'elle cite ; interface publique d'export | Accepté | 2026-10-28 |
 | [ADR-0098](ADR-0098-contenu-ordre-et-textes-du-rapport.md) | Contenu, ordre et textes du rapport et du résumé du terminal | Accepté | 2026-10-28 |
+| [ADR-0099](ADR-0099-banc-outil-du-depot.md) | Banc d'évaluation : outil du dépôt, hors du paquet publié | Accepté | 2026-10-28 |
+| [ADR-0100](ADR-0100-evaluation-sans-reseau.md) | Évaluation sans réseau : espace de noms réseau vide et crochet d'audit | Accepté | 2026-10-28 |
+| [ADR-0101](ADR-0101-bornes-des-niveaux-et-cible.md) | Bornes des niveaux d'indice et cible du taux par fichier : 1 % et 5 %, borne de Wilson | Accepté | 2026-10-28 |
+| [ADR-0102](ADR-0102-matrice-de-verification.md) | Matrice de vérification : marqueurs dans les tests, fichier TOML, rendu vérifié | Accepté | 2026-10-28 |
+| [ADR-0103](ADR-0103-manifeste-du-corpus.md) | Manifeste du corpus : catégories, parties par groupe, origine et provenance | Accepté | 2026-10-28 |
+| [ADR-0104](ADR-0104-definition-des-mesures.md) | Définition des mesures : par technique et catégorie, par règle, par fichier | Accepté | 2026-10-28 |
+| [ADR-0105](ADR-0105-rapport-d-evaluation-et-corpus-d-essai.md) | Rapport d'évaluation, codes de sortie et corpus d'essai | Accepté | 2026-10-28 |
+| [ADR-0106](ADR-0106-contenu-et-controles-de-la-matrice.md) | Contenu et contrôles de la matrice : principes numérotés, cas d'usage, états | Accepté | 2026-10-28 |
+| [ADR-0107](ADR-0107-effectif-et-borne-dans-l-evaluation.md) | Évaluation d'une règle : effectif et borne supérieure au catalogue, niveau contrôlé | Accepté | 2026-10-28 |

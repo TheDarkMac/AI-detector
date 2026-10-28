@@ -34,6 +34,8 @@ from voight_kampff.rapport.modele import (
     TechniqueCouverte,
 )
 
+pytestmark = pytest.mark.exigence("F-01")
+
 
 def test_version_affichee(capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit) as sortie:
@@ -101,6 +103,7 @@ def sans_isolation(sortie: str) -> list[str]:
     ]
 
 
+@pytest.mark.exigence("F-03", "ES-07")
 def test_resume_d_un_polyglotte(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     contenu = jpeg() + archive(("a.txt", b"a")) + b"\x00\x00"
     chemin = tmp_path / "SOURCE-photo.png"
@@ -136,6 +139,7 @@ def test_resume_d_un_polyglotte(tmp_path: Path, capsys: pytest.CaptureFixture[st
     assert hashlib.sha256(contenu).hexdigest() not in sortie
 
 
+@pytest.mark.exigence("F-04")
 def test_lot_avec_un_refus(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     vide = tmp_path / "vide.pdf"
     vide.write_bytes(b"")
@@ -162,6 +166,7 @@ def test_desactiver_un_module_inconnu(capsys: pytest.CaptureFixture[str]) -> Non
     assert "module inconnu : omega ; modules livrés : aucun" in capsys.readouterr().err
 
 
+@pytest.mark.exigence("NF-10", "P-06")
 def test_desactiver_un_module_livre(
     tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -276,6 +281,7 @@ def test_resume_de_chaque_element() -> None:
 # Catalogue (T15, ADR-0086, NF-07)
 
 
+@pytest.mark.exigence("NF-07")
 def test_regles_du_catalogue_livre(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--regles"]) == 0
     livre = catalogue.charger(manifestes.decouvrir()).version
@@ -326,6 +332,7 @@ def test_catalogue_invalide(tmp_path: Path, capsys: pytest.CaptureFixture[str]) 
 # Rapports et masquage (T16, ADR-0092, ADR-0093)
 
 
+@pytest.mark.exigence("F-83")
 def test_rapports_ecrits_par_rang(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     vide = tmp_path / "vide.pdf"
     vide.write_bytes(b"")
@@ -344,6 +351,7 @@ def test_rapports_ecrits_par_rang(tmp_path: Path, capsys: pytest.CaptureFixture[
         assert {(sortie / n).stat().st_mode & 0o777 for n in ("2.html", "2.json")} == {0o600}
 
 
+@pytest.mark.exigence("NF-18", "ES-13")
 def test_rapports_revelent_ce_qui_est_demande(tmp_path: Path) -> None:
     document = tmp_path / "SOURCE.pdf"
     document.write_bytes(PDF)
@@ -408,6 +416,7 @@ def test_rapport_non_ecrit(
     assert (sortie / "1.html").read_text() == "à garder"
 
 
+@pytest.mark.exigence("ES-12")
 def test_sortie_du_terminal_neutralisee(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     # Un nom qui inverse l'affichage (U+202E) : montré, jamais actif (ES-12, M-21). Un caractère
     # de contrôle (ESC) est vérifié par test_rapport.py : Windows l'interdit dans un nom.

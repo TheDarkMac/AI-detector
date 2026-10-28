@@ -46,6 +46,8 @@ from voight_kampff.rapport.modele import (
     Zone,
 )
 
+pytestmark = pytest.mark.exigence("F-80", "F-81", "F-82")
+
 EMPREINTE = "3f" * 32
 JPEG = Partie(1, "jpeg", Plage(0, 2_000_000), fin_connue=True)
 
@@ -130,6 +132,7 @@ def test_le_modele_ne_charge_pas_jsonschema() -> None:
 
 
 @pytest.mark.parametrize("raison", [r for r in RaisonNonMenee if r not in RAISONS_D_UNE_PARTIE])
+@pytest.mark.exigence("NF-08")
 def test_interrompue_selon_la_raison(rapport: Rapport, raison: RaisonNonMenee) -> None:
     non_menee = NonMenee(raison, "jpeg", partie=1)
     modifie = dataclasses.replace(rapport, non_menees=(*rapport.non_menees, non_menee))
@@ -187,6 +190,7 @@ def test_rapport_complet_non_interrompu(rapport: Rapport) -> None:
         pytest.param({"module": "a b"}, "identifiant", id="module-invalide"),
     ],
 )
+@pytest.mark.exigence("P-02", "P-03", "ES-20")
 def test_constat_incoherent_refuse(modifications: dict[str, Any], motif: str) -> None:
     with pytest.raises(ValueError, match=motif):
         indice(**modifications)
@@ -195,6 +199,7 @@ def test_constat_incoherent_refuse(modifications: dict[str, Any], motif: str) ->
 @pytest.mark.parametrize("fondement", list(Fondement))
 @pytest.mark.parametrize("categorie", list(Categorie))
 @pytest.mark.parametrize("direction", list(Direction))
+@pytest.mark.exigence("P-03", "ES-20")
 def test_combinaisons_admises(
     fondement: Fondement, categorie: Categorie, direction: Direction
 ) -> None:
@@ -415,6 +420,7 @@ def test_localisation_invalide_refusee(fabrique: Any, motif: str) -> None:
         ),
     ],
 )
+@pytest.mark.exigence("ES-14")
 def test_identification_invalide_refusee(
     rapport: Rapport, modifications: dict[str, Any], motif: str
 ) -> None:
@@ -422,6 +428,7 @@ def test_identification_invalide_refusee(
         dataclasses.replace(rapport.identification, **modifications)
 
 
+@pytest.mark.exigence("ES-14")
 def test_date_d_analyse_en_utc_a_la_seconde(rapport: Rapport) -> None:
     assert rapport.vers_dict()["identification"]["date_analyse"] == "2026-10-26T14:03:00Z"
 
@@ -602,6 +609,7 @@ def test_technique_hors_v1_non_applicable_sans_version(rapport: Rapport) -> None
         ((), ("c2pa", "c2pa")),
     ],
 )
+@pytest.mark.exigence("F-25")
 def test_couverture_en_double_refusee(
     techniques: tuple[TechniqueCouverte, ...], marquages: tuple[str, ...]
 ) -> None:

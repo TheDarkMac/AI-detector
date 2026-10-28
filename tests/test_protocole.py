@@ -4,6 +4,8 @@ import pytest
 
 from voight_kampff._protocole import MessageInvalide, decoder, encoder
 
+pytestmark = pytest.mark.exigence("ES-04")
+
 
 def test_aller_retour() -> None:
     message = {

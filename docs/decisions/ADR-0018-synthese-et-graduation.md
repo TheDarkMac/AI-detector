@@ -55,3 +55,4 @@ Le §10 laisse ouverts la forme de la synthèse globale (aucune, niveaux qualita
 | 2026-10-26 | Renvoi : le constat porte sa règle et sa graduation (niveau, règle évaluée ou non), ADR-0058 (T11) |
 | 2026-10-27 | Réalisé en T15 : niveau et évaluation (taux, corpus, date) portés par la règle ; sans évaluation, niveau « faible » imposé (ADR-0084) |
 | 2026-10-28 | Réalisé en T16 : résumé dans l'ordre fixé, indices comptés par direction et niveau sans combinaison, aucune conclusion globale (ADR-0098) |
+| 2026-10-28 | Réalisé en T17 : bornes des niveaux (1 % et 5 %) et cible par fichier (5 %) sur la borne supérieure de l'intervalle de Wilson (ADR-0101) ; taux par fichier compté sur les preuves et les indices modérés ou forts (ADR-0104) ; niveau contrôlé au chargement du catalogue (ADR-0107) |

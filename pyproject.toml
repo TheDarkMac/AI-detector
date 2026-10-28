@@ -89,7 +89,7 @@ select = [
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["src", "tests"]
+files = ["src", "tests", "banc"]
 
 [[tool.mypy.overrides]]
 # google-re2 ne publie pas ses types : ses objets sont Any, employés dans _regles.py seulement.
@@ -99,13 +99,16 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["-ra", "--strict-markers", "--strict-config", "--import-mode=importlib"]
-# Échantillons partagés entre fichiers de tests (tests/echantillons.py).
-pythonpath = ["tests"]
+# Échantillons partagés entre fichiers de tests (tests/echantillons.py) ; banc d'évaluation, à la
+# racine du dépôt (ADR-0099).
+pythonpath = ["tests", "."]
+# Exigences vérifiées par un test : matrice de vérification (ADR-0102, docs/verification/).
+markers = ["exigence(*identifiants): exigences du cahier, de sécurité ou principes que vérifie le test"]
 xfail_strict = true
 
 [tool.coverage.run]
 branch = true
-source = ["voight_kampff"]
+source = ["voight_kampff", "banc"]
 # Mesure aussi les interpréteurs lancés par les tests (python -m voight_kampff).
 patch = ["subprocess"]
 

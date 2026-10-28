@@ -20,6 +20,8 @@ from voight_kampff._orchestration.catalogue import CatalogueInvalide, charger, e
 from voight_kampff._orchestration.manifestes import Manifeste
 from voight_kampff.rapport.modele import Direction
 
+pytestmark = pytest.mark.exigence("F-26", "NF-07", "ES-09")
+
 RACINE_DU_DEPOT = Path(__file__).resolve().parents[1]
 REGISTRE = RACINE_DU_DEPOT / "docs" / "catalogue" / "versions.toml"
 
@@ -55,6 +57,7 @@ def test_catalogue_livre_valide() -> None:
     assert livre.version.empreinte == empreinte(fichiers(Path(str(catalogues.livre()))))
 
 
+@pytest.mark.exigence("NF-06", "P-05")
 def test_empreinte_selon_la_procedure_publiee() -> None:
     # Ce que donne `find . -type f | LC_ALL=C sort | xargs sha256sum | sha256sum` (ADR-0088).
     dossier = Path(str(catalogues.livre()))

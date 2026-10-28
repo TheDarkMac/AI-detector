@@ -53,3 +53,4 @@ Le §10 demande si un seuil calibré sur un corpus est admis, et une pondératio
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-27 | Réalisé en T15 : calibrage (méthode, procédure, corpus) obligatoire pour une règle à seuil ; un changement de seuil change la version de la règle et du catalogue (ADR-0084, ADR-0085) |
+| 2026-10-28 | Réalisé en T17 : manifeste du corpus avec partie déclarée par fichier, groupes d'origine dans une seule partie (ADR-0103) ; taux publiés mesurés sur la partie évaluation seulement, rapport non publiable sinon (ADR-0104, ADR-0105) |

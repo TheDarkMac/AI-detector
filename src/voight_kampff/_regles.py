@@ -41,6 +41,8 @@ from voight_kampff.rapport.modele import (
 )
 
 __all__ = [
+    "BORNE_FORT",
+    "BORNE_MODERE",
     "Application",
     "Calibrage",
     "Comparaison",
@@ -52,6 +54,7 @@ __all__ = [
     "appliquer",
     "conforme",
     "emplacements",
+    "niveau_permis",
     "remplir",
 ]
 
@@ -63,6 +66,10 @@ CONDITIONS_MAX = 16
 LIMITES_MAX = 32
 LANGUES = ("fr",)
 """Langues des phrases : le français seul en V1 (ADR-0020) ; en ajouter une change le format."""
+BORNE_FORT = 0.01
+BORNE_MODERE = 0.05
+"""Bornes des niveaux (ADR-0101) : la borne supérieure de l'intervalle de Wilson à 95 % du taux
+de faux positifs d'une règle permet « fort » jusqu'à 1 %, « modéré » jusqu'à 5 %."""
 
 # Expressions du code, fixes, sans répétition imbriquée : temps linéaire (ADR-0039).
 _IDENTIFIANT_REGLE = re.compile(r"R-[A-Z][A-Z0-9]*-[0-9]{3}")
@@ -297,25 +304,54 @@ class Condition:
 
 @dataclass(frozen=True, slots=True)
 class Evaluation:
-    """Taux de faux positifs mesuré sur la partie évaluation du corpus (ADR-0016, ADR-0018)."""
+    """Taux de faux positifs mesuré sur la partie évaluation du corpus (ADR-0016, ADR-0018).
+
+    Publié avec son effectif et la borne supérieure de son intervalle de confiance (A-54), que
+    calcule le banc d'évaluation (ADR-0104) ; c'est cette borne qui fixe le niveau permis.
+    """
 
     taux_faux_positifs: float
+    effectif: int
+    """Nombre de fichiers sur lequel le taux est mesuré."""
+    borne_superieure: float
+    """Borne supérieure de l'intervalle de Wilson à 95 % du taux (ADR-0101)."""
     corpus: str
     """Version du corpus d'évaluation."""
     date: date
 
     def __post_init__(self) -> None:
-        taux = self.taux_faux_positifs
-        if isinstance(taux, bool) or not isinstance(taux, int | float) or not 0 <= taux <= 1:
-            raise ValueError("evaluation.taux_faux_positifs : entre 0 et 1 attendu")
+        taux, borne = self.taux_faux_positifs, self.borne_superieure
+        for valeur in (taux, borne):
+            if isinstance(valeur, bool) or not isinstance(valeur, int | float):
+                raise ValueError("evaluation : taux et borne entre 0 et 1 attendus")
+        if not 0 <= taux <= borne <= 1:
+            raise ValueError("evaluation : 0 ≤ taux ≤ borne supérieure ≤ 1 attendu")
+        if isinstance(self.effectif, bool) or not isinstance(self.effectif, int):
+            raise ValueError("evaluation.effectif : entier attendu")
+        if self.effectif < 1:
+            raise ValueError("evaluation.effectif : au moins un fichier")
         _verifier(_VERSION_CORPUS, self.corpus, 64, "evaluation.corpus")
 
     def vers_dict(self) -> Document:
         return {
             "taux_faux_positifs": self.taux_faux_positifs,
+            "effectif": self.effectif,
+            "borne_superieure": self.borne_superieure,
             "corpus": self.corpus,
             "date": self.date.isoformat(),
         }
+
+
+def niveau_permis(borne_superieure: float) -> Niveau:
+    """Niveau le plus élevé que permet la borne supérieure d'un taux de faux positifs."""
+    if borne_superieure <= BORNE_FORT:
+        return Niveau.FORT
+    if borne_superieure <= BORNE_MODERE:
+        return Niveau.MODERE
+    return Niveau.FAIBLE
+
+
+_RANG_DES_NIVEAUX = {Niveau.FAIBLE: 0, Niveau.MODERE: 1, Niveau.FORT: 2}
 
 
 @dataclass(frozen=True, slots=True)
@@ -403,6 +439,10 @@ class Regle:
         object.__setattr__(self, "textes", MappingProxyType(dict(self.textes)))
         if self.categorie is not Categorie.INDICE and (self.niveau or self.evaluation):
             raise ValueError("regle.niveau : réservé aux indices (ADR-0018)")
+        if self.niveau is not None and self.evaluation is not None:
+            permis = niveau_permis(self.evaluation.borne_superieure)
+            if _RANG_DES_NIVEAUX[self.niveau] > _RANG_DES_NIVEAUX[permis]:
+                raise ValueError("regle.niveau : plus élevé que ne le permet l'évaluation")
         seuils = any(condition.seuil is not None for condition in self.conditions)
         if seuils and self.calibrage is None:
             raise ValueError("regle.calibrage : obligatoire pour une règle à seuil (ADR-0016)")
@@ -493,6 +533,8 @@ class Regle:
             if evaluation is None
             else Evaluation(
                 evaluation["taux_faux_positifs"],
+                evaluation["effectif"],
+                evaluation["borne_superieure"],
                 evaluation["corpus"],
                 date.fromisoformat(evaluation["date"]),
             ),
