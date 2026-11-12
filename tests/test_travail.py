@@ -509,7 +509,7 @@ def test_configuration_avec_ses_regles() -> None:
 
 def test_import_des_modules_livres() -> None:
     analyseurs, echecs = principal.importer()
-    assert sorted(analyseurs) == ["exif", "iptc", "textepng", "xmp"]
+    assert sorted(analyseurs) == ["exif", "infopdf", "iptc", "textepng", "xmp"]
     assert echecs == frozenset()
 
 

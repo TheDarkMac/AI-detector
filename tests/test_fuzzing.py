@@ -3,7 +3,8 @@
 Quatre familles d'analyseurs lisent aujourd'hui des données hostiles :
 
 - l'identification, dans le processus de travail, lit le fichier (ADR-0070) ;
-- les modules de métadonnées d'image et leurs lecteurs de structure (T20, ADR-0114) ;
+- les modules de métadonnées d'image et de PDF et leurs lecteurs de structure (T20, T21,
+  ADR-0114, ADR-0124) ;
 - le décodage strict des lignes, dans le processus principal, lit ce qu'envoie un processus de
   travail peut-être compromis (ES-04) ;
 - la réception, qui valide chaque message par le schéma puis par le modèle (ADR-0065).
@@ -55,6 +56,8 @@ from metadonnees import (
     heic_meta,
     jeu,
     jpeg_meta,
+    pdf,
+    pdf_info,
     png_meta,
     ressource,
     texte,
@@ -256,7 +259,7 @@ def test_reception_messages_mutes(suite: list[dict[str, Any]]) -> None:
     reception.resultat((MODULE,), set())  # le résultat se construit quoi qu'il soit arrivé
 
 
-# Modules de métadonnées d'image (T20)
+# Modules de métadonnées d'image (T20) et de PDF (T21)
 
 _TIFF = tiff(
     (
@@ -272,6 +275,11 @@ _XMP = xmp(
     '<dc:source rdf:parseType="Resource"><dc:x>1</dc:x></dc:source>'
 )
 _ORACLE = Path(__file__).parent / "donnees" / "metadonnees"
+_INFO = (
+    b"<</Title(Titre \\(entre parenth\\350ses\\))/Author<FEFF004A0065>/Trapped/False"
+    b"/Pages 3/Liste[(a) 1]/Sous<</A(b)>>/Creator 2 0 R>>"
+)
+_PNG = "<</Predictor 12/Columns 7>>"
 ECHANTILLONS_METADONNEES = (
     ("jpeg", jpeg_meta(app1_exif(_TIFF), app1_xmp(_XMP), app1_etendu(b"G" * 32, 4, 0, b"abcd"))),
     ("jpeg", jpeg_meta(app13(ressource(0x0404, jeu(1, 90, b"\x1b%G") + jeu(2, 25, b"mot"))))),
@@ -297,6 +305,12 @@ ECHANTILLONS_METADONNEES = (
     ("png", (_ORACLE / "image.png").read_bytes()),
     ("webp", (_ORACLE / "image.webp").read_bytes()),
     ("heic", (_ORACLE / "image.heic").read_bytes()),
+    ("pdf", pdf_info(_INFO, xmp_=_XMP)),
+    ("pdf", pdf_info(_INFO, flux_xref=True, flux_objets={9: (1, 3)}, predicteur=_PNG, png=True)),
+    ("pdf", pdf({3: b"<</Title(Mise a jour)>>"}, "", base=pdf_info(_INFO), largeur=19)),
+    ("pdf", (_ORACLE / "document.pdf").read_bytes()),
+    ("pdf", (_ORACLE / "ghostscript.pdf").read_bytes()),
+    ("pdf", (_ORACLE / "chiffre.pdf").read_bytes()),
 )
 """Échantillons par format : toutes les familles, toutes les formes de conteneur lues."""
 _MODULES: dict[str, tuple[str, ...]] = {
@@ -304,6 +318,7 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "png": ("exif", "xmp", "textepng"),
     "webp": ("exif", "xmp"),
     "heic": ("exif", "xmp"),
+    "pdf": ("infopdf", "xmp"),
 }
 
 

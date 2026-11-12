@@ -17,6 +17,7 @@ from xml.parsers import expat
 import pytest
 from echantillons import bloc_png, boite, jpeg, png, segment
 from metadonnees import (
+    CATALOGUE_PDF,
     DC,
     Element,
     Sous,
@@ -35,6 +36,7 @@ from metadonnees import (
     jpeg_meta,
     nombres,
     observations,
+    pdf,
     png_meta,
     raisons,
     ressource,
@@ -80,6 +82,7 @@ def verrouille(monkeypatch: pytest.MonkeyPatch) -> None:
         ("exif", "heic", heic_meta()),
         ("xmp", "jpeg", jpeg()),
         ("xmp", "png", png()),
+        ("xmp", "pdf", pdf({1: CATALOGUE_PDF})),
         ("iptc", "jpeg", jpeg()),
         ("textepng", "png", png()),
     ],

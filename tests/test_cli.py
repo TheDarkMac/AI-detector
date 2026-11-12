@@ -51,7 +51,10 @@ def test_sans_argument_affiche_l_aide(capsys: pytest.CaptureFixture[str]) -> Non
 
 def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--modules"]) == 0
-    assert capsys.readouterr().out == "exif 0.1.1\niptc 0.1.0\ntextepng 0.1.0\nxmp 0.1.0\n"
+    assert (
+        capsys.readouterr().out
+        == "exif 0.1.1\ninfopdf 0.1.0\niptc 0.1.0\ntextepng 0.1.0\nxmp 0.2.0\n"
+    )
 
 
 def test_liste_des_modules_vide(
@@ -172,7 +175,7 @@ def test_desactiver_un_module_inconnu(capsys: pytest.CaptureFixture[str]) -> Non
         main(["--desactiver", "omega", "f.pdf"])
     assert sortie.value.code == 2
     erreur = capsys.readouterr().err
-    assert "module inconnu : omega ; modules livrés : exif, iptc, textepng, xmp" in erreur
+    assert "module inconnu : omega ; modules livrés : exif, infopdf, iptc, textepng, xmp" in erreur
 
 
 @pytest.mark.exigence("NF-10", "P-06")

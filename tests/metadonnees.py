@@ -1,8 +1,9 @@
-"""Échantillons de métadonnées d'image, construits octet par octet pour les tests (T20).
+"""Échantillons de métadonnées, construits octet par octet pour les tests (T20, T21).
 
 Chaque constructeur suit la structure que lisent les modules : en-tête et répertoires TIFF,
-segments JPEG, blocs PNG et WebP, boîtes HEIC, paquets XMP, ressources Photoshop et IIM. Aucun
-échantillon n'est décodable comme image : les données d'image sont absentes ou factices.
+segments JPEG, blocs PNG et WebP, boîtes HEIC, paquets XMP, ressources Photoshop et IIM,
+objets et références croisées d'un PDF. Aucun échantillon n'est décodable comme image, ni
+affichable comme document : les données d'image et les pages sont absentes ou factices.
 """
 
 import importlib
@@ -244,6 +245,128 @@ def xmp(description: str, *, espaces: str = f'xmlns:dc="{DC}"', attributs: str =
         "</rdf:RDF></x:xmpmeta>"
         '<?xpacket end="w"?>'
     ).encode()
+
+
+# PDF (ISO 32000-2, §7.5)
+
+
+def flux_pdf(dico: str, donnees: bytes) -> bytes:
+    """Corps d'un objet flux : dictionnaire, longueur exacte, données."""
+    return f"<<{dico}/Length {len(donnees)}>>stream\n".encode() + donnees + b"\nendstream"
+
+
+def lignes_png(
+    donnees: bytes, colonnes: int, filtres: tuple[int, ...] = (2,), pas: int = 1
+) -> bytes:
+    """Lignes filtrées par le prédicteur PNG, un filtre par ligne pris en boucle dans ``filtres``.
+
+    ``pas`` est le nombre d'octets d'un pixel : la gauche d'un octet est ``pas`` octets avant.
+    """
+    sortie, precedente = bytearray(), bytes(colonnes)
+    for rang, debut in enumerate(range(0, len(donnees), colonnes)):
+        ligne, filtre = donnees[debut : debut + colonnes], filtres[rang % len(filtres)]
+        codee = bytearray()
+        for i, octet in enumerate(ligne):
+            gauche = ligne[i - pas] if i >= pas else 0
+            haut = precedente[i]
+            diagonale = precedente[i - pas] if i >= pas else 0
+            estimation = gauche + haut - diagonale
+            ecarts = [abs(estimation - v) for v in (gauche, haut, diagonale)]
+            paeth = (gauche, haut, diagonale)[ecarts.index(min(ecarts))]
+            ajout = (0, gauche, haut, (gauche + haut) // 2, paeth)[filtre]
+            codee.append((octet - ajout) & 0xFF)
+        sortie += bytes([filtre]) + codee
+        precedente = ligne
+    return bytes(sortie)
+
+
+def pdf(
+    objets: dict[int, bytes],
+    trailer: str = "/Root 1 0 R",
+    *,
+    flux_xref: bool = False,
+    flux_objets: dict[int, tuple[int, ...]] | None = None,
+    predicteur: str = "",
+    png: bool = False,
+    base: bytes | None = None,
+    largeur: int = 20,
+) -> bytes:
+    """PDF : objets (numéro → corps), table classique ou flux de références croisées.
+
+    ``flux_objets`` range des objets dans des flux d'objets (numéro du flux → numéros des
+    objets) ; ``predicteur`` est le ``/DecodeParms`` du flux de références croisées, et ``png``
+    filtre ses lignes en Up. Avec ``base``, ajoute une mise à jour incrémentale à ce document.
+    """
+    tampon = bytearray(base if base is not None else b"%PDF-1.7\n%\xe2\xe3\xcf\xd3\n")
+    entrees: dict[int, tuple[int, int, int]] = {} if base is not None else {0: (0, 0, 65535)}
+    contenus = dict(objets)
+    for numero_flux, ranges in (flux_objets or {}).items():
+        tete, corps = b"", b""
+        for rang, numero in enumerate(ranges):
+            tete += f"{numero} {len(corps)} ".encode()
+            corps += contenus.pop(numero) + b"\n"
+            entrees[numero] = (2, numero_flux, rang)
+        dico = f"/Type/ObjStm/N {len(ranges)}/First {len(tete)}/Filter/FlateDecode"
+        contenus[numero_flux] = flux_pdf(dico, zlib.compress(tete + corps))
+    for numero, corps in sorted(contenus.items()):
+        entrees[numero] = (1, len(tampon), 0)
+        tampon += f"{numero} 0 obj\n".encode() + corps + b"\nendobj\n"
+    precedent = f"/Prev {_startxref(base)}" if base is not None else ""
+    taille = max(entrees) + 1
+    debut = len(tampon)
+    if not flux_xref:
+        fin = {19: b"\n", 20: b"\r\n", 21: b" \r\n"}[largeur]
+        tampon += b"xref\n"
+        for premier, numeros in _plages(entrees):
+            tampon += f"{premier} {len(numeros)}\n".encode()
+            for numero in numeros:
+                nature, champ, generation = entrees[numero]
+                marque = "n" if nature == 1 else "f"
+                tampon += f"{champ:010d} {generation:05d} {marque}".encode() + fin
+        tampon += f"trailer\n<</Size {taille}{trailer}{precedent}>>\n".encode()
+    else:
+        entrees[taille] = (1, debut, 0)
+        taille += 1
+        index, lignes = "", b""
+        for premier, numeros in _plages(entrees):
+            index += f"{premier} {len(numeros)} "
+            lignes += b"".join(struct.pack(">BIH", *entrees[n]) for n in numeros)
+        if png:
+            lignes = lignes_png(lignes, 7)
+        dico = f"/Type/XRef/Size {taille}/W[1 4 2]/Index[{index}]{trailer}{precedent}"
+        dico += "/Filter/FlateDecode" + (f"/DecodeParms{predicteur}" if predicteur else "")
+        corps = flux_pdf(dico, zlib.compress(lignes))
+        tampon += f"{taille - 1} 0 obj\n".encode() + corps + b"\nendobj\n"
+    tampon += f"startxref\n{debut}\n%%EOF\n".encode()
+    return bytes(tampon)
+
+
+def _startxref(document: bytes) -> int:
+    queue = document[document.rindex(b"startxref") + 9 :]
+    return int(queue.split()[0])
+
+
+def _plages(entrees: dict[int, tuple[int, int, int]]) -> list[tuple[int, list[int]]]:
+    plages: list[tuple[int, list[int]]] = []
+    for numero in sorted(entrees):
+        if plages and plages[-1][0] + len(plages[-1][1]) == numero:
+            plages[-1][1].append(numero)
+        else:
+            plages.append((numero, [numero]))
+    return plages
+
+
+CATALOGUE_PDF = b"<</Type/Catalog/Pages 2 0 R>>"
+PAGES_PDF = b"<</Type/Pages/Kids[]/Count 0>>"
+
+
+def pdf_info(info: bytes, *, xmp_: bytes | None = None, **options: Any) -> bytes:
+    """PDF d'un catalogue, de ses pages, d'un dictionnaire Info (objet 3) et d'un XMP (objet 4)."""
+    catalogue = CATALOGUE_PDF if xmp_ is None else b"<</Type/Catalog/Pages 2 0 R/Metadata 4 0 R>>"
+    objets = {1: catalogue, 2: PAGES_PDF, 3: info}
+    if xmp_ is not None:
+        objets[4] = flux_pdf("/Type/Metadata/Subtype/XML", xmp_)
+    return pdf(objets, options.pop("trailer", "/Root 1 0 R/Info 3 0 R"), **options)
 
 
 # Photoshop et IIM

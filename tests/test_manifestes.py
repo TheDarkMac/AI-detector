@@ -175,9 +175,11 @@ def test_fiche_et_manifeste_concordent() -> None:
 
 
 def test_modules_de_metadonnees_livres() -> None:
-    # T20 : un module par famille de métadonnées d'image (ADR-0114).
+    # T20 et T21 : un module par famille de métadonnées (ADR-0114, ADR-0127).
     livres = {manifeste.identifiant: manifeste for manifeste in decouvrir()}
-    assert sorted(livres) == ["exif", "iptc", "textepng", "xmp"]
+    assert sorted(livres) == ["exif", "infopdf", "iptc", "textepng", "xmp"]
+    assert livres["infopdf"].formats == ("pdf",)
+    assert "pdf" in livres["xmp"].formats
     assert livres["iptc"].formats == ("jpeg",)
     assert livres["textepng"].formats == ("png",)
     assert livres["xmp"].bibliotheques == ("expat",)
