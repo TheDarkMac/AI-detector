@@ -16,6 +16,27 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
+      # Une PR ne se merge pas tant qu'un ADR attend la validation de TheDarkMac (ADR-0129, ERR-0008).
+      - name: Aucun ADR au statut Proposé
+        run: |
+          if grep -l '^- \*\*Statut\*\* : Proposé' docs/decisions/ADR-*.md; then
+            echo "::error::ADR au statut Proposé : à valider, puis passer à Accepté ou Abandonné (ADR-0129)"
+            exit 1
+          fi
+          echo "Aucun ADR au statut Proposé."
+      # Le titre se choisit au moment du merge : il ne peut être que vérifié après (ADR-0044, ADR-0129).
+      - name: Titre du commit de merge
+        if: github.event_name == 'push'
+        env:
+          SUJET: ${{ github.event.head_commit.message }}
+        run: |
+          parents=$(git log -1 --format=%P | wc -w)
+          titre=$(printf '%s\n' "$SUJET" | head -n 1)
+          if [ "$parents" -gt 1 ] && ! printf '%s\n' "$titre" | grep -Eq '^Merge: .+ — .+ \(#[0-9]+\)$'; then
+            echo "::error::Titre du commit de merge hors du format d'ADR-0044 : $titre"
+            exit 1
+          fi
+          echo "Titre conforme, ou commit sans merge : $titre"
 
   fichiers-interdits:
     runs-on: ubuntu-latest
