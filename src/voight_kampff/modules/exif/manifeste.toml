@@ -1,7 +1,7 @@
 # Module exif : métadonnées EXIF d'une image (ADR-0114). Validé par schemas/manifeste.schema.json (ADR-0064).
 
 identifiant = "exif"
-version = "0.1.0"
+version = "0.1.1"
 formats = ["jpeg", "png", "webp", "heic"]
 exigences = ["F-10", "ES-13"]
 regles = []

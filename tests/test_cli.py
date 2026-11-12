@@ -51,7 +51,7 @@ def test_sans_argument_affiche_l_aide(capsys: pytest.CaptureFixture[str]) -> Non
 
 def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--modules"]) == 0
-    assert capsys.readouterr().out == "exif 0.1.0\niptc 0.1.0\ntextepng 0.1.0\nxmp 0.1.0\n"
+    assert capsys.readouterr().out == "exif 0.1.1\niptc 0.1.0\ntextepng 0.1.0\nxmp 0.1.0\n"
 
 
 def test_liste_des_modules_vide(

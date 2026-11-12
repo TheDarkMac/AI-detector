@@ -79,7 +79,7 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
         (technique, EtatTechnique.NON_MENEE, None)
         for technique in ("referencepdf", "references", "pointstracage")
     } | {
-        (module, EtatTechnique.NON_APPLICABLE, "0.1.0")
+        (module, EtatTechnique.NON_APPLICABLE, "0.1.1" if module == "exif" else "0.1.0")
         for module in ("exif", "iptc", "textepng", "xmp")
     }
     assert {n.raison for n in analyse.non_menees} == {RaisonNonMenee.HORS_V1}
