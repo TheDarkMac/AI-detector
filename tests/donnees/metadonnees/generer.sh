@@ -1,7 +1,8 @@
 #!/bin/sh
 # Échantillons de l'oracle exiftool (T20, ADR-0043, ADR-0122) : quatre images de 8 × 8 pixels
 # (64 × 64 pour HEIC) créées par ImageMagick, métadonnées écrites par exiftool, puis métadonnées
-# relues par exiftool dans exiftool.json. Outils employés pour la version du dépôt :
+# relues par exiftool dans exiftool.json (relire.sh, qui relit aussi les PDF de
+# generer_pdf.sh). Outils employés pour la version du dépôt :
 # ImageMagick 7.1.1-43 (libheif 1.19.8, libwebp 1.5.0) et exiftool 13.25, sous Debian 13.
 #
 # À lancer depuis ce dossier : sh generer.sh. Les images changent à chaque génération (dates
@@ -33,5 +34,4 @@ exiftool -q -overwrite_original -IPTC:Keywords=mot1 -IPTC:Keywords=mot2 \
 exiftool -q -overwrite_original -PNG:Author="Jeanne Exemple" -PNG:Comment="Un commentaire" \
     -PNG:Software="Logiciel PNG" image.png
 
-exiftool -j -a -G1 -n -D -struct -x System:all -x File:all -x Composite:all \
-    photo.jpg image.png image.webp image.heic > exiftool.json
+sh relire.sh
