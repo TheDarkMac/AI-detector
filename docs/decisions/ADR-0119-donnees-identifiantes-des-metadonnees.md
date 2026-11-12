@@ -1,6 +1,6 @@
 # ADR-0119 — Données identifiantes des métadonnées : champs marqués par chaque module
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-10-28
 - **Décideur** : assistant, proposition non posée en question pendant T20, à valider pendant la revue de la PR de T20
 - **Tâche** : T20
@@ -63,3 +63,4 @@ Option A. Champs marqués :
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
+| 2026-11-12 | Validé par TheDarkMac au début de T21, la PR de T20 ayant été mergée sans changement de statut (ERR-0008) : statut « Accepté » |

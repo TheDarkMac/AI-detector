@@ -47,3 +47,4 @@ où « TNN — titre » est le titre de la PR (ADR-0005). Le commit de merge de 
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-11-12 | Renvoi : titre du commit de merge vérifié par la CI après chaque merge (ADR-0129, ERR-0008) (T21) |

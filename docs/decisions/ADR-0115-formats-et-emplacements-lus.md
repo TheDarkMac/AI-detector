@@ -55,3 +55,4 @@ Option A. Emplacements lus, par format et par module (proposés par l'assistant)
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création ; emplacements à valider pendant la revue de la PR de T20 |
+| 2026-11-12 | Emplacements validés par TheDarkMac au début de T21 ; ils avaient été mergés avec T20 sans validation consignée (ERR-0008) |

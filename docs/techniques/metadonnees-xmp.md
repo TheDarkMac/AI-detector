@@ -1,9 +1,9 @@
 # Fiche technique — Métadonnées XMP
 
-- **Module** : `xmp` (version 0.1.0)
-- **Tâche** : T20
+- **Module** : `xmp` (version 0.2.0)
+- **Tâche** : T20, T21
 - **Exigences** : F-10, ES-05, ES-13
-- **Formats** : `jpeg`, `png`, `webp`, `heic`
+- **Formats** : `jpeg`, `png`, `webp`, `heic`, `pdf`
 - **Directions permises** : `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : `expat`
@@ -24,6 +24,7 @@ Le module trouve chaque paquet XMP du conteneur et le lit comme du XML, par l'ex
 | PNG | Bloc `iTXt` de mot-clé `XML:com.adobe.xmp`, décompressé au besoin |
 | WebP | Bloc `XMP` |
 | HEIC | Éléments `mime` de type `application/rdf+xml` |
+| PDF | Flux `/Metadata` du catalogue courant (ISO 32000-2, §14.3.2), décodé au besoin (`FlateDecode`) ; structure lue par le lecteur PDF du projet ([ADR-0124](../decisions/ADR-0124-lecteur-pdf-du-projet.md), [ADR-0127](../decisions/ADR-0127-metadonnees-pdf-lues.md)) |
 
 Aucune donnée de référence.
 
@@ -34,7 +35,7 @@ Noms d'observation ([ADR-0117](../decisions/ADR-0117-vocabulaire-des-observation
 | Nom | Valeur |
 | --- | --- |
 | `xmp.present` | Vrai si au moins un paquet a été trouvé ; toujours observé (F-14) |
-| `xmp.blocs` | Nombre de paquets principaux |
+| `xmp.blocs` | Nombre de paquets principaux ; pour un PDF, 1 si le catalogue désigne un paquet |
 | `xmp.etendu.blocs` | Nombre de morceaux de paquet étendu (JPEG), s'il y en a |
 | `xmp.<préfixe>:<propriété>` | Valeur d'une propriété simple (texte), ou liste pour un tableau, même d'un seul élément |
 | `xmp.<p>:<propriété>.<p>:<champ>` | Champ d'une structure ; pour un tableau de structures, liste des valeurs de ce champ, dans l'ordre |
@@ -80,6 +81,7 @@ Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftoo
 
 - Les qualificatifs autres que `rdf:value` ne sont pas observés (langue d'un `rdf:Alt`, qualificatifs `xmpidq`).
 - Un paquet étendu incomplet, ou que le paquet principal ne désigne pas, n'est pas lu (non mené pour format partiel).
+- PDF : seuls le catalogue courant et son flux `/Metadata` sont lus. Les paquets attachés aux pages, images, polices ou formulaires ne le sont pas (T53), ni ceux des révisions antérieures (T50). Un document chiffré n'a son paquet lu que si `/EncryptMetadata` vaut faux ; sinon le paquet est non mené, jamais déchiffré ([ADR-0126](../decisions/ADR-0126-pdf-chiffre.md)). Une structure PDF illisible (table des références croisées, objet, flux) est non menée pour format partiel ou fichier tronqué, sans reconstruction ([ADR-0125](../decisions/ADR-0125-lecture-stricte-du-pdf.md)).
 - Les paquets portés autrement ne sont pas lus : étiquette `XMLPacket` d'un bloc EXIF (sa taille est observée par `exif`), ressource Photoshop `0x0424`, texte « Raw profile type xmp » d'un PNG (relevé par `textepng`).
 - Un paquet dont le XML est invalide est lu jusqu'à l'erreur ; ce qui précède est observé, et le paquet est non mené pour format partiel.
 - Des noms locaux qui ne diffèrent que par un caractère remplacé par un tiret donnent le même nom d'observation.
@@ -88,7 +90,8 @@ Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftoo
 
 - DTD, déclaration d'entité et entité externe refusées : la lecture s'arrête (ES-05, M-02, M-04) ; aucune résolution réseau ni lecture de fichier.
 - Chaque élément XML compte un objet, chaque niveau un niveau d'imbrication (64 au plus, ADR-0078).
-- Le texte d'un `iTXt` compressé est décompressé par `Contexte.decompresser`, donc compté dans le budget de décompression ; aucune autre décompression.
+- Le texte d'un `iTXt` compressé et un flux PDF `FlateDecode` sont décompressés par `Contexte.decompresser`, donc comptés dans le budget de décompression ; aucune autre décompression.
+- PDF : chaque objet lu compte un objet, chaque résolution de référence un niveau d'imbrication ; les références circulaires sont refusées.
 - Le paquet étendu n'est assemblé qu'une fois couvert par ses morceaux : sa taille ne dépasse pas ce qui a été lu du fichier.
 
 ## Historique
@@ -96,3 +99,4 @@ Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftoo
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-10-28 | 0.1.0 | Création (T20) |
+| 2026-11-12 | 0.2.0 | PDF : paquet du catalogue (T21, ADR-0127) |

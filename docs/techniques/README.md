@@ -15,8 +15,9 @@ Une fiche par module d'analyse (NF-09, livrable 4), livrée avec son code, ses t
 | Fiche | Module | Tâche | Formats |
 | --- | --- | --- | --- |
 | [Métadonnées EXIF](metadonnees-exif.md) | `exif` | T20 | JPEG, PNG, WebP, HEIC |
-| [Métadonnées XMP](metadonnees-xmp.md) | `xmp` | T20 | JPEG, PNG, WebP, HEIC |
+| [Métadonnées XMP](metadonnees-xmp.md) | `xmp` | T20, T21 | JPEG, PNG, WebP, HEIC, PDF |
 | [Métadonnées IPTC-IIM](metadonnees-iptc.md) | `iptc` | T20 | JPEG |
 | [Blocs texte PNG](metadonnees-texte-png.md) | `textepng` | T20 | PNG |
+| [Dictionnaire d'information PDF](metadonnees-info-pdf.md) | `infopdf` | T21 | PDF |
 
-Les quatre modules de T20 partagent leurs lecteurs de structure (`voight_kampff/modules/_lecture/`, [ADR-0114](../decisions/ADR-0114-un-module-par-famille-de-metadonnees.md)) : conteneurs, TIFF, XMP, ressources Photoshop et IIM, valeurs.
+Les modules de métadonnées partagent leurs lecteurs de structure (`voight_kampff/modules/_lecture/`, [ADR-0114](../decisions/ADR-0114-un-module-par-famille-de-metadonnees.md)) : conteneurs, TIFF, XMP, ressources Photoshop et IIM, valeurs (T20) ; structure PDF (T21, [ADR-0124](../decisions/ADR-0124-lecteur-pdf-du-projet.md)).

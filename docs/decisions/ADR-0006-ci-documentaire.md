@@ -60,3 +60,4 @@ Permissions du workflow réduites à la lecture du contenu.
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : CI du code ajoutée à côté de la CI documentaire (ADR-0051) (T10) |
+| 2026-11-12 | Renvoi : `lint-markdown` refuse aussi un ADR « Proposé » et vérifie le titre du commit de merge (ADR-0129) (T21) |

@@ -59,3 +59,4 @@ Réglages fixés par l'assistant :
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création ; choix de l'option par TheDarkMac, réglages proposés par l'assistant |
+| 2026-11-12 | Réglages validés par TheDarkMac au début de T21 ; ils avaient été mergés avec T20 sans validation consignée (ERR-0007, ERR-0008) |

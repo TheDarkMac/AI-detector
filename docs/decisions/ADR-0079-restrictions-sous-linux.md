@@ -70,3 +70,4 @@ Avant les restrictions, le processus de travail importe tout ce qu'il emploiera 
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
 | 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T14 : statut « Accepté » |
+| 2026-11-12 | Renvoi : un codec chargé à la première utilisation est un import à la demande ; les modules chargent les leurs à l'import (ERR-0009, T21) |

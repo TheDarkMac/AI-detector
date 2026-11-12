@@ -1,6 +1,6 @@
 # Fiche technique — Métadonnées EXIF
 
-- **Module** : `exif` (version 0.1.0)
+- **Module** : `exif` (version 0.1.1)
 - **Tâche** : T20
 - **Exigences** : F-10, ES-13
 - **Formats** : `jpeg`, `png`, `webp`, `heic`
@@ -92,9 +92,11 @@ Sans objet : aucun constat, donc ni faux positif ni faux négatif au sens du ban
 - Chaque entrée compte un objet, chaque répertoire un niveau d'imbrication (ADR-0078) ; un répertoire déjà lu n'est pas relu (boucle).
 - Les valeurs sont des vues sur le bloc, sans copie ; une liste est décodée jusqu'à 4 097 éléments au plus.
 - Aucune décompression, aucun décodage d'image.
+- Les codecs UTF-16 et Shift_JIS sont chargés à l'import du module, avant les restrictions du processus de travail (ADR-0079, ERR-0009).
 
 ## Historique
 
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-10-28 | 0.1.0 | Création (T20) |
+| 2026-11-12 | 0.1.1 | Étiquettes `XP…` et commentaires `UNICODE` ou `JIS` lus dans le processus de travail restreint, où ils mettaient le module en erreur (ERR-0009, T21) |
