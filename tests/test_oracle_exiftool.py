@@ -1,19 +1,23 @@
-"""Oracle exiftool : les modules relèvent ce qu'exiftool relève (ADR-0043, ADR-0122, ADR-0135).
+"""Oracle exiftool : les modules relèvent ce qu'exiftool relève (ADR-0043, ADR-0122, ADR-0135,
+ADR-0141).
 
-Les échantillons de ``donnees/metadonnees/`` ont été écrits par exiftool ou ffmpeg, puis relus
-par exiftool dans ``exiftool.json`` (``generer.sh``, ``generer_pdf.sh``, ``generer_media.sh``,
-``relire.sh``). Le test compare, dans les deux sens, les étiquettes EXIF (par numéro et
-répertoire), les propriétés XMP (par nom local), les jeux de données IPTC, les blocs texte PNG,
-les entrées du dictionnaire Info d'un PDF et les balises audio et vidéo (par identifiant), et
-leurs valeurs, ramenées à une forme commune : exiftool écrit une liste de nombres en texte
-séparé par des espaces, une latitude en degrés décimaux, un tableau d'un seul élément comme une
-valeur simple, une date à sa façon, des mots-clés PDF en liste, un nombre XMP en nombre, un
-texte RIFF en Latin-1, la date et l'heure de ``bext`` ensemble.
+Les échantillons de ``donnees/metadonnees/`` ont été écrits par exiftool, ffmpeg ou LibreOffice,
+puis relus par exiftool dans ``exiftool.json`` (``generer.sh``, ``generer_pdf.sh``,
+``generer_media.sh``, ``generer_bureautique.sh``, ``relire.sh``). Le test compare, dans les deux
+sens, les étiquettes EXIF (par numéro et répertoire), les propriétés XMP (par nom local), les
+jeux de données IPTC, les blocs texte PNG, les entrées du dictionnaire Info d'un PDF, les
+balises audio et vidéo et les propriétés de DOCX et d'ODT (par identifiant), et leurs valeurs,
+ramenées à une forme commune : exiftool écrit une liste de nombres en texte séparé par des
+espaces, une latitude en degrés décimaux, un tableau d'un seul élément comme une valeur simple,
+une date à sa façon, des mots-clés PDF en liste, un nombre XMP en nombre, un texte RIFF en
+Latin-1, la date et l'heure de ``bext`` ensemble, les statistiques d'un ODT en structure, ses
+propriétés utilisateur en paires nom et valeur.
 
 exiftool n'est ni livré ni appelé par l'outil. S'il est installé dans la même version que celle
 qui a produit ``exiftool.json``, un dernier test vérifie que sa sortie n'a pas changé.
 """
 
+import copy
 import json
 import re
 import shutil
@@ -49,6 +53,8 @@ FORMATS = {
     ".mp4": "mp4",
     ".mov": "mov",
     ".webm": "webm",
+    ".docx": "docx",
+    ".odt": "odt",
 }
 REPERTOIRES = {
     "IFD0": "ifd0",
@@ -72,6 +78,8 @@ MODULES = {
     "mp4": ("quicktime", "xmp"),
     "mov": ("quicktime", "xmp"),
     "webm": ("matroska",),
+    "docx": ("ooxml",),
+    "odt": ("odf",),
 }
 GENERALES = frozenset({"present", "blocs", "ordre", "photoshop", "chiffre", "version"})
 """Observations des modules sans équivalent chez exiftool : présence, nombre de blocs…"""
@@ -92,6 +100,8 @@ BEXT = {
 """Champs du bloc ``bext``, nommés par exiftool ; il joint la date et l'heure."""
 INFO_MATROSKA = {0x3BA9: "Title", 0x0D80: "MuxingApp", 0x1741: "WritingApp", 0x0461: "DateUTC"}
 """Éléments d'``Info``, identifiés par exiftool sans les bits de longueur de l'identifiant."""
+DUBLIN_CORE = ("xmp.", "ooxml.core.dc:", "odf.dc:")
+"""Observations qu'exiftool range dans ses groupes XMP : XMP, Dublin Core d'un DOCX et d'un ODT."""
 DATE = re.compile(r"(D:)?\d{4}[-:]?\d\d[-:]?\d\d([T ]?\d\d:?\d\d:?\d\d.*)?")
 EPOQUES = {
     "quicktime.mvhd.CreationTime": (datetime(1904, 1, 1, tzinfo=UTC), 1),
@@ -127,7 +137,45 @@ def lu_par_les_modules(fichier: str) -> dict[str, Any]:
 
 def lu_par_exiftool(fichier: str) -> dict[str, dict[str, Any]]:
     [entree] = [e for e in ORACLE if e["SourceFile"] == fichier]
-    return {cle: valeur for cle, valeur in entree.items() if cle != "SourceFile"}
+    lues = {cle: copy.deepcopy(valeur) for cle, valeur in entree.items() if cle != "SourceFile"}
+    return repetees_odf(utilisateur_odf(statistiques_odf(lues)))
+
+
+def statistiques_odf(lues: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """``meta:document-statistic``, qu'exiftool lit en structure, champ par champ."""
+    structure = lues.pop("XMP-meta:Document-statistic", None)
+    if structure is None:
+        return lues
+    for champ, valeur in structure["val"].items():
+        lues[f"XMP-meta:Document-statistic{champ}"] = {
+            "id": f"meta:document-statistic.meta:{champ.lower()}",
+            "val": valeur,
+        }
+    return lues
+
+
+def repetees_odf(lues: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Élément répété d'un ODT (``meta:keyword``) : une balise par copie chez exiftool, une
+    liste pour le module."""
+    for cle in [cle for cle in lues if cle.startswith("XMP-meta:Copy")]:
+        premiere = lues[f"XMP-meta:{cle.rpartition(':')[2]}"]
+        if not isinstance(premiere["val"], list):
+            premiere["val"] = [premiere["val"]]
+        premiere["val"].append(lues.pop(cle)["val"])
+    return lues
+
+
+def utilisateur_odf(lues: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Propriétés utilisateur d'un ODT : exiftool en donne le nom et la valeur en deux balises,
+    numérotées ensemble (``Copy1``) ; leur type (``Value-type``) ne l'est pas avec elles."""
+    for cle in [cle for cle in lues if cle.endswith(":User-definedName")]:
+        nom = lues.pop(cle)["val"]
+        valeur = lues.pop(cle.removesuffix("Name"))
+        lues[f"XMP-meta:User-defined.{nom}"] = {
+            "id": f"meta:user-defined.{valeurs.composant(nom)}",
+            "val": valeur["val"],
+        }
+    return {cle: v for cle, v in lues.items() if not cle.endswith(":User-definedValue-type")}
 
 
 def attendus(nom_exiftool: str, entree: dict[str, Any]) -> tuple[str, ...]:
@@ -138,8 +186,12 @@ def attendus(nom_exiftool: str, entree: dict[str, Any]) -> tuple[str, ...]:
     if groupe in REPERTOIRES:
         repertoire = REPERTOIRES[groupe]
         return (f"exif.{repertoire}.{etiquettes.nom(repertoire, identifiant)}",)
+    if groupe == "XMP-meta":
+        return (f"odf.{identifiant}",)  # meta.xml d'un ODT, que lit le lecteur XMP d'exiftool
     if groupe.startswith("XMP-"):
         return (f":{identifiant}",)  # nom local : le préfixe d'exiftool n'est pas celui de l'outil
+    if groupe == "XML":
+        return proprietes_docx(identifiant)
     if groupe == "IPTC":
         return (f"iptc.{nom}",)
     if groupe == "PNG" and isinstance(identifiant, str) and len(identifiant) != 4:
@@ -177,6 +229,13 @@ def attendus_media(groupe: str, nom: str, identifiant: Any) -> tuple[str, ...]:
     if groupe == "Matroska" and identifiant in INFO_MATROSKA:
         return (f"matroska.{INFO_MATROSKA[identifiant]}",)
     return ()
+
+
+def proprietes_docx(identifiant: str) -> tuple[str, ...]:
+    """Propriétés d'un DOCX, qu'exiftool nomme sans leur partie ni leur espace."""
+    principales = tuple(f"ooxml.core.{prefixe}:{identifiant}" for prefixe in ("cp", "dcterms"))
+    composant = valeurs.composant(identifiant)
+    return (*principales, f"ooxml.app.{composant}", f"ooxml.custom.{composant}")
 
 
 def degres(valeur: list[float]) -> float:
@@ -231,7 +290,9 @@ def trouver(lues: dict[str, Any], cles: tuple[str, ...], sienne: Any) -> str | N
         nom
         for cle in cles
         for nom in lues
-        if (nom.startswith("xmp.") and nom.endswith(cle) if cle.startswith(":") else nom == cle)
+        if (
+            nom.startswith(DUBLIN_CORE) and nom.endswith(cle) if cle.startswith(":") else nom == cle
+        )
     ]
     return next((n for n in noms if concordent(lues[n], sienne)), noms[0] if noms else None)
 
@@ -258,6 +319,7 @@ def test_les_modules_relevent_ce_que_releve_exiftool(fichier: str) -> None:
 def test_oracle_couvre_les_formats_et_familles() -> None:
     assert sorted(FORMATS[Path(e["SourceFile"]).suffix] for e in ORACLE) == [
         "aac",
+        "docx",
         "flac",
         "heic",
         "jpeg",
@@ -265,6 +327,7 @@ def test_oracle_couvre_les_formats_et_familles() -> None:
         "mov",
         "mp3",
         "mp4",
+        "odt",
         "ogg",
         "ogg",
         "pdf",
@@ -278,6 +341,7 @@ def test_oracle_couvre_les_formats_et_familles() -> None:
     assert {"IFD0", "ExifIFD", "GPS", "IPTC", "XMP-dc", "PNG", "PDF", "XMP-pdf"} <= groupes
     medias = {"ID3v2_4", "ID3v1", "RIFF", "Vorbis", "ItemList", "UserData", "Keys", "Matroska"}
     assert medias <= groupes
+    assert {"XML", "XMP-meta"} <= groupes  # propriétés d'un DOCX et d'un ODT
 
 
 def version_d_exiftool() -> str | None:
@@ -295,7 +359,7 @@ def version_d_exiftool() -> str | None:
 def test_sortie_d_exiftool_inchangee() -> None:
     # Même commande que relire.sh.
     commande = ["exiftool", "-j", "-a", "-G1:4", "-n", "-D", "-struct"]
-    commande += ["-x", "System:all", "-x", "File:all", "-x", "Composite:all"]
+    commande += ["-x", "System:all", "-x", "File:all", "-x", "Composite:all", "-x", "ZIP:all"]
     commande += [entree["SourceFile"] for entree in ORACLE]
     sortie = subprocess.run(commande, capture_output=True, check=True, cwd=DOSSIER)
     assert json.loads(sortie.stdout) == ORACLE
