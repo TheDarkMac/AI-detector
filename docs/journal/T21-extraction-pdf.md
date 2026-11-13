@@ -3,7 +3,7 @@
 - **Branche** : `tache/T21-extraction-pdf`
 - **Dates** : 2026-11-12
 - **Exigences couvertes** : F-10 (PDF), F-14 (absence observée), F-82, ES-03, ES-05 (XMP du PDF), ES-13, ES-19, NF-09
-- **Décisions** : ADR-0123 à ADR-0129 ; ADR-0117 à ADR-0122 acceptés, emplacements d'ADR-0115 et réglages d'ADR-0110 validés
+- **Décisions** : ADR-0123 à ADR-0129, tous acceptés ; ADR-0117 à ADR-0122 acceptés, emplacements d'ADR-0115 et réglages d'ADR-0110 validés
 - **Errata** : [ERR-0008](../errata/ERR-0008-merge-de-la-pr-19.md), [ERR-0009](../errata/ERR-0009-codecs-charges-apres-les-restrictions.md)
 
 ## Objectif
@@ -29,7 +29,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) (v0.18) : extraire les m�
    - PDF chiffré : reconnu, non lu, dit au rapport ([ADR-0126](../decisions/ADR-0126-pdf-chiffre.md)) ;
    - ADR de T20 : tous acceptés, et un erratum dont la prévention empêche la récidive (ERR-0008, [ADR-0129](../decisions/ADR-0129-controle-des-adr-et-du-titre-de-merge.md)).
 
-   Les autres choix, faits par l'assistant, sont soumis dans la PR : [ADR-0125](../decisions/ADR-0125-lecture-stricte-du-pdf.md) (lecture stricte), [ADR-0127](../decisions/ADR-0127-metadonnees-pdf-lues.md) (emplacements lus), [ADR-0128](../decisions/ADR-0128-observations-du-dictionnaire-info.md) (noms et valeurs).
+   Les autres choix, faits par l'assistant, ont été soumis dans la PR et validés par TheDarkMac pendant sa revue (2026-11-13) : [ADR-0125](../decisions/ADR-0125-lecture-stricte-du-pdf.md) (lecture stricte), [ADR-0127](../decisions/ADR-0127-metadonnees-pdf-lues.md) (emplacements lus), [ADR-0128](../decisions/ADR-0128-observations-du-dictionnaire-info.md) (noms et valeurs).
 3. Branche `tache/T21-extraction-pdf` créée depuis `detector` à jour (`dfd0216`). ADR-0117 à ADR-0122 passés à « Accepté » ; validation des emplacements d'ADR-0115 et des réglages d'ADR-0110 consignée.
 4. Essais de PDF produits par LibreOffice (table classique), ImageMagick (PDF 1.3), Ghostscript (flux de références croisées, flux d'objets) et exiftool (mise à jour incrémentale), pour voir les formes à lire.
 5. Lecteur `modules/_lecture/pdf.py` : analyse lexicale (§7.2, §7.3), `startxref`, tables classiques (entrées de 19 à 21 octets), flux de références croisées (`/W`, `/Index`), sections antérieures (`/Prev`, `/XRefStm`), trailer complété, objets indirects vérifiés par numéro et génération, flux d'objets, `FlateDecode` et prédicteurs PNG et TIFF, chaînes de texte (PDFDocEncoding, UTF-16BE, UTF-8) ; fenêtres de lecture croissantes ; références suivies jusqu'au bout, boucles refusées.
@@ -45,6 +45,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) (v0.18) : extraire les m�
 9. Contrôle de la CI (ADR-0129) : étapes « Aucun ADR au statut Proposé » et « Titre du commit de merge » dans `lint-markdown` ; motif du titre essayé sur les titres de `detector`.
 10. Vérification locale : `uv lock --check` ; Ruff (format et analyse) et mypy sans remarque ; matrice régénérée et vérifiée ; lint Markdown (`npx --yes markdownlint-cli2@0.23.2`) sans remarque ; 1 282 tests verts, un sauté (lanceur de Windows) ; couverture 100 % des lignes et des branches ; campagne de fuzzing des modules de métadonnées, 40 000 exemples par propriété (profil temporaire, hors du dépôt), sans échec, en 18 min 32 s. Deux passages de la suite ont d'abord été faussés par des fichiers modifiés pendant qu'ils tournaient (versions, matrice, numéros de ligne) : refaits sans rien toucher.
 11. Documentation : ADR-0123 à ADR-0129 ; ERR-0008, ERR-0009 ; fiche `metadonnees-info-pdf`, fiches `metadonnees-xmp` et `metadonnees-exif` ; renvois dans ADR-0006, ADR-0043, ADR-0044, ADR-0079, ADR-0114, ADR-0122 ; matrice (F-10, F-14, ES-05) ; découpage v0.19, architecture v1.13 ; `CONTRIBUTING.md` (§1, oracle ; §3, étape 6) ; index des ADR, des errata, du journal et des fiches.
+12. PR [#20](https://github.com/TheDarkMac/AI-detector/pull/20) ouverte ; `lint-markdown` rouge sur l'étape « Aucun ADR au statut Proposé », comme prévu (ADR-0129). ADR-0125, ADR-0127 et ADR-0128 validés par TheDarkMac pendant la revue, le 2026-11-13 : statut « Accepté ».
 
 ## Problèmes rencontrés
 
@@ -84,5 +85,4 @@ Seuls deux de ces problèmes touchent un élément déjà mergé : le merge de l
 - T22 : signatures de générateurs dans `Producer` et `Creator` ; nouvelle version du catalogue.
 - T23 : dates PDF converties dans la règle qui les compare (ADR-0128).
 - T25 : marquage de `Title`, `Subject`, `Keywords` (ADR-0128).
-- Revue de la PR : ADR-0125, ADR-0127, ADR-0128 ; la CI reste rouge (`lint-markdown`) tant qu'ils sont « Proposé » (ADR-0129).
 - Toujours en attente : messages à @Jean ; alertes de sécurité de Dependabot à proposer ; règle de protection des étiquettes et `can_admins_bypass`, sur demande.

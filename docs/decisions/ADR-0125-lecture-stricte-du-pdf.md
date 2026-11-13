@@ -1,8 +1,8 @@
 # ADR-0125 — Lecture stricte du PDF : rien n'est reconstruit, tolérances écrites
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-12
-- **Décideur** : proposition de l'assistant, à valider par TheDarkMac
+- **Décideur** : proposition de l'assistant, validée par TheDarkMac
 - **Tâche** : T21
 - **Exigences liées** : F-10, F-82, NF-06, NF-14 ; principe P-02 ; ADR-0124
 
@@ -46,3 +46,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-11-12 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR de T21 : statut « Accepté » |

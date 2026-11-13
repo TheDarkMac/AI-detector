@@ -1,8 +1,8 @@
 # ADR-0127 — Métadonnées PDF lues : dictionnaire Info du dernier trailer, XMP du catalogue
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-12
-- **Décideur** : proposition de l'assistant, à valider par TheDarkMac
+- **Décideur** : proposition de l'assistant, validée par TheDarkMac
 - **Tâche** : T21
 - **Exigences liées** : F-10, F-14, F-82, ES-05, ES-13 ; ADR-0114, ADR-0115, ADR-0122, ADR-0124
 
@@ -50,3 +50,4 @@ Option A. Modules et versions : `infopdf` 0.1.0 (nouveau, format `pdf`), `xmp` 0
 | Date | Modification |
 | --- | --- |
 | 2026-11-12 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR de T21 : statut « Accepté » |

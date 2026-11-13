@@ -139,8 +139,8 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0122](ADR-0122-oracle-exiftool.md) | Oracle exiftool : échantillons générés, sortie enregistrée, comparaison dans les deux sens | Accepté | 2026-10-28 |
 | [ADR-0123](ADR-0123-decoupage-de-t21.md) | Découpage de T21 : le PDF d'abord, l'audio, la vidéo et la bureautique en compléments | Accepté | 2026-11-12 |
 | [ADR-0124](ADR-0124-lecteur-pdf-du-projet.md) | Lecteur PDF écrit par le projet ; `pypdf` reporté à T51 et au-delà | Accepté | 2026-11-12 |
-| [ADR-0125](ADR-0125-lecture-stricte-du-pdf.md) | Lecture stricte du PDF : rien n'est reconstruit, tolérances écrites | Proposé | 2026-11-12 |
+| [ADR-0125](ADR-0125-lecture-stricte-du-pdf.md) | Lecture stricte du PDF : rien n'est reconstruit, tolérances écrites | Accepté | 2026-11-12 |
 | [ADR-0126](ADR-0126-pdf-chiffre.md) | PDF chiffré : reconnu et dit au rapport, jamais déchiffré | Accepté | 2026-11-12 |
-| [ADR-0127](ADR-0127-metadonnees-pdf-lues.md) | Métadonnées PDF lues : dictionnaire Info du dernier trailer, XMP du catalogue | Proposé | 2026-11-12 |
-| [ADR-0128](ADR-0128-observations-du-dictionnaire-info.md) | Observations du dictionnaire Info : noms, dates telles qu'écrites, formes des valeurs | Proposé | 2026-11-12 |
+| [ADR-0127](ADR-0127-metadonnees-pdf-lues.md) | Métadonnées PDF lues : dictionnaire Info du dernier trailer, XMP du catalogue | Accepté | 2026-11-12 |
+| [ADR-0128](ADR-0128-observations-du-dictionnaire-info.md) | Observations du dictionnaire Info : noms, dates telles qu'écrites, formes des valeurs | Accepté | 2026-11-12 |
 | [ADR-0129](ADR-0129-controle-des-adr-et-du-titre-de-merge.md) | La CI refuse un ADR « Proposé » et vérifie le titre du commit de merge | Accepté | 2026-11-12 |

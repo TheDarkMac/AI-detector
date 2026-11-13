@@ -1,8 +1,8 @@
 # ADR-0128 — Observations du dictionnaire Info : noms, dates telles qu'écrites, formes des valeurs
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-12
-- **Décideur** : proposition de l'assistant, à valider par TheDarkMac
+- **Décideur** : proposition de l'assistant, validée par TheDarkMac
 - **Tâche** : T21
 - **Exigences liées** : F-10, F-14, ES-13, NF-06, NF-11 ; ADR-0057, ADR-0117, ADR-0118, ADR-0119
 
@@ -53,3 +53,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-11-12 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR de T21 : statut « Accepté » |
