@@ -62,10 +62,14 @@ Les tests de fuzzing (ADR-0082) tirent 300 exemples par test d'une graine fixe. 
 VK_FUZZING=campagne uv run --locked pytest tests/test_fuzzing.py
 ```
 
-Les modules de métadonnées sont comparés à exiftool (ADR-0122) : `tests/donnees/metadonnees/exiftool.json` est la sortie d'exiftool sur les échantillons du même dossier, et les tests la lisent sans qu'exiftool soit installé. Pour changer les échantillons, installer ImageMagick et exiftool (versions indiquées dans le script), relancer le script depuis ce dossier, puis les tests ; si exiftool est installé dans la version enregistrée, un test vérifie aussi que sa sortie n'a pas changé :
+Les modules de métadonnées sont comparés à exiftool (ADR-0122) : `tests/donnees/metadonnees/exiftool.json` est la sortie d'exiftool sur les échantillons du même dossier, et les tests la lisent sans qu'exiftool soit installé. Pour changer les échantillons, installer ImageMagick et exiftool pour les images, LibreOffice, Ghostscript et exiftool pour les PDF (versions indiquées dans chaque script), relancer le script depuis ce dossier, puis les tests ; les deux scripts finissent par `relire.sh`, qui écrit `exiftool.json`. Si exiftool est installé dans la version enregistrée, un test vérifie aussi que sa sortie n'a pas changé :
 
 ```bash
 sh generer.sh
+```
+
+```bash
+sh generer_pdf.sh
 ```
 
 Les tests d'isolation (ADR-0083) vérifient l'effet des restrictions depuis un vrai processus de travail ; leurs attentes par système sont dans `tests/systeme.py`.
@@ -100,7 +104,7 @@ Ajouter ou mettre à jour une dépendance : `uv add` ou `uv lock --upgrade-packa
    - l'historique des documents vivants modifiés.
 4. Vérifier qu'aucun fichier interdit n'est suivi : `git ls-files | grep -E '(^|/)(CLAUDE(\.local)?\.md$|\.claude/)'` ne doit rien afficher.
 5. Pousser la branche et ouvrir une PR vers `detector` (titre `TNN — titre`), en remplissant le modèle.
-6. Avant le merge, passer chaque ADR « Proposé » de la tâche à « Accepté », ou le retirer, sur validation de TheDarkMac consignée dans la branche (ERR-0007). Merger par **commit de merge** quand toutes les vérifications sont vertes, avec un titre au format `Merge: TNN — titre (#N)` (ADR-0044) : `gh pr merge N --merge --subject "Merge: TNN — titre (#N)"`. Squash et rebase sont désactivés.
+6. Avant le merge, passer chaque ADR « Proposé » de la tâche à « Accepté », ou le retirer, sur validation de TheDarkMac consignée dans la branche (ERR-0007) ; le job `lint-markdown` refuse tout ADR « Proposé », et vérifie après le merge le titre du commit de merge (ADR-0129, ERR-0008). Merger par **commit de merge** quand toutes les vérifications sont vertes, avec un titre au format `Merge: TNN — titre (#N)` (ADR-0044) : `gh pr merge N --merge --subject "Merge: TNN — titre (#N)"`. Squash et rebase sont désactivés.
 7. Consigner le résultat de la CI et du merge dans la section « État initial » du journal de la tâche suivante.
 
 ## 4. Messages de commit — ADR-0005

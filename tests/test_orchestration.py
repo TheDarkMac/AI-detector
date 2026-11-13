@@ -20,6 +20,7 @@ from xml.parsers import expat
 
 import pytest
 from catalogues import CATALOGUE
+from metadonnees import Sous, app1_exif, indefini, jpeg_meta, nombres, pdf_info, tiff
 from systeme import MANQUES_ATTENDUS
 
 from voight_kampff._orchestration import manifestes, travail
@@ -161,8 +162,10 @@ def test_vrai_processus_identifie_le_format(pdf: int) -> None:
     assert resultat.empreinte == hashlib.sha256(PDF).hexdigest()
     assert set(resultat.isolation.manques) == MANQUES_ATTENDUS
     assert (resultat.isolation.niveau is NiveauIsolation.COMPLETE) == (not MANQUES_ATTENDUS)
-    # Les modules livrés sont tous des modules d'image : non applicables au PDF.
-    assert {t.etat for t in resultat.couverture.techniques} == {EtatTechnique.NON_APPLICABLE}
+    # Modules d'image non applicables ; ceux du PDF partiels : l'échantillon n'a pas de startxref.
+    etats = {t.module: t.etat for t in resultat.couverture.techniques}
+    assert etats.pop("infopdf") is etats.pop("xmp") is EtatTechnique.PARTIELLE
+    assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(PDF))
 
@@ -186,6 +189,60 @@ def test_vrai_processus_extrait_les_metadonnees(tmp_path: Path) -> None:
     }
     assert not resultat.interrompue
     analyse_de(resultat, len(contenu))
+
+
+@pytest.mark.exigence("F-10", "ES-05")
+def test_vrai_processus_extrait_les_metadonnees_d_un_pdf(tmp_path: Path) -> None:
+    # Flux de références croisées et flux d'objets, mis à jour par exiftool (T21).
+    dossier = Path(__file__).parent / "donnees" / "metadonnees"
+    contenu = (dossier / "ghostscript.pdf").read_bytes()
+    ouvert = ouvrir(tmp_path / "document.pdf", contenu)
+    try:
+        resultat = executer(ouvert, manifestes.decouvrir())
+    finally:
+        os.close(ouvert)
+    valeurs = {o.nom: o.valeur for o in resultat.observations}
+    assert valeurs["infopdf.Author"] == "Jeanne Exemple"
+    assert valeurs["infopdf.chiffre"] is False
+    assert str(valeurs["xmp.Iptc4xmpExt:DigitalSourceType"]).endswith("trainedAlgorithmicMedia")
+    etats = {t.module: t.etat for t in resultat.couverture.techniques if t.version is not None}
+    assert etats.pop("infopdf") is etats.pop("xmp") is EtatTechnique.APPLIQUEE
+    assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
+    assert not resultat.interrompue
+    analyse_de(resultat, len(contenu))
+
+
+@pytest.mark.exigence("F-10")
+def test_vrai_processus_decode_les_textes_utf16_et_jis(tmp_path: Path) -> None:
+    # Codecs chargés avant les restrictions (ADR-0079, ERR-0009) : étiquette XP en UTF-16LE,
+    # commentaires UNICODE en UTF-16BE et JIS en Shift_JIS, titre PDF en UTF-16BE.
+    exif = tiff(
+        (
+            nombres(0x9C9D, 1, *"Jé".encode("utf-16-le"), 0, 0),
+            Sous(
+                0x8769,
+                (indefini(0x9286, b"JIS\x00\x00\x00\x00\x00" + "テスト".encode("shift_jis")),),
+            ),
+        )
+    )
+    unicode = tiff((Sous(0x8769, (indefini(0x9286, b"UNICODE\x00" + "Jé".encode("utf-16-be")),)),))
+    attendus = {
+        "photo.jpg": (
+            jpeg_meta(app1_exif(exif)),
+            {"exif.ifd0.XPAuthor": "Jé", "exif.exif.UserComment": "テスト"},
+        ),
+        "unicode.jpg": (jpeg_meta(app1_exif(unicode)), {"exif.exif.UserComment": "Jé"}),
+        "titre.pdf": (pdf_info(b"<</Title<FEFF004A00E9>>>"), {"infopdf.Title": "Jé"}),
+    }
+    for nom, (contenu, valeurs) in attendus.items():
+        ouvert = ouvrir(tmp_path / nom, contenu)
+        try:
+            resultat = executer(ouvert, manifestes.decouvrir())
+        finally:
+            os.close(ouvert)
+        lues = {o.nom: o.valeur for o in resultat.observations}
+        assert {cle: lues.get(cle) for cle in valeurs} == valeurs, nom
+        assert RaisonNonMenee.ERREUR_MODULE not in {n.raison for n in resultat.non_menees}
 
 
 def test_vrai_processus_bibliotheques_des_seuls_modules_actifs(tmp_path: Path) -> None:

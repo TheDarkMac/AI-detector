@@ -1,17 +1,20 @@
 """Oracle exiftool : les modules relèvent ce qu'exiftool relève (ADR-0043, ADR-0122).
 
 Les échantillons de ``donnees/metadonnees/`` ont été écrits par exiftool, qui les a relus dans
-``exiftool.json`` (``generer.sh``). Le test compare, dans les deux sens, les étiquettes EXIF
-(par numéro et répertoire), les propriétés XMP (par nom local), les jeux de données IPTC et les
-blocs texte PNG (par nom), et leurs valeurs, ramenées à une forme commune : exiftool écrit une
-liste de nombres en texte séparé par des espaces, une latitude en degrés décimaux, un tableau
-d'un seul élément comme une valeur simple.
+``exiftool.json`` (``generer.sh``, ``generer_pdf.sh``, ``relire.sh``). Le test compare, dans les
+deux sens, les étiquettes EXIF (par numéro et répertoire), les propriétés XMP (par nom local),
+les jeux de données IPTC, les blocs texte PNG et les entrées du dictionnaire Info d'un PDF (par
+nom), et leurs valeurs, ramenées à une forme commune : exiftool écrit une liste de nombres en
+texte séparé par des espaces, une latitude en degrés décimaux, un tableau d'un seul élément
+comme une valeur simple, une date à sa façon, des mots-clés PDF en liste, un nombre XMP en
+nombre.
 
 exiftool n'est ni livré ni appelé par l'outil. S'il est installé dans la même version que celle
 qui a produit ``exiftool.json``, un dernier test vérifie que sa sortie n'a pas changé.
 """
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -27,7 +30,7 @@ pytestmark = pytest.mark.exigence("F-10")
 
 DOSSIER = Path(__file__).parent / "donnees" / "metadonnees"
 ORACLE = json.loads((DOSSIER / "exiftool.json").read_text(encoding="utf-8"))
-FORMATS = {".jpg": "jpeg", ".png": "png", ".webp": "webp", ".heic": "heic"}
+FORMATS = {".jpg": "jpeg", ".png": "png", ".webp": "webp", ".heic": "heic", ".pdf": "pdf"}
 REPERTOIRES = {
     "IFD0": "ifd0",
     "IFD1": "ifd1",
@@ -35,9 +38,18 @@ REPERTOIRES = {
     "GPS": "gps",
     "InteropIFD": "interop",
 }
-MODULES = ("exif", "xmp", "iptc", "textepng")
-GENERALES = frozenset({"present", "blocs", "ordre", "photoshop"})
+MODULES = {
+    "jpeg": ("exif", "xmp", "iptc"),
+    "png": ("exif", "xmp", "textepng"),
+    "webp": ("exif", "xmp"),
+    "heic": ("exif", "xmp"),
+    "pdf": ("infopdf", "xmp"),
+}
+GENERALES = frozenset({"present", "blocs", "ordre", "photoshop", "chiffre"})
 """Observations des modules sans équivalent chez exiftool : présence, nombre de blocs…"""
+STRUCTURE_PDF = frozenset({"Version", "_linearized", "Count", "PageMode", "Lang", "Marked"})
+"""Groupe « PDF » d'exiftool hors du dictionnaire Info : en-tête, catalogue, pages (T50)."""
+DATE = re.compile(r"(D:)?\d{4}[-:]?\d\d[-:]?\d\d[T ]?\d\d:?\d\d:?\d\d.*")
 
 
 @pytest.fixture(autouse=True)
@@ -49,7 +61,7 @@ def lu_par_les_modules(fichier: str) -> dict[str, Any]:
     contenu = (DOSSIER / fichier).read_bytes()
     format_ = FORMATS[Path(fichier).suffix]
     lues: dict[str, Any] = {}
-    for module in MODULES:
+    for module in MODULES[format_]:
         lues |= valeurs_de(resultats(module, contenu, format_))
     return {nom: valeur for nom, valeur in lues.items() if nom.split(".")[1] not in GENERALES}
 
@@ -72,6 +84,8 @@ def attendu(nom_exiftool: str, entree: dict[str, Any]) -> str | None:
         return f"iptc.{nom}"
     if groupe == "PNG" and isinstance(identifiant, str) and len(identifiant) != 4:
         return f"textepng.{identifiant}"  # mot-clé ; les blocs de quatre lettres sont des types
+    if groupe == "PDF" and identifiant not in STRUCTURE_PDF:
+        return f"infopdf.{identifiant}"
     return None
 
 
@@ -79,7 +93,17 @@ def degres(valeur: list[float]) -> float:
     return valeur[0] + valeur[1] / 60 + valeur[2] / 3600
 
 
+def chiffres(date: str) -> str:
+    return "".join(c for c in date if c.isdigit())
+
+
 def concordent(notre: Any, sienne: Any) -> bool:
+    if isinstance(notre, str) and isinstance(sienne, str) and DATE.fullmatch(notre):
+        return chiffres(notre) == chiffres(sienne)  # D:AAAAMMJJ…, ISO 8601 ou AAAA:MM:JJ
+    if isinstance(notre, str) and isinstance(sienne, list):
+        return notre.split(", ") == sienne  # mots-clés PDF : exiftool les sépare
+    if isinstance(notre, str) and type(sienne) is int:
+        return notre == str(sienne)  # nombre XMP écrit en texte
     if isinstance(notre, list) and isinstance(sienne, str) and sienne.replace(" ", "").isdigit():
         return notre == [int(n) for n in sienne.split()]
     if isinstance(notre, list) and len(notre) == 3 and isinstance(sienne, float):
@@ -115,15 +139,17 @@ def test_les_modules_relevent_ce_que_releve_exiftool(fichier: str) -> None:
     assert set(lues) == retrouvees, f"{fichier} : {sorted(set(lues) - retrouvees)}"
 
 
-def test_oracle_couvre_les_quatre_formats_et_familles() -> None:
+def test_oracle_couvre_les_formats_et_familles() -> None:
     assert sorted(FORMATS[Path(e["SourceFile"]).suffix] for e in ORACLE) == [
         "heic",
         "jpeg",
+        "pdf",
+        "pdf",
         "png",
         "webp",
     ]
     groupes = {cle.partition(":")[0] for entree in ORACLE for cle in entree}
-    assert {"IFD0", "ExifIFD", "GPS", "IPTC", "XMP-dc", "PNG"} <= groupes
+    assert {"IFD0", "ExifIFD", "GPS", "IPTC", "XMP-dc", "PNG", "PDF", "XMP-pdf"} <= groupes
 
 
 def version_d_exiftool() -> str | None:
@@ -139,6 +165,7 @@ def version_d_exiftool() -> str | None:
     reason="exiftool absent, ou d'une autre version que celle de l'oracle",
 )
 def test_sortie_d_exiftool_inchangee() -> None:
+    # Même commande que relire.sh.
     commande = ["exiftool", "-j", "-a", "-G1", "-n", "-D", "-struct"]
     commande += ["-x", "System:all", "-x", "File:all", "-x", "Composite:all"]
     commande += [entree["SourceFile"] for entree in ORACLE]

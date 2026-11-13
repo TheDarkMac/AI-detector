@@ -677,4 +677,214 @@
     "id": "CreatorTool",
     "val": "Outil 3"
   }
+},
+{
+  "SourceFile": "document.pdf",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "PDF:PDFVersion": {
+    "id": "Version",
+    "val": 1.7
+  },
+  "PDF:Linearized": {
+    "id": "_linearized",
+    "val": false
+  },
+  "PDF:PageCount": {
+    "id": "Count",
+    "val": 1
+  },
+  "PDF:PageMode": {
+    "id": "PageMode",
+    "val": "UseOutlines"
+  },
+  "PDF:Language": {
+    "id": "Lang",
+    "val": "en-US"
+  },
+  "PDF:TaggedPDF": {
+    "id": "Marked",
+    "val": true
+  },
+  "PDF:Creator": {
+    "id": "Creator",
+    "val": "Outil 3"
+  },
+  "PDF:Producer": {
+    "id": "Producer",
+    "val": "LibreOffice 25.2.3.2 (X86_64) / LibreOffice Community"
+  },
+  "PDF:CreateDate": {
+    "id": "CreationDate",
+    "val": "2026:11:12 23:42:28+03:00"
+  },
+  "PDF:Author": {
+    "id": "Author",
+    "val": "Jeanne Exemple"
+  },
+  "PDF:Keywords": {
+    "id": "Keywords",
+    "val": ["mot1","mot2"]
+  },
+  "PDF:Subject": {
+    "id": "Subject",
+    "val": "Sujet"
+  },
+  "PDF:Title": {
+    "id": "Title",
+    "val": "Titre accentué"
+  },
+  "XMP-x:XMPToolkit": {
+    "id": "xmptk",
+    "val": "Image::ExifTool 13.25"
+  },
+  "XMP-iptcExt:DigitalSourceType": {
+    "id": "DigitalSourceType",
+    "val": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "XMP-dc:Creator": {
+    "id": "creator",
+    "val": ["Jeanne Exemple"]
+  },
+  "XMP-dc:Title": {
+    "id": "title",
+    "val": "Titre"
+  },
+  "XMP-pdf:Keywords": {
+    "id": "Keywords",
+    "val": "mot1, mot2"
+  },
+  "XMP-pdf:PDFVersion": {
+    "id": "PDFVersion",
+    "val": 1.7
+  },
+  "XMP-pdf:Producer": {
+    "id": "Producer",
+    "val": "LibreOffice 25.2.3.2 (X86_64) / LibreOffice Community"
+  },
+  "XMP-xmp:CreateDate": {
+    "id": "CreateDate",
+    "val": "0000:00:00 00:00:00+03:00"
+  },
+  "XMP-xmp:CreatorTool": {
+    "id": "CreatorTool",
+    "val": "Outil 3"
+  },
+  "XMP-xmp:MetadataDate": {
+    "id": "MetadataDate",
+    "val": "0000:00:00 00:00:00+03:00"
+  },
+  "XMP-xmp:ModifyDate": {
+    "id": "ModifyDate",
+    "val": "0000:00:00 00:00:00+03:00"
+  }
+},
+{
+  "SourceFile": "ghostscript.pdf",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "PDF:PDFVersion": {
+    "id": "Version",
+    "val": 1.7
+  },
+  "PDF:Linearized": {
+    "id": "_linearized",
+    "val": false
+  },
+  "PDF:PageCount": {
+    "id": "Count",
+    "val": 1
+  },
+  "PDF:Producer": {
+    "id": "Producer",
+    "val": "GPL Ghostscript 10.05.1"
+  },
+  "PDF:CreateDate": {
+    "id": "CreationDate",
+    "val": "2026:11:12 23:42:29+03:00"
+  },
+  "PDF:ModifyDate": {
+    "id": "ModDate",
+    "val": "2026:11:12 23:42:29+03:00"
+  },
+  "PDF:Author": {
+    "id": "Author",
+    "val": "Jeanne Exemple"
+  },
+  "PDF:Creator": {
+    "id": "Creator",
+    "val": "Outil 3"
+  },
+  "PDF:Keywords": {
+    "id": "Keywords",
+    "val": ["mot1","mot2"]
+  },
+  "PDF:Subject": {
+    "id": "Subject",
+    "val": "Sujet"
+  },
+  "PDF:Title": {
+    "id": "Title",
+    "val": "Titre accentué"
+  },
+  "XMP-x:XMPToolkit": {
+    "id": "xmptk",
+    "val": "Image::ExifTool 13.25"
+  },
+  "XMP-iptcExt:DigitalSourceType": {
+    "id": "DigitalSourceType",
+    "val": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "XMP-dc:Creator": {
+    "id": "creator",
+    "val": ["Jeanne Exemple"]
+  },
+  "XMP-dc:Format": {
+    "id": "format",
+    "val": "application/pdf"
+  },
+  "XMP-dc:Title": {
+    "id": "title",
+    "val": "Titre"
+  },
+  "XMP-pdf:Keywords": {
+    "id": "Keywords",
+    "val": "mot1, mot2"
+  },
+  "XMP-pdf:Producer": {
+    "id": "Producer",
+    "val": "GPL Ghostscript 10.05.1"
+  },
+  "XMP-xmp:CreateDate": {
+    "id": "CreateDate",
+    "val": "2026:11:12 23:42:29+03:00"
+  },
+  "XMP-xmp:CreatorTool": {
+    "id": "CreatorTool",
+    "val": "Outil 3"
+  },
+  "XMP-xmp:MetadataDate": {
+    "id": "MetadataDate",
+    "val": "2026:11:12 23:42:29+03:00"
+  },
+  "XMP-xmp:ModifyDate": {
+    "id": "ModifyDate",
+    "val": "2026:11:12 23:42:29+03:00"
+  },
+  "XMP-xmpMM:DocumentID": {
+    "id": "DocumentID",
+    "val": "uuid:2073bac9-16f6-11fd-0000-4ed8545473e5"
+  },
+  "XMP-xmpMM:RenditionClass": {
+    "id": "RenditionClass",
+    "val": "default"
+  },
+  "XMP-xmpMM:VersionID": {
+    "id": "VersionID",
+    "val": 1
+  }
 }]

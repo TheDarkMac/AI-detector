@@ -60,3 +60,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création |
+| 2026-11-12 | Renvoi : PDF ajouté aux formats de `xmp`, module `infopdf` pour le dictionnaire d'information (ADR-0127) (T21) |

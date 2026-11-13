@@ -1,8 +1,9 @@
-"""Module ``xmp`` : métadonnées XMP d'une image (F-10, ES-05, ADR-0114 ; fiche
-``metadonnees-xmp``).
+"""Module ``xmp`` : métadonnées XMP d'une image ou d'un PDF (F-10, ES-05, ADR-0114, ADR-0127 ;
+fiche ``metadonnees-xmp``).
 
 Lit chaque paquet XMP de la partie (segment APP1 d'un JPEG et ses morceaux étendus, bloc ``iTXt``
-``XML:com.adobe.xmp`` d'un PNG, bloc ``XMP`` d'un WebP, élément XMP d'un HEIC). Chaque propriété
+``XML:com.adobe.xmp`` d'un PNG, bloc ``XMP`` d'un WebP, élément XMP d'un HEIC, flux
+``/Metadata`` du catalogue d'un PDF). Chaque propriété
 est observée sous le nom ``xmp.<préfixe>:<propriété>``, les champs d'une structure à la suite,
 séparés par un point (ADR-0117). Observe aussi ``xmp.present`` dans tous les cas (F-14).
 
@@ -18,8 +19,9 @@ from voight_kampff.modules._lecture.conteneurs import (
     relever,
     texte_png,
 )
+from voight_kampff.modules._lecture.pdf import Document, Flux, Illisible, Ref
 from voight_kampff.modules._lecture.xmp import Propriete, Xmp, lire_xmp
-from voight_kampff.rapport.modele import CategorieIdentifiante, RaisonNonMenee
+from voight_kampff.rapport.modele import CategorieIdentifiante, Localisation, RaisonNonMenee
 
 __all__ = ["analyser"]
 
@@ -69,6 +71,9 @@ _GPS = ("exif:GPS", "exifEX:GPS", "Iptc4xmpExt:GPS")
 
 
 def analyser(contexte: Contexte) -> None:
+    if contexte.format_reel == "pdf":
+        _pdf(contexte)
+        return
     releve = relever(contexte)
     paquets = [bloc for bloc in releve.blocs if bloc.nature is Nature.XMP]
     morceaux = [bloc for bloc in releve.blocs if bloc.nature is Nature.XMP_ETENDU]
@@ -82,7 +87,7 @@ def analyser(contexte: Contexte) -> None:
             contexte.non_mener(RaisonNonMenee.FORMAT_PARTIEL, localisation=bloc.localisation())
             continue
         xmp = lire_xmp(contexte, donnees)
-        _observer(contexte, bloc, xmp)
+        _observer(contexte, bloc.localisation(), xmp)
         attendus.extend(v for p in xmp.proprietes if p.nom == _ETENDU for v in p.valeurs)
     if morceaux:
         contexte.observer("xmp.etendu.blocs", len(morceaux))
@@ -97,8 +102,7 @@ def _paquet(contexte: Contexte, bloc: Bloc) -> bytes | str | None:
     return texte_png(contexte, bloc).texte
 
 
-def _observer(contexte: Contexte, bloc: Bloc, xmp: Xmp) -> None:
-    localisation = bloc.localisation()
+def _observer(contexte: Contexte, localisation: Localisation, xmp: Xmp) -> None:
     for rang, adresse in enumerate(xmp.inconnus, start=1):
         valeurs.observer(contexte, f"xmp.espace.ns{rang}", adresse, localisation=localisation)
     for propriete in xmp.proprietes:
@@ -154,7 +158,7 @@ def _etendus(contexte: Contexte, morceaux: list[Bloc], attendus: list[str]) -> N
         paquet = bytearray(total)
         for position, contenu in parts:
             paquet[position : position + len(contenu)] = contenu
-        _observer(contexte, premier, lire_xmp(contexte, bytes(paquet)))
+        _observer(contexte, premier.localisation(), lire_xmp(contexte, bytes(paquet)))
     for bloc in ecartes:
         contexte.non_mener(RaisonNonMenee.FORMAT_PARTIEL, localisation=bloc.localisation())
 
@@ -167,3 +171,51 @@ def _couvert(parts: list[tuple[int, bytes]], total: int) -> bool:
             return False
         atteint = max(atteint, debut + len(contenu))
     return atteint >= total
+
+
+def _pdf(contexte: Contexte) -> None:
+    """Flux ``/Metadata`` du catalogue (ISO 32000-2, §14.3.2), le paquet XMP du document.
+
+    Les flux de métadonnées des pages, images et polices ne sont pas lus (ADR-0127). Dans un
+    document chiffré, le paquet n'est lu que si le dictionnaire de chiffrement le dit en clair
+    (``/EncryptMetadata false``) ; il n'est jamais déchiffré (ADR-0126).
+    """
+    trouve: tuple[Localisation, bytes] | None = None
+    present = False
+    arret: Illisible | None = None
+    try:
+        document = Document(contexte)
+        catalogue = document.resoudre(document.trailer.get("Root"))
+        designe = catalogue.get("Metadata") if isinstance(catalogue, dict) else None
+        flux = document.resoudre(designe)
+        present = flux is not None
+        if isinstance(flux, Flux) and isinstance(designe, Ref):
+            localisation = document.localisation(designe, "flux Metadata du catalogue")
+            if _chiffre(document):
+                arret = Illisible(
+                    RaisonNonMenee.FORMAT_PARTIEL,
+                    flux.debut,
+                    "flux Metadata du catalogue (document chiffré)",
+                )
+            else:
+                trouve = (localisation, document.decoder(flux))
+        elif present:
+            arret = Illisible(RaisonNonMenee.FORMAT_PARTIEL, 0, "flux Metadata du catalogue")
+    except Illisible as illisible:
+        arret = illisible
+    contexte.observer("xmp.present", present)
+    if present:
+        contexte.observer("xmp.blocs", 1)
+    if trouve is not None:
+        localisation, donnees = trouve
+        _observer(contexte, localisation, lire_xmp(contexte, donnees))
+    if arret is not None:
+        contexte.non_mener(arret.raison, localisation=arret.localisation(contexte.taille))
+
+
+def _chiffre(document: Document) -> bool:
+    """Vrai si le paquet XMP est chiffré : document chiffré, sauf ``/EncryptMetadata false``."""
+    if "Encrypt" not in document.trailer:
+        return False
+    chiffrement = document.resoudre(document.trailer["Encrypt"])
+    return not (isinstance(chiffrement, dict) and chiffrement.get("EncryptMetadata") is False)

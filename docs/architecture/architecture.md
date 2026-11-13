@@ -1,6 +1,6 @@
 # Architecture
 
-> Statut : **v1.12** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 avec T15, v1.9 avec T16, v1.10 avec T17, v1.11 avec T18, v1.12 proposée dans la PR de T20. Document vivant : toute modification est inscrite à l'historique (§13).
+> Statut : **v1.13** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 avec T15, v1.9 avec T16, v1.10 avec T17, v1.11 avec T18, v1.12 avec T20, v1.13 proposée dans la PR de T21. Document vivant : toute modification est inscrite à l'historique (§13).
 > Exigences : NF-01, NF-06, NF-10 ; exigences de sécurité ES-01, ES-02, ES-05, ES-10, ES-17, ES-18 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-05, A-16, A-30, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T04. Date de rédaction : 2026-10-26.
 
@@ -108,7 +108,7 @@ Dans un lot (ADR-0015), ces étapes se répètent pour chaque fichier, avec un n
 
 ## 4. Composants et organisation du code
 
-Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; T11 a créé `rapport/modele.py` et `schemas/` (schémas du rapport et des messages) ; T12 a créé `_protocole.py`, `_orchestration/`, `_travail/`, `modules/` (vide) et le schéma des manifestes ; T13 a créé `formats.py`, `analyse.py`, `_orchestration/soumission.py` et `_travail/identification.py` ; T14 a créé `_limites.py`, `_orchestration/surveillance.py` et `_travail/restrictions/` ; T15 a créé `_regles.py`, `_orchestration/catalogue.py`, `donnees/catalogue/` et `modules/hors_v1.toml` ; T16 a créé `rapport/export.py` (exports et masquage), `rapport/_html.py` (document HTML), `rapport/_presentation.py` (textes, valeurs, résumé) et `rapport/textes.toml` (textes du rapport) ; T18 a créé `rapport/comparaison.py` (comparaison de deux rapports, `vk --comparer`, ADR-0112) ; T20 a créé les modules `modules/exif/`, `modules/xmp/`, `modules/iptc/`, `modules/textepng/` et leurs lecteurs communs `modules/_lecture/` (ADR-0114) ; les autres éléments arrivent avec leurs tâches.
+Le paquet d'import s'appelle `voight_kampff` ; il est publié sur PyPI sous le nom `voight-kampff-forensics` et installe les commandes `voight-kampff` et `vk` ([ADR-0045](../decisions/ADR-0045-nom-du-projet.md)). T10 a créé `__init__.py`, `__main__.py`, `cli.py` et `py.typed` ; T11 a créé `rapport/modele.py` et `schemas/` (schémas du rapport et des messages) ; T12 a créé `_protocole.py`, `_orchestration/`, `_travail/`, `modules/` (vide) et le schéma des manifestes ; T13 a créé `formats.py`, `analyse.py`, `_orchestration/soumission.py` et `_travail/identification.py` ; T14 a créé `_limites.py`, `_orchestration/surveillance.py` et `_travail/restrictions/` ; T15 a créé `_regles.py`, `_orchestration/catalogue.py`, `donnees/catalogue/` et `modules/hors_v1.toml` ; T16 a créé `rapport/export.py` (exports et masquage), `rapport/_html.py` (document HTML), `rapport/_presentation.py` (textes, valeurs, résumé) et `rapport/textes.toml` (textes du rapport) ; T18 a créé `rapport/comparaison.py` (comparaison de deux rapports, `vk --comparer`, ADR-0112) ; T20 a créé les modules `modules/exif/`, `modules/xmp/`, `modules/iptc/`, `modules/textepng/` et leurs lecteurs communs `modules/_lecture/` (ADR-0114) ; T21 a créé le module `modules/infopdf/` et le lecteur de structure PDF `modules/_lecture/pdf.py` (ADR-0124, ADR-0127) ; les autres éléments arrivent avec leurs tâches.
 
 Hors du paquet, à la racine du dépôt, T17 a créé `banc/` : le banc d'évaluation et la matrice de vérification, outils de développement qui ne sont ni dans le wheel ni dans le paquet source ([ADR-0099](../decisions/ADR-0099-banc-outil-du-depot.md)). Le banc analyse un corpus par l'interface publique, dans un espace de noms réseau vide (ADR-0100), et mesure les taux du §8 du cahier (ADR-0104) ; la matrice relie chaque exigence à sa vérification (ADR-0102). T18 y ajoute la double analyse de chaque fichier (ADR-0113).
 
@@ -213,7 +213,7 @@ Politique : [ADR-0043](../decisions/ADR-0043-politique-des-bibliotheques.md) ; g
 | Bibliothèque standard Python | PSF-2.0 | P1 et P2 | `hashlib`, `tomllib`, `json`, `zipfile`, `struct`, `argparse`, `ctypes` ; expat (`xml.parsers.expat`) pour XMP depuis T20 (ADR-0116), version au rapport (ADR-0120) |
 | `c2pa-python` | Apache-2.0 ou MIT | P2 | C2PA (T30) |
 | ~~`defusedxml`~~ | PSF-2.0 | — | Écartée en T20 au profit d'expat, DTD refusée (ADR-0116) |
-| `pypdf` | BSD-3-Clause | P2 | Objets PDF (T50 à T53) |
+| `pypdf` | BSD-3-Clause | P2 | Contenus de pages et polices (T51 à T53) ; la structure PDF (références croisées, objets, flux) est lue par le projet depuis T21 (ADR-0124) |
 | `google-re2` | BSD-3-Clause | P1 (compilation), P2 | Expressions du catalogue (ES-09) ; dépendance depuis T15 (ADR-0039, ADR-0089) |
 | `jsonschema` | MIT | P1 | Validation des messages, du catalogue, des manifestes ; dépendance depuis T11 (ADR-0054) |
 | `numpy` | BSD-3-Clause | P2 | Analyses JPEG (T40, T41) |
@@ -232,7 +232,7 @@ Fait le 2026-10-26 à partir des métadonnées publiées sur PyPI. Aucune de ces
 | `c2pa-python` | 0.38.1 (2026-10-22) | Linux (x86_64, aarch64), macOS (x86_64, arm64) ; **pas de Windows** dans cette version, présent jusqu'à 0.38.0 ; pas de paquet source | `cryptography` (Rust et OpenSSL, par `cffi` et `pycparser`), `requests` (avec `urllib3`, `idna`, `charset-normalizer`, `certifi`), `toml` | `requests` est une bibliothèque réseau : critère « aucun accès réseau, ou désactivable » à vérifier en T30 (P2 n'a de toute façon pas de réseau). `toml` n'a plus de version depuis 2020 (critère « maintenue »). `certifi` est sous MPL-2.0, copyleft faible par fichier, compatible avec une diffusion sous Apache-2.0 tant qu'il n'est pas modifié |
 | `jsonschema` | 4.26.0 | Python pur | `attrs`, `jsonschema-specifications`, `referencing`, `rpds-py` | `rpds-py` est écrit en Rust (sûr pour la mémoire), paquets pour les trois systèmes ; s'exécute dans P1. Toutes MIT |
 | `numpy` | 2.5.4 | Python 3.12 à 3.15, trois systèmes | Aucune | Licence composée, toutes permissives (BSD-3-Clause, 0BSD, MIT, Zlib, CC0-1.0) |
-| `pypdf` | 6.21.2 | Python pur | Aucune obligatoire | Les PDF chiffrés demandent l'option `crypto` (`cryptography`) : à trancher en T50 |
+| `pypdf` | 6.21.2 | Python pur | Aucune obligatoire | Les PDF chiffrés demandent l'option `crypto` (`cryptography`) : à trancher en T50 ; T21 ne déchiffre rien (ADR-0126) |
 | `defusedxml` | 0.7.1 (mars 2021) | Python pur | Aucune | Plus de version depuis 2021 (critère « maintenue ») ; T20 compare avec les protections actuelles de la bibliothèque standard (fait : écartée, ADR-0116) |
 
 Outillage de développement verrouillé en T10 (41 paquets dans `uv.lock`, avec empreintes) : Ruff 0.17.2, mypy 2.4.0, pytest 9.1.1, coverage.py 7.17.0, pip-audit 2.10.1 et leurs dépendances ; pip-audit n'y signale aucune faille connue. Outil de construction : `uv_build` 0.13.5, épinglé avec empreintes (ADR-0049).
@@ -315,3 +315,4 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | 2026-10-28 | 1.10 | Banc d'évaluation et matrice de vérification, hors du paquet (§4) | T17 |
 | 2026-10-28 | 1.11 | Reproductibilité : `rapport/comparaison.py` et double analyse du banc (§4) | T18 |
 | 2026-10-28 | 1.12 | Premiers modules : métadonnées d'image et lecteurs communs (§4), XML par expat (§5, §9, §11), bibliothèques au manifeste (§7), `defusedxml` écarté et oracle exiftool (§9), points tranchés (§12) | T20 |
+| 2026-11-12 | 1.13 | Module `infopdf` et lecteur PDF du projet (§4) ; `pypdf` reportée à T51 à T53, PDF chiffrés non déchiffrés (§9) | T21 |

@@ -9,6 +9,8 @@ Aucune règle : ce module extrait, il n'interprète pas. Les règles qui lisent 
 viennent avec T22 et T23.
 """
 
+import codecs
+
 from voight_kampff._travail.contexte import Contexte
 from voight_kampff.modules._lecture import valeurs
 from voight_kampff.modules._lecture.conteneurs import Bloc, Nature, lire_bloc, relever
@@ -22,6 +24,11 @@ from voight_kampff.rapport.modele import (
 )
 
 __all__ = ["analyser"]
+
+# Codecs chargés à l'import : après les restrictions, plus rien n'est lu sur le disque, et
+# Python charge un codec à sa première utilisation (ADR-0079, ERR-0009).
+for _codec in ("utf-16-le", "utf-16-be", "shift_jis"):
+    codecs.lookup(_codec)
 
 _VERSIONS = frozenset({("exif", 0x9000), ("exif", 0xA000), ("interop", 0x0002)})
 """Versions écrites en quatre caractères dans des octets indéfinis."""

@@ -113,7 +113,7 @@ id = "F-10"
 etat = "partielle"
 taches = ["T20", "T21"]
 methodes = ["test"]
-note = "Images (JPEG, PNG, WebP, HEIC) : EXIF, XMP, IPTC-IIM et blocs texte PNG, vérifiés contre exiftool (T20, ADR-0122) ; PDF, conteneurs audio et vidéo, documents bureautiques à T21."
+note = "Images (JPEG, PNG, WebP, HEIC) : EXIF, XMP, IPTC-IIM et blocs texte PNG, vérifiés contre exiftool (T20, ADR-0122) ; PDF : dictionnaire Info et XMP du catalogue, vérifiés contre exiftool (T21, ADR-0127) ; conteneurs audio et vidéo, documents bureautiques aux compléments de T21 (ADR-0123)."
 
 [[exigence]]
 id = "F-11"
@@ -136,9 +136,9 @@ methodes = ["test"]
 [[exigence]]
 id = "F-14"
 etat = "partielle"
-taches = ["T20", "T23"]
+taches = ["T20", "T21", "T23"]
 methodes = ["test"]
-note = "Absence de métadonnées observée par chaque module (`<famille>.present`), jamais un constat (T20) ; règles et présentation à T23."
+note = "Absence de métadonnées observée par chaque module (`<famille>.present`), jamais un constat (T20, T21) ; règles et présentation à T23."
 
 # 5.3 Provenance et marquages
 
@@ -578,7 +578,7 @@ id = "ES-05"
 etat = "partielle"
 taches = ["T20", "T21"]
 methodes = ["test"]
-note = "XML de XMP lu par expat, DOCTYPE et entités refusés (T20, ADR-0116) ; XML et archives de DOCX et ODT à T21."
+note = "XML de XMP lu par expat, DOCTYPE et entités refusés (T20, ADR-0116), y compris le XMP d'un PDF (T21) ; XML et archives de DOCX et ODT au complément de T21 (ADR-0123)."
 
 [[exigence]]
 id = "ES-06"
