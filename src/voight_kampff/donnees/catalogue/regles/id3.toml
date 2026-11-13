@@ -23,3 +23,26 @@ application = "moteur"
 observation = "id3.TSSE"
 motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
 parametre = "logiciel"
+
+# Règle de T23 : absence de métadonnées, information neutre (F-14, ADR-0151).
+
+[[regle]]
+identifiant = "R-ID3-002"
+version = "1"
+module = "id3"
+titre = "Aucune balise ID3"
+description = "Le module id3 n'a trouvé aucune balise ID3 (balises ID3v2 et ID3v1) : l'observation id3.present vaut faux. Information neutre (F-14, A-34, ADR-0151) : elle ne compte ni pour ni contre une origine IA."
+gabarit = "id3.absence"
+phrase = { fr = "Le fichier ne porte aucune balise ID3. Cette absence est fréquente (messageries, réseaux sociaux, conversions) et ne dit rien de son origine." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Absence neutre : beaucoup de logiciels, messageries et plateformes retirent ces métadonnées, et beaucoup de générateurs n'en écrivent pas ; elle n'est ni un indice d'IA ni une garantie d'authenticité (F-14, P-04).",
+  "Seuls les emplacements de la fiche du module sont lus : des métadonnées logées ailleurs dans le fichier ne sont pas vues.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "id3.present"
+egal = false

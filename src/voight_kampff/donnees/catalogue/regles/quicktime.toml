@@ -47,3 +47,50 @@ application = "moteur"
 observation = "quicktime.udta.-swr"
 motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
 parametre = "logiciel"
+
+# Règles de T23 : incohérences internes (F-13, ADR-0147 à ADR-0150) et absence (F-14,
+# ADR-0151), toutes des informations neutres.
+
+[[regle]]
+identifiant = "R-QUICKTIME-003"
+version = "1"
+module = "quicktime"
+titre = "Création postérieure à la modification (mvhd)"
+description = "La date de création de la présentation (mvhd) est postérieure à la date de modification de la présentation (mvhd), pour tous les instants que peuvent désigner les deux dates, lues comme des secondes depuis le 1904-01-01 UTC : l'ordre que fixe leur définition est renversé, l'une des deux au moins est inexacte (F-13, ADR-0150)."
+gabarit = "quicktime.creation-apres-modification"
+phrase = { fr = "La date de création de la présentation (mvhd), {creation} secondes depuis le 1er janvier 1904 UTC, est postérieure à sa date de modification, {modification} secondes : l'une des deux au moins est inexacte." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Une date nulle, qui dit une date non renseignée, n'est pas comparée (ADR-0133, ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "quicktime.mvhd.CreationTime"
+lecture = "date-1904"
+parametre = "creation"
+comparer = { observation = "quicktime.mvhd.ModificationTime", operateur = ">", parametre = "modification" }
+
+[[regle]]
+identifiant = "R-QUICKTIME-004"
+version = "1"
+module = "quicktime"
+titre = "Aucune balise QuickTime (udta, meta)"
+description = "Le module quicktime n'a trouvé aucune balise QuickTime (udta, meta) (boîtes udta et meta du premier moov) : l'observation quicktime.present vaut faux. Information neutre (F-14, A-34, ADR-0151) : elle ne compte ni pour ni contre une origine IA."
+gabarit = "quicktime.absence"
+phrase = { fr = "Le fichier ne porte aucune balise QuickTime (udta, meta). Cette absence est fréquente (messageries, réseaux sociaux, conversions) et ne dit rien de son origine." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Absence neutre : beaucoup de logiciels, messageries et plateformes retirent ces métadonnées, et beaucoup de générateurs n'en écrivent pas ; elle n'est ni un indice d'IA ni une garantie d'authenticité (F-14, P-04).",
+  "Seuls les emplacements de la fiche du module sont lus : des métadonnées logées ailleurs dans le fichier ne sont pas vues.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "quicktime.present"
+egal = false

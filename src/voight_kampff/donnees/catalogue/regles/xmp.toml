@@ -127,3 +127,171 @@ application = "moteur"
 observation = "xmp.xmpMM:History.stEvt:softwareAgent"
 motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
 parametre = "logiciel"
+
+# Règles de T23 : incohérences internes (F-13, ADR-0147 à ADR-0150) et absence (F-14,
+# ADR-0151), toutes des informations neutres.
+
+[[regle]]
+identifiant = "R-XMP-006"
+version = "1"
+module = "xmp"
+titre = "Date de création impossible (xmp:CreateDate)"
+description = "La valeur de La date de création XMP (xmp:CreateDate) suit l'écriture ISO 8601 (AAAA-MM-JJThh:mm:ss et fuseau), mais la date qu'elle écrit n'existe pas dans le calendrier (mois, jour, heure, minute ou seconde hors de son domaine, fuseau impossible) : dates impossibles de F-13 (ADR-0150)."
+gabarit = "xmp.date-creation-impossible"
+phrase = { fr = "La date de création XMP (xmp:CreateDate) vaut « {date} », une date qui n'existe pas dans le calendrier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Seule une date qui suit l'écriture et n'existe pas dans le calendrier est relevée ; une date d'une autre écriture, ou qui dit une date inconnue, ne l'est pas (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.xmp:CreateDate"
+impossible = true
+lecture = "date-iso8601"
+parametre = "date"
+
+[[regle]]
+identifiant = "R-XMP-007"
+version = "1"
+module = "xmp"
+titre = "Date de modification impossible (xmp:ModifyDate)"
+description = "La valeur de La date de modification XMP (xmp:ModifyDate) suit l'écriture ISO 8601 (AAAA-MM-JJThh:mm:ss et fuseau), mais la date qu'elle écrit n'existe pas dans le calendrier (mois, jour, heure, minute ou seconde hors de son domaine, fuseau impossible) : dates impossibles de F-13 (ADR-0150)."
+gabarit = "xmp.date-modification-impossible"
+phrase = { fr = "La date de modification XMP (xmp:ModifyDate) vaut « {date} », une date qui n'existe pas dans le calendrier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Seule une date qui suit l'écriture et n'existe pas dans le calendrier est relevée ; une date d'une autre écriture, ou qui dit une date inconnue, ne l'est pas (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.xmp:ModifyDate"
+impossible = true
+lecture = "date-iso8601"
+parametre = "date"
+
+[[regle]]
+identifiant = "R-XMP-008"
+version = "1"
+module = "xmp"
+titre = "Date des métadonnées impossible (xmp:MetadataDate)"
+description = "La valeur de La date des métadonnées XMP (xmp:MetadataDate) suit l'écriture ISO 8601 (AAAA-MM-JJThh:mm:ss et fuseau), mais la date qu'elle écrit n'existe pas dans le calendrier (mois, jour, heure, minute ou seconde hors de son domaine, fuseau impossible) : dates impossibles de F-13 (ADR-0150)."
+gabarit = "xmp.date-metadonnees-impossible"
+phrase = { fr = "La date des métadonnées XMP (xmp:MetadataDate) vaut « {date} », une date qui n'existe pas dans le calendrier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Seule une date qui suit l'écriture et n'existe pas dans le calendrier est relevée ; une date d'une autre écriture, ou qui dit une date inconnue, ne l'est pas (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.xmp:MetadataDate"
+impossible = true
+lecture = "date-iso8601"
+parametre = "date"
+
+[[regle]]
+identifiant = "R-XMP-009"
+version = "1"
+module = "xmp"
+titre = "Création postérieure à la modification (xmp:CreateDate, xmp:ModifyDate)"
+description = "La date de création XMP (xmp:CreateDate) est postérieure à la date de modification XMP (xmp:ModifyDate), pour tous les instants que peuvent désigner les deux dates, lues selon l'écriture ISO 8601 (AAAA-MM-JJThh:mm:ss et fuseau) : l'ordre que fixe leur définition est renversé, l'une des deux au moins est inexacte (F-13, ADR-0150)."
+gabarit = "xmp.creation-apres-modification"
+phrase = { fr = "La date de création XMP (xmp:CreateDate), « {creation} », est postérieure à la date de modification XMP (xmp:ModifyDate), « {modification} », quel que soit le fuseau horaire : l'une des deux au moins est inexacte." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Une date sans fuseau est lue dans tous les fuseaux, de UTC-12 à UTC+14 : un écart de moins de 26 heures entre deux dates sans fuseau n'est pas relevé (ADR-0148).",
+  "Une valeur qui ne suit pas l'écriture de la date, ou qui dit une date inconnue, n'est pas comparée (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.xmp:CreateDate"
+lecture = "date-iso8601"
+parametre = "creation"
+comparer = { observation = "xmp.xmp:ModifyDate", operateur = ">", parametre = "modification" }
+
+[[regle]]
+identifiant = "R-XMP-010"
+version = "1"
+module = "xmp"
+titre = "Création postérieure aux métadonnées (xmp:CreateDate, xmp:MetadataDate)"
+description = "La date de création XMP (xmp:CreateDate) est postérieure à la date des métadonnées XMP (xmp:MetadataDate), pour tous les instants que peuvent désigner les deux dates, lues selon l'écriture ISO 8601 (AAAA-MM-JJThh:mm:ss et fuseau) : l'ordre que fixe leur définition est renversé, l'une des deux au moins est inexacte (F-13, ADR-0150)."
+gabarit = "xmp.creation-apres-metadonnees"
+phrase = { fr = "La date de création XMP (xmp:CreateDate), « {creation} », est postérieure à la date des métadonnées XMP (xmp:MetadataDate), « {metadonnees} », quel que soit le fuseau horaire : l'une des deux au moins est inexacte." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Une date sans fuseau est lue dans tous les fuseaux, de UTC-12 à UTC+14 : un écart de moins de 26 heures entre deux dates sans fuseau n'est pas relevé (ADR-0148).",
+  "Une valeur qui ne suit pas l'écriture de la date, ou qui dit une date inconnue, n'est pas comparée (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.xmp:CreateDate"
+lecture = "date-iso8601"
+parametre = "creation"
+comparer = { observation = "xmp.xmp:MetadataDate", operateur = ">", parametre = "metadonnees" }
+
+[[regle]]
+identifiant = "R-XMP-011"
+version = "1"
+module = "xmp"
+titre = "Appareil déclaré et générateur nommé (tiff:Make, xmp:CreatorTool)"
+description = "La propriété XMP tiff:Make déclare l'appareil qui a pris l'image, et xmp:CreatorTool nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : logiciel incompatible avec l'appareil déclaré (F-13, ADR-0150)."
+gabarit = "xmp.appareil-et-generateur"
+phrase = { fr = "La propriété XMP tiff:Make déclare un appareil (« {appareil} ») et xmp:CreatorTool nomme un logiciel de génération par IA (« {logiciel} ») : ces deux déclarations se contredisent, ou décrivent deux étapes, une prise de vue puis un passage par ce logiciel." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : un logiciel qui garde l'appareil d'une photo qu'il transforme, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Seuls les noms de la liste des générateurs sont reconnus (ADR-0144) ; le nom du générateur fait aussi l'indice d'une autre règle du module.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.tiff:Make"
+presente = true
+parametre = "appareil"
+
+[[regle.condition]]
+observation = "xmp.xmp:CreatorTool"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"
+
+[[regle]]
+identifiant = "R-XMP-012"
+version = "1"
+module = "xmp"
+titre = "Aucune métadonnée XMP"
+description = "Le module xmp n'a trouvé aucune métadonnée XMP (paquets XMP des emplacements de la fiche) : l'observation xmp.present vaut faux. Information neutre (F-14, A-34, ADR-0151) : elle ne compte ni pour ni contre une origine IA."
+gabarit = "xmp.absence"
+phrase = { fr = "Le fichier ne porte aucune métadonnée XMP. Cette absence est fréquente (messageries, réseaux sociaux, conversions) et ne dit rien de son origine." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Absence neutre : beaucoup de logiciels, messageries et plateformes retirent ces métadonnées, et beaucoup de générateurs n'en écrivent pas ; elle n'est ni un indice d'IA ni une garantie d'authenticité (F-14, P-04).",
+  "Seuls les emplacements de la fiche du module sont lus : des métadonnées logées ailleurs dans le fichier ne sont pas vues.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.present"
+egal = false

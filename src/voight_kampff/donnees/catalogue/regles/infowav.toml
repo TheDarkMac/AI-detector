@@ -23,3 +23,26 @@ application = "moteur"
 observation = "infowav.ISFT"
 motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
 parametre = "logiciel"
+
+# Règle de T23 : absence de métadonnées, information neutre (F-14, ADR-0151).
+
+[[regle]]
+identifiant = "R-INFOWAV-002"
+version = "1"
+module = "infowav"
+titre = "Aucune métadonnée RIFF (INFO, bext)"
+description = "Le module infowav n'a trouvé aucune métadonnée RIFF (INFO, bext) (listes INFO et bloc bext du WAV) : l'observation infowav.present vaut faux. Information neutre (F-14, A-34, ADR-0151) : elle ne compte ni pour ni contre une origine IA."
+gabarit = "infowav.absence"
+phrase = { fr = "Le fichier ne porte aucune métadonnée RIFF (INFO, bext). Cette absence est fréquente (messageries, réseaux sociaux, conversions) et ne dit rien de son origine." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Absence neutre : beaucoup de logiciels, messageries et plateformes retirent ces métadonnées, et beaucoup de générateurs n'en écrivent pas ; elle n'est ni un indice d'IA ni une garantie d'authenticité (F-14, P-04).",
+  "Seuls les emplacements de la fiche du module sont lus : des métadonnées logées ailleurs dans le fichier ne sont pas vues.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "infowav.present"
+egal = false

@@ -47,3 +47,97 @@ application = "moteur"
 observation = "infopdf.Producer"
 motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
 parametre = "logiciel"
+
+# Règles de T23 : incohérences internes (F-13, ADR-0147 à ADR-0150) et absence (F-14,
+# ADR-0151), toutes des informations neutres.
+
+[[regle]]
+identifiant = "R-INFOPDF-003"
+version = "1"
+module = "infopdf"
+titre = "Date de création impossible (CreationDate)"
+description = "La valeur de La date de création du PDF (CreationDate) suit l'écriture des dates PDF (D:AAAAMMJJHHmmSS et fuseau), mais la date qu'elle écrit n'existe pas dans le calendrier (mois, jour, heure, minute ou seconde hors de son domaine, fuseau impossible) : dates impossibles de F-13 (ADR-0150)."
+gabarit = "infopdf.date-creation-impossible"
+phrase = { fr = "La date de création du PDF (CreationDate) vaut « {date} », une date qui n'existe pas dans le calendrier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Seule une date qui suit l'écriture et n'existe pas dans le calendrier est relevée ; une date d'une autre écriture, ou qui dit une date inconnue, ne l'est pas (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "infopdf.CreationDate"
+impossible = true
+lecture = "date-pdf"
+parametre = "date"
+
+[[regle]]
+identifiant = "R-INFOPDF-004"
+version = "1"
+module = "infopdf"
+titre = "Date de modification impossible (ModDate)"
+description = "La valeur de La date de modification du PDF (ModDate) suit l'écriture des dates PDF (D:AAAAMMJJHHmmSS et fuseau), mais la date qu'elle écrit n'existe pas dans le calendrier (mois, jour, heure, minute ou seconde hors de son domaine, fuseau impossible) : dates impossibles de F-13 (ADR-0150)."
+gabarit = "infopdf.date-modification-impossible"
+phrase = { fr = "La date de modification du PDF (ModDate) vaut « {date} », une date qui n'existe pas dans le calendrier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Seule une date qui suit l'écriture et n'existe pas dans le calendrier est relevée ; une date d'une autre écriture, ou qui dit une date inconnue, ne l'est pas (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "infopdf.ModDate"
+impossible = true
+lecture = "date-pdf"
+parametre = "date"
+
+[[regle]]
+identifiant = "R-INFOPDF-005"
+version = "1"
+module = "infopdf"
+titre = "Création postérieure à la modification (CreationDate, ModDate)"
+description = "La date de création du PDF (CreationDate) est postérieure à la date de modification du PDF (ModDate), pour tous les instants que peuvent désigner les deux dates, lues selon l'écriture des dates PDF (D:AAAAMMJJHHmmSS et fuseau) : l'ordre que fixe leur définition est renversé, l'une des deux au moins est inexacte (F-13, ADR-0150)."
+gabarit = "infopdf.creation-apres-modification"
+phrase = { fr = "La date de création du PDF (CreationDate), « {creation} », est postérieure à la date de modification du PDF (ModDate), « {modification} », quel que soit le fuseau horaire : l'une des deux au moins est inexacte." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Une date sans fuseau est lue dans tous les fuseaux, de UTC-12 à UTC+14 : un écart de moins de 26 heures entre deux dates sans fuseau n'est pas relevé (ADR-0148).",
+  "Une valeur qui ne suit pas l'écriture de la date, ou qui dit une date inconnue, n'est pas comparée (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "infopdf.CreationDate"
+lecture = "date-pdf"
+parametre = "creation"
+comparer = { observation = "infopdf.ModDate", operateur = ">", parametre = "modification" }
+
+[[regle]]
+identifiant = "R-INFOPDF-006"
+version = "1"
+module = "infopdf"
+titre = "Aucun dictionnaire d'informations PDF (Info)"
+description = "Le module infopdf n'a trouvé aucun dictionnaire d'informations PDF (Info) (dictionnaire désigné par le trailer) : l'observation infopdf.present vaut faux. Information neutre (F-14, A-34, ADR-0151) : elle ne compte ni pour ni contre une origine IA."
+gabarit = "infopdf.absence"
+phrase = { fr = "Le fichier ne porte aucun dictionnaire d'informations PDF (Info). Cette absence est fréquente (messageries, réseaux sociaux, conversions) et ne dit rien de son origine." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Absence neutre : beaucoup de logiciels, messageries et plateformes retirent ces métadonnées, et beaucoup de générateurs n'en écrivent pas ; elle n'est ni un indice d'IA ni une garantie d'authenticité (F-14, P-04).",
+  "Seuls les emplacements de la fiche du module sont lus : des métadonnées logées ailleurs dans le fichier ne sont pas vues.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "infopdf.present"
+egal = false

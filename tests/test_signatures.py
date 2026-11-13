@@ -70,6 +70,9 @@ pytestmark = pytest.mark.exigence("F-12")
 
 MANIFESTES = {manifeste.identifiant: manifeste for manifeste in manifestes.decouvrir()}
 CATALOGUE = catalogues.charger(tuple(MANIFESTES.values()))
+REGLES_T22 = tuple(regle for regle in CATALOGUE.regles if regle.categorie is Categorie.INDICE)
+"""Règles de T22 : les seuls indices du catalogue ; celles de T23 sont des informations neutres
+(``test_incoherences.py``)."""
 
 IPTC = "http://cv.iptc.org/newscodes/digitalsourcetype/"
 EXT = 'xmlns:Iptc4xmpExt="http://iptc.org/std/Iptc4xmpExt/2008-02-29/"'
@@ -93,8 +96,13 @@ def verrouille(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(garde, "_verrouille", True)
 
 
-def constats(module: str, contenu: bytes, format_: str) -> dict[str, dict[str, Any]]:
-    """Constats des règles livrées sur ``contenu`` : valeur de chaque paramètre, par règle."""
+def constats(
+    module: str, contenu: bytes, format_: str, regles: tuple[Any, ...] = REGLES_T22
+) -> dict[str, dict[str, Any]]:
+    """Constats des ``regles`` sur ``contenu`` : valeur de chaque paramètre, par règle.
+
+    Par défaut, les règles de T22 ; ``test_incoherences.py`` passe celles de T23.
+    """
     with tempfile.TemporaryFile() as fichier:
         fichier.write(contenu)
         fichier.flush()
@@ -105,7 +113,7 @@ def constats(module: str, contenu: bytes, format_: str) -> dict[str, dict[str, A
             Fichier(fichier.fileno()),
             partie,
             64 << 20,
-            regles=CATALOGUE.du_module(module),
+            regles=tuple(regle for regle in regles if regle.module == module),
         )
         importlib.import_module(f"voight_kampff.modules.{module}").analyser(contexte)
         contexte.appliquer_catalogue()
@@ -297,14 +305,15 @@ def test_regle_appliquee(
     assert constats(module, contenu, format_) == {regle: parametres}
 
 
-def test_chaque_regle_livree_est_eprouvee() -> None:
-    assert {cas[3] for cas in CAS} == {regle.identifiant for regle in CATALOGUE.regles}
+def test_chaque_regle_de_t22_est_eprouvee() -> None:
+    assert {cas[3] for cas in CAS} == {regle.identifiant for regle in REGLES_T22}
+    assert len(REGLES_T22) == 24
 
 
 @pytest.mark.exigence("ES-20", "F-14")
-def test_regles_livrees_indices_faibles_de_declaration() -> None:
+def test_regles_de_t22_indices_faibles_de_declaration() -> None:
     # ADR-0142 : une déclaration du fichier n'est qu'un indice, faible tant qu'il n'est pas évalué.
-    for regle in CATALOGUE.regles:
+    for regle in REGLES_T22:
         assert regle.application is Application.MOTEUR
         assert regle.categorie is Categorie.INDICE
         assert regle.fondement is Fondement.DECLARATION
@@ -313,7 +322,7 @@ def test_regles_livrees_indices_faibles_de_declaration() -> None:
 
 def test_une_seule_liste_de_generateurs() -> None:
     # ADR-0144 : chaque champ logiciel est éprouvé par la même liste de noms, au même paramètre.
-    regles = [regle for regle in CATALOGUE.regles if regle.gabarit.endswith("-generateur")]
+    regles = [regle for regle in REGLES_T22 if regle.gabarit.endswith("-generateur")]
     assert len(regles) == 16
     assert {(c.motif, c.parametre) for regle in regles for c in regle.conditions} == {
         (regles[0].conditions[0].motif, "logiciel")
@@ -511,10 +520,12 @@ def test_quicktime_hors_moov_udta_non_lu() -> None:
 
 
 def _analyse(chemin: Path) -> dict[str, Any]:
+    """Indices d'une analyse complète ; les informations neutres de T23 sont éprouvées ailleurs."""
     resultat = analyser(chemin)
     return {
         constat.regle.identifiant: (constat.direction, constat.module)
         for constat in resultat.constats
+        if constat.categorie is Categorie.INDICE
     }
 
 
@@ -553,4 +564,8 @@ def test_processus_de_travail_applique_le_catalogue_livre_par_defaut(tmp_path: P
         resultat = travail.executer(descripteur, manifestes.decouvrir())
     finally:
         os.close(descripteur)
-    assert [constat.regle.identifiant for constat in resultat.constats] == ["R-TEXTEPNG-002"]
+    assert [
+        constat.regle.identifiant
+        for constat in resultat.constats
+        if constat.categorie is Categorie.INDICE
+    ] == ["R-TEXTEPNG-002"]
