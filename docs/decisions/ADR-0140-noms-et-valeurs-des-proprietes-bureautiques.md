@@ -1,8 +1,8 @@
 # ADR-0140 — Noms et valeurs des propriétés de DOCX et d'ODT
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-13
-- **Décideur** : proposition de l'assistant, à valider par TheDarkMac pendant la revue de la PR du complément
+- **Décideur** : proposition de l'assistant, validée par TheDarkMac
 - **Tâche** : T21 (complément bureautique)
 - **Exigences liées** : F-10, F-14, ES-13, NF-06, NF-11 ; ADR-0057, ADR-0117, ADR-0118, ADR-0119, ADR-0128, ADR-0133
 
@@ -70,3 +70,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR du complément (« Yes, all three ») : statut « Accepté » |

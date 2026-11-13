@@ -1,8 +1,8 @@
 # ADR-0141 — Oracle des propriétés bureautiques : échantillons écrits par LibreOffice
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-13
-- **Décideur** : proposition de l'assistant, à valider par TheDarkMac pendant la revue de la PR du complément
+- **Décideur** : proposition de l'assistant, validée par TheDarkMac
 - **Tâche** : T21 (complément bureautique)
 - **Exigences liées** : F-10, NF-09 ; ADR-0043, ADR-0122, ADR-0135
 
@@ -50,3 +50,4 @@ Option A. `tests/donnees/metadonnees/generer_bureautique.sh` écrit `document.od
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR du complément (« Yes, all three ») : statut « Accepté » |

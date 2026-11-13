@@ -3,7 +3,7 @@
 - **Branche** : `tache/T21-extraction-bureautique`
 - **Dates** : 2026-11-13
 - **Exigences couvertes** : F-10 (documents bureautiques, F-10 réalisée), F-14 (absence observée), F-82, ES-03, ES-05 (archives, ES-05 réalisée), ES-06 (DOCX et ODT), ES-13, ES-19, NF-09
-- **Décisions** : ADR-0136 à ADR-0141 ; ADR-0136, ADR-0137 et ADR-0138 acceptés, ADR-0139, ADR-0140 et ADR-0141 proposés, à valider pendant la revue
+- **Décisions** : ADR-0136 à ADR-0141, tous acceptés
 - **Errata** : aucun
 
 ## Objectif
@@ -27,7 +27,7 @@ Dernier complément de T21 (ADR-0123) : extraire les propriétés des documents 
    - lecture de l'archive : lecteur du projet plutôt que `zipfile` ([ADR-0137](../decisions/ADR-0137-lecteur-zip-du-projet.md)) ;
    - relations externes et références : ni lues ni suivies, garantie testée ([ADR-0138](../decisions/ADR-0138-relations-et-references-non-suivies.md)).
 
-   Les autres choix, faits par l'assistant, sont soumis dans la PR : [ADR-0139](../decisions/ADR-0139-parties-lues-dans-docx-et-odt.md) (parties lues et non lues, résolution des relations), [ADR-0140](../decisions/ADR-0140-noms-et-valeurs-des-proprietes-bureautiques.md) (noms, valeurs typées, données identifiantes), [ADR-0141](../decisions/ADR-0141-oracle-bureautique-par-libreoffice.md) (échantillons de LibreOffice).
+   Les autres choix, faits par l'assistant, ont été soumis dans la PR et validés par TheDarkMac pendant sa revue (2026-11-13) : [ADR-0139](../decisions/ADR-0139-parties-lues-dans-docx-et-odt.md) (parties lues et non lues, résolution des relations), [ADR-0140](../decisions/ADR-0140-noms-et-valeurs-des-proprietes-bureautiques.md) (noms, valeurs typées, données identifiantes), [ADR-0141](../decisions/ADR-0141-oracle-bureautique-par-libreoffice.md) (échantillons de LibreOffice).
 3. Branche `tache/T21-extraction-bureautique` créée depuis `detector` à jour (`eba1efd`).
 4. Lecteurs : `arbre` reçoit la lecture du XML par expat (DOCTYPE et entités refusés, budget), déplacée de `xmp` sans changement de comportement ; `zip` lit l'enregistrement de fin (ZIP64 compris), le répertoire central et les entrées stockées ou deflate, strictement ; `proprietes` range les propriétés et lit les types de XML Schema.
 5. Modules `ooxml` et `odf` 0.1.0 (bibliothèque `expat`) ; fiches `metadonnees-ooxml` et `metadonnees-odf`.
@@ -40,6 +40,8 @@ Dernier complément de T21 (ADR-0123) : extraire les propriétés des documents 
    - tests existants adaptés : liste des modules (CLI, travail, manifestes), couverture d'un PDF, bibliothèques des seuls modules actifs (expat sert désormais à trois modules).
 8. Vérification locale : Ruff (format et analyse) et mypy sans remarque ; matrice régénérée ; suite complète verte avec une couverture de 100 % des lignes et des branches ; exiftool 13.25 redonne exactement `exiftool.json` ; campagne de fuzzing des modules de métadonnées à 40 000 exemples par propriété (profil temporaire, hors du dépôt), échantillons de l'oracle et construits des seize formats, DOCX et ODT compris : sans échec (10 min 38 s).
 9. Documentation : ADR-0136 à ADR-0141 ; fiches ; renvois dans ADR-0013, ADR-0033, ADR-0043, ADR-0114, ADR-0116 à ADR-0120, ADR-0122, ADR-0123 ; matrice (F-10 et ES-05 réalisées, ES-06 partielle) ; découpage v0.21, architecture v1.15 ; `CONTRIBUTING.md` (§1, oracle) ; index des ADR, du journal et des fiches.
+
+10. PR [#22](https://github.com/TheDarkMac/AI-detector/pull/22) ouverte ; code vert sur tous les systèmes, `lint-markdown` rouge sur l'étape « Aucun ADR au statut Proposé », comme prévu (ADR-0129). ADR-0139, ADR-0140 et ADR-0141 validés par TheDarkMac pendant la revue, le 2026-11-13 : statut « Accepté ».
 
 ## Problèmes rencontrés
 
@@ -76,5 +78,4 @@ Aucun de ces problèmes ne touche un élément déjà mergé.
 - T23 : dates des propriétés, converties dans la règle qui les compare.
 - T25 : textes libres des propriétés (titres, mots-clés, propriétés personnalisées).
 - T52, T81 : modèle distant et liens d'un document, signatures ; historique d'édition (`TotalTime`, `cp:revision`, `meta:editing-cycles`, `meta:editing-duration`, identifiants de révision).
-- Validation par TheDarkMac d'ADR-0139, ADR-0140 et ADR-0141 avant le merge (ADR-0129).
 - Toujours en attente : messages à @Jean ; alertes de sécurité de Dependabot à proposer ; règle de protection des étiquettes et `can_admins_bypass`, sur demande ; contrôle des ADR en tâche séparée (ADR-0129, option B).

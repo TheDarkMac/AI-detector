@@ -1,8 +1,8 @@
 # ADR-0139 — Parties lues dans un DOCX et dans un ODT
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-13
-- **Décideur** : proposition de l'assistant, à valider par TheDarkMac pendant la revue de la PR du complément
+- **Décideur** : proposition de l'assistant, validée par TheDarkMac
 - **Tâche** : T21 (complément bureautique)
 - **Exigences liées** : F-10, F-14, F-71, F-82 ; ADR-0127, ADR-0132, ADR-0136, ADR-0138
 
@@ -55,3 +55,4 @@ Option A. Ne sont pas lus, et chaque fiche le dit : le corps et ses relations (`
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR du complément (« Yes, all three ») : statut « Accepté » |
