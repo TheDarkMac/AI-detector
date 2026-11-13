@@ -1,0 +1,49 @@
+# Règles du module matroska (T22) : nom d'un générateur dans un champ logiciel (F-12, ADR-0144).
+
+[[regle]]
+identifiant = "R-MATROSKA-001"
+version = "1"
+module = "matroska"
+titre = "Générateur nommé par le logiciel d'écriture d'un WebM"
+description = "L'élément WritingApp de Info (logiciel d'écriture) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
+gabarit = "matroska.logiciel-generateur"
+phrase = { fr = "L'élément WritingApp du WebM, qui nomme le logiciel d'écriture, vaut « {logiciel} » : on y lit le nom d'un logiciel de génération par IA." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer cet élément ; son absence ne dit rien (F-14).",
+  "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
+  "Le constat dit ce que le champ nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "matroska.WritingApp"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"
+
+[[regle]]
+identifiant = "R-MATROSKA-002"
+version = "1"
+module = "matroska"
+titre = "Générateur nommé par la balise globale de l'encodeur d'un WebM"
+description = "La balise simple globale ENCODER nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
+gabarit = "matroska.encodeur-generateur"
+phrase = { fr = "La balise ENCODER du WebM, qui nomme l'encodeur, vaut « {logiciel} » : on y lit le nom d'un logiciel de génération par IA." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer cette balise ; son absence ne dit rien (F-14).",
+  "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
+  "Le constat dit ce que le champ nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "matroska.tag.ENCODER"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"

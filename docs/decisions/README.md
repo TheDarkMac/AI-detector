@@ -156,3 +156,8 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0139](ADR-0139-parties-lues-dans-docx-et-odt.md) | Parties lues dans un DOCX et dans un ODT | Accepté | 2026-11-13 |
 | [ADR-0140](ADR-0140-noms-et-valeurs-des-proprietes-bureautiques.md) | Noms et valeurs des propriétés de DOCX et d'ODT | Accepté | 2026-11-13 |
 | [ADR-0141](ADR-0141-oracle-bureautique-par-libreoffice.md) | Oracle des propriétés bureautiques : échantillons écrits par LibreOffice | Accepté | 2026-11-13 |
+| [ADR-0142](ADR-0142-constats-d-une-declaration-du-fichier.md) | Constats tirés d'une déclaration du fichier : indices faibles, dirigés par ce que le champ déclare | Accepté | 2026-11-13 |
+| [ADR-0143](ADR-0143-valeurs-iptc-de-la-source-numerique.md) | Valeurs IPTC de la source numérique : trois valeurs, une direction chacune, comparaison tolérante | Accepté | 2026-11-13 |
+| [ADR-0144](ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md) | Noms de générateurs : une liste de noms distinctifs, appliquée à chaque champ logiciel | Accepté | 2026-11-13 |
+| [ADR-0145](ADR-0145-signatures-de-parametres-de-generation.md) | Signatures de paramètres de génération : celles que montre le code public d'un outil | Accepté | 2026-11-13 |
+| [ADR-0146](ADR-0146-versions-des-modules-et-du-catalogue-de-t22.md) | Versions des modules et du catalogue de T22 ; forme des règles | Accepté | 2026-11-13 |

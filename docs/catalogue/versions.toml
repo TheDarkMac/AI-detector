@@ -8,3 +8,8 @@
 version = "0.1.0"
 date = "2026-10-27"
 empreinte = "3983518025d0e91610ee34c9febdb76197aebd5a81c5b283746fc3fd77356d87"
+
+[[version]]
+version = "0.2.0"
+date = "2026-11-13"
+empreinte = "9cbb54f9cce87cd581b173ca267a92f3f279f609639fdcea1ec390d48b28c875"

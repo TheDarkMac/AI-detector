@@ -1,0 +1,49 @@
+# Règles du module infopdf (T22) : nom d'un générateur dans un champ logiciel (F-12, ADR-0144).
+
+[[regle]]
+identifiant = "R-INFOPDF-001"
+version = "1"
+module = "infopdf"
+titre = "Générateur nommé par le logiciel d'origine du PDF"
+description = "L'entrée Creator du dictionnaire d'information (logiciel d'origine du document) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
+gabarit = "infopdf.createur-generateur"
+phrase = { fr = "L'entrée Creator du dictionnaire d'information du PDF, qui nomme le logiciel d'origine, vaut « {logiciel} » : on y lit le nom d'un logiciel de génération par IA." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer cette entrée ; son absence ne dit rien (F-14).",
+  "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
+  "Le constat dit ce que le champ nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "infopdf.Creator"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"
+
+[[regle]]
+identifiant = "R-INFOPDF-002"
+version = "1"
+module = "infopdf"
+titre = "Générateur nommé par le logiciel de conversion du PDF"
+description = "L'entrée Producer du dictionnaire d'information (logiciel qui a écrit le PDF) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
+gabarit = "infopdf.producteur-generateur"
+phrase = { fr = "L'entrée Producer du dictionnaire d'information du PDF, qui nomme le logiciel de conversion, vaut « {logiciel} » : on y lit le nom d'un logiciel de génération par IA." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer cette entrée ; son absence ne dit rien (F-14).",
+  "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
+  "Le constat dit ce que le champ nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "infopdf.Producer"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"

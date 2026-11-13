@@ -82,18 +82,18 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
     } | {
         (module, EtatTechnique.NON_APPLICABLE, version)
         for module, version in (
-            ("exif", "0.1.1"),
-            ("id3", "0.1.0"),
-            ("infowav", "0.1.0"),
-            ("iptc", "0.1.0"),
-            ("matroska", "0.1.0"),
-            ("odf", "0.1.0"),
-            ("ooxml", "0.1.0"),
-            ("quicktime", "0.1.0"),
-            ("textepng", "0.1.0"),
-            ("vorbis", "0.1.0"),
+            ("exif", "0.2.0"),
+            ("id3", "0.2.0"),
+            ("infowav", "0.2.0"),
+            ("iptc", "0.2.0"),
+            ("matroska", "0.2.0"),
+            ("odf", "0.2.0"),
+            ("ooxml", "0.2.0"),
+            ("quicktime", "0.2.0"),
+            ("textepng", "0.2.0"),
+            ("vorbis", "0.2.0"),
         )
-    } | {("infopdf", EtatTechnique.PARTIELLE, "0.1.0"), ("xmp", EtatTechnique.PARTIELLE, "0.3.0")}
+    } | {("infopdf", EtatTechnique.PARTIELLE, "0.2.0"), ("xmp", EtatTechnique.PARTIELLE, "0.4.0")}
     assert {n.raison for n in analyse.non_menees} == {
         RaisonNonMenee.HORS_V1,
         RaisonNonMenee.FORMAT_PARTIEL,
@@ -137,6 +137,7 @@ def test_arret_apres_l_identification_resultat_partiel(tmp_path: Path) -> None:
     # Pas d'empreinte finale du travail : le principal hache de nouveau, à l'identique.
     analyse = soumission.soumettre(
         ecrire(tmp_path, "f.jpg", b"contenu"),
+        catalogue=CATALOGUE,
         manifestes=MODULES,
         hors_v1=(),
         delai=3.0,
@@ -229,14 +230,17 @@ def test_fichier_modifie_pendant_un_arret(tmp_path: Path, monkeypatch: pytest.Mo
 
     monkeypatch.setattr(soumission, "executer", arret_et_modification)
     with pytest.raises(AnalyseRefusee) as refus:
-        soumission.soumettre(chemin, manifestes=())
+        soumission.soumettre(chemin, catalogue=CATALOGUE, manifestes=())
     assert refus.value.motif is MotifRefus.FICHIER_MODIFIE
 
 
 def test_arret_avant_l_identification(tmp_path: Path) -> None:
     with pytest.raises(AnalyseRefusee) as refus:
         soumission.soumettre(
-            ecrire(tmp_path, "f.jpg", b"contenu"), manifestes=MODULES, commande=factice("rien")
+            ecrire(tmp_path, "f.jpg", b"contenu"),
+            catalogue=CATALOGUE,
+            manifestes=MODULES,
+            commande=factice("rien"),
         )
     assert refus.value.motif is MotifRefus.ANALYSE_IMPOSSIBLE
     assert refus.value.raison is RaisonNonMenee.ARRET_PROCESSUS

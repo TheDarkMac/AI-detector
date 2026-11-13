@@ -1,10 +1,10 @@
 # Fiche technique — Commentaires Vorbis
 
-- **Module** : `vorbis` (version 0.1.0)
-- **Tâche** : T21
-- **Exigences** : F-10, ES-13
+- **Module** : `vorbis` (version 0.2.0)
+- **Tâche** : T21, T22
+- **Exigences** : F-10, F-12, ES-13
 - **Formats** : `flac`, `ogg`
-- **Directions permises** : `rien_de_particulier`
+- **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : aucune
 
@@ -41,7 +41,7 @@ Noms d'observation ([ADR-0133](../decisions/ADR-0133-noms-et-valeurs-des-balises
 - Valeurs en UTF-8, caractère de remplacement pour un octet invalide ; date telle qu'écrite.
 - Chaque flux d'un Ogg donne ses propres observations ; leur localisation (« flux 0000abcd / commentaires ») les distingue.
 
-Aucun constat.
+Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
 
 ## Données identifiantes
 
@@ -58,17 +58,23 @@ Les autres champs, libres, relèvent de T25 ([ADR-0119](../decisions/ADR-0119-do
 | Capture brute | Rien |
 | Transformation banale | Rien |
 | Retouche | Rien |
-| Génération | Rien |
+| Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `ENCODER` |
 
-Le module ne distingue aucune hypothèse et n'émet aucun constat ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)). La chaîne du fournisseur est écrite par la bibliothèque d'encodage, mais peut être réécrite (cas d'abus C-02).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. La chaîne du fournisseur est écrite par la bibliothèque d'encodage, mais peut être réécrite (cas d'abus C-02).
 
 ## Ce qui déclenche un constat
 
-Aucun constat en T21. Une absence de commentaires est l'observation `vorbis.present` à faux (F-14).
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+
+| Règle | Observation | Test | Direction |
+| --- | --- | --- | --- |
+| `R-VORBIS-001` Générateur nommé par le champ Vorbis de l'encodeur ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `vorbis.ENCODER` | liste des générateurs (ADR-0144) | origine IA |
+
+Une absence de commentaires est l'observation `vorbis.present` à faux (F-14).
 
 ## Taux d'erreur
 
-Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftool sur un FLAC, un Ogg Vorbis et un Ogg Opus écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un FLAC, un Ogg Vorbis et un Ogg Opus écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)).
 
 ## Limites connues
 
@@ -87,3 +93,4 @@ Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftoo
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
+| 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |

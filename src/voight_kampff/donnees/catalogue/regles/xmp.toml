@@ -1,0 +1,129 @@
+# Règles du module xmp (T22) : origine IA déclarée par la propriété IPTC DigitalSourceType
+# (F-11, ADR-0142, ADR-0143) et nom d'un générateur dans un champ logiciel (F-12, ADR-0144).
+#
+# Vocabulaire IPTC Digital Source Type, http://cv.iptc.org/newscodes/digitalsourcetype/ (lu le
+# 2026-11-13) ; propriété Iptc4xmpExt:DigitalSourceType de l'IPTC Photo Metadata Standard
+# 2025.1. Valeur reconnue avec ou sans l'adresse du vocabulaire, en http ou https, sans égard à
+# la casse ni aux blancs autour (ADR-0143).
+
+[[regle]]
+identifiant = "R-XMP-001"
+version = "1"
+module = "xmp"
+titre = "Création par IA générative déclarée (IPTC)"
+description = "La propriété XMP Iptc4xmpExt:DigitalSourceType vaut trainedAlgorithmicMedia, que le vocabulaire de l'IPTC définit comme un contenu créé par un modèle d'IA générative entraîné sur des contenus captés."
+gabarit = "xmp.source-ia-generative"
+phrase = { fr = "La propriété XMP DigitalSourceType déclare « {source} » : selon le vocabulaire de l'IPTC, un contenu créé par une IA générative." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier, non signée : quiconque peut l'écrire, la modifier ou l'effacer (cas d'abus C-02) ; son absence ne dit rien (F-14).",
+  "Seuls les paquets XMP que lit le module sont vus (fiche metadonnees-xmp) ; la même déclaration dans un manifeste C2PA relève de T30.",
+  "Une graphie autre que l'adresse du vocabulaire ou le code seul n'est pas reconnue.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.Iptc4xmpExt:DigitalSourceType"
+motif = '(?i)^\s*(?:(?:https?://)?cv\.iptc\.org/newscodes/digitalsourcetype/)?trainedalgorithmicmedia/?\s*$'
+parametre = "source"
+
+[[regle]]
+identifiant = "R-XMP-002"
+version = "1"
+module = "xmp"
+titre = "Retouche par IA générative déclarée (IPTC)"
+description = "La propriété XMP Iptc4xmpExt:DigitalSourceType vaut compositeWithTrainedAlgorithmicMedia, que le vocabulaire de l'IPTC nomme « Edited using Generative AI » : un contenu complété, corrigé ou augmenté par un modèle d'IA générative, par exemple par remplissage ou extension d'image."
+gabarit = "xmp.source-retouche-ia-generative"
+phrase = { fr = "La propriété XMP DigitalSourceType déclare « {source} » : selon le vocabulaire de l'IPTC, un contenu retouché par une IA générative (remplissage ou extension d'image, par exemple)." }
+categorie = "indice"
+direction = "retouche"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier, non signée : quiconque peut l'écrire, la modifier ou l'effacer (cas d'abus C-02) ; son absence ne dit rien (F-14).",
+  "La déclaration ne dit ni quelle part du contenu est générée, ni où elle se trouve.",
+  "Seuls les paquets XMP que lit le module sont vus (fiche metadonnees-xmp) ; la même déclaration dans un manifeste C2PA relève de T30.",
+  "Une graphie autre que l'adresse du vocabulaire ou le code seul n'est pas reconnue.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.Iptc4xmpExt:DigitalSourceType"
+motif = '(?i)^\s*(?:(?:https?://)?cv\.iptc\.org/newscodes/digitalsourcetype/)?compositewithtrainedalgorithmicmedia/?\s*$'
+parametre = "source"
+
+[[regle]]
+identifiant = "R-XMP-003"
+version = "1"
+module = "xmp"
+titre = "Montage avec un élément généré par IA déclaré (IPTC)"
+description = "La propriété XMP Iptc4xmpExt:DigitalSourceType vaut compositeSynthetic, que le vocabulaire de l'IPTC définit comme un montage de plusieurs éléments dont au moins un est généré par IA."
+gabarit = "xmp.source-montage-ia-generative"
+phrase = { fr = "La propriété XMP DigitalSourceType déclare « {source} » : selon le vocabulaire de l'IPTC, un montage dont au moins un élément est généré par IA." }
+categorie = "indice"
+direction = "retouche"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier, non signée : quiconque peut l'écrire, la modifier ou l'effacer (cas d'abus C-02) ; son absence ne dit rien (F-14).",
+  "La déclaration ne dit ni quels éléments sont générés, ni où ils se trouvent.",
+  "Seuls les paquets XMP que lit le module sont vus (fiche metadonnees-xmp) ; la même déclaration dans un manifeste C2PA relève de T30.",
+  "Une graphie autre que l'adresse du vocabulaire ou le code seul n'est pas reconnue.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.Iptc4xmpExt:DigitalSourceType"
+motif = '(?i)^\s*(?:(?:https?://)?cv\.iptc\.org/newscodes/digitalsourcetype/)?compositesynthetic/?\s*$'
+parametre = "source"
+
+[[regle]]
+identifiant = "R-XMP-004"
+version = "1"
+module = "xmp"
+titre = "Générateur nommé par l'outil de création XMP"
+description = "La propriété XMP xmp:CreatorTool nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
+gabarit = "xmp.outil-generateur"
+phrase = { fr = "La propriété XMP CreatorTool, qui nomme le logiciel de création, vaut « {logiciel} » : on y lit le nom d'un logiciel de génération par IA." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer cette propriété ; son absence ne dit rien (F-14).",
+  "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
+  "Le constat dit ce que la propriété nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.xmp:CreatorTool"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"
+
+[[regle]]
+identifiant = "R-XMP-005"
+version = "1"
+module = "xmp"
+titre = "Générateur nommé dans l'historique XMP"
+description = "Un événement de l'historique XMP (xmpMM:History, champ stEvt:softwareAgent) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144)."
+gabarit = "xmp.historique-generateur"
+phrase = { fr = "L'historique XMP du fichier nomme les logiciels « {logiciel} », parmi lesquels un logiciel de génération par IA." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer l'historique ; son absence ne dit rien (F-14).",
+  "Seuls les noms de la liste sont reconnus, entiers et sans faute ; seul le premier événement qui en nomme un est cité.",
+  "Le constat dit quel logiciel l'historique nomme, pas ce qu'il a fait : l'action peut être une génération, une retouche ou un simple enregistrement.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.xmpMM:History.stEvt:softwareAgent"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"

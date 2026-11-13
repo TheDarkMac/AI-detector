@@ -9,7 +9,7 @@ dans tous les cas (F-14), et ``infopdf.chiffre`` dès que la table des référen
 lit ; noms et formes des valeurs : ADR-0128.
 
 Un document chiffré n'est pas déchiffré : ses chaînes ne sont pas lues (ADR-0126). Aucune
-règle : T22 et T23 lisent ces observations.
+règle « module » : les règles du catalogue lisent ces observations (T22, T23).
 """
 
 from voight_kampff._travail.contexte import Contexte

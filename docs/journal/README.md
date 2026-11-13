@@ -32,4 +32,5 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T20](T20-extraction-image.md) | Extraction image | `tache/T20-extraction-image` | [#19](https://github.com/TheDarkMac/AI-detector/pull/19) |
 | [T21](T21-extraction-pdf.md) | Extraction PDF | `tache/T21-extraction-pdf` | [#20](https://github.com/TheDarkMac/AI-detector/pull/20) |
 | [T21 (complément)](T21-extraction-audio-video.md) | Extraction audio et vidéo : balises des conteneurs | `tache/T21-extraction-audio-video` | [#21](https://github.com/TheDarkMac/AI-detector/pull/21) |
-| [T21 (complément 2)](T21-extraction-bureautique.md) | Extraction bureautique : propriétés de DOCX et d'ODT | `tache/T21-extraction-bureautique` | à venir |
+| [T21 (complément 2)](T21-extraction-bureautique.md) | Extraction bureautique : propriétés de DOCX et d'ODT | `tache/T21-extraction-bureautique` | [#22](https://github.com/TheDarkMac/AI-detector/pull/22) |
+| [T22](T22-origine-ia-et-signatures.md) | Origine IA déclarée et signatures de générateurs | `tache/T22-origine-ia-et-signatures` | à venir |

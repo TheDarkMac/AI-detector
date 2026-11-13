@@ -7,7 +7,7 @@ sous ``infowav.<identifiant>`` (``infowav.ISFT``, ``infowav.INAM``…) ; puis le
 ``infowav.present`` dans tous les cas (F-14). Les balises ID3 d'un WAV sont lues par ``id3``,
 son paquet XMP par ``xmp``.
 
-Aucune règle : T22 et T23 lisent ces observations.
+Aucune règle « module » : les règles du catalogue lisent ces observations (T22, T23).
 """
 
 from voight_kampff._travail.contexte import Contexte

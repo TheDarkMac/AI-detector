@@ -1,6 +1,6 @@
 # Catalogue de règles
 
-> Statut : **v1.2** ; v1.0 mergée avec T15, v1.1 avec T16, v1.2 proposée dans la PR de T17. Document vivant : toute modification est inscrite à l'historique (§6).
+> Statut : **v1.3** ; v1.0 mergée avec T15, v1.1 avec T16, v1.2 avec T17, v1.3 proposée dans la PR de T22. Document vivant : toute modification est inscrite à l'historique (§6).
 > Exigences : F-12, F-24, F-26, NF-06, NF-07 ; ES-09 du [modèle de menace](../modele-de-menace/modele-de-menace.md).
 > Décisions : [ADR-0029](../decisions/ADR-0029-integrite-du-catalogue.md), [ADR-0038](../decisions/ADR-0038-format-du-catalogue.md), [ADR-0039](../decisions/ADR-0039-expressions-regulieres-re2.md), [ADR-0084](../decisions/ADR-0084-langage-des-regles.md) à [ADR-0091](../decisions/ADR-0091-texte-des-phrases-dans-la-regle.md).
 
@@ -10,7 +10,7 @@ Le catalogue décide de ce que l'outil tire de ses observations : chaque constat
 
 | Élément | Emplacement |
 | --- | --- |
-| Catalogue livré | [`src/voight_kampff/donnees/catalogue/`](../../src/voight_kampff/donnees/catalogue/) |
+| Catalogue livré | [`src/voight_kampff/donnees/catalogue/`](../../src/voight_kampff/donnees/catalogue/) ; premières règles en version 0.2.0 (T22) : origine IA déclarée et signatures de générateurs ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md) à [ADR-0146](../decisions/ADR-0146-versions-des-modules-et-du-catalogue-de-t22.md)) ; chaque fiche technique liste les règles qui lisent ses observations |
 | Schémas | `src/voight_kampff/schemas/catalogue.schema.json` (en-tête), `regles.schema.json` (règles) |
 | Chargement et validation | `src/voight_kampff/_orchestration/catalogue.py` |
 | Règles et évaluation | `src/voight_kampff/_regles.py` |
@@ -110,3 +110,4 @@ La CI refuse une PR qui modifie une entrée du registre déjà sur `detector`, o
 | 2026-10-27 | 1.0 | Création | T15 |
 | 2026-10-28 | 1.1 | Champ `phrase` des règles (§2, §3, §5, ADR-0091) | T16 |
 | 2026-10-28 | 1.2 | Évaluation : effectif, borne supérieure, niveau contrôlé (§2, §3) ; mesure par le banc (§5) ; ADR-0101, ADR-0107 | T17 |
+| 2026-11-13 | 1.3 | Premières règles livrées (§1) ; ADR-0142 à ADR-0146 | T22 |

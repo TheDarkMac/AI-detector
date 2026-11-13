@@ -1,10 +1,10 @@
 # Fiche technique — Balises ID3
 
-- **Module** : `id3` (version 0.1.0)
-- **Tâche** : T21
-- **Exigences** : F-10, ES-13
+- **Module** : `id3` (version 0.2.0)
+- **Tâche** : T21, T22
+- **Exigences** : F-10, F-12, ES-13
 - **Formats** : `mp3`, `aac`, `flac`, `wav`
-- **Directions permises** : `rien_de_particulier`
+- **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : aucune
 
@@ -48,7 +48,7 @@ Noms d'observation ([ADR-0133](../decisions/ADR-0133-noms-et-valeurs-des-balises
 - Date : telle qu'écrite (`2026-11-13T10:00`), sans conversion ; T23 l'interprétera.
 - Trame vide : rien n'est observé.
 
-Aucun constat.
+Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
 
 ## Données identifiantes
 
@@ -66,17 +66,23 @@ Commentaires, textes libres (`TXXX`) et paroles ne sont pas marqués : la liste 
 | Capture brute | Rien |
 | Transformation banale | Rien |
 | Retouche | Rien |
-| Génération | Rien |
+| Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `TSSE` |
 
-Le module ne distingue aucune hypothèse et n'émet aucun constat ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)). Un `TSSE` (souvent `Lavf…` pour un fichier écrit par ffmpeg) est une déclaration que quiconque peut écrire ou effacer (cas d'abus C-02) : les règles de T22 en feront au mieux une déclaration de logiciel.
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. Un `TSSE` (souvent `Lavf…` pour un fichier écrit par ffmpeg) est une déclaration que quiconque peut écrire ou effacer (cas d'abus C-02).
 
 ## Ce qui déclenche un constat
 
-Aucun constat en T21. Une absence de balise est l'observation `id3.present` à faux (F-14).
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+
+| Règle | Observation | Test | Direction |
+| --- | --- | --- | --- |
+| `R-ID3-001` Générateur nommé par la trame ID3 du logiciel d'encodage ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `id3.TSSE` | liste des générateurs (ADR-0144) | origine IA |
+
+Une absence de balise est l'observation `id3.present` à faux (F-14).
 
 ## Taux d'erreur
 
-Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftool sur un MP3 (ID3v2.4 et ID3v1) et un AAC écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)) ; ffmpeg n'écrit d'ID3 ni dans un WAV ni dans un FLAC, ces emplacements sont vérifiés par les échantillons construits des tests. ffmpeg écrit le texte UTF-8 de son titre dans la balise ID3v1, en Latin-1 : `id3.v1.Title` le lit en Latin-1, comme exiftool, et montre donc des caractères mal décodés.
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un MP3 (ID3v2.4 et ID3v1) et un AAC écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)) ; ffmpeg n'écrit d'ID3 ni dans un WAV ni dans un FLAC, ces emplacements sont vérifiés par les échantillons construits des tests. ffmpeg écrit le texte UTF-8 de son titre dans la balise ID3v1, en Latin-1 : `id3.v1.Title` le lit en Latin-1, comme exiftool, et montre donc des caractères mal décodés.
 
 ## Limites connues
 
@@ -99,3 +105,4 @@ Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftoo
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
+| 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |

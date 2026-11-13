@@ -17,6 +17,7 @@ from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import pytest
+from catalogues import CATALOGUE
 
 from voight_kampff import AnalyseRefusee, MotifRefus, _limites
 from voight_kampff._orchestration import soumission, surveillance, travail
@@ -246,7 +247,7 @@ def test_fichier_trop_grand_refuse_sans_etre_lu(
 
     monkeypatch.setattr(soumission, "empreinte", interdit)
     with pytest.raises(AnalyseRefusee, match="trop volumineux : l'outil analyse au plus 1 Gio"):
-        soumission.soumettre(chemin, manifestes=())
+        soumission.soumettre(chemin, catalogue=CATALOGUE, manifestes=())
 
 
 def test_fichier_qui_grandit_pendant_le_hachage(
@@ -256,7 +257,7 @@ def test_fichier_qui_grandit_pendant_le_hachage(
     chemin.write_bytes(b"%PDF-1.7\n")
     monkeypatch.setattr(soumission, "empreinte", lambda _d, _m: ("0" * 64, (1 << 30) + 1))
     with pytest.raises(AnalyseRefusee) as refus:
-        soumission.soumettre(chemin, manifestes=())
+        soumission.soumettre(chemin, catalogue=CATALOGUE, manifestes=())
     assert refus.value.motif is MotifRefus.HORS_LIMITES
 
 
@@ -283,7 +284,9 @@ def test_arret_par_le_temps_processeur() -> None:
 
 @pytest.mark.skipif(sys.platform == "win32", reason="signaux POSIX")
 def test_temps_processeur_epuise(descripteur: int) -> None:
-    resultat = travail.executer(descripteur, (MODULE,), commande=factice("temps_processeur"))
+    resultat = travail.executer(
+        descripteur, (MODULE,), catalogue=CATALOGUE, commande=factice("temps_processeur")
+    )
     assert NonMenee(RaisonNonMenee.DELAI_DEPASSE) in resultat.non_menees
     assert resultat.interrompue
 
@@ -307,7 +310,9 @@ def test_surveillance_pendant_l_attente(
         return depasse
 
     monkeypatch.setattr(surveillance, "memoire_depassee", mesure)
-    resultat = travail.executer(descripteur, (MODULE,), delai=1.0, commande=factice("silence"))
+    resultat = travail.executer(
+        descripteur, (MODULE,), catalogue=CATALOGUE, delai=1.0, commande=factice("silence")
+    )
     attendue = {
         "memoire": RaisonNonMenee.MEMOIRE_DEPASSEE,
         "delai": RaisonNonMenee.DELAI_DEPASSE,

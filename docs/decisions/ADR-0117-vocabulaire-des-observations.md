@@ -75,3 +75,4 @@ Option A.
 | 2026-11-12 | Validé par TheDarkMac au début de T21, la PR de T20 ayant été mergée sans changement de statut (ERR-0008) : statut « Accepté » |
 | 2026-11-13 | Renvoi : noms des balises audio et vidéo, mêmes principes (ADR-0133) (T21, complément audio et vidéo) |
 | 2026-11-13 | Renvoi : noms des propriétés de DOCX et d'ODT, mêmes principes (ADR-0140) (T21, complément bureautique) |
+| 2026-11-13 | Renvoi : premières règles du catalogue sur ces noms, dont `xmp.Iptc4xmpExt:DigitalSourceType`, que le préfixe écrit dans le fichier ne trompe pas (ADR-0143, ADR-0144, ADR-0145) (T22) |

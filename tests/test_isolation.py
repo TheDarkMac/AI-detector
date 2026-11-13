@@ -22,6 +22,7 @@ from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import pytest
+from catalogues import CATALOGUE
 from systeme import MANQUES_ATTENDUS
 
 from voight_kampff._orchestration.manifestes import Manifeste
@@ -68,7 +69,7 @@ def descripteur(tmp_path: Path) -> Iterator[int]:
 
 
 def analyser_avec(descripteur: int, module: str) -> ResultatTravail:
-    return executer(descripteur, (manifeste(module),), commande=factice)
+    return executer(descripteur, (manifeste(module),), catalogue=CATALOGUE, commande=factice)
 
 
 # Effet réel, depuis un module

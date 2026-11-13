@@ -17,7 +17,7 @@ Un code est passé par la règle des composants d'ADR-0117 : ``©`` y devient un
 taille. Observe aussi ``quicktime.present`` dans tous les cas (F-14). Le paquet XMP est lu par
 ``xmp`` ; les métadonnées des pistes ne sont pas lues (ADR-0132).
 
-Aucune règle : T22 et T23 lisent ces observations.
+Aucune règle « module » : les règles du catalogue lisent ces observations (T22, T23).
 """
 
 import codecs

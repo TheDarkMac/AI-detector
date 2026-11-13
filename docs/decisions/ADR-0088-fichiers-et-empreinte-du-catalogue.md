@@ -52,3 +52,4 @@ Option A pour les deux.
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T15 : statut « Accepté » |
+| 2026-11-13 | Renvoi : le test de la procédure publiée triait les lignes par empreinte ; corrigé, la décision et le code étaient justes (ERR-0010, T22) |

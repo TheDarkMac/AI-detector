@@ -1,0 +1,49 @@
+# Règles du module quicktime (T22) : nom d'un générateur dans un champ logiciel (F-12, ADR-0144).
+
+[[regle]]
+identifiant = "R-QUICKTIME-001"
+version = "1"
+module = "quicktime"
+titre = "Générateur nommé par l'encodeur d'un MP4 ou d'un M4A"
+description = "L'élément ©too de la liste ilst (outil d'encodage) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
+gabarit = "quicktime.encodeur-generateur"
+phrase = { fr = "L'élément ©too des métadonnées, qui nomme l'outil d'encodage, vaut « {logiciel} » : on y lit le nom d'un logiciel de génération par IA." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer cet élément ; son absence ne dit rien (F-14).",
+  "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
+  "Le constat dit ce que le champ nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "quicktime.ilst.-too"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"
+
+[[regle]]
+identifiant = "R-QUICKTIME-002"
+version = "1"
+module = "quicktime"
+titre = "Générateur nommé par le logiciel d'un MOV"
+description = "La boîte ©swr de udta (logiciel) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
+gabarit = "quicktime.logiciel-generateur"
+phrase = { fr = "La boîte ©swr des données utilisateur, qui nomme le logiciel, vaut « {logiciel} » : on y lit le nom d'un logiciel de génération par IA." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer cette boîte ; son absence ne dit rien (F-14).",
+  "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
+  "Le constat dit ce que le champ nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "quicktime.udta.-swr"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"

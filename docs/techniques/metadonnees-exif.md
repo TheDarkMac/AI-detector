@@ -1,10 +1,10 @@
 # Fiche technique — Métadonnées EXIF
 
-- **Module** : `exif` (version 0.1.1)
-- **Tâche** : T20
-- **Exigences** : F-10, ES-13
+- **Module** : `exif` (version 0.2.0)
+- **Tâche** : T20, T22
+- **Exigences** : F-10, F-12, ES-13
 - **Formats** : `jpeg`, `png`, `webp`, `heic`
-- **Directions permises** : `rien_de_particulier`
+- **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : aucune
 
@@ -46,7 +46,7 @@ Une étiquette porte le nom de la norme EXIF 3.0 ou de TIFF 6.0 (`Make`, `DateTi
 
 Valeurs, par type TIFF : texte ASCII jusqu'au premier octet nul, en UTF-8 s'il est valide, en Latin-1 sinon ; texte UTF-8 (type 129 d'EXIF 3.0) ; entier, ou liste d'entiers s'il y en a plusieurs ; fraction rendue en nombre réel, ou en texte `n/0` si son dénominateur est nul ; réel non fini en texte (`nan`). Les versions (`ExifVersion`, `FlashpixVersion`, `InteroperabilityVersion`) sont rendues en texte, `UserComment`, `GPSProcessingMethod` et `GPSAreaInformation` décodés selon leur code de huit octets (ASCII, UNICODE dans l'ordre du bloc, JIS), les étiquettes `XP…` en UTF-16. Les autres octets indéfinis sont observés par leur taille.
 
-Aucun constat.
+Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
 
 ## Données identifiantes
 
@@ -66,17 +66,24 @@ Marquées par le module ([ADR-0119](../decisions/ADR-0119-donnees-identifiantes-
 | Capture brute | Rien : le module rapporte ce que le fichier déclare, sans le juger |
 | Transformation banale | Rien |
 | Retouche | Rien |
-| Génération | Rien |
+| Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `Software`, paramètres d'AUTOMATIC1111 dans `UserComment` |
 
-Le module ne distingue aucune hypothèse : il n'émet aucun constat, et sa seule direction permise est « rien de particulier » ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)). Ce que ses observations indiquent est l'affaire des règles de T22 (logiciel de génération) et de T23 (incohérences), chacune avec sa propre rubrique.
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations.
 
 ## Ce qui déclenche un constat
 
-Aucun constat en T20. Une absence d'EXIF est l'observation `exif.present` à faux, jamais un indice (F-14).
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+
+| Règle | Observation | Test | Direction |
+| --- | --- | --- | --- |
+| `R-EXIF-001` Générateur nommé par l'étiquette Software ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `exif.ifd0.Software` | liste des générateurs (ADR-0144) | origine IA |
+| `R-EXIF-002` Paramètres de génération au format d'AUTOMATIC1111 dans le commentaire EXIF ([ADR-0145](../decisions/ADR-0145-signatures-de-parametres-de-generation.md)) | `exif.exif.UserComment` | motif `Steps: [0-9]+, Sampler:` | origine IA |
+
+Une absence d'EXIF est l'observation `exif.present` à faux, jamais un indice (F-14).
 
 ## Taux d'erreur
 
-Sans objet : aucun constat, donc ni faux positif ni faux négatif au sens du banc (ADR-0104). La fidélité de l'extraction est vérifiée contre exiftool sur des échantillons des quatre formats ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). La fidélité de l'extraction est vérifiée contre exiftool sur des échantillons des quatre formats ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)).
 
 ## Limites connues
 
@@ -100,3 +107,4 @@ Sans objet : aucun constat, donc ni faux positif ni faux négatif au sens du ban
 | --- | --- | --- |
 | 2026-10-28 | 0.1.0 | Création (T20) |
 | 2026-11-12 | 0.1.1 | Étiquettes `XP…` et commentaires `UNICODE` ou `JIS` lus dans le processus de travail restreint, où ils mettaient le module en erreur (ERR-0009, T21) |
+| 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |

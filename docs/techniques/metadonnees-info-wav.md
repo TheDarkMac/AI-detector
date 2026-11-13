@@ -1,10 +1,10 @@
 # Fiche technique — Liste INFO et bloc bext d'un WAV
 
-- **Module** : `infowav` (version 0.1.0)
-- **Tâche** : T21
-- **Exigences** : F-10, ES-13
+- **Module** : `infowav` (version 0.2.0)
+- **Tâche** : T21, T22
+- **Exigences** : F-10, F-12, ES-13
 - **Formats** : `wav`
-- **Directions permises** : `rien_de_particulier`
+- **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : aucune
 
@@ -41,7 +41,7 @@ Noms d'observation ([ADR-0133](../decisions/ADR-0133-noms-et-valeurs-des-balises
 - Textes : UTF-8 s'ils sont valides, Latin-1 sinon, la spécification ne fixant pas l'encodage ([ADR-0118](../decisions/ADR-0118-valeurs-tirees-du-fichier.md)). Texte vide : rien n'est observé.
 - Dates telles qu'écrites (`ICRD`, `OriginationDate` `AAAA-MM-JJ`, `OriginationTime` `HH:MM:SS`) ; T23 les interprétera.
 
-Aucun constat.
+Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
 
 ## Données identifiantes
 
@@ -59,17 +59,23 @@ Aucun constat.
 | Capture brute | Rien |
 | Transformation banale | Rien |
 | Retouche | Rien |
-| Génération | Rien |
+| Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `ISFT` |
 
-Le module ne distingue aucune hypothèse et n'émet aucun constat ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)). Un `ISFT` ou un historique de codage sont des déclarations que quiconque peut écrire (cas d'abus C-02).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. Un `ISFT` ou un historique de codage sont des déclarations que quiconque peut écrire (cas d'abus C-02).
 
 ## Ce qui déclenche un constat
 
-Aucun constat en T21. Une absence de liste et de bloc est l'observation `infowav.present` à faux (F-14).
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+
+| Règle | Observation | Test | Direction |
+| --- | --- | --- | --- |
+| `R-INFOWAV-001` Générateur nommé par le logiciel d'un WAV ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `infowav.ISFT` | liste des générateurs (ADR-0144) | origine IA |
+
+Une absence de liste et de bloc est l'observation `infowav.present` à faux (F-14).
 
 ## Taux d'erreur
 
-Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftool sur un WAV écrit par ffmpeg, liste `INFO` et bloc `bext` ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Écarts connus : exiftool lit les textes `INFO` en Latin-1 (« Titre accentuÃ© » pour un titre écrit en UTF-8 par ffmpeg), et joint `OriginationDate` et `OriginationTime` en une seule date.
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un WAV écrit par ffmpeg, liste `INFO` et bloc `bext` ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Écarts connus : exiftool lit les textes `INFO` en Latin-1 (« Titre accentuÃ© » pour un titre écrit en UTF-8 par ffmpeg), et joint `OriginationDate` et `OriginationTime` en une seule date.
 
 ## Limites connues
 
@@ -88,3 +94,4 @@ Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftoo
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
+| 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
