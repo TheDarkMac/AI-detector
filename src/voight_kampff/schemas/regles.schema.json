@@ -26,7 +26,7 @@
     },
     "version_corpus": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/version" },
     "condition": {
-      "description": "Test sur une observation nommée ; un seul test parmi egal, parmi, motif, seuil, presente.",
+      "description": "Test sur une observation nommée ; un seul test parmi egal, parmi, motif, seuil, presente, et au format 2 impossible, comparer (ADR-0147). lecture, du format 2, dit comment lire les dates d'impossible et de comparer (ADR-0148) ; le code refuse comparer = entre deux dates.",
       "type": "object",
       "additionalProperties": false,
       "required": ["observation"],
@@ -55,6 +55,25 @@
           }
         },
         "presente": { "const": true },
+        "impossible": {
+          "description": "Format 2 : la valeur suit l'écriture de lecture mais ne désigne aucune date du calendrier.",
+          "const": true
+        },
+        "comparer": {
+          "description": "Format 2 : seconde observation, comparée à la première ; pour deux dates, < et > disent un ordre certain (ADR-0148).",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["observation", "operateur"],
+          "properties": {
+            "observation": { "$ref": "#/$defs/nom" },
+            "operateur": { "enum": ["<", ">", "="] },
+            "parametre": { "$ref": "#/$defs/nom" }
+          }
+        },
+        "lecture": {
+          "description": "Format 2 : écriture des dates lues (ADR-0148).",
+          "enum": ["date-exif", "date-pdf", "date-iso8601", "date-1904"]
+        },
         "parametre": { "$ref": "#/$defs/nom" }
       },
       "oneOf": [
@@ -62,8 +81,14 @@
         { "required": ["parmi"] },
         { "required": ["motif"] },
         { "required": ["seuil"] },
-        { "required": ["presente"] }
-      ]
+        { "required": ["presente"] },
+        { "required": ["impossible"] },
+        { "required": ["comparer"] }
+      ],
+      "dependentRequired": { "impossible": ["lecture"] },
+      "dependentSchemas": {
+        "lecture": { "anyOf": [{ "required": ["impossible"] }, { "required": ["comparer"] }] }
+      }
     },
     "regle": {
       "type": "object",

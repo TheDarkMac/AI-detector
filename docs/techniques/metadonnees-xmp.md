@@ -1,7 +1,7 @@
 # Fiche technique — Métadonnées XMP
 
 - **Module** : `xmp` (version 0.4.0)
-- **Tâche** : T20, T21, T22
+- **Tâche** : T20, T21, T22, T23
 - **Exigences** : F-10, F-11, F-12, ES-05, ES-13
 - **Formats** : `jpeg`, `png`, `webp`, `heic`, `pdf`, `wav`, `m4a`, `mp4`, `mov`
 - **Directions permises** : `origine_ia`, `retouche`, `rien_de_particulier`
@@ -83,11 +83,23 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | `R-XMP-004` Générateur nommé par l'outil de création XMP ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `xmp.xmp:CreatorTool` | liste des générateurs (ADR-0144) | origine IA |
 | `R-XMP-005` Générateur nommé dans l'historique XMP ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `xmp.xmpMM:History.stEvt:softwareAgent` | liste des générateurs (ADR-0144) | origine IA |
 
-Une absence de XMP est l'observation `xmp.present` à faux (F-14).
+Règles de T23, des informations neutres fondées sur une déclaration du fichier, ou pour l'absence sur la lecture de sa structure ([ADR-0149](../decisions/ADR-0149-constat-d-une-incoherence.md), [ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)) :
+
+| Règle | Observations | Test |
+| --- | --- | --- |
+| `R-XMP-006` Date de création impossible (xmp:CreateDate) | `xmp.xmp:CreateDate` | date impossible (`date-iso8601`) |
+| `R-XMP-007` Date de modification impossible (xmp:ModifyDate) | `xmp.xmp:ModifyDate` | date impossible (`date-iso8601`) |
+| `R-XMP-008` Date des métadonnées impossible (xmp:MetadataDate) | `xmp.xmp:MetadataDate` | date impossible (`date-iso8601`) |
+| `R-XMP-009` Création postérieure à la modification (xmp:CreateDate, xmp:ModifyDate) | `xmp.xmp:CreateDate`, `xmp.xmp:ModifyDate` | certainement postérieure à `xmp.xmp:ModifyDate`, lues par `date-iso8601` |
+| `R-XMP-010` Création postérieure aux métadonnées (xmp:CreateDate, xmp:MetadataDate) | `xmp.xmp:CreateDate`, `xmp.xmp:MetadataDate` | certainement postérieure à `xmp.xmp:MetadataDate`, lues par `date-iso8601` |
+| `R-XMP-011` Appareil déclaré et générateur nommé (tiff:Make, xmp:CreatorTool) | `xmp.tiff:Make`, `xmp.xmp:CreatorTool` | présente ; liste des générateurs (ADR-0144) |
+| `R-XMP-012` Aucune métadonnée XMP | `xmp.present` | faux |
+
+Une absence de XMP est l'observation `xmp.present` à faux ; la règle `R-XMP-012` en fait une information neutre, jamais un indice (F-14).
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par le nom local de chaque propriété ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)) ; pour la vidéo, sur un MP4 et un MOV dont exiftool a écrit le paquet ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par le nom local de chaque propriété ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)) ; pour la vidéo, sur un MP4 et un MOV dont exiftool a écrit le paquet ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 
@@ -115,3 +127,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-12 | 0.2.0 | PDF : paquet du catalogue (T21, ADR-0127) |
 | 2026-11-13 | 0.3.0 | WAV, M4A, MP4, MOV : blocs `_PMX`, boîtes `uuid` et `XMP_` (T21, complément audio et vidéo, ADR-0134) |
 | 2026-11-13 | 0.4.0 | Directions origine IA, retouche permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
+| 2026-11-13 | 0.4.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |

@@ -56,3 +56,4 @@ Option A dans les trois cas.
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T15 : statut « Accepté » |
+| 2026-11-13 | Complété en T23 : pour une condition qui compare deux observations, la première paire, dans l'ordre des premières puis des secondes, trouvée en temps linéaire (ADR-0147) |

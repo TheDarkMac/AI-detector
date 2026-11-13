@@ -131,16 +131,17 @@ note = "Catalogue 0.2.0 : nom d'un générateur dans seize champs logiciels des 
 
 [[exigence]]
 id = "F-13"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T23"]
 methodes = ["test"]
+note = "Catalogue 0.3.0, format 2 (ADR-0147) : dates impossibles et dates dans un ordre renversé, quel que soit le fuseau, dans EXIF, XMP, le dictionnaire Info d'un PDF, les propriétés OOXML et ODF, `mvhd` (ADR-0148, ADR-0150) ; appareil déclaré avec un générateur nommé (EXIF, XMP) ; dimensions EXIF d'un générateur avec un appareil déclaré (tailles de l'API d'OpenAI). Informations neutres (ADR-0149) ; comparaison entre deux modules non faite."
 
 [[exigence]]
 id = "F-14"
-etat = "partielle"
+etat = "realisee"
 taches = ["T20", "T21", "T23"]
 methodes = ["test"]
-note = "Absence de métadonnées observée par chaque module (`<famille>.present`), jamais un constat (T20, T21 et son complément audio et vidéo) ; règles et présentation à T23."
+note = "Absence de métadonnées observée par chaque module (`<famille>.present`, T20, T21) ; une règle par module en fait une information neutre, jamais un indice (T23, ADR-0151)."
 
 # 5.3 Provenance et marquages
 
@@ -723,10 +724,10 @@ methodes = ["test"]
 
 [[exigence]]
 id = "P-04"
-etat = "partielle"
+etat = "realisee"
 taches = ["T16", "T23"]
 methodes = ["test"]
-note = "Avertissement et couverture au rapport ; absence de métadonnées neutre à T23 (F-14)."
+note = "Avertissement et couverture au rapport (T16) ; absence de métadonnées dite neutre, ni indice ni garantie (T23, F-14, ADR-0151)."
 
 [[exigence]]
 id = "P-05"

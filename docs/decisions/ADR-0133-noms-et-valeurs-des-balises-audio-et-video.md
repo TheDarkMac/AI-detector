@@ -75,3 +75,4 @@ Option A.
 | --- | --- |
 | 2026-11-13 | Création, statut « Proposé » |
 | 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR du complément : statut « Accepté » |
+| 2026-11-13 | Suite en T23 : les dates de `mvhd` sont lues par la lecture `date-1904`, 0 non renseignée ; les textes ID3 et la date Matroska ne sont pas comparés (ADR-0148, ADR-0150) |

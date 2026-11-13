@@ -4,7 +4,7 @@
 # d'un fichier de ce dossier change l'empreinte du catalogue : elle exige une nouvelle version,
 # inscrite au registre docs/catalogue/versions.toml (procédure : docs/catalogue/README.md).
 
-format = 1
-version = "0.2.0"
+format = 2
+version = "0.3.0"
 date = "2026-11-13"
-description = "Premières règles (T22) : origine IA déclarée par la propriété IPTC DigitalSourceType du XMP, et signatures de générateurs (paramètres de génération, nom du logiciel) dans les métadonnées des images, des PDF, des sons, des vidéos et des documents. Toutes sont des indices faibles, non évalués, fondés sur une déclaration du fichier."
+description = "Origine IA déclarée et signatures de générateurs (T22), indices faibles fondés sur une déclaration du fichier ; incohérences internes (T23) : dates impossibles, dates dans un ordre renversé, appareil déclaré avec un générateur nommé ou des dimensions de générateur, et absence de métadonnées, toutes des informations neutres. Format 2 : lecture des dates et comparaison de deux observations."

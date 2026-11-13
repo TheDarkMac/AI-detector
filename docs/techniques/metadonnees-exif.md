@@ -1,7 +1,7 @@
 # Fiche technique — Métadonnées EXIF
 
 - **Module** : `exif` (version 0.2.0)
-- **Tâche** : T20, T22
+- **Tâche** : T20, T22, T23
 - **Exigences** : F-10, F-12, ES-13
 - **Formats** : `jpeg`, `png`, `webp`, `heic`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
@@ -79,11 +79,27 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | `R-EXIF-001` Générateur nommé par l'étiquette Software ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `exif.ifd0.Software` | liste des générateurs (ADR-0144) | origine IA |
 | `R-EXIF-002` Paramètres de génération au format d'AUTOMATIC1111 dans le commentaire EXIF ([ADR-0145](../decisions/ADR-0145-signatures-de-parametres-de-generation.md)) | `exif.exif.UserComment` | motif `Steps: [0-9]+, Sampler:` | origine IA |
 
-Une absence d'EXIF est l'observation `exif.present` à faux, jamais un indice (F-14).
+Règles de T23, des informations neutres fondées sur une déclaration du fichier, ou pour l'absence sur la lecture de sa structure ([ADR-0149](../decisions/ADR-0149-constat-d-une-incoherence.md), [ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)) :
+
+| Règle | Observations | Test |
+| --- | --- | --- |
+| `R-EXIF-003` Date de modification impossible (DateTime) | `exif.ifd0.DateTime` | date impossible (`date-exif`) |
+| `R-EXIF-004` Date de prise de vue impossible (DateTimeOriginal) | `exif.exif.DateTimeOriginal` | date impossible (`date-exif`) |
+| `R-EXIF-005` Date de numérisation impossible (DateTimeDigitized) | `exif.exif.DateTimeDigitized` | date impossible (`date-exif`) |
+| `R-EXIF-006` Prise de vue postérieure à la modification (DateTimeOriginal, DateTime) | `exif.exif.DateTimeOriginal`, `exif.ifd0.DateTime` | certainement postérieure à `exif.ifd0.DateTime`, lues par `date-exif` |
+| `R-EXIF-007` Numérisation postérieure à la modification (DateTimeDigitized, DateTime) | `exif.exif.DateTimeDigitized`, `exif.ifd0.DateTime` | certainement postérieure à `exif.ifd0.DateTime`, lues par `date-exif` |
+| `R-EXIF-008` Prise de vue postérieure à la numérisation (DateTimeOriginal, DateTimeDigitized) | `exif.exif.DateTimeOriginal`, `exif.exif.DateTimeDigitized` | certainement postérieure à `exif.exif.DateTimeDigitized`, lues par `date-exif` |
+| `R-EXIF-009` Appareil déclaré et générateur nommé (Make, Software) | `exif.ifd0.Make`, `exif.ifd0.Software` | présente ; liste des générateurs (ADR-0144) |
+| `R-EXIF-010` Appareil déclaré et dimensions carrées d'un générateur | `exif.ifd0.Make`, `exif.exif.PixelXDimension`, `exif.exif.PixelYDimension` | présente ; parmi 256, 512, 1024 ; égale à `exif.exif.PixelYDimension` |
+| `R-EXIF-011` Appareil déclaré et dimensions d'un générateur, en paysage | `exif.ifd0.Make`, `exif.exif.PixelXDimension`, `exif.exif.PixelYDimension` | présente ; parmi 1536, 1792 ; égale à 1024 |
+| `R-EXIF-012` Appareil déclaré et dimensions d'un générateur, en portrait | `exif.ifd0.Make`, `exif.exif.PixelXDimension`, `exif.exif.PixelYDimension` | présente ; égale à 1024 ; parmi 1536, 1792 |
+| `R-EXIF-013` Aucune métadonnée EXIF | `exif.present` | faux |
+
+Une absence d'EXIF est l'observation `exif.present` à faux ; la règle `R-EXIF-013` en fait une information neutre, jamais un indice (F-14).
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). La fidélité de l'extraction est vérifiée contre exiftool sur des échantillons des quatre formats ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). La fidélité de l'extraction est vérifiée contre exiftool sur des échantillons des quatre formats ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 
@@ -91,7 +107,7 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 - Les répertoires `SubIFDs` (TIFF, DNG) ne sont pas suivis ; IFD1 et suivants sont lus par le chaînage d'IFD0.
 - Les blocs EXIF portés autrement ne sont pas lus : texte brut « Raw profile type exif » d'un PNG (relevé par le module `textepng`), ressource Photoshop `0x0422`, segment APP1 après le premier SOS.
 - Les positions des valeurs ne sont pas données une à une : la localisation est celle du bloc et du répertoire.
-- Le module ne vérifie ni les dates ni la cohérence entre étiquettes (T23).
+- Le module ne vérifie ni les dates ni la cohérence entre étiquettes : les règles de T23 le font, sur ses observations seulement ; un écart avec le XMP ou l'IPTC n'est pas relevé (ADR-0147, ADR-0150).
 
 ## Sécurité
 
@@ -108,3 +124,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-10-28 | 0.1.0 | Création (T20) |
 | 2026-11-12 | 0.1.1 | Étiquettes `XP…` et commentaires `UNICODE` ou `JIS` lus dans le processus de travail restreint, où ils mettaient le module en erreur (ERR-0009, T21) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
+| 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |

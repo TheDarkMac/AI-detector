@@ -8,8 +8,8 @@
   "required": ["format", "version", "date", "description"],
   "properties": {
     "format": {
-      "description": "Format du catalogue que cette version de l'outil sait lire ; un autre format est refusé.",
-      "const": 1
+      "description": "Format du catalogue : 1, ou 2 s'il lit des dates ou compare deux observations (ADR-0147) ; cette version de l'outil sait lire les deux, et refuse un autre format, ou une règle du format 2 dans un catalogue du format 1.",
+      "enum": [1, 2]
     },
     "version": {
       "description": "Version du catalogue, X.Y.Z, propre au catalogue (ADR-0085).",

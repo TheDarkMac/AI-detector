@@ -5,15 +5,16 @@ ce qui compile chaque motif : un motif que RE2 refuse rend le catalogue invalide
 ne les applique jamais à une donnée du fichier. Le processus de travail les reconstruit depuis
 la configuration et applique celles du moteur aux observations d'un module, après lui.
 
-Une règle « moteur » est une conjonction de conditions, chacune sur une observation nommée ;
-une règle « module » est appliquée par le code de son module, qui la cite par son identifiant.
+Une règle « moteur » est une conjonction de conditions, chacune sur une observation nommée, ou
+sur deux observations qu'elle compare (format 2 du catalogue, ADR-0147) ; une règle « module »
+est appliquée par le code de son module, qui la cite par son identifiant.
 Dans les deux cas, c'est le catalogue qui fixe ce que dit le constat : gabarit et texte de la
 phrase, catégorie, direction, fondement et niveau (ADR-0090, ADR-0091).
 """
 
 import math
 import re
-from collections.abc import Iterable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from enum import StrEnum
@@ -22,6 +23,7 @@ from typing import Any
 
 import re2
 
+from voight_kampff._dates import Etat, Intervalle, Lecture, lire
 from voight_kampff._limites import MEMOIRE_MAX_MOTIF, PROGRAMME_MAX_MOTIF
 from voight_kampff.rapport.modele import (
     LONGUEUR_MAX_TEXTE,
@@ -46,9 +48,12 @@ __all__ = [
     "Application",
     "Calibrage",
     "Comparaison",
+    "Comparer",
     "Condition",
     "Evaluation",
+    "Lecture",
     "Methode",
+    "Operateur",
     "Regle",
     "Seuil",
     "appliquer",
@@ -97,6 +102,17 @@ class Comparaison(StrEnum):
     INFERIEUR_OU_EGAL = "<="
     SUPERIEUR = ">"
     SUPERIEUR_OU_EGAL = ">="
+
+
+class Operateur(StrEnum):
+    """Opérateur d'une comparaison entre deux observations (ADR-0147)."""
+
+    AVANT = "<"
+    """La première est inférieure, ou pour deux dates, certainement antérieure."""
+    APRES = ">"
+    """La première est supérieure, ou pour deux dates, certainement postérieure."""
+    EGAL = "="
+    """Valeurs égales, au sens d'``egal`` ; jamais pour deux dates, toujours imprécises."""
 
 
 class Methode(StrEnum):
@@ -204,11 +220,49 @@ class Seuil:
 
 
 @dataclass(frozen=True, slots=True)
+class Comparer:
+    """Seconde observation d'une condition qui compare deux observations (ADR-0147)."""
+
+    observation: str
+    operateur: Operateur
+    parametre: str | None = None
+    """Nom du paramètre de la phrase qui renvoie à la seconde observation retenue."""
+
+    def __post_init__(self) -> None:
+        _verifier(_NOM, self.observation, 128, "condition.comparer.observation")
+        if self.parametre is not None:
+            _verifier(_NOM, self.parametre, 128, "condition.comparer.parametre")
+
+    def vers_dict(self) -> Document:
+        document: Document = {"observation": self.observation, "operateur": self.operateur}
+        if self.parametre is not None:
+            document["parametre"] = self.parametre
+        return document
+
+
+def _comparees(premiere: Any, seconde: Any, operateur: Operateur) -> bool:
+    """Comparaison de deux valeurs brutes : l'égalité au sens d'``egal`` ; pour un ordre, deux
+    nombres, les seuls éléments que garde ``Condition._elements``."""
+    if operateur is Operateur.EGAL:
+        return _cle(premiere) == _cle(seconde)
+    return bool(premiere < seconde if operateur is Operateur.AVANT else premiere > seconde)
+
+
+def _dates_comparees(premiere: Intervalle, seconde: Intervalle, operateur: Operateur) -> bool:
+    if operateur is Operateur.AVANT:
+        return premiere.avant(seconde)
+    return seconde.avant(premiere)  # Operateur.APRES : EGAL est refusé avec une lecture
+
+
+@dataclass(frozen=True, slots=True)
 class Condition:
     """Test sur une observation nommée ; un seul des tests est donné (ADR-0089).
 
     Une observation dont la valeur est une liste satisfait la condition si l'un de ses
     éléments la satisfait. ``presente`` est satisfaite par toute observation du nom donné.
+    ``impossible`` et ``comparer`` sont du format 2 : ``impossible`` est satisfaite par une
+    date qui suit l'écriture ``lecture`` mais n'existe pas ; ``comparer`` par deux observations
+    dans l'ordre dit, lues par ``lecture`` si elle est donnée (ADR-0147, ADR-0148).
     """
 
     observation: str
@@ -219,6 +273,10 @@ class Condition:
     """Expression RE2, cherchée n'importe où dans un texte : ``^`` et ``$`` l'ancrent."""
     seuil: Seuil | None = None
     presente: bool = False
+    impossible: bool = False
+    comparer: Comparer | None = None
+    lecture: Lecture | None = None
+    """Écriture des dates lues par ``impossible`` ou ``comparer`` (ADR-0148)."""
     parametre: str | None = None
     """Nom du paramètre de la phrase qui renvoie à l'observation retenue."""
     _compile: Any = field(default=None, init=False, repr=False, compare=False)
@@ -234,9 +292,21 @@ class Condition:
             self.motif is not None,
             self.seuil is not None,
             self.presente,
+            self.impossible,
+            self.comparer is not None,
         )
         if sum(tests) != 1:
             raise ValueError("condition : un test et un seul attendu")
+        if self.impossible and self.lecture is None:
+            raise ValueError("condition.impossible : lecture d'une date attendue")
+        if self.lecture is not None and not (self.impossible or self.comparer is not None):
+            raise ValueError("condition.lecture : réservée à impossible et comparer")
+        if (
+            self.comparer is not None
+            and self.lecture is not None
+            and self.comparer.operateur is Operateur.EGAL
+        ):
+            raise ValueError("condition.comparer : deux dates ne sont jamais certainement égales")
         if self.egal is not None:
             _scalaire(self.egal, "condition.egal")
         if self.parmi is not None:
@@ -251,12 +321,104 @@ class Condition:
         if self.parametre is not None:
             _verifier(_NOM, self.parametre, 128, "condition.parametre")
 
+    @property
+    def format(self) -> int:
+        """Plus petit format du catalogue qui sait écrire cette condition."""
+        return 2 if self.lecture is not None or self.impossible or self.comparer else 1
+
+    @property
+    def parametres(self) -> tuple[str, ...]:
+        seconde = self.comparer.parametre if self.comparer is not None else None
+        return tuple(nom for nom in (self.parametre, seconde) if nom is not None)
+
     def satisfaite(self, valeur: Valeur) -> bool:
+        """Test d'une seule observation ; jamais satisfaite pour une condition qui compare."""
         if self.presente:
             return True
         if isinstance(valeur, tuple):
             return any(map(self._element, valeur))
         return self._element(valeur)
+
+    def comparees(self, premiere: Valeur, seconde: Valeur) -> bool:
+        """Test ``comparer`` de deux valeurs ; pour deux listes, une paire d'éléments."""
+        if self.comparer is None:
+            return False
+        operateur = self.comparer.operateur
+        return any(
+            self._ordonnes(a, b, operateur)
+            for a in self._elements(premiere, operateur)
+            for b in self._elements(seconde, operateur)
+        )
+
+    def paire(
+        self, premieres: Sequence[Observation], secondes: Sequence[Observation]
+    ) -> tuple[Observation, Observation] | None:
+        """Première paire qui satisfait ``comparer``, dans l'ordre des premières, puis des
+        secondes ; ``None`` s'il n'y en a pas.
+
+        En temps linéaire : un fichier peut répéter une observation des milliers de fois, et
+        essayer chaque paire coûterait leur produit. Pour un ordre, la seconde valeur la plus
+        facile à dépasser dit si une première a une partenaire ; pour l'égalité, un index.
+        """
+        if self.comparer is None:
+            return None
+        operateur = self.comparer.operateur
+        droite = [(o, self._elements(o.valeur, operateur)) for o in secondes]
+        if operateur is Operateur.EGAL:
+            rangs: dict[tuple[str, Scalaire], int] = {}
+            for rang, (_, elements) in enumerate(droite):
+                for element in elements:
+                    rangs.setdefault(_cle(element), rang)
+            for observation in premieres:
+                cles = map(_cle, self._elements(observation.valeur, operateur))
+                trouves = [rangs[cle] for cle in cles if cle in rangs]
+                if trouves:
+                    return observation, droite[min(trouves)][0]
+            return None
+        apres = operateur is Operateur.APRES
+        tous = [element for _, elements in droite for element in elements]
+        if not tous:
+            return None
+        facile = (min if apres else max)(tous, key=self._rang(apres, seconde=True))
+        for observation in premieres:
+            elements = self._elements(observation.valeur, operateur)
+            if not elements:
+                continue
+            meilleur = (max if apres else min)(elements, key=self._rang(apres, seconde=False))
+            if self._ordonnes(meilleur, facile, operateur):
+                return observation, next(
+                    o
+                    for o, liste in droite
+                    if any(self._ordonnes(meilleur, b, operateur) for b in liste)
+                )
+        return None
+
+    def _elements(self, valeur: Valeur, operateur: Operateur) -> list[Any]:
+        """Éléments comparables d'une valeur : ses dates lues, ou ses nombres pour un ordre."""
+        elements = valeur if isinstance(valeur, tuple) else (valeur,)
+        if self.lecture is not None:
+            lues = (lire(self.lecture, element) for element in elements)
+            return [date for date in lues if isinstance(date, Intervalle)]
+        if operateur is Operateur.EGAL:
+            return list(elements)
+        return [element for element in elements if not isinstance(element, bool | str)]
+
+    def _ordonnes(self, premiere: Any, seconde: Any, operateur: Operateur) -> bool:
+        if self.lecture is not None:
+            return _dates_comparees(premiere, seconde, operateur)
+        return _comparees(premiere, seconde, operateur)
+
+    def _rang(self, apres: bool, *, seconde: bool) -> Callable[[Any], Any]:
+        """Clé qui range les éléments d'un ordre : le plus favorable à une paire est un extrême.
+
+        Pour « après », la première qui commence le plus tard, la seconde qui finit le plus tôt ;
+        pour « avant », l'inverse. Un nombre est sa propre clé.
+        """
+        if self.lecture is None:
+            return lambda element: element
+        if apres != seconde:
+            return lambda date: date.debut
+        return lambda date: date.fin
 
     def _element(self, valeur: Scalaire) -> bool:
         if self.egal is not None:
@@ -267,6 +429,8 @@ class Condition:
             return isinstance(valeur, str) and self._compile.search(valeur) is not None
         if self.seuil is not None and not isinstance(valeur, bool | str):
             return self.seuil.atteint(valeur)
+        if self.impossible and self.lecture is not None:
+            return lire(self.lecture, valeur) is Etat.IMPOSSIBLE
         return False
 
     def vers_dict(self) -> Document:
@@ -281,6 +445,12 @@ class Condition:
             document["seuil"] = {"operateur": self.seuil.operateur, "valeur": self.seuil.valeur}
         if self.presente:
             document["presente"] = True
+        if self.impossible:
+            document["impossible"] = True
+        if self.comparer is not None:
+            document["comparer"] = self.comparer.vers_dict()
+        if self.lecture is not None:
+            document["lecture"] = self.lecture
         if self.parametre is not None:
             document["parametre"] = self.parametre
         return document
@@ -289,6 +459,8 @@ class Condition:
     def depuis_dict(cls, document: Mapping[str, Any]) -> "Condition":
         seuil = document.get("seuil")
         parmi = document.get("parmi")
+        comparer = document.get("comparer")
+        lecture = document.get("lecture")
         return cls(
             observation=document["observation"],
             egal=document.get("egal"),
@@ -298,6 +470,13 @@ class Condition:
             if seuil is None
             else Seuil(Comparaison(seuil["operateur"]), seuil["valeur"]),
             presente=document.get("presente", False),
+            impossible=document.get("impossible", False),
+            comparer=None
+            if comparer is None
+            else Comparer(
+                comparer["observation"], Operateur(comparer["operateur"]), comparer.get("parametre")
+            ),
+            lecture=None if lecture is None else Lecture(lecture),
             parametre=document.get("parametre"),
         )
 
@@ -474,7 +653,12 @@ class Regle:
     def noms_des_parametres(self) -> tuple[str, ...]:
         if self.application is Application.MODULE:
             return self.parametres
-        return tuple(c.parametre for c in self.conditions if c.parametre is not None)
+        return tuple(nom for condition in self.conditions for nom in condition.parametres)
+
+    @property
+    def format(self) -> int:
+        """Plus petit format du catalogue qui sait écrire cette règle (ADR-0147)."""
+        return max((condition.format for condition in self.conditions), default=1)
 
     def phrase(self, parametres: Mapping[str, str]) -> Phrase:
         return Phrase(self.gabarit, parametres)
@@ -546,27 +730,42 @@ class Regle:
         )
 
 
+def _retenues_de(
+    condition: Condition, par_nom: Mapping[str, Sequence[Observation]]
+) -> tuple[tuple[Observation, str | None], ...] | None:
+    """Observations retenues par une condition, chacune avec son paramètre ; ``None`` sinon."""
+    premieres = par_nom.get(condition.observation, ())
+    if condition.comparer is None:
+        retenue = next((o for o in premieres if condition.satisfaite(o.valeur)), None)
+        return None if retenue is None else ((retenue, condition.parametre),)
+    paire = condition.paire(premieres, par_nom.get(condition.comparer.observation, ()))
+    if paire is None:
+        return None
+    return (paire[0], condition.parametre), (paire[1], condition.comparer.parametre)
+
+
 def _retenues(
     regle: Regle, par_nom: Mapping[str, Sequence[Observation]]
 ) -> tuple[tuple[str, ...], dict[str, str]] | None:
     """Données et paramètres du constat si chaque condition est satisfaite, sinon ``None``.
 
     Pour chaque condition, la première observation qui la satisfait, dans l'ordre où le module
-    les a produites, est retenue : deux analyses retiennent les mêmes (NF-06).
+    les a produites, est retenue : deux analyses retiennent les mêmes (NF-06). Pour une
+    condition qui compare, la première paire, dans l'ordre de la première observation puis de
+    la seconde.
     """
     donnees: dict[str, None] = {}
     parametres: dict[str, str] = {}
     for condition in regle.conditions:
-        retenue = next(
-            (o for o in par_nom.get(condition.observation, ()) if condition.satisfaite(o.valeur)),
-            None,
-        )
-        if retenue is None:
+        retenues = _retenues_de(condition, par_nom)
+        if retenues is None:
             return None
-        donnees[retenue.identifiant] = None
-        if condition.parametre is not None:
-            parametres[condition.parametre] = retenue.identifiant
-    # Au plus 16 conditions (CONDITIONS_MAX), donc 16 données : sous la borne du modèle.
+        for retenue, nom in retenues:
+            donnees[retenue.identifiant] = None
+            if nom is not None:
+                parametres[nom] = retenue.identifiant
+    # Au plus 16 conditions (CONDITIONS_MAX) de deux observations, donc 32 données : sous la
+    # borne du modèle.
     return tuple(donnees), parametres
 
 

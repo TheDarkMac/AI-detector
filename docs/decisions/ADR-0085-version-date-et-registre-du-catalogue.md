@@ -65,3 +65,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création |
+| 2026-11-13 | Précisé en T23 (ADR-0152) : avant la version 1.0.0, un nouveau format du catalogue augmente `Y` ; à partir de 1.0.0, `X` |

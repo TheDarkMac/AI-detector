@@ -47,3 +47,298 @@ application = "moteur"
 [[regle.condition]]
 observation = "exif.exif.UserComment"
 motif = 'Steps: [0-9]+, Sampler:'
+
+# Règles de T23 : incohérences internes (F-13, ADR-0147 à ADR-0150) et absence (F-14,
+# ADR-0151), toutes des informations neutres. Tailles de l'API d'images d'OpenAI :
+# https://developers.openai.com/api/reference/resources/images/methods/generate (lu le
+# 2026-11-13).
+
+[[regle]]
+identifiant = "R-EXIF-003"
+version = "1"
+module = "exif"
+titre = "Date de modification impossible (DateTime)"
+description = "La valeur de La date de modification EXIF (DateTime) suit l'écriture EXIF AAAA:MM:JJ HH:MM:SS, mais la date qu'elle écrit n'existe pas dans le calendrier (mois, jour, heure, minute ou seconde hors de son domaine, fuseau impossible) : dates impossibles de F-13 (ADR-0150)."
+gabarit = "exif.date-modification-impossible"
+phrase = { fr = "La date de modification EXIF (DateTime) vaut « {date} », une date qui n'existe pas dans le calendrier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Seule une date qui suit l'écriture et n'existe pas dans le calendrier est relevée ; une date d'une autre écriture, ou qui dit une date inconnue, ne l'est pas (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.ifd0.DateTime"
+impossible = true
+lecture = "date-exif"
+parametre = "date"
+
+[[regle]]
+identifiant = "R-EXIF-004"
+version = "1"
+module = "exif"
+titre = "Date de prise de vue impossible (DateTimeOriginal)"
+description = "La valeur de La date de prise de vue EXIF (DateTimeOriginal) suit l'écriture EXIF AAAA:MM:JJ HH:MM:SS, mais la date qu'elle écrit n'existe pas dans le calendrier (mois, jour, heure, minute ou seconde hors de son domaine, fuseau impossible) : dates impossibles de F-13 (ADR-0150)."
+gabarit = "exif.date-prise-de-vue-impossible"
+phrase = { fr = "La date de prise de vue EXIF (DateTimeOriginal) vaut « {date} », une date qui n'existe pas dans le calendrier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Seule une date qui suit l'écriture et n'existe pas dans le calendrier est relevée ; une date d'une autre écriture, ou qui dit une date inconnue, ne l'est pas (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.exif.DateTimeOriginal"
+impossible = true
+lecture = "date-exif"
+parametre = "date"
+
+[[regle]]
+identifiant = "R-EXIF-005"
+version = "1"
+module = "exif"
+titre = "Date de numérisation impossible (DateTimeDigitized)"
+description = "La valeur de La date de numérisation EXIF (DateTimeDigitized) suit l'écriture EXIF AAAA:MM:JJ HH:MM:SS, mais la date qu'elle écrit n'existe pas dans le calendrier (mois, jour, heure, minute ou seconde hors de son domaine, fuseau impossible) : dates impossibles de F-13 (ADR-0150)."
+gabarit = "exif.date-numerisation-impossible"
+phrase = { fr = "La date de numérisation EXIF (DateTimeDigitized) vaut « {date} », une date qui n'existe pas dans le calendrier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Seule une date qui suit l'écriture et n'existe pas dans le calendrier est relevée ; une date d'une autre écriture, ou qui dit une date inconnue, ne l'est pas (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.exif.DateTimeDigitized"
+impossible = true
+lecture = "date-exif"
+parametre = "date"
+
+[[regle]]
+identifiant = "R-EXIF-006"
+version = "1"
+module = "exif"
+titre = "Prise de vue postérieure à la modification (DateTimeOriginal, DateTime)"
+description = "La date de prise de vue EXIF (DateTimeOriginal) est postérieure à la date de modification EXIF (DateTime), pour tous les instants que peuvent désigner les deux dates, lues selon l'écriture EXIF AAAA:MM:JJ HH:MM:SS : l'ordre que fixe leur définition est renversé, l'une des deux au moins est inexacte (F-13, ADR-0150)."
+gabarit = "exif.prise-de-vue-apres-modification"
+phrase = { fr = "La date de prise de vue EXIF (DateTimeOriginal), « {prise} », est postérieure à la date de modification EXIF (DateTime), « {modification} », quel que soit le fuseau horaire : l'une des deux au moins est inexacte." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Une date sans fuseau est lue dans tous les fuseaux, de UTC-12 à UTC+14 : un écart de moins de 26 heures entre deux dates sans fuseau n'est pas relevé (ADR-0148).",
+  "Les étiquettes OffsetTime, OffsetTimeOriginal et OffsetTimeDigitized ne sont pas lues : chaque date EXIF est prise sans fuseau.",
+  "Une valeur qui ne suit pas l'écriture de la date, ou qui dit une date inconnue, n'est pas comparée (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.exif.DateTimeOriginal"
+lecture = "date-exif"
+parametre = "prise"
+comparer = { observation = "exif.ifd0.DateTime", operateur = ">", parametre = "modification" }
+
+[[regle]]
+identifiant = "R-EXIF-007"
+version = "1"
+module = "exif"
+titre = "Numérisation postérieure à la modification (DateTimeDigitized, DateTime)"
+description = "La date de numérisation EXIF (DateTimeDigitized) est postérieure à la date de modification EXIF (DateTime), pour tous les instants que peuvent désigner les deux dates, lues selon l'écriture EXIF AAAA:MM:JJ HH:MM:SS : l'ordre que fixe leur définition est renversé, l'une des deux au moins est inexacte (F-13, ADR-0150)."
+gabarit = "exif.numerisation-apres-modification"
+phrase = { fr = "La date de numérisation EXIF (DateTimeDigitized), « {numerisation} », est postérieure à la date de modification EXIF (DateTime), « {modification} », quel que soit le fuseau horaire : l'une des deux au moins est inexacte." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Une date sans fuseau est lue dans tous les fuseaux, de UTC-12 à UTC+14 : un écart de moins de 26 heures entre deux dates sans fuseau n'est pas relevé (ADR-0148).",
+  "Les étiquettes OffsetTime, OffsetTimeOriginal et OffsetTimeDigitized ne sont pas lues : chaque date EXIF est prise sans fuseau.",
+  "Une valeur qui ne suit pas l'écriture de la date, ou qui dit une date inconnue, n'est pas comparée (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.exif.DateTimeDigitized"
+lecture = "date-exif"
+parametre = "numerisation"
+comparer = { observation = "exif.ifd0.DateTime", operateur = ">", parametre = "modification" }
+
+[[regle]]
+identifiant = "R-EXIF-008"
+version = "1"
+module = "exif"
+titre = "Prise de vue postérieure à la numérisation (DateTimeOriginal, DateTimeDigitized)"
+description = "La date de prise de vue EXIF (DateTimeOriginal) est postérieure à la date de numérisation EXIF (DateTimeDigitized), pour tous les instants que peuvent désigner les deux dates, lues selon l'écriture EXIF AAAA:MM:JJ HH:MM:SS : l'ordre que fixe leur définition est renversé, l'une des deux au moins est inexacte (F-13, ADR-0150)."
+gabarit = "exif.prise-de-vue-apres-numerisation"
+phrase = { fr = "La date de prise de vue EXIF (DateTimeOriginal), « {prise} », est postérieure à la date de numérisation EXIF (DateTimeDigitized), « {numerisation} », quel que soit le fuseau horaire : l'une des deux au moins est inexacte." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui recopie ou réécrit une date, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Une date sans fuseau est lue dans tous les fuseaux, de UTC-12 à UTC+14 : un écart de moins de 26 heures entre deux dates sans fuseau n'est pas relevé (ADR-0148).",
+  "Les étiquettes OffsetTime, OffsetTimeOriginal et OffsetTimeDigitized ne sont pas lues : chaque date EXIF est prise sans fuseau.",
+  "Une valeur qui ne suit pas l'écriture de la date, ou qui dit une date inconnue, n'est pas comparée (ADR-0148).",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.exif.DateTimeOriginal"
+lecture = "date-exif"
+parametre = "prise"
+comparer = { observation = "exif.exif.DateTimeDigitized", operateur = ">", parametre = "numerisation" }
+
+[[regle]]
+identifiant = "R-EXIF-009"
+version = "1"
+module = "exif"
+titre = "Appareil déclaré et générateur nommé (Make, Software)"
+description = "L'étiquette EXIF Make déclare l'appareil qui a pris l'image, et l'étiquette Software nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : logiciel incompatible avec l'appareil déclaré (F-13, ADR-0150)."
+gabarit = "exif.appareil-et-generateur"
+phrase = { fr = "L'étiquette EXIF Make déclare un appareil (« {appareil} ») et l'étiquette Software nomme un logiciel de génération par IA (« {logiciel} ») : ces deux déclarations se contredisent, ou décrivent deux étapes, une prise de vue puis un passage par ce logiciel." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : un logiciel qui garde l'appareil d'une photo qu'il transforme, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Seuls les noms de la liste des générateurs sont reconnus (ADR-0144) ; le nom du générateur fait aussi l'indice d'une autre règle du module.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.ifd0.Make"
+presente = true
+parametre = "appareil"
+
+[[regle.condition]]
+observation = "exif.ifd0.Software"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"
+
+[[regle]]
+identifiant = "R-EXIF-010"
+version = "1"
+module = "exif"
+titre = "Appareil déclaré et dimensions carrées d'un générateur"
+description = "L'étiquette Make déclare un appareil, et PixelXDimension et PixelYDimension des dimensions qui sont des tailles de sortie documentées de l'API d'images d'OpenAI (256 × 256, 512 × 512, 1 024 × 1 024, référence de l'API lue le 2026-11-13) : dimensions atypiques pour l'appareil déclaré (F-13, A-32, ADR-0150)."
+gabarit = "exif.appareil-et-dimensions-carrees"
+phrase = { fr = "L'EXIF déclare un appareil (« {appareil} ») et des dimensions de {largeur} × {hauteur} pixels, une taille de sortie de générateurs d'images : un appareil photo ne les écrit pas d'ordinaire, mais un logiciel qui recadre ou redimensionne une photo peut les écrire en gardant l'appareil." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : un recadrage ou un redimensionnement qui garde l'appareil, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Les dimensions lues sont celles que déclare l'EXIF, pas celles de l'image : un logiciel qui redimensionne sans réécrire l'EXIF les rend fausses.",
+  "Seules les tailles fixes de l'API d'OpenAI sont reconnues ; un générateur aux dimensions libres, ou une autre taille, n'est pas vu.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.ifd0.Make"
+presente = true
+parametre = "appareil"
+
+[[regle.condition]]
+observation = "exif.exif.PixelXDimension"
+parmi = [256, 512, 1024]
+parametre = "largeur"
+
+[[regle.condition]]
+observation = "exif.exif.PixelXDimension"
+comparer = { observation = "exif.exif.PixelYDimension", operateur = "=", parametre = "hauteur" }
+
+[[regle]]
+identifiant = "R-EXIF-011"
+version = "1"
+module = "exif"
+titre = "Appareil déclaré et dimensions d'un générateur, en paysage"
+description = "L'étiquette Make déclare un appareil, et PixelXDimension et PixelYDimension des dimensions qui sont des tailles de sortie documentées de l'API d'images d'OpenAI (1 536 × 1 024, 1 792 × 1 024, référence de l'API lue le 2026-11-13) : dimensions atypiques pour l'appareil déclaré (F-13, A-32, ADR-0150)."
+gabarit = "exif.appareil-et-dimensions-paysage"
+phrase = { fr = "L'EXIF déclare un appareil (« {appareil} ») et des dimensions de {largeur} × {hauteur} pixels, une taille de sortie de générateurs d'images : un appareil photo ne les écrit pas d'ordinaire, mais un logiciel qui recadre ou redimensionne une photo peut les écrire en gardant l'appareil." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : un recadrage ou un redimensionnement qui garde l'appareil, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Les dimensions lues sont celles que déclare l'EXIF, pas celles de l'image : un logiciel qui redimensionne sans réécrire l'EXIF les rend fausses.",
+  "Seules les tailles fixes de l'API d'OpenAI sont reconnues ; un générateur aux dimensions libres, ou une autre taille, n'est pas vu.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.ifd0.Make"
+presente = true
+parametre = "appareil"
+
+[[regle.condition]]
+observation = "exif.exif.PixelXDimension"
+parmi = [1536, 1792]
+parametre = "largeur"
+
+[[regle.condition]]
+observation = "exif.exif.PixelYDimension"
+egal = 1024
+parametre = "hauteur"
+
+[[regle]]
+identifiant = "R-EXIF-012"
+version = "1"
+module = "exif"
+titre = "Appareil déclaré et dimensions d'un générateur, en portrait"
+description = "L'étiquette Make déclare un appareil, et PixelXDimension et PixelYDimension des dimensions qui sont des tailles de sortie documentées de l'API d'images d'OpenAI (1 024 × 1 536, 1 024 × 1 792, référence de l'API lue le 2026-11-13) : dimensions atypiques pour l'appareil déclaré (F-13, A-32, ADR-0150)."
+gabarit = "exif.appareil-et-dimensions-portrait"
+phrase = { fr = "L'EXIF déclare un appareil (« {appareil} ») et des dimensions de {largeur} × {hauteur} pixels, une taille de sortie de générateurs d'images : un appareil photo ne les écrit pas d'ordinaire, mais un logiciel qui recadre ou redimensionne une photo peut les écrire en gardant l'appareil." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : un recadrage ou un redimensionnement qui garde l'appareil, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Les dimensions lues sont celles que déclare l'EXIF, pas celles de l'image : un logiciel qui redimensionne sans réécrire l'EXIF les rend fausses.",
+  "Seules les tailles fixes de l'API d'OpenAI sont reconnues ; un générateur aux dimensions libres, ou une autre taille, n'est pas vu.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.ifd0.Make"
+presente = true
+parametre = "appareil"
+
+[[regle.condition]]
+observation = "exif.exif.PixelXDimension"
+egal = 1024
+parametre = "largeur"
+
+[[regle.condition]]
+observation = "exif.exif.PixelYDimension"
+parmi = [1536, 1792]
+parametre = "hauteur"
+
+[[regle]]
+identifiant = "R-EXIF-013"
+version = "1"
+module = "exif"
+titre = "Aucune métadonnée EXIF"
+description = "Le module exif n'a trouvé aucune métadonnée EXIF (blocs EXIF du JPEG, du PNG, du WebP ou du HEIC) : l'observation exif.present vaut faux. Information neutre (F-14, A-34, ADR-0151) : elle ne compte ni pour ni contre une origine IA."
+gabarit = "exif.absence"
+phrase = { fr = "Le fichier ne porte aucune métadonnée EXIF. Cette absence est fréquente (messageries, réseaux sociaux, conversions) et ne dit rien de son origine." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Absence neutre : beaucoup de logiciels, messageries et plateformes retirent ces métadonnées, et beaucoup de générateurs n'en écrivent pas ; elle n'est ni un indice d'IA ni une garantie d'authenticité (F-14, P-04).",
+  "Seuls les emplacements de la fiche du module sont lus : des métadonnées logées ailleurs dans le fichier ne sont pas vues.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.present"
+egal = false

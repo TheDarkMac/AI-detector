@@ -1,7 +1,7 @@
 # Fiche technique — Dictionnaire d'information PDF
 
 - **Module** : `infopdf` (version 0.2.0)
-- **Tâche** : T21, T22
+- **Tâche** : T21, T22, T23
 - **Exigences** : F-10, F-12, ES-13
 - **Formats** : `pdf`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
@@ -41,7 +41,7 @@ Noms d'observation ([ADR-0128](../decisions/ADR-0128-observations-du-dictionnair
 
 - Clés usuelles : `Title`, `Author`, `Subject`, `Keywords`, `Creator` (logiciel d'origine), `Producer` (logiciel de conversion), `CreationDate`, `ModDate`, `Trapped`. Une clé propre à un logiciel est observée de même ; un caractère hors des lettres ASCII, des chiffres et du tiret y devient un tiret (ADR-0117).
 - Chaîne : UTF-16BE ou UTF-8 si elle commence par leur marque d'ordre, PDFDocEncoding sinon (§7.9.2.2, annexe D) ; un code non défini devient le caractère de remplacement.
-- Date : telle qu'écrite, `D:AAAAMMJJHHmmSS+HH'mm'`, sans conversion ; T23 l'interprétera.
+- Date : telle qu'écrite, `D:AAAAMMJJHHmmSS+HH'mm'`, sans conversion ; les règles de T23 la lisent par la lecture `date-pdf` ([ADR-0148](../decisions/ADR-0148-lecture-des-dates.md)).
 - Objet nul : entrée absente, rien n'est observé.
 
 Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
@@ -74,11 +74,20 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | `R-INFOPDF-001` Générateur nommé par le logiciel d'origine du PDF ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `infopdf.Creator` | liste des générateurs (ADR-0144) | origine IA |
 | `R-INFOPDF-002` Générateur nommé par le logiciel de conversion du PDF ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `infopdf.Producer` | liste des générateurs (ADR-0144) | origine IA |
 
-Une absence de dictionnaire est l'observation `infopdf.present` à faux (F-14).
+Règles de T23, des informations neutres fondées sur une déclaration du fichier, ou pour l'absence sur la lecture de sa structure ([ADR-0149](../decisions/ADR-0149-constat-d-une-incoherence.md), [ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)) :
+
+| Règle | Observations | Test |
+| --- | --- | --- |
+| `R-INFOPDF-003` Date de création impossible (CreationDate) | `infopdf.CreationDate` | date impossible (`date-pdf`) |
+| `R-INFOPDF-004` Date de modification impossible (ModDate) | `infopdf.ModDate` | date impossible (`date-pdf`) |
+| `R-INFOPDF-005` Création postérieure à la modification (CreationDate, ModDate) | `infopdf.CreationDate`, `infopdf.ModDate` | certainement postérieure à `infopdf.ModDate`, lues par `date-pdf` |
+| `R-INFOPDF-006` Aucun dictionnaire d'informations PDF (Info) | `infopdf.present` | faux |
+
+Une absence de dictionnaire est l'observation `infopdf.present` à faux ; la règle `R-INFOPDF-006` en fait une information neutre, jamais un indice (F-14).
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur deux PDF, l'un à table classique (LibreOffice), l'autre à flux de références croisées et flux d'objets (Ghostscript), tous deux mis à jour par exiftool ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md), ADR-0127).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur deux PDF, l'un à table classique (LibreOffice), l'autre à flux de références croisées et flux d'objets (Ghostscript), tous deux mis à jour par exiftool ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md), ADR-0127). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 
@@ -103,3 +112,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | --- | --- | --- |
 | 2026-11-12 | 0.1.0 | Création (T21) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
+| 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |

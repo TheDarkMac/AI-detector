@@ -2,7 +2,7 @@
 
 Le catalogue est un dossier de fichiers TOML, séparé du moteur (F-26) :
 
-    catalogue.toml          en-tête : format, version, date, description
+    catalogue.toml          en-tête : format (1 ou 2, ADR-0147), version, date, description
     regles/<module>.toml    règles d'un module, une table ``[[regle]]`` chacune
 
 Le catalogue livré est dans le paquet (``donnees/catalogue``). L'utilisateur peut en fournir un
@@ -115,6 +115,12 @@ def charger(
     doubles = sorted({i for i in identifiants if identifiants.count(i) > 1})
     if doubles:
         raise CatalogueInvalide(f"catalogue : règle définie deux fois : {doubles[0]}")
+    for regle in regles:
+        if regle.format > entete["format"]:
+            raise CatalogueInvalide(
+                f"règle {regle.identifiant} : du format {regle.format}, "
+                f"dans un catalogue du format {entete['format']}"
+            )
     _verifier_modules(regles, manifestes)
     version = VersionCatalogue(
         version=entete["version"],

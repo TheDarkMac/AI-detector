@@ -1,7 +1,7 @@
 # Fiche technique — Métadonnées d'un document ODT
 
 - **Module** : `odf` (version 0.2.0)
-- **Tâche** : T21 (complément bureautique), T22
+- **Tâche** : T21 (complément bureautique), T22, T23
 - **Exigences** : F-10, F-12, ES-05, ES-06, ES-13
 - **Formats** : `odt`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
@@ -44,7 +44,7 @@ Noms d'observation ([ADR-0140](../decisions/ADR-0140-noms-et-valeurs-des-proprie
 
 - Préfixes de la spécification, quel que soit celui qu'écrit le fichier : `office`, `meta`, `dc` ; un espace inconnu prend `ns1`, `ns2`… ([ADR-0117](../decisions/ADR-0117-vocabulaire-des-observations.md)). Un nom tiré du fichier passe par la règle des composants.
 - Valeurs : textes tels qu'écrits ; entiers pour `meta:editing-cycles` et les attributs de `meta:document-statistic` ; propriété utilisateur lue selon `meta:value-type` : réel (`float`, `percentage`), booléen (`boolean`), texte sinon (`string`, `date`, `time`) ; une écriture que le type n'admet pas reste un texte.
-- Dates et durées (`meta:creation-date`, `dc:date`, `meta:print-date`, `meta:editing-duration`) : telles qu'écrites (ISO 8601), sans conversion ; T23 et T81 les interpréteront.
+- Dates et durées (`meta:creation-date`, `dc:date`, `meta:print-date`, `meta:editing-duration`) : telles qu'écrites (ISO 8601), sans conversion ; les règles de T23 lisent les deux premières par la lecture `date-iso8601` ([ADR-0148](../decisions/ADR-0148-lecture-des-dates.md)), `meta:print-date` n'est pas comparée (ADR-0150) ; T81 interprétera la durée.
 - Élément répété (`meta:keyword`) : une liste, dans l'ordre du document. Texte vide : rien n'est observé.
 
 Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
@@ -76,11 +76,20 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | --- | --- | --- | --- |
 | `R-ODF-001` Générateur nommé par le générateur d'un ODT ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `odf.meta:generator` | liste des générateurs (ADR-0144) | origine IA |
 
-Une absence de métadonnées est l'observation `odf.present` à faux (F-14).
+Règles de T23, des informations neutres fondées sur une déclaration du fichier, ou pour l'absence sur la lecture de sa structure ([ADR-0149](../decisions/ADR-0149-constat-d-une-incoherence.md), [ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)) :
+
+| Règle | Observations | Test |
+| --- | --- | --- |
+| `R-ODF-002` Date de création impossible (meta:creation-date) | `odf.meta:creation-date` | date impossible (`date-iso8601`) |
+| `R-ODF-003` Date de modification impossible (dc:date) | `odf.dc:date` | date impossible (`date-iso8601`) |
+| `R-ODF-004` Création postérieure à la modification (meta:creation-date, dc:date) | `odf.meta:creation-date`, `odf.dc:date` | certainement postérieure à `odf.dc:date`, lues par `date-iso8601` |
+| `R-ODF-005` Aucune propriété de document ODF (meta.xml) | `odf.present` | faux |
+
+Une absence de métadonnées est l'observation `odf.present` à faux ; la règle `R-ODF-005` en fait une information neutre, jamais un indice (F-14).
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, dans les deux sens, sur un ODT écrit par LibreOffice ([ADR-0141](../decisions/ADR-0141-oracle-bureautique-par-libreoffice.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, dans les deux sens, sur un ODT écrit par LibreOffice ([ADR-0141](../decisions/ADR-0141-oracle-bureautique-par-libreoffice.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 
@@ -102,3 +111,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | --- | --- | --- |
 | 2026-11-13 | 0.1.0 | Création (T21, complément bureautique) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
+| 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |

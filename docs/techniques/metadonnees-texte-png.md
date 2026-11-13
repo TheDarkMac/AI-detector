@@ -1,7 +1,7 @@
 # Fiche technique — Blocs texte PNG
 
 - **Module** : `textepng` (version 0.2.0)
-- **Tâche** : T20, T22
+- **Tâche** : T20, T22, T23
 - **Exigences** : F-10, F-12, ES-13
 - **Formats** : `png`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
@@ -69,11 +69,17 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | `R-TEXTEPNG-004` Métadonnées de génération d'InvokeAI 2 ([ADR-0145](../decisions/ADR-0145-signatures-de-parametres-de-generation.md)) | `textepng.sd-metadata` | présente | origine IA |
 | `R-TEXTEPNG-005` Générateur nommé par le bloc texte Software ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `textepng.Software` | liste des générateurs (ADR-0144) | origine IA |
 
-Une absence de bloc texte est l'observation `textepng.present` à faux (F-14).
+Règles de T23, des informations neutres fondées sur une déclaration du fichier, ou pour l'absence sur la lecture de sa structure ([ADR-0149](../decisions/ADR-0149-constat-d-une-incoherence.md), [ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)) :
+
+| Règle | Observations | Test |
+| --- | --- | --- |
+| `R-TEXTEPNG-006` Aucun bloc texte PNG (tEXt, zTXt, iTXt) | `textepng.present` | faux |
+
+Une absence de bloc texte est l'observation `textepng.present` à faux ; la règle `R-TEXTEPNG-006` en fait une information neutre, jamais un indice (F-14).
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par mot-clé ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par mot-clé ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 
@@ -93,3 +99,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | --- | --- | --- |
 | 2026-10-28 | 0.1.0 | Création (T20) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
+| 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |

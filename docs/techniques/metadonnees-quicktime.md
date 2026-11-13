@@ -1,7 +1,7 @@
 # Fiche technique — Métadonnées QuickTime et ISOBMFF
 
 - **Module** : `quicktime` (version 0.2.0)
-- **Tâche** : T21, T22
+- **Tâche** : T21, T22, T23
 - **Exigences** : F-10, F-12, ES-13
 - **Formats** : `m4a`, `mp4`, `mov`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
@@ -78,11 +78,18 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | `R-QUICKTIME-001` Générateur nommé par l'encodeur d'un MP4 ou d'un M4A ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `quicktime.ilst.-too` | liste des générateurs (ADR-0144) | origine IA |
 | `R-QUICKTIME-002` Générateur nommé par le logiciel d'un MOV ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `quicktime.udta.-swr` | liste des générateurs (ADR-0144) | origine IA |
 
-Une absence de `udta` et de `meta` est l'observation `quicktime.present` à faux (F-14) ; les dates de `mvhd` restent observées.
+Règles de T23, des informations neutres fondées sur une déclaration du fichier, ou pour l'absence sur la lecture de sa structure ([ADR-0149](../decisions/ADR-0149-constat-d-une-incoherence.md), [ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)) :
+
+| Règle | Observations | Test |
+| --- | --- | --- |
+| `R-QUICKTIME-003` Création postérieure à la modification (mvhd) | `quicktime.mvhd.CreationTime`, `quicktime.mvhd.ModificationTime` | certainement postérieure à `quicktime.mvhd.ModificationTime`, lues par `date-1904` |
+| `R-QUICKTIME-004` Aucune balise QuickTime (udta, meta) | `quicktime.present` | faux |
+
+Une absence de `udta` et de `meta` est l'observation `quicktime.present` à faux ; la règle `R-QUICKTIME-004` en fait une information neutre, jamais un indice (F-14) ; les dates de `mvhd` restent observées.
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un M4A, un MP4 et un MOV écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un M4A, un MP4 et un MOV écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 
@@ -104,3 +111,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | --- | --- | --- |
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
+| 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
