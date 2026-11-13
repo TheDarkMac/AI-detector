@@ -38,7 +38,10 @@ def regle_dict(
     } | champs
     if "phrase" not in champs:
         noms = champs.get("parametres", []) + [
-            c["parametre"] for c in champs.get("condition", []) if "parametre" in c
+            nom
+            for c in champs.get("condition", [])
+            for nom in (c.get("parametre"), c.get("comparer", {}).get("parametre"))
+            if nom is not None
         ]
         document["phrase"] = {"fr": " ".join(["Phrase de test", *(f"{{{n}}}" for n in noms)])}
     return {cle: valeur for cle, valeur in document.items() if valeur is not None}

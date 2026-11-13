@@ -124,6 +124,16 @@ def test_catalogue_fourni(tmp_path: Path) -> None:
     assert charger(MODULES, str(dossier)) == fourni
 
 
+@pytest.mark.exigence("F-13")
+def test_catalogue_du_format_2(tmp_path: Path) -> None:
+    # ADR-0147 : le format 2 ajoute la lecture des dates et la comparaison de deux observations.
+    entete = ENTETE.replace("format = 1", "format = 2")
+    dossier = ecrire_catalogue(tmp_path, {"alpha": ALPHA, "beta": FORMAT_2}, entete=entete)
+    fourni = charger(MODULES, dossier)
+    assert fourni.du_module("beta") == (regle("R-BETA-002", "beta", **COMPARAISON),)
+    assert [r.format for r in fourni.regles] == [1, 1, 2]
+
+
 def test_catalogue_sans_regle(tmp_path: Path) -> None:
     assert charger((manifeste(),), ecrire_catalogue(tmp_path)).regles == ()
 
@@ -136,6 +146,10 @@ def ecrire(dossier: Path, chemin: str, contenu: str | bytes) -> None:
 
 AUTRE_MODULE = toml_regles(regle_dict("R-ALPHA-003", "alpha"))  # dans regles/beta.toml
 INCONNU = toml_regles(regle_dict("R-GAMMA-001", "gamma", **moteur({"observation": "n", "egal": 1})))
+COMPARAISON = moteur(
+    {"observation": "n", "lecture": "date-exif", "comparer": {"observation": "m", "operateur": ">"}}
+)
+FORMAT_2 = toml_regles(regle_dict("R-BETA-002", "beta", **COMPARAISON))
 DIRECTION = toml_regles(
     regle_dict(
         "R-BETA-002",
@@ -160,6 +174,18 @@ DIRECTION = toml_regles(
         pytest.param("catalogue.toml", "format = ", "TOML illisible", id="entete-illisible"),
         pytest.param("catalogue.toml", b"\xff", "TOML illisible", id="entete-non-utf8"),
         pytest.param("catalogue.toml", "format = 2\n", "catalogue.toml : document", id="format"),
+        pytest.param(
+            "catalogue.toml",
+            ENTETE.replace("format = 1", "format = 3"),
+            "properties/format",
+            id="format-inconnu",
+        ),
+        pytest.param(
+            "regles/beta.toml",
+            FORMAT_2,
+            "R-BETA-002 : du format 2, dans un catalogue du format 1",
+            id="regle-du-format-2",
+        ),
         pytest.param(
             "catalogue.toml",
             ENTETE.replace('"1.2.3"', '"1.2"'),

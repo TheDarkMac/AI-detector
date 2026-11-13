@@ -3,10 +3,13 @@
 import dataclasses
 import subprocess
 import sys
+import time
 from typing import Any
 
 import pytest
 from catalogues import moteur, regle, regle_dict
+from hypothesis import given
+from hypothesis import strategies as st
 
 from voight_kampff._regles import (
     Application,
@@ -367,3 +370,205 @@ def test_phrase_figee() -> None:
     assert lue.textes["fr"] == "Phrase de test"
     with pytest.raises(TypeError):
         lue.textes["fr"] = "modifiée"  # type: ignore[index]
+
+
+# Format 2 : lecture des dates et comparaison de deux observations (T23, ADR-0147, ADR-0148)
+
+COMPARER = {"observation": "m", "operateur": ">", "parametre": "m"}
+
+
+@pytest.mark.exigence("F-13")
+@pytest.mark.parametrize(
+    ("test", "attendu"),
+    [
+        pytest.param({"impossible": True}, "lecture d'une date", id="impossible-sans-lecture"),
+        pytest.param({"egal": 1, "lecture": "date-exif"}, "réservée", id="lecture-sans-date"),
+        pytest.param(
+            {"comparer": COMPARER | {"operateur": "="}, "lecture": "date-pdf"},
+            "jamais certainement égales",
+            id="dates-egales",
+        ),
+        pytest.param({"comparer": {"observation": "", "operateur": ">"}}, "observation", id="nom"),
+        pytest.param(
+            {"comparer": COMPARER | {"parametre": "a b"}}, "comparer.parametre", id="parametre"
+        ),
+        pytest.param({"comparer": COMPARER, "presente": True}, "un test et un seul", id="deux"),
+    ],
+)
+def test_condition_du_format_2_refusee(test: dict[str, Any], attendu: str) -> None:
+    with pytest.raises(ValueError, match=attendu):
+        condition(**test)
+
+
+@pytest.mark.exigence("F-13")
+def test_condition_du_format_2_aller_retour() -> None:
+    for test in (
+        {"impossible": True, "lecture": "date-exif", "parametre": "p"},
+        {"comparer": {"observation": "m", "operateur": "<"}, "lecture": "date-1904"},
+        {"comparer": COMPARER | {"operateur": "="}, "parametre": "n"},
+    ):
+        document = {"observation": "n"} | test
+        assert condition(**test).vers_dict() == document
+        assert condition(**test).format == 2
+    assert condition(egal=1).format == 1
+
+
+@pytest.mark.exigence("F-13")
+@pytest.mark.parametrize(
+    ("valeur", "attendu"),
+    [
+        ("2026:02:30 10:00:00", True),
+        (("2026:11:13 10:00:00", "2026:02:30 10:00:00"), True),
+        ("2026:11:13 10:00:00", False),
+        ("0000:00:00 00:00:00", False),
+        ("30/02/2026", False),
+        (20260230, False),
+    ],
+)
+def test_date_impossible(valeur: Valeur, attendu: bool) -> None:
+    assert condition(impossible=True, lecture="date-exif").satisfaite(valeur) is attendu
+
+
+@pytest.mark.exigence("F-13")
+@pytest.mark.parametrize(
+    ("operateur", "lecture", "premiere", "seconde", "attendu"),
+    [
+        # Valeurs brutes : un nombre à un nombre ; l'égalité au sens d'egal.
+        (">", None, 2, 1, True),
+        (">", None, 1, 2, False),
+        ("<", None, 1, 2.5, True),
+        ("<", None, 2.5, 1, False),
+        (">", None, "b", "a", False),
+        (">", None, True, 0, False),
+        ("<", None, 0, True, False),
+        ("=", None, 1024, 1024.0, True),
+        ("=", None, 1, True, False),
+        ("=", None, "a", "a", True),
+        ("=", None, (512, 1024), (2048, 1024), True),
+        ("=", None, (512, 1024), (2048, 4096), False),
+        # Dates : un ordre certain, quel que soit le fuseau ; une date illisible n'est pas lue.
+        (">", "date-exif", "2026:11:15 10:00:00", "2026:11:13 10:00:00", True),
+        (">", "date-exif", "2026:11:14 10:00:00", "2026:11:13 10:00:00", False),
+        ("<", "date-exif", "2026:11:13 10:00:00", "2026:11:15 10:00:00", True),
+        ("<", "date-exif", "2026:11:15 10:00:00", "2026:11:13 10:00:00", False),
+        (">", "date-exif", "2026:02:30 10:00:00", "2026:11:13 10:00:00", False),
+        (">", "date-exif", "2026:11:15 10:00:00", "    :  :     :  :  ", False),
+        (">", "date-exif", ("x", "2026:11:15 10:00:00"), "2026:11:13 10:00:00", True),
+        (">", "date-1904", 3_800_000_001, 3_800_000_000, True),
+        (">", "date-1904", 3_800_000_001, 0, False),
+    ],
+)
+def test_comparaison_de_deux_observations(
+    operateur: str, lecture: str | None, premiere: Valeur, seconde: Valeur, attendu: bool
+) -> None:
+    test: dict[str, Any] = {"comparer": {"observation": "m", "operateur": operateur}}
+    if lecture is not None:
+        test["lecture"] = lecture
+    comparaison = condition(**test)
+    assert comparaison.comparees(premiere, seconde) is attendu
+    assert not comparaison.satisfaite(premiere)  # une comparaison ne teste jamais une seule valeur
+
+
+def test_condition_sans_comparaison_ne_compare_rien() -> None:
+    assert not condition(egal=1).comparees(1, 1)
+    assert condition(egal=1).paire([observation(1, "n", 1)], [observation(2, "m", 1)]) is None
+
+
+@pytest.mark.exigence("F-13")
+def test_premiere_paire_retenue() -> None:
+    observations = (
+        observation(1, "creation", "2026:11:01 20:00:00"),  # moins de 26 h : ordre incertain
+        observation(2, "creation", "2026:11:20 10:00:00"),
+        observation(3, "creation", "2026:11:30 10:00:00"),
+        observation(4, "modification", "2026:11:25 10:00:00"),
+        observation(5, "modification", "2026:11:01 10:00:00"),
+    )
+    regles = [
+        regle(
+            "R-TEST-001",
+            **moteur(
+                {
+                    "observation": "creation",
+                    "lecture": "date-exif",
+                    "parametre": "creation",
+                    "comparer": {
+                        "observation": "modification",
+                        "operateur": ">",
+                        "parametre": "modification",
+                    },
+                }
+            ),
+        ),
+        regle(
+            "R-TEST-002",
+            **moteur(
+                {"observation": "creation", "presente": True},
+                {
+                    "observation": "creation",
+                    "comparer": {"observation": "absente", "operateur": "="},
+                },
+            ),
+        ),
+    ]
+    resultats = [(r.identifiant, d, p) for r, d, p in appliquer(regles, observations)]
+    # Dans l'ordre de la première observation, puis de la seconde : la paire (2, 5).
+    assert resultats == [
+        (
+            "R-TEST-001",
+            ("alpha/2", "alpha/5"),
+            {"creation": "alpha/2", "modification": "alpha/5"},
+        )
+    ]
+    assert regles[0].format == 2
+    assert regles[0].noms_des_parametres == ("creation", "modification")
+
+
+VALEURS = st.one_of(
+    st.sampled_from(
+        ["2026:11:10 10:00:00", "2026:11:13 10:00:00", "2026:11:20 10:00:00", "2026:02:30 10:00:00"]
+    ),
+    st.integers(-2, 2),
+    st.booleans(),
+    st.sampled_from(["a", "b"]),
+)
+
+
+@pytest.mark.exigence("F-13", "NF-06")
+@given(
+    st.lists(st.one_of(VALEURS, st.lists(VALEURS, max_size=3).map(tuple)), max_size=6),
+    st.lists(st.one_of(VALEURS, st.lists(VALEURS, max_size=3).map(tuple)), max_size=6),
+    st.sampled_from(["<", ">", "="]),
+    st.booleans(),
+)
+def test_paire_lineaire_egale_a_la_premiere_paire(
+    premieres: list[Valeur], secondes: list[Valeur], operateur: str, dates: bool
+) -> None:
+    # Recherche linéaire et essai de chaque paire, dans l'ordre, retiennent la même paire.
+    if dates and operateur == "=":
+        operateur = ">"
+    test: dict[str, Any] = {"comparer": {"observation": "m", "operateur": operateur}}
+    if dates:
+        test["lecture"] = "date-exif"
+    comparaison = condition(**test)
+    gauche = [observation(i, "n", v) for i, v in enumerate(premieres, start=1)]
+    droite = [observation(i, "m", v) for i, v in enumerate(secondes, start=100)]
+    naive = next(
+        ((a, b) for a in gauche for b in droite if comparaison.comparees(a.valeur, b.valeur)), None
+    )
+    assert comparaison.paire(gauche, droite) == naive
+
+
+@pytest.mark.exigence("F-13", "ES-03")
+@pytest.mark.parametrize("operateur", ["<", ">", "="])
+def test_paire_sur_des_milliers_d_observations(operateur: str) -> None:
+    # 2 048 par 2 048 observations au même instant : l'essai de chaque paire prendrait des
+    # dizaines de secondes (ADR-0147).
+    test: dict[str, Any] = {"comparer": {"observation": "m", "operateur": operateur}}
+    if operateur != "=":
+        test["lecture"] = "date-iso8601"
+    comparaison = condition(**test)
+    gauche = [observation(i, "n", "2026-11-13T09:00:00Z") for i in range(2048)]
+    droite = [observation(i, "m", "2026-11-13T10:00:00+01:00") for i in range(2048, 4096)]
+    debut = time.perf_counter()
+    assert comparaison.paire(gauche, droite) is None
+    assert time.perf_counter() - debut < 5
