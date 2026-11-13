@@ -1,6 +1,6 @@
 # Analyse critique du cahier des charges v0.1
 
-> Statut : **v1.1** ; v1.0 mergée avec T01. Document vivant : toute modification est inscrite à l'historique (§9).
+> Statut : **v1.2** ; v1.0 mergée avec T01, v1.1 avec T02, v1.2 proposée dans la PR de T22. Document vivant : toute modification est inscrite à l'historique (§9).
 > Source analysée : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, brouillon, 24 oct. 2026, auteur @Jean), SHA-256 `702b468ff57099b401f9042dcc38f85951e7b224659874b86ccb519ebfc7dafc`.
 > Tâche : T01. Date de rédaction : 2026-10-26.
 
@@ -277,7 +277,7 @@ Présentées comme protection des sources (§5.6), elles servent tout autant à 
 | A-30 | F-05 ne précise ni l'algorithme ni ce qui est haché. Le découpage a retenu SHA-256 (T13) sans ADR. | Mineur · C4 | Décider l'algorithme en T04, par ADR ; empreinte du fichier entier, octet pour octet. | T04 |
 | A-31 | F-02 : un fichier peut être valide dans deux formats à la fois (fichier polyglotte), ce qui trompe l'identification et peut viser un analyseur précis. | Mineur · C4 | À traiter dans le modèle de menace. | T03 |
 | A-32 | F-06 et F-13 : « dimensions typiques », « dimensions atypiques » supposent une liste de référence non prévue. | Mineur · C1 | Mettre ces listes dans le catalogue (F-26), versionnées. | T15, T23, T24 |
-| A-33 | F-11 ne cite que deux valeurs IPTC. Le vocabulaire DigitalSourceType en compte d'autres pertinentes, dont `algorithmicMedia`, `compositeSynthetic` et `algorithmicallyEnhanced` (retouche assistée par algorithme) ; le même vocabulaire sert dans les actions C2PA (F-23) (**à vérifier** sur la liste IPTC en T22). | Mineur · C4 | Reprendre le vocabulaire complet, avec une direction par valeur. | T22, T30 |
+| A-33 | F-11 ne cite que deux valeurs IPTC. Le vocabulaire DigitalSourceType en compte d'autres pertinentes, dont `algorithmicMedia`, `compositeSynthetic` et `algorithmicallyEnhanced` (retouche assistée par algorithme) ; le même vocabulaire sert dans les actions C2PA (F-23) (**à vérifier** sur la liste IPTC en T22 ; vérifié en T22 : liste exacte, `compositeWithTrainedAlgorithmicMedia` se nomme aujourd'hui « Edited using Generative AI », ADR-0143). | Mineur · C4 | Reprendre le vocabulaire complet, avec une direction par valeur. | T22, T30 |
 | A-34 | F-14 fait de l'absence de métadonnées une information neutre. C'est un **choix de politique** défendable (les messageries retirent les métadonnées), non un constat statistique : les sorties de générateurs en ligne en sont souvent dépourvues. F-06 utilise pourtant la même absence comme indice de transfert. | Mineur · C2 | Écrire la règle explicitement : neutre vis-à-vis de l'origine IA, utilisable comme indice de transfert. | T23, T24 |
 | A-35 | F-24 : peu de filigranes ont un lecteur à la fois public et non neuronal ; pour le texte, la détection d'un filigrane exige en général la clé du fournisseur. Le catalogue V1 risque d'être presque vide (remarque 3 du découpage). | Majeur · C3 | Recenser les schémas réellement lisibles en T31 avant de s'engager ; sinon, réduire F-24 à un point d'extension. | T02, T31 |
 | A-36 | F-22 : les états ne reprennent pas le vocabulaire de validation C2PA, et il manque : certificat expiré ou révoqué, manifeste distant (récupéré par une URL, donc requête sortante), ingrédients aux états différents, date de la vérification. | Majeur · C4 | Aligner les états sur la spécification C2PA en vigueur, ajouter les cas manquants. | T30 |
@@ -376,7 +376,7 @@ Ces points ne figurent pas au §10 et devront être arbitrés en T02 ou dans la 
 | L'article 50 de l'AI Act s'applique depuis le 2 août 2026 | Cohérent avec les sources consultées. | [Commission européenne, communiqué IP/26/1328](https://europa.eu/newsroom/ecpc-failover/pdf/ip-26-1328_en.pdf) |
 | Les systèmes déjà sur le marché ont jusqu'au 2 décembre 2026 | Cohérent avec plusieurs sources secondaires, qui précisent que ce délai ne concerne que le marquage de l'article 50(2) et les systèmes mis sur le marché avant le 2 août 2026 (omnibus numérique). Les sources divergent sur la date d'entrée en vigueur de l'omnibus. **À confirmer sur EUR-Lex.** | [Usercentrics](https://usercentrics.com/knowledge-hub/eu-ai-act-high-risk-delay-article-50-transparency-consent/), [FEDIL](https://fedil.lu/en/publications/ai-act-update-enforcement-begins-as-the-digital-omnibus-reshapes-the-timeline/?pdf=1) |
 | Le marquage des contenus générés se généralise | Le code de bonnes pratiques final sur le marquage et l'étiquetage a été publié le 10 juin 2026 ; il est volontaire, et reconnaît qu'aucune technique de marquage ne satisfait seule toutes les exigences. | [Jones Day](https://www.jonesday.com/en/insights/2026/06/european-commission-publishes-final-code-of-practice-on-marking-and-labelling-aigenerated-content), [SCL](https://www.scl.org/european-commission-publishes-code-of-practice-on-marking-and-labelling-ai-generated-content/) |
-| Valeurs IPTC `trainedAlgorithmicMedia`, `compositeWithTrainedAlgorithmicMedia` | Valeurs existantes du vocabulaire DigitalSourceType, d'après la connaissance de l'assistant. Liste complète **à vérifier** en T22. | Vocabulaire IPTC NewsCodes « digitalsourcetype » |
+| Valeurs IPTC `trainedAlgorithmicMedia`, `compositeWithTrainedAlgorithmicMedia` | Valeurs existantes du vocabulaire DigitalSourceType, d'après la connaissance de l'assistant. Liste complète **à vérifier** en T22 ; vérifiée le 2026-11-13 : vingt valeurs, dont trois retirées (ADR-0143). | Vocabulaire IPTC NewsCodes « digitalsourcetype » |
 
 Recherche faite le 2026-10-26. Les sources secondaires sont des cabinets et des blogs ; elles suffisent à juger la phrase du cahier plausible, pas à la citer comme référence.
 
@@ -418,3 +418,4 @@ Les points adressés à T02 ont été tranchés ou reportés : voir le [registre
 | --- | --- | --- | --- |
 | 2026-10-26 | 1.0 | Création | T01 |
 | 2026-10-26 | 1.1 | Renvoi vers le registre des arbitrages (§8) | T02 |
+| 2026-11-13 | 1.2 | A-33 (§4) et vérification des faits (§7) : vocabulaire IPTC vérifié (ADR-0143) | T22 |
