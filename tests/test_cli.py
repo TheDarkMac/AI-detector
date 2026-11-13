@@ -189,7 +189,9 @@ def test_desactiver_un_module_livre(
     monkeypatch.setattr(manifestes, "decouvrir", lambda: (livre,))
     document = tmp_path / "document.pdf"
     document.write_bytes(PDF)
-    assert main(["--desactiver", "exif", str(document)]) == 0
+    # Le catalogue livré cite les modules livrés : un catalogue sans règle va avec ce seul module.
+    vide = ecrire_catalogue(tmp_path / "catalogue")
+    assert main(["--catalogue", str(vide), "--desactiver", "exif", str(document)]) == 0
     sortie = capsys.readouterr().out
     assert "  technique exif, partie 1 : non menée\n" in sortie
     assert (
