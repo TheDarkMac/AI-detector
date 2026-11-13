@@ -1,0 +1,49 @@
+# Règles du module exif (T22) : nom d'un générateur dans l'étiquette Software (F-12, ADR-0144)
+# et paramètres de génération d'AUTOMATIC1111 dans le commentaire EXIF (ADR-0145).
+
+[[regle]]
+identifiant = "R-EXIF-001"
+version = "1"
+module = "exif"
+titre = "Générateur nommé par l'étiquette Software"
+description = "L'étiquette Software (TIFF 6.0) du répertoire principal nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
+gabarit = "exif.logiciel-generateur"
+phrase = { fr = "L'étiquette EXIF Software, qui nomme le logiciel de création, vaut « {logiciel} » : on y lit le nom d'un logiciel de génération par IA." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer cette étiquette ; son absence ne dit rien (F-14).",
+  "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
+  "Le constat dit ce que l'étiquette nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.ifd0.Software"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"
+
+[[regle]]
+identifiant = "R-EXIF-002"
+version = "1"
+module = "exif"
+titre = "Paramètres de génération au format d'AUTOMATIC1111 dans le commentaire EXIF"
+description = "L'étiquette UserComment porte des paramètres de génération au format qu'écrit l'interface stable-diffusion-webui d'AUTOMATIC1111 dans un JPEG ou un WebP (modules/images.py, par piexif) : la requête, puis une ligne « Steps: …, Sampler: … »."
+gabarit = "exif.parametres-automatic1111"
+phrase = { fr = "Le commentaire EXIF (UserComment) porte des paramètres de génération d'images au format de l'interface AUTOMATIC1111 (nombre d'étapes, échantillonneur)." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer ce commentaire ; une conversion ou une plateforme de partage l'efface souvent ; son absence ne dit rien (F-14).",
+  "Le constat dit le format des paramètres, pas l'outil : d'autres interfaces peuvent écrire le même format.",
+  "Seuls les 4 096 premiers caractères du commentaire sont lus (ADR-0118) : une requête plus longue cache la ligne des paramètres.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "exif.exif.UserComment"
+motif = 'Steps: [0-9]+, Sampler:'

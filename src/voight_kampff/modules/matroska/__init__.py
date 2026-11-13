@@ -11,8 +11,8 @@ Lit, dans le segment (RFC 9559) :
   vise une édition, un chapitre ou un fichier joint ; une balise imbriquée à la suite de son
   parent ; une balise binaire par sa seule taille.
 
-Observe aussi ``matroska.present`` dans tous les cas (F-14). Aucune règle : T22 et T23 lisent
-ces observations.
+Observe aussi ``matroska.present`` dans tous les cas (F-14). Aucune règle « module » : les
+règles du catalogue lisent ces observations (T22, T23).
 """
 
 from voight_kampff._travail.contexte import Contexte

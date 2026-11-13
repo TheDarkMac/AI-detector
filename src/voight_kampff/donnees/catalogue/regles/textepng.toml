@@ -1,0 +1,121 @@
+# Règles du module textepng (T22) : paramètres de génération écrits dans les blocs texte d'un
+# PNG par des outils dont le code est public (F-12, ADR-0145), et nom d'un générateur dans le
+# mot-clé Software (ADR-0144).
+#
+# Le mot-clé observé passe par la règle des composants d'ADR-0117 : le tiret bas devient un
+# tiret (invokeai_metadata donne textepng.invokeai-metadata). Un texte est coupé à 4 096
+# caractères (ADR-0118) : un motif ne voit que son début.
+
+[[regle]]
+identifiant = "R-TEXTEPNG-001"
+version = "1"
+module = "textepng"
+titre = "Paramètres de génération au format d'AUTOMATIC1111"
+description = "Le bloc texte de mot-clé parameters porte des paramètres de génération au format qu'écrit l'interface stable-diffusion-webui d'AUTOMATIC1111 (modules/images.py et modules/processing.py) : la requête, puis une ligne « Steps: …, Sampler: … »."
+gabarit = "textepng.parametres-automatic1111"
+phrase = { fr = "Le bloc texte « parameters » du PNG porte des paramètres de génération d'images au format de l'interface AUTOMATIC1111 (nombre d'étapes, échantillonneur)." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer ce bloc ; une conversion ou une plateforme de partage l'efface souvent ; son absence ne dit rien (F-14).",
+  "Le constat dit le format des paramètres, pas l'outil : d'autres interfaces peuvent écrire le même format.",
+  "Seuls les 4 096 premiers caractères du bloc sont lus (ADR-0118) : une requête plus longue cache la ligne des paramètres.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "textepng.parameters"
+motif = 'Steps: [0-9]+, Sampler:'
+
+[[regle]]
+identifiant = "R-TEXTEPNG-002"
+version = "1"
+module = "textepng"
+titre = "Graphe de génération de ComfyUI"
+description = "Le bloc texte de mot-clé prompt porte le graphe de génération que ComfyUI enregistre avec chaque image (nodes.py, SaveImage) : un objet JSON dont chaque nœud nomme sa classe par la clé class_type (execution.py)."
+gabarit = "textepng.graphe-comfyui"
+phrase = { fr = "Le bloc texte « prompt » du PNG porte un graphe de génération d'images au format de ComfyUI (nœuds désignés par « class_type »)." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer ce bloc ; une conversion ou une plateforme de partage l'efface souvent ; son absence ne dit rien (F-14).",
+  "Le constat dit le format du graphe, pas l'outil : un autre logiciel peut écrire le même format.",
+  "Seuls les 4 096 premiers caractères du bloc sont lus (ADR-0118) : un premier nœud de plus de 4 096 caractères cache la clé cherchée.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "textepng.prompt"
+motif = '"class_type"\s*:'
+
+[[regle]]
+identifiant = "R-TEXTEPNG-003"
+version = "1"
+module = "textepng"
+titre = "Métadonnées de génération d'InvokeAI"
+description = "Le PNG porte un bloc texte de mot-clé invokeai_metadata, que l'application InvokeAI écrit avec chaque image qu'elle enregistre (invokeai/app/services/image_files/image_files_disk.py)."
+gabarit = "textepng.metadonnees-invokeai"
+phrase = { fr = "Le PNG porte un bloc texte « invokeai_metadata », où l'application de génération d'images InvokeAI écrit ses paramètres." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer ce bloc ; une conversion ou une plateforme de partage l'efface souvent ; son absence ne dit rien (F-14).",
+  "Le contenu du bloc n'est pas examiné : sa seule présence fait le constat.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "textepng.invokeai-metadata"
+presente = true
+
+[[regle]]
+identifiant = "R-TEXTEPNG-004"
+version = "1"
+module = "textepng"
+titre = "Métadonnées de génération d'InvokeAI 2"
+description = "Le PNG porte un bloc texte de mot-clé sd-metadata, qu'écrivaient les versions 2 d'InvokeAI (ldm/invoke/pngwriter.py de la version 2.3.5)."
+gabarit = "textepng.metadonnees-invokeai-2"
+phrase = { fr = "Le PNG porte un bloc texte « sd-metadata », où les versions 2 de l'application de génération d'images InvokeAI écrivaient leurs paramètres." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer ce bloc ; une conversion ou une plateforme de partage l'efface souvent ; son absence ne dit rien (F-14).",
+  "Le contenu du bloc n'est pas examiné : sa seule présence fait le constat ; un autre outil peut employer le même mot-clé.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "textepng.sd-metadata"
+presente = true
+
+[[regle]]
+identifiant = "R-TEXTEPNG-005"
+version = "1"
+module = "textepng"
+titre = "Générateur nommé par le bloc texte Software"
+description = "Le bloc texte de mot-clé Software (mot-clé prédéfini par la norme PNG) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
+gabarit = "textepng.logiciel-generateur"
+phrase = { fr = "Le bloc texte « Software » du PNG, qui nomme le logiciel de création, vaut « {logiciel} » : on y lit le nom d'un logiciel de génération par IA." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer ce bloc ; son absence ne dit rien (F-14).",
+  "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
+  "Le constat dit ce que le bloc nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "textepng.Software"
+motif = '(?i)\b(?:midjourney|dall[-·‧ ]e|stable[- ]?diffusion|adobe firefly|comfyui|invoke[- ]?ai|novelai|automatic1111|fooocus|leonardo\.ai|ideogram|craiyon|dreamstudio|chatgpt|suno|udio|elevenlabs)\b'
+parametre = "logiciel"

@@ -1,10 +1,10 @@
 # Fiche technique — Métadonnées d'un document ODT
 
-- **Module** : `odf` (version 0.1.0)
-- **Tâche** : T21 (complément bureautique)
-- **Exigences** : F-10, ES-05, ES-06, ES-13
+- **Module** : `odf` (version 0.2.0)
+- **Tâche** : T21 (complément bureautique), T22
+- **Exigences** : F-10, F-12, ES-05, ES-06, ES-13
 - **Formats** : `odt`
-- **Directions permises** : `rien_de_particulier`
+- **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : `expat`
 
@@ -47,7 +47,7 @@ Noms d'observation ([ADR-0140](../decisions/ADR-0140-noms-et-valeurs-des-proprie
 - Dates et durées (`meta:creation-date`, `dc:date`, `meta:print-date`, `meta:editing-duration`) : telles qu'écrites (ISO 8601), sans conversion ; T23 et T81 les interpréteront.
 - Élément répété (`meta:keyword`) : une liste, dans l'ordre du document. Texte vide : rien n'est observé.
 
-Aucun constat.
+Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
 
 ## Données identifiantes
 
@@ -64,17 +64,23 @@ Le titre, les mots-clés et les propriétés utilisateur ne sont pas marqués : 
 | Capture brute | Rien |
 | Transformation banale | Rien |
 | Retouche | Rien |
-| Génération | Rien |
+| Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `meta:generator` |
 
-Le module ne distingue aucune hypothèse et n'émet aucun constat ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)). `meta:generator` est une déclaration du logiciel, que quiconque peut écrire (cas d'abus C-02) ; un seul cycle d'édition ou une durée nulle sont neutres (F-71, T81).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. `meta:generator` est une déclaration du logiciel, que quiconque peut écrire (cas d'abus C-02) ; un seul cycle d'édition ou une durée nulle sont neutres (F-71, T81).
 
 ## Ce qui déclenche un constat
 
-Aucun constat en T21. Une absence de métadonnées est l'observation `odf.present` à faux (F-14).
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+
+| Règle | Observation | Test | Direction |
+| --- | --- | --- | --- |
+| `R-ODF-001` Générateur nommé par le générateur d'un ODT ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `odf.meta:generator` | liste des générateurs (ADR-0144) | origine IA |
+
+Une absence de métadonnées est l'observation `odf.present` à faux (F-14).
 
 ## Taux d'erreur
 
-Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftool, dans les deux sens, sur un ODT écrit par LibreOffice ([ADR-0141](../decisions/ADR-0141-oracle-bureautique-par-libreoffice.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, dans les deux sens, sur un ODT écrit par LibreOffice ([ADR-0141](../decisions/ADR-0141-oracle-bureautique-par-libreoffice.md)).
 
 ## Limites connues
 
@@ -95,3 +101,4 @@ Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftoo
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-11-13 | 0.1.0 | Création (T21, complément bureautique) |
+| 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |

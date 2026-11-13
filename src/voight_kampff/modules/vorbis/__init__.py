@@ -8,7 +8,7 @@ d'ordinaire la bibliothèque d'encodage, est observée sous ``vorbis.vendor`` ; 
 répété donne une liste. Une image (``METADATA_BLOCK_PICTURE``, ``COVERART``) est observée par
 sa seule taille. Observe aussi ``vorbis.present`` dans tous les cas (F-14).
 
-Aucune règle : T22 et T23 lisent ces observations.
+Aucune règle « module » : les règles du catalogue lisent ces observations (T22, T23).
 """
 
 from voight_kampff._travail.contexte import Contexte

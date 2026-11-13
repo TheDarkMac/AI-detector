@@ -1,10 +1,10 @@
 # Fiche technique — Blocs texte PNG
 
-- **Module** : `textepng` (version 0.1.0)
-- **Tâche** : T20
-- **Exigences** : F-10, ES-13
+- **Module** : `textepng` (version 0.2.0)
+- **Tâche** : T20, T22
+- **Exigences** : F-10, F-12, ES-13
 - **Formats** : `png`
-- **Directions permises** : `rien_de_particulier`
+- **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : aucune
 
@@ -40,7 +40,7 @@ Noms d'observation ([ADR-0117](../decisions/ADR-0117-vocabulaire-des-observation
 
 Dans le mot-clé, tout caractère hors des lettres ASCII, des chiffres et du tiret devient un tiret : `Creation Time` donne `textepng.Creation-Time`. Le mot-clé traduit d'un `iTXt` n'est pas observé.
 
-Aucun constat. Les paramètres de génération que certains outils écrivent dans ces blocs (mots-clés `parameters`, `prompt`, `workflow`…) sont observés comme tout texte ; leur reconnaissance est l'affaire du catalogue de signatures de T22 (F-12).
+Le module n'émet aucun constat. Les paramètres de génération que certains outils écrivent dans ces blocs (mots-clés `parameters`, `prompt`, `invokeai_metadata`…) sont observés comme tout texte ; les règles R-TEXTEPNG-001 à R-TEXTEPNG-004 du catalogue les reconnaissent (F-12, [ADR-0145](../decisions/ADR-0145-signatures-de-parametres-de-generation.md)).
 
 ## Données identifiantes
 
@@ -53,21 +53,31 @@ Marqués `metadonnee_nominative` ([ADR-0119](../decisions/ADR-0119-donnees-ident
 | Capture brute | Rien |
 | Transformation banale | Rien |
 | Retouche | Rien |
-| Génération | Rien |
+| Génération | Ce que le fichier en déclare, sans vérification : paramètres d'AUTOMATIC1111, graphe de ComfyUI, métadonnées d'InvokeAI, nom d'un générateur dans `Software` |
 
-Le module ne distingue aucune hypothèse et n'émet aucun constat ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations.
 
 ## Ce qui déclenche un constat
 
-Aucun constat en T20. Une absence de bloc texte est l'observation `textepng.present` à faux (F-14).
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+
+| Règle | Observation | Test | Direction |
+| --- | --- | --- | --- |
+| `R-TEXTEPNG-001` Paramètres de génération au format d'AUTOMATIC1111 ([ADR-0145](../decisions/ADR-0145-signatures-de-parametres-de-generation.md)) | `textepng.parameters` | motif `Steps: [0-9]+, Sampler:` | origine IA |
+| `R-TEXTEPNG-002` Graphe de génération de ComfyUI ([ADR-0145](../decisions/ADR-0145-signatures-de-parametres-de-generation.md)) | `textepng.prompt` | motif `"class_type"\s*:` | origine IA |
+| `R-TEXTEPNG-003` Métadonnées de génération d'InvokeAI ([ADR-0145](../decisions/ADR-0145-signatures-de-parametres-de-generation.md)) | `textepng.invokeai-metadata` | présente | origine IA |
+| `R-TEXTEPNG-004` Métadonnées de génération d'InvokeAI 2 ([ADR-0145](../decisions/ADR-0145-signatures-de-parametres-de-generation.md)) | `textepng.sd-metadata` | présente | origine IA |
+| `R-TEXTEPNG-005` Générateur nommé par le bloc texte Software ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `textepng.Software` | liste des générateurs (ADR-0144) | origine IA |
+
+Une absence de bloc texte est l'observation `textepng.present` à faux (F-14).
 
 ## Taux d'erreur
 
-Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftool, par mot-clé ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par mot-clé ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)).
 
 ## Limites connues
 
-- Un texte de plus de 4 096 caractères est coupé : une règle de T22 ne verra que son début (le flux de travail JSON de certains outils dépasse souvent cette taille). Sa longueur entière est observée.
+- Un texte de plus de 4 096 caractères est coupé : les règles R-TEXTEPNG-001 et R-TEXTEPNG-002 n'en voient que le début (le flux de travail JSON de certains outils dépasse souvent cette taille). Sa longueur entière est observée.
 - Les textes « Raw profile type exif / xmp / iptc » écrits en hexadécimal par ImageMagick sont observés comme du texte, sans être décodés vers EXIF, XMP ou IPTC.
 - Une compression inconnue, un flux invalide ou un drapeau de compression invalide rendent le bloc non mené (format partiel) ; les autres blocs sont lus.
 - Le bloc `tIME` (date de dernière modification) n'est pas un bloc texte : il n'est pas lu en T20.
@@ -82,3 +92,4 @@ Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftoo
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-10-28 | 0.1.0 | Création (T20) |
+| 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |

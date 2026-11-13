@@ -82,18 +82,18 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
     } | {
         (module, EtatTechnique.NON_APPLICABLE, version)
         for module, version in (
-            ("exif", "0.1.1"),
-            ("id3", "0.1.0"),
-            ("infowav", "0.1.0"),
-            ("iptc", "0.1.0"),
-            ("matroska", "0.1.0"),
-            ("odf", "0.1.0"),
-            ("ooxml", "0.1.0"),
-            ("quicktime", "0.1.0"),
-            ("textepng", "0.1.0"),
-            ("vorbis", "0.1.0"),
+            ("exif", "0.2.0"),
+            ("id3", "0.2.0"),
+            ("infowav", "0.2.0"),
+            ("iptc", "0.2.0"),
+            ("matroska", "0.2.0"),
+            ("odf", "0.2.0"),
+            ("ooxml", "0.2.0"),
+            ("quicktime", "0.2.0"),
+            ("textepng", "0.2.0"),
+            ("vorbis", "0.2.0"),
         )
-    } | {("infopdf", EtatTechnique.PARTIELLE, "0.1.0"), ("xmp", EtatTechnique.PARTIELLE, "0.3.0")}
+    } | {("infopdf", EtatTechnique.PARTIELLE, "0.2.0"), ("xmp", EtatTechnique.PARTIELLE, "0.4.0")}
     assert {n.raison for n in analyse.non_menees} == {
         RaisonNonMenee.HORS_V1,
         RaisonNonMenee.FORMAT_PARTIEL,

@@ -6,7 +6,7 @@ sous ``iptc.<enregistrement>:<numéro>`` (ADR-0117). Les propriétés IPTC écri
 (``Iptc4xmpCore``, ``Iptc4xmpExt``) sont lues par le module ``xmp``. Observe aussi
 ``iptc.present`` dans tous les cas (F-14).
 
-Aucune règle : T22 et T23 lisent ces observations.
+Aucune règle « module » : les règles du catalogue lisent ces observations (T22, T23).
 """
 
 from voight_kampff._travail.contexte import Contexte

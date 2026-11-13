@@ -6,7 +6,8 @@ langue d'un ``iTXt``, si elle est déclarée, sous ``textepng.<mot-clé>.langue`
 ``iTXt`` ``XML:com.adobe.xmp`` est lu par le module ``xmp``. Observe aussi ``textepng.present``
 dans tous les cas (F-14).
 
-Aucune règle : les paramètres de génération qu'un bloc texte peut porter sont l'affaire de T22.
+Aucune règle « module » : les paramètres de génération qu'un bloc texte peut porter sont reconnus
+par les règles du catalogue (T22).
 """
 
 from voight_kampff._travail.contexte import Contexte

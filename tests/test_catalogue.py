@@ -53,18 +53,20 @@ def fichiers(dossier: Path) -> list[tuple[str, bytes]]:
 def test_catalogue_livre_valide() -> None:
     livre = charger(manifestes.decouvrir())
     assert not livre.version.fourni_par_utilisateur
-    assert livre.regles == ()  # aucune règle avant T22 : les modules de T20 extraient seulement
+    assert livre.regles  # premières règles en T22 ; leur effet est éprouvé par test_signatures.py
     assert livre.version.empreinte == empreinte(fichiers(Path(str(catalogues.livre()))))
 
 
 @pytest.mark.exigence("NF-06", "P-05")
 def test_empreinte_selon_la_procedure_publiee() -> None:
-    # Ce que donne `find . -type f | LC_ALL=C sort | xargs sha256sum | sha256sum` (ADR-0088).
+    # Ce que donne `find . -type f | LC_ALL=C sort | xargs sha256sum | sha256sum` (ADR-0088) :
+    # lignes dans l'ordre des chemins, pas des empreintes (ERR-0010).
     dossier = Path(str(catalogues.livre()))
-    lignes = sorted(
+    lignes = [
         f"{hashlib.sha256(contenu).hexdigest()}  {chemin}\n"
-        for chemin, contenu in fichiers(dossier)
-    )
+        for chemin, contenu in sorted(fichiers(dossier), key=lambda fichier: fichier[0].encode())
+    ]
+    assert len(lignes) > 1
     attendue = hashlib.sha256("".join(lignes).encode()).hexdigest()
     assert charger(manifestes.decouvrir()).version.empreinte == attendue
 

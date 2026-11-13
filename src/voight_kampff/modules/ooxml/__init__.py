@@ -13,7 +13,8 @@ parties 1 et 2) et observe chacune sous ``ooxml.core``, ``ooxml.app`` ou ``ooxml
 Observe aussi ``ooxml.present`` dans tous les cas (F-14). Les dates sont observées telles
 qu'écrites (W3CDTF). Aucune autre relation n'est lue ni suivie : ni le document, ni un modèle
 distant, ni un lien, ni la liste des liens des propriétés étendues (``HLinks``) (ES-06,
-ADR-0138). Aucune règle : T22, T23 et T81 lisent ces observations.
+ADR-0138). Aucune règle « module » : les règles du catalogue lisent
+ces observations (T22, T23, T81).
 """
 
 import binascii

@@ -52,8 +52,8 @@ def test_sans_argument_affiche_l_aide(capsys: pytest.CaptureFixture[str]) -> Non
 def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--modules"]) == 0
     assert capsys.readouterr().out == (
-        "exif 0.1.1\nid3 0.1.0\ninfopdf 0.1.0\ninfowav 0.1.0\niptc 0.1.0\nmatroska 0.1.0\n"
-        "odf 0.1.0\nooxml 0.1.0\nquicktime 0.1.0\ntextepng 0.1.0\nvorbis 0.1.0\nxmp 0.3.0\n"
+        "exif 0.2.0\nid3 0.2.0\ninfopdf 0.2.0\ninfowav 0.2.0\niptc 0.2.0\nmatroska 0.2.0\n"
+        "odf 0.2.0\nooxml 0.2.0\nquicktime 0.2.0\ntextepng 0.2.0\nvorbis 0.2.0\nxmp 0.4.0\n"
     )
 
 
@@ -301,11 +301,23 @@ def test_resume_de_chaque_element() -> None:
 @pytest.mark.exigence("NF-07")
 def test_regles_du_catalogue_livre(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--regles"]) == 0
-    livre = catalogue.charger(manifestes.decouvrir()).version
-    assert capsys.readouterr().out == (
-        f"catalogue : {livre.version} du {livre.date.isoformat()}, empreinte {livre.empreinte}\n"
-        "Aucune règle dans cette version du catalogue.\n"
-    )
+    livre = catalogue.charger(manifestes.decouvrir())
+    version = livre.version
+    assert capsys.readouterr().out.splitlines() == [
+        f"catalogue : {version.version} du {version.date.isoformat()}, "
+        f"empreinte {version.empreinte}",
+        *(f"{r.identifiant} version {r.version} ({r.module}) : {r.titre}" for r in livre.regles),
+    ]
+
+
+def test_regles_d_un_catalogue_sans_regle(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    vide = ecrire_catalogue(tmp_path / "catalogue")
+    assert main(["--catalogue", str(vide), "--regles"]) == 0
+    lignes = capsys.readouterr().out.splitlines()
+    assert lignes[0].startswith("catalogue : 1.2.3 du 2026-10-20, fourni par l'utilisateur")
+    assert lignes[1:] == ["Aucune règle dans cette version du catalogue."]
 
 
 def test_regles_d_un_catalogue_fourni(

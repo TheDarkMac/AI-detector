@@ -5,8 +5,8 @@ d'un WebP, élément ``Exif`` d'un HEIC) et observe chaque étiquette de chaque 
 nom ``exif.<répertoire>.<étiquette>`` (ADR-0117). Observe aussi ``exif.present`` dans tous les
 cas : une absence est une observation, jamais un constat (F-14, ADR-0058).
 
-Aucune règle : ce module extrait, il n'interprète pas. Les règles qui lisent ses observations
-viennent avec T22 et T23.
+Aucune règle « module » : ce module extrait, il n'interprète pas. Les règles du catalogue lisent
+ses observations (T22 : logiciel de génération, paramètres d'AUTOMATIC1111 ; T23 à venir).
 """
 
 import codecs

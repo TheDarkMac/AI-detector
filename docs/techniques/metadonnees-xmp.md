@@ -1,10 +1,10 @@
 # Fiche technique — Métadonnées XMP
 
-- **Module** : `xmp` (version 0.3.0)
-- **Tâche** : T20, T21
-- **Exigences** : F-10, ES-05, ES-13
+- **Module** : `xmp` (version 0.4.0)
+- **Tâche** : T20, T21, T22
+- **Exigences** : F-10, F-11, F-12, ES-05, ES-13
 - **Formats** : `jpeg`, `png`, `webp`, `heic`, `pdf`, `wav`, `m4a`, `mp4`, `mov`
-- **Directions permises** : `rien_de_particulier`
+- **Directions permises** : `origine_ia`, `retouche`, `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : `expat`
 
@@ -47,7 +47,7 @@ Noms d'observation ([ADR-0117](../decisions/ADR-0117-vocabulaire-des-observation
 
 Le préfixe vient de l'adresse de l'espace de noms, jamais du préfixe écrit dans le fichier : `dc`, `xmp`, `xmpMM`, `photoshop`, `exif`, `tiff`, `Iptc4xmpCore`, `Iptc4xmpExt`, `crs`, `GPano`… (table `ESPACES` de `modules/_lecture/xmp.py`) ; un espace inconnu prend `ns1`, `ns2`… dans l'ordre de première apparition. Un caractère d'un nom local hors des lettres ASCII, des chiffres et du tiret devient un tiret (le point compris, qui sépare les parties d'un nom). Le qualificatif `xml:lang` n'est pas observé : un `rdf:Alt` de langues donne la liste de ses valeurs, dans l'ordre du fichier. Le paquet étendu n'est lu que complet et désigné par la propriété `xmpNote:HasExtendedXMP` du paquet principal (XMP, partie 3) ; ses propriétés suivent celles du paquet principal, sous les mêmes noms.
 
-Aucun constat. La propriété `Iptc4xmpExt:DigitalSourceType`, qui peut déclarer une origine IA (F-11), est observée telle quelle ; la règle qui la lit vient avec T22.
+Le module n'émet aucun constat. La propriété `Iptc4xmpExt:DigitalSourceType`, qui peut déclarer une origine IA (F-11), est observée telle quelle ; les règles R-XMP-001 à R-XMP-003 la lisent ([ADR-0143](../decisions/ADR-0143-valeurs-iptc-de-la-source-numerique.md)).
 
 ## Données identifiantes
 
@@ -66,18 +66,28 @@ Marquées par le module, d'après le premier composant identifiant du nom ([ADR-
 | --- | --- |
 | Capture brute | Rien |
 | Transformation banale | Rien |
-| Retouche | Rien |
-| Génération | Rien |
+| Retouche | Ce que le fichier en déclare, sans vérification : `DigitalSourceType` à `compositeWithTrainedAlgorithmicMedia` ou `compositeSynthetic` |
+| Génération | Ce que le fichier en déclare, sans vérification : `DigitalSourceType` à `trainedAlgorithmicMedia`, nom d'un générateur dans `xmp:CreatorTool` ou l'historique |
 
-Le module ne distingue aucune hypothèse et n'émet aucun constat ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)). Une déclaration XMP n'est jamais une preuve (ADR-0021, cas d'abus C-02) : les règles de T22 qui liront `DigitalSourceType` en feront au mieux une déclaration.
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. Une déclaration XMP n'est jamais une preuve (ADR-0021, cas d'abus C-02).
 
 ## Ce qui déclenche un constat
 
-Aucun constat en T20. Une absence de XMP est l'observation `xmp.present` à faux (F-14).
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+
+| Règle | Observation | Test | Direction |
+| --- | --- | --- | --- |
+| `R-XMP-001` Création par IA générative déclarée (IPTC) ([ADR-0143](../decisions/ADR-0143-valeurs-iptc-de-la-source-numerique.md)) | `xmp.Iptc4xmpExt:DigitalSourceType` | valeur IPTC `trainedAlgorithmicMedia`, adresse ou code seul | origine IA |
+| `R-XMP-002` Retouche par IA générative déclarée (IPTC) ([ADR-0143](../decisions/ADR-0143-valeurs-iptc-de-la-source-numerique.md)) | `xmp.Iptc4xmpExt:DigitalSourceType` | valeur IPTC `compositeWithTrainedAlgorithmicMedia`, adresse ou code seul | retouche |
+| `R-XMP-003` Montage avec un élément généré par IA déclaré (IPTC) ([ADR-0143](../decisions/ADR-0143-valeurs-iptc-de-la-source-numerique.md)) | `xmp.Iptc4xmpExt:DigitalSourceType` | valeur IPTC `compositeSynthetic`, adresse ou code seul | retouche |
+| `R-XMP-004` Générateur nommé par l'outil de création XMP ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `xmp.xmp:CreatorTool` | liste des générateurs (ADR-0144) | origine IA |
+| `R-XMP-005` Générateur nommé dans l'historique XMP ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `xmp.xmpMM:History.stEvt:softwareAgent` | liste des générateurs (ADR-0144) | origine IA |
+
+Une absence de XMP est l'observation `xmp.present` à faux (F-14).
 
 ## Taux d'erreur
 
-Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftool, par le nom local de chaque propriété ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)) ; pour la vidéo, sur un MP4 et un MOV dont exiftool a écrit le paquet ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par le nom local de chaque propriété ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)) ; pour la vidéo, sur un MP4 et un MOV dont exiftool a écrit le paquet ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)).
 
 ## Limites connues
 
@@ -104,3 +114,4 @@ Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftoo
 | 2026-10-28 | 0.1.0 | Création (T20) |
 | 2026-11-12 | 0.2.0 | PDF : paquet du catalogue (T21, ADR-0127) |
 | 2026-11-13 | 0.3.0 | WAV, M4A, MP4, MOV : blocs `_PMX`, boîtes `uuid` et `XMP_` (T21, complément audio et vidéo, ADR-0134) |
+| 2026-11-13 | 0.4.0 | Directions origine IA, retouche permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |

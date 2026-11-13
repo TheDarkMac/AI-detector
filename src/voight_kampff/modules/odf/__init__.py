@@ -11,7 +11,7 @@ le document (``odf.meta:user-defined.<nom>``). Observe aussi ``odf.present`` dan
 
 Les dates et durées sont observées telles qu'écrites (ISO 8601). Les références (attributs
 ``xlink`` : modèle, rechargement automatique) ne sont ni lues ni suivies (ES-06, ADR-0138).
-Aucune règle : T22, T23 et T81 lisent ces observations.
+Aucune règle « module » : les règles du catalogue lisent ces observations (T22, T23, T81).
 """
 
 from voight_kampff._travail.contexte import Contexte

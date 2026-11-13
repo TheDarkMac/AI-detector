@@ -8,7 +8,8 @@ Lit chaque paquet XMP de la partie (segment APP1 d'un JPEG et ses morceaux éten
 est observée sous le nom ``xmp.<préfixe>:<propriété>``, les champs d'une structure à la suite,
 séparés par un point (ADR-0117). Observe aussi ``xmp.present`` dans tous les cas (F-14).
 
-Le XML est lu sans DTD par expat (ADR-0116). Aucune règle : T22 et T23 lisent ces observations.
+Le XML est lu sans DTD par expat (ADR-0116). Aucune règle « module » : les règles du
+catalogue lisent ces observations (T22, T23).
 """
 
 from voight_kampff._travail.contexte import Contexte

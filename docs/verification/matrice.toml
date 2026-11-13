@@ -117,15 +117,17 @@ note = "Images (JPEG, PNG, WebP, HEIC) : EXIF, XMP, IPTC-IIM et blocs texte PNG,
 
 [[exigence]]
 id = "F-11"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T22"]
 methodes = ["test"]
+note = "Propriété XMP `Iptc4xmpExt:DigitalSourceType` de tous les formats que lit `xmp` : `trainedAlgorithmicMedia` vers l'origine IA, `compositeWithTrainedAlgorithmicMedia` et `compositeSynthetic` vers la retouche, indices faibles d'une déclaration (règles R-XMP-001 à R-XMP-003, ADR-0142, ADR-0143). La même déclaration dans un manifeste C2PA relève de T30."
 
 [[exigence]]
 id = "F-12"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T22"]
 methodes = ["test"]
+note = "Catalogue 0.2.0 : nom d'un générateur dans seize champs logiciels des douze modules de métadonnées (ADR-0144) ; paramètres d'AUTOMATIC1111, graphe de ComfyUI, métadonnées d'InvokeAI (ADR-0145). Indices faibles non évalués, faute de corpus de référence (T100)."
 
 [[exigence]]
 id = "F-13"
@@ -677,7 +679,7 @@ id = "ES-20"
 etat = "partielle"
 taches = ["T11", "T22", "T30"]
 methodes = ["test"]
-note = "Le modèle refuse une preuve sans vérification ; premières déclarations restituées en T22 et T30."
+note = "Le modèle refuse une preuve sans vérification ; les règles de T22 restituent une déclaration du fichier en indice, jamais en preuve (ADR-0142) ; manifestes C2PA en T30."
 
 [[exigence]]
 id = "ES-21"

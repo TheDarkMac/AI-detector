@@ -1,10 +1,10 @@
 # Fiche technique — Métadonnées IPTC-IIM
 
-- **Module** : `iptc` (version 0.1.0)
-- **Tâche** : T20
-- **Exigences** : F-10, ES-13
+- **Module** : `iptc` (version 0.2.0)
+- **Tâche** : T20, T22
+- **Exigences** : F-10, F-12, ES-13
 - **Formats** : `jpeg`
-- **Directions permises** : `rien_de_particulier`
+- **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : aucune
 
@@ -41,7 +41,7 @@ Noms d'observation ([ADR-0117](../decisions/ADR-0117-vocabulaire-des-observation
 
 Un jeu répétable selon la norme (`Keywords`, `By-line`, `SupplementalCategories`, `Contact`…) est toujours une liste ; un jeu non répétable présent plusieurs fois aussi. Les versions et formats (`ApplicationRecordVersion`, `FileFormat`…) sont des entiers. Le texte est décodé en UTF-8 si `CodedCharacterSet` le déclare (`ESC % G`) ; sinon en UTF-8 s'il est valide, en Latin-1 à défaut.
 
-Aucun constat.
+Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
 
 ## Données identifiantes
 
@@ -54,17 +54,23 @@ Marquées `metadonnee_nominative` ([ADR-0119](../decisions/ADR-0119-donnees-iden
 | Capture brute | Rien |
 | Transformation banale | Rien |
 | Retouche | Rien |
-| Génération | Rien |
+| Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `OriginatingProgram` |
 
-Le module ne distingue aucune hypothèse et n'émet aucun constat ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations.
 
 ## Ce qui déclenche un constat
 
-Aucun constat en T20. Une absence d'IPTC est l'observation `iptc.present` à faux (F-14).
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+
+| Règle | Observation | Test | Direction |
+| --- | --- | --- | --- |
+| `R-IPTC-001` Générateur nommé par le programme d'origine IPTC ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `iptc.OriginatingProgram` | liste des générateurs (ADR-0144) | origine IA |
+
+Une absence d'IPTC est l'observation `iptc.present` à faux (F-14).
 
 ## Taux d'erreur
 
-Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftool, par le nom de chaque jeu ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par le nom de chaque jeu ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)).
 
 ## Limites connues
 
@@ -83,3 +89,4 @@ Sans objet : aucun constat. Fidélité de l'extraction vérifiée contre exiftoo
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-10-28 | 0.1.0 | Création (T20) |
+| 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |

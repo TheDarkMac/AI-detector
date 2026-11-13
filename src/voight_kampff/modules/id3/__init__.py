@@ -9,7 +9,7 @@ binaire (image, objet, données privées) par sa seule taille. La balise ID3v1 d
 ``id3.v1.<champ>``. Observe aussi ``id3.present`` dans tous les cas (F-14).
 
 Désynchronisation et compression des trames sont défaites ; une trame chiffrée n'est pas lue.
-Aucune règle : T22 et T23 lisent ces observations.
+Aucune règle « module » : les règles du catalogue lisent ces observations (T22, T23).
 """
 
 import codecs

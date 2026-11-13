@@ -204,9 +204,16 @@ def test_modules_de_metadonnees_livres() -> None:
     assert livres["odf"].formats == ("odt",)
     for module in ("xmp", "ooxml", "odf"):
         assert livres[module].bibliotheques == ("expat",)
-    for manifeste in livres.values():
-        assert "F-10" in manifeste.exigences
-        assert manifeste.directions == (Direction.RIEN_DE_PARTICULIER,)
+    # T22 : les règles du catalogue sur leurs observations sont dirigées (ADR-0142).
+    for identifiant, manifeste in livres.items():
+        assert {"F-10", "F-12"} <= set(manifeste.exigences)
+        assert manifeste.directions == (
+            (Direction.ORIGINE_IA, Direction.RETOUCHE, Direction.RIEN_DE_PARTICULIER)
+            if identifiant == "xmp"
+            else (Direction.ORIGINE_IA, Direction.RIEN_DE_PARTICULIER)
+        )
+        assert manifeste.regles == ()
+    assert "F-11" in livres["xmp"].exigences
 
 
 # Techniques hors de cette version (T15, ADR-0087)
