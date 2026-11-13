@@ -20,6 +20,17 @@ from xml.parsers import expat
 
 import pytest
 from catalogues import CATALOGUE
+from echantillons import boite
+from medias import (
+    donnee,
+    element_ilst,
+    id3v2,
+    meta_itunes,
+    mp3,
+    quicktime,
+    texte_id3,
+    texte_qt,
+)
 from metadonnees import Sous, app1_exif, indefini, jpeg_meta, nombres, pdf_info, tiff
 from systeme import MANQUES_ATTENDUS
 
@@ -212,10 +223,30 @@ def test_vrai_processus_extrait_les_metadonnees_d_un_pdf(tmp_path: Path) -> None
     analyse_de(resultat, len(contenu))
 
 
+@pytest.mark.exigence("F-10", "ES-05")
+def test_vrai_processus_extrait_les_balises_d_une_video(tmp_path: Path) -> None:
+    # Clés QuickTime écrites par ffmpeg, XMP ajouté par exiftool (T21, complément audio et vidéo).
+    contenu = (Path(__file__).parent / "donnees" / "metadonnees" / "video.mp4").read_bytes()
+    ouvert = ouvrir(tmp_path / "video.mp4", contenu)
+    try:
+        resultat = executer(ouvert, manifestes.decouvrir())
+    finally:
+        os.close(ouvert)
+    valeurs = {o.nom: o.valeur for o in resultat.observations}
+    assert str(valeurs["quicktime.mdta.encoder"]).startswith("Lavf")
+    assert str(valeurs["xmp.Iptc4xmpExt:DigitalSourceType"]).endswith("trainedAlgorithmicMedia")
+    etats = {t.module: t.etat for t in resultat.couverture.techniques if t.version is not None}
+    assert etats.pop("quicktime") is etats.pop("xmp") is EtatTechnique.APPLIQUEE
+    assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
+    assert not resultat.interrompue
+    analyse_de(resultat, len(contenu))
+
+
 @pytest.mark.exigence("F-10")
 def test_vrai_processus_decode_les_textes_utf16_et_jis(tmp_path: Path) -> None:
     # Codecs chargés avant les restrictions (ADR-0079, ERR-0009) : étiquette XP en UTF-16LE,
-    # commentaires UNICODE en UTF-16BE et JIS en Shift_JIS, titre PDF en UTF-16BE.
+    # commentaires UNICODE en UTF-16BE et JIS en Shift_JIS, titre PDF en UTF-16BE ; trames ID3
+    # en UTF-16 des deux ordres, textes QuickTime en UTF-16BE, Shift_JIS et Mac Roman (T21).
     exif = tiff(
         (
             nombres(0x9C9D, 1, *"Jé".encode("utf-16-le"), 0, 0),
@@ -233,6 +264,27 @@ def test_vrai_processus_decode_les_textes_utf16_et_jis(tmp_path: Path) -> None:
         ),
         "unicode.jpg": (jpeg_meta(app1_exif(unicode)), {"exif.exif.UserComment": "Jé"}),
         "titre.pdf": (pdf_info(b"<</Title<FEFF004A00E9>>>"), {"infopdf.Title": "Jé"}),
+        "chanson.mp3": (
+            mp3(id3v2(texte_id3(b"TIT2", "Jé", encodage=1), texte_id3(b"TALB", "Jé", encodage=2))),
+            {"id3.TIT2": "Jé", "id3.TALB": "Jé"},
+        ),
+        "chanson.m4a": (
+            quicktime(
+                boite(
+                    b"udta",
+                    texte_qt(b"\xa9nam", "Jé".encode("mac_roman"), langue=0)
+                    + meta_itunes(
+                        element_ilst(b"\xa9cmt", donnee(2, "Jé".encode("utf-16-be"))),
+                        element_ilst(b"\xa9lyr", donnee(3, "テスト".encode("shift_jis"))),
+                    ),
+                )
+            ),
+            {
+                "quicktime.udta.-nam": "Jé",
+                "quicktime.ilst.-cmt": "Jé",
+                "quicktime.ilst.-lyr": "テスト",
+            },
+        ),
     }
     for nom, (contenu, valeurs) in attendus.items():
         ouvert = ouvrir(tmp_path / nom, contenu)

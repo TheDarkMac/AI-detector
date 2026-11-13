@@ -20,6 +20,7 @@ lance une recherche longue (``CONTRIBUTING.md``).
 import importlib
 import json
 import tempfile
+import zlib
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +30,7 @@ from echantillons import (
     PDF,
     TRAME_MP3,
     archive,
+    boite,
     docx,
     ebml,
     id3,
@@ -42,6 +44,38 @@ from echantillons import (
 )
 from hypothesis import given
 from hypothesis import strategies as st
+from medias import (
+    bext,
+    bloc_flac,
+    bloc_wav,
+    cluster,
+    commentaires,
+    donnee,
+    element,
+    element_ilst,
+    flac,
+    id3v1,
+    id3v2,
+    info,
+    libre,
+    liste_info,
+    meta_itunes,
+    meta_mdta,
+    mp3,
+    mvhd,
+    ogg,
+    quicktime,
+    simple,
+    syncsafe,
+    tag,
+    tags,
+    texte_ebml,
+    texte_id3,
+    texte_qt,
+    trame_id3,
+    wav,
+    webm,
+)
 from metadonnees import (
     Element,
     Sous,
@@ -311,6 +345,86 @@ ECHANTILLONS_METADONNEES = (
     ("pdf", (_ORACLE / "document.pdf").read_bytes()),
     ("pdf", (_ORACLE / "ghostscript.pdf").read_bytes()),
     ("pdf", (_ORACLE / "chiffre.pdf").read_bytes()),
+    (
+        "mp3",
+        mp3(
+            id3v2(
+                texte_id3(b"TIT2", "Titre", encodage=1),
+                texte_id3(b"TXXX", "desc", "valeur"),
+                trame_id3(b"COMM", b"\x00fra\x00note"),
+                trame_id3(b"APIC", b"\x00image/png\x00\x03\x00PNG"),
+                trame_id3(b"TIT3", syncsafe(2) + zlib.compress(b"\x00x"), format_=0x09),
+                bourrage=8,
+            ),
+            id3v2(texte_id3(b"TT2", "v2.2", version=2), version=2),
+            v1=id3v1(b"Titre", b"Artiste", piste=1, genre=0),
+        ),
+    ),
+    (
+        "wav",
+        wav(
+            liste_info((b"ISFT", b"Lavf"), (b"IART", b"Moi")),
+            bext(description=b"d", originator=b"o", umid=b"\x01", historique=b"A=PCM"),
+            bloc_wav(b"id3 ", id3v2(texte_id3(b"TIT2", "t"))),
+            bloc_wav(b"_PMX", _XMP),
+        ),
+    ),
+    ("flac", flac(bloc_flac(4, commentaires(b"libFLAC", b"TITLE=t", b"ARTIST=a")))),
+    (
+        "ogg",
+        ogg(
+            (
+                1,
+                [
+                    b"\x01vorbis" + bytes(23),
+                    b"\x03vorbis" + commentaires(b"Xiph", b"A=" + b"1" * 400),
+                ],
+            ),
+            (2, [b"OpusHead" + bytes(11), b"OpusTags" + commentaires(b"libopus", b"B=2")]),
+            par_page=255,
+        ),
+    ),
+    (
+        "m4a",
+        quicktime(
+            mvhd(1, 2),
+            boite(
+                b"udta",
+                texte_qt(b"\xa9swr", b"Lavf")
+                + meta_itunes(
+                    element_ilst(b"\xa9too", donnee(1, b"Lavf")),
+                    element_ilst(b"tmpo", donnee(21, b"\x00\x78")),
+                    libre(b"com.apple.iTunes", b"x", donnee(1, b"y")),
+                )
+                + boite(b"XMP_", _XMP),
+            ),
+            meta_mdta([b"com.apple.quicktime.software"], (1, donnee(1, b"17"))),
+        ),
+    ),
+    (
+        "webm",
+        webm(
+            info(texte_ebml(0x4D80, "Lavf"), element(0x4461, bytes(8))),
+            cluster(inconnu=True),
+            tags(tag(simple("ENCODER", "x", simple("A", "b")), cibles=element(0x63C5, b"\x01"))),
+            segment_inconnu=True,
+        ),
+    ),
+    *(
+        (format_, (_ORACLE / nom).read_bytes())
+        for nom, format_ in (
+            ("son.wav", "wav"),
+            ("son.mp3", "mp3"),
+            ("son.aac", "aac"),
+            ("son.m4a", "m4a"),
+            ("son.flac", "flac"),
+            ("son.ogg", "ogg"),
+            ("son.opus", "ogg"),
+            ("video.mp4", "mp4"),
+            ("video.mov", "mov"),
+            ("video.webm", "webm"),
+        )
+    ),
 )
 """Échantillons par format : toutes les familles, toutes les formes de conteneur lues."""
 _MODULES: dict[str, tuple[str, ...]] = {
@@ -319,6 +433,15 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "webp": ("exif", "xmp"),
     "heic": ("exif", "xmp"),
     "pdf": ("infopdf", "xmp"),
+    "mp3": ("id3",),
+    "aac": ("id3",),
+    "wav": ("id3", "infowav", "xmp"),
+    "flac": ("id3", "vorbis"),
+    "ogg": ("vorbis",),
+    "m4a": ("quicktime", "xmp"),
+    "mp4": ("quicktime", "xmp"),
+    "mov": ("quicktime", "xmp"),
+    "webm": ("matroska",),
 }
 
 
