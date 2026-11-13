@@ -146,7 +146,7 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0129](ADR-0129-controle-des-adr-et-du-titre-de-merge.md) | La CI refuse un ADR « Proposé » et vérifie le titre du commit de merge | Accepté | 2026-11-12 |
 | [ADR-0130](ADR-0130-complement-audio-et-video-de-t21.md) | Complément audio et vidéo de T21 : les neuf formats en une branche | Accepté | 2026-11-13 |
 | [ADR-0131](ADR-0131-un-module-par-famille-de-balises.md) | Un module par famille de balises ; lecteurs de structure écrits par le projet | Accepté | 2026-11-13 |
-| [ADR-0132](ADR-0132-emplacements-lus-dans-les-conteneurs-audio-et-video.md) | Emplacements lus dans les conteneurs audio et vidéo | Proposé | 2026-11-13 |
-| [ADR-0133](ADR-0133-noms-et-valeurs-des-balises-audio-et-video.md) | Noms et valeurs des balises audio et vidéo | Proposé | 2026-11-13 |
+| [ADR-0132](ADR-0132-emplacements-lus-dans-les-conteneurs-audio-et-video.md) | Emplacements lus dans les conteneurs audio et vidéo | Accepté | 2026-11-13 |
+| [ADR-0133](ADR-0133-noms-et-valeurs-des-balises-audio-et-video.md) | Noms et valeurs des balises audio et vidéo | Accepté | 2026-11-13 |
 | [ADR-0134](ADR-0134-xmp-des-fichiers-audio-et-video.md) | XMP des fichiers audio et vidéo lu par `xmp` | Accepté | 2026-11-13 |
 | [ADR-0135](ADR-0135-oracle-des-balises-par-ffmpeg.md) | Oracle des balises audio et vidéo : échantillons écrits par ffmpeg | Accepté | 2026-11-13 |

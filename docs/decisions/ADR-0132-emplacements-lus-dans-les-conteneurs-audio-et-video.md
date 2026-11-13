@@ -1,8 +1,8 @@
 # ADR-0132 — Emplacements lus dans les conteneurs audio et vidéo
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-13
-- **Décideur** : assistant, proposition à valider pendant la revue de la PR du complément
+- **Décideur** : proposition de l'assistant, validée par TheDarkMac
 - **Tâche** : T21 (complément audio et vidéo)
 - **Exigences liées** : F-10, F-14, F-25, F-82 ; ADR-0115, ADR-0127, ADR-0131
 
@@ -64,3 +64,4 @@ Option A. Emplacements lus, par format et par module :
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR du complément : statut « Accepté » |

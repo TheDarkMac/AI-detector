@@ -3,7 +3,7 @@
 - **Branche** : `tache/T21-extraction-audio-video`
 - **Dates** : 2026-11-13
 - **Exigences couvertes** : F-10 (audio et vidéo), F-14 (absence observée), F-82, ES-03, ES-05 (XMP des fichiers audio et vidéo), ES-13, ES-19, NF-09
-- **Décisions** : ADR-0130, ADR-0131, ADR-0134, ADR-0135 acceptés ; ADR-0132 et ADR-0133 proposés, à valider pendant la revue
+- **Décisions** : ADR-0130 à ADR-0135, tous acceptés
 - **Errata** : aucun
 
 ## Objectif
@@ -28,7 +28,7 @@ Premier complément de T21 (ADR-0123) : extraire les balises des conteneurs audi
    - XMP des fichiers audio et vidéo : dans cette PR ([ADR-0134](../decisions/ADR-0134-xmp-des-fichiers-audio-et-video.md)) ;
    - oracle : ffmpeg du dépôt Debian, installé par TheDarkMac ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)).
 
-   Les autres choix, faits par l'assistant, sont soumis dans la PR : [ADR-0132](../decisions/ADR-0132-emplacements-lus-dans-les-conteneurs-audio-et-video.md) (emplacements lus et non lus), [ADR-0133](../decisions/ADR-0133-noms-et-valeurs-des-balises-audio-et-video.md) (noms, valeurs, dates, données identifiantes).
+   Les autres choix, faits par l'assistant, ont été soumis dans la PR et validés par TheDarkMac pendant sa revue (2026-11-13) : [ADR-0132](../decisions/ADR-0132-emplacements-lus-dans-les-conteneurs-audio-et-video.md) (emplacements lus et non lus), [ADR-0133](../decisions/ADR-0133-noms-et-valeurs-des-balises-audio-et-video.md) (noms, valeurs, dates, données identifiantes).
 3. Branche `tache/T21-extraction-audio-video` créée depuis `detector` à jour (`4a49cba`).
 4. Lecteurs : `conteneurs` localise les blocs des neuf formats (parcours RIFF commun à WebP et WAV, balises ID3v2 consécutives et ID3v1, blocs FLAC, pages et paquets Ogg réassemblés, boîtes de `moov` et XMP d'ISOBMFF, éléments de premier niveau d'un segment EBML, `Cluster` de taille inconnue) ; `ebml` lit en-têtes, enfants et entiers EBML ; `valeurs` gagne `entier` et `texte`.
 5. Modules `id3`, `infowav`, `vorbis`, `quicktime`, `matroska` 0.1.0 ; `xmp` 0.3.0 (WAV, M4A, MP4, MOV) ; fiches `metadonnees-id3`, `metadonnees-info-wav`, `metadonnees-vorbis`, `metadonnees-quicktime`, `metadonnees-matroska`, fiche `metadonnees-xmp` complétée.
@@ -41,6 +41,8 @@ Premier complément de T21 (ADR-0123) : extraire les balises des conteneurs audi
 7. TheDarkMac a installé ffmpeg 7.1.5 (Debian 13). Oracle : `generer_media.sh` (dix échantillons, balises de ffmpeg, XMP d'exiftool pour le MP4 et le MOV) ; `relire.sh` passé à `-G1:4` ; test d'oracle étendu aux neuf formats, dans les deux sens.
 8. Vérification locale : `uv lock --check` ; Ruff (format et analyse) et mypy sans remarque ; matrice régénérée et vérifiée ; lint Markdown (`npx --yes markdownlint-cli2@0.23.2`) sans remarque ; 1 402 tests verts, un sauté (lanceur de Windows) ; couverture 100 % des lignes et des branches ; exiftool 13.25 redonne exactement `exiftool.json` ; campagne de fuzzing des modules de métadonnées, 40 000 exemples par propriété (profil temporaire, hors du dépôt), trois fois : sur les échantillons construits, sans échec (18 min 00 s) ; avec les échantillons de l'oracle, un échec, `TimeReference` hors bornes (voir les problèmes) ; après la correction, sans échec (17 min 30 s).
 9. Documentation : ADR-0130 à ADR-0135 ; fiches ; renvois dans ADR-0043, ADR-0114, ADR-0117, ADR-0119, ADR-0122, ADR-0123 ; matrice (F-10, F-14, ES-05, ES-19) ; découpage v0.20, architecture v1.14 ; `CONTRIBUTING.md` (§1, oracle) ; index des ADR, du journal et des fiches.
+
+10. PR [#21](https://github.com/TheDarkMac/AI-detector/pull/21) ouverte ; `lint-markdown` rouge sur l'étape « Aucun ADR au statut Proposé », comme prévu (ADR-0129). ADR-0132 et ADR-0133 validés par TheDarkMac pendant la revue, le 2026-11-13 : statut « Accepté ».
 
 ## Problèmes rencontrés
 
