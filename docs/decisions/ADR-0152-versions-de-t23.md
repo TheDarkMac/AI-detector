@@ -1,8 +1,8 @@
 # ADR-0152 — Versions de T23 : catalogue 0.3.0 au format 2, modules inchangés
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-13
-- **Décideur** : l'assistant, sur proposition non posée en question pendant T23 ; à valider par TheDarkMac pendant la revue de la PR de T23
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T23, validée pendant la revue de la PR de T23
 - **Tâche** : T23
 - **Exigences liées** : NF-06, NF-07, F-26 ; ADR-0064, ADR-0068, ADR-0085, ADR-0146, ADR-0147
 
@@ -46,3 +46,4 @@ Option A dans les deux cas.
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR de T23 (« Yes, all three ») : statut « Accepté » |

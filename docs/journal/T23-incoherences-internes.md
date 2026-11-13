@@ -3,7 +3,7 @@
 - **Branche** : `tache/T23-incoherences-internes`
 - **Dates** : 2026-11-13
 - **Exigences couvertes** : F-13 (réalisée), F-14 (réalisée), P-04 (réalisée), F-26 (format 2 du catalogue), NF-06
-- **Décisions** : ADR-0147 à ADR-0152 ; ADR-0147, ADR-0149 et ADR-0151 acceptés, ADR-0148, ADR-0150 et ADR-0152 proposés
+- **Décisions** : ADR-0147 à ADR-0152, tous acceptés
 - **Errata** : aucun
 
 ## Objectif
@@ -29,7 +29,7 @@ Relever les incohérences internes des métadonnées : dates impossibles, logici
    - dimensions atypiques : liste dans le catalogue ([ADR-0150](../decisions/ADR-0150-incoherences-retenues.md)) ;
    - absence de métadonnées : une règle par module ([ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)).
 
-   Les autres choix, faits par l'assistant, sont soumis dans la PR : [ADR-0148](../decisions/ADR-0148-lecture-des-dates.md) (lecture des dates), ADR-0150 hors dimensions (incohérences retenues et écartées), [ADR-0152](../decisions/ADR-0152-versions-de-t23.md) (versions).
+   Les autres choix, faits par l'assistant, ont été soumis dans la PR et validés par TheDarkMac pendant sa revue (« Yes, all three », 2026-11-13) : [ADR-0148](../decisions/ADR-0148-lecture-des-dates.md) (lecture des dates), ADR-0150 hors dimensions (incohérences retenues et écartées), [ADR-0152](../decisions/ADR-0152-versions-de-t23.md) (versions).
 3. Vérification des sources, en ligne, le 2026-11-13 : référence de l'API d'images d'OpenAI (tailles fixes) ; écriture des dates EXIF (copies de la norme CIPA DC-008), PDF (manuels de cpdf, Apryse, `DateTime::Format::PDF` ; la norme ISO 32000 est payante), XMP (page des types de données et de l'espace `xmp` d'Adobe, dont « It should be the same as or more recent than xmp:ModifyDate » pour `xmp:MetadataDate`).
 4. Branche `tache/T23-incoherences-internes` créée depuis `detector` à jour (`22809de`).
 5. Lecture des dates : `src/voight_kampff/_dates.py`, quatre écritures, intervalles d'instants UTC, états impossible, non renseignée, non reconnue (ADR-0148).
@@ -44,6 +44,7 @@ Relever les incohérences internes des métadonnées : dates impossibles, logici
 9. Fiches des douze modules, par un second script temporaire hors du dépôt, puis relues : tâche, tableau des règles de T23 à la rubrique « Ce qui déclenche un constat », phrase de l'absence, taux d'erreur ; à la main, dates lues ou non par les règles, limite d'EXIF ; historique ; index des fiches.
 10. Vérification locale : Ruff (format et analyse) et mypy sans remarque ; lint Markdown (`npx --yes markdownlint-cli2@0.23.2`) sans erreur ; matrice régénérée (F-13, F-14 et P-04 réalisées) ; suite complète verte, couverture de 100 % des lignes et des branches ; banc sur le corpus d'essai, sans réseau (`unshare -rn`) : code 1 et le seul écart attendu, la cible par fichier non établie sur quatre authentiques (ADR-0105) ; le banc ne compte que les indices, et les vingt-quatre de T22 restent sans déclenchement sur les fichiers authentiques. Essai sur le poste : un JPEG fabriqué (appareil Canon, prise de vue une semaine après la modification, 1 024 × 1 024) donne quatre informations neutres et aucun indice ; rapport HTML relu. Code des modules inchangé : campagne de fuzzing non relancée.
 11. Documentation : ADR-0147 à ADR-0152 ; renvois dans ADR-0084, ADR-0085, ADR-0089, ADR-0128, ADR-0133, ADR-0140 ; guide du catalogue v1.4 ; architecture v1.16 ; analyse critique v1.3 (A-32, A-34) ; découpage v0.23 ; matrice ; index des ADR, du journal et des fiches.
+12. PR [#24](https://github.com/TheDarkMac/AI-detector/pull/24) ouverte ; sur `2995b22`, code 43445583589 vert sur tous les systèmes, docs 43445583584 rouge sur l'étape « Aucun ADR au statut Proposé », comme prévu (ADR-0129). ADR-0148, ADR-0150 et ADR-0152 validés par TheDarkMac pendant la revue, le 2026-11-13 (« Yes, all three ») : statut « Accepté ».
 
 ## Problèmes rencontrés
 
@@ -57,6 +58,7 @@ Relever les incohérences internes des métadonnées : dates impossibles, logici
 | Deux lignes de `_regles.py` non couvertes par la suite complète | Une garde devenue inaccessible (textes et booléens déjà écartés avant un ordre) ; `paire` d'une condition sans comparaison jamais appelée | Garde retirée ; test ajouté |
 | Le statut en gras du découpage affichait v0.20, celui de l'architecture v1.14 | Les PR des compléments de T21 et de T22 ont complété la phrase du statut sans changer le numéro en gras | Numéros corrigés (v0.23, v1.16) ; simple libellé, sans erratum |
 | mypy refusait l'aide `instant` de `tests/test_dates.py` | Champs passés par `*champs` à `datetime`, avec `tzinfo` nommé | Paramètres nommés un à un |
+| Le statut en gras du guide du catalogue restait à v1.3 dans le premier commit de documentation | Oubli de l'assistant, qui avait ajouté la v1.4 à l'historique seulement | Corrigé dans le commit de validation des ADR |
 | Trois échantillons de test faux | Erreurs de l'assistant : une date de numérisation qui déclenchait une seconde règle, un MP4 sans balise qui déclenchait l'absence, une paire « sans ordre » qui en avait un | Échantillons corrigés |
 
 Seul le statut en gras du découpage et de l'architecture touche un élément déjà mergé : un libellé de version, non une analyse ni une décision, donc sans erratum.

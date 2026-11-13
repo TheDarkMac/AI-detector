@@ -162,8 +162,8 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0145](ADR-0145-signatures-de-parametres-de-generation.md) | Signatures de paramètres de génération : celles que montre le code public d'un outil | Accepté | 2026-11-13 |
 | [ADR-0146](ADR-0146-versions-des-modules-et-du-catalogue-de-t22.md) | Versions des modules et du catalogue de T22 ; forme des règles | Accepté | 2026-11-13 |
 | [ADR-0147](ADR-0147-comparaison-de-deux-observations.md) | Comparaison de deux observations : test du catalogue, format 2 | Accepté | 2026-11-13 |
-| [ADR-0148](ADR-0148-lecture-des-dates.md) | Lecture des dates : quatre écritures, intervalles d'instants, ordre certain | Proposé | 2026-11-13 |
+| [ADR-0148](ADR-0148-lecture-des-dates.md) | Lecture des dates : quatre écritures, intervalles d'instants, ordre certain | Accepté | 2026-11-13 |
 | [ADR-0149](ADR-0149-constat-d-une-incoherence.md) | Constat d'une incohérence interne : information neutre | Accepté | 2026-11-13 |
-| [ADR-0150](ADR-0150-incoherences-retenues.md) | Incohérences retenues : dates, appareil et générateur, dimensions d'un générateur | Proposé | 2026-11-13 |
+| [ADR-0150](ADR-0150-incoherences-retenues.md) | Incohérences retenues : dates, appareil et générateur, dimensions d'un générateur | Accepté | 2026-11-13 |
 | [ADR-0151](ADR-0151-absence-de-metadonnees.md) | Absence de métadonnées : une règle par module, information neutre | Accepté | 2026-11-13 |
-| [ADR-0152](ADR-0152-versions-de-t23.md) | Versions de T23 : catalogue 0.3.0 au format 2, modules inchangés | Proposé | 2026-11-13 |
+| [ADR-0152](ADR-0152-versions-de-t23.md) | Versions de T23 : catalogue 0.3.0 au format 2, modules inchangés | Accepté | 2026-11-13 |

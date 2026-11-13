@@ -1,8 +1,8 @@
 # ADR-0150 — Incohérences retenues : dates, appareil et générateur, dimensions d'un générateur
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-13
-- **Décideur** : TheDarkMac pour les dimensions (liste du catalogue), parmi les options proposées par l'assistant ; l'assistant pour le reste, sur proposition non posée en question, à valider par TheDarkMac pendant la revue de la PR de T23
+- **Décideur** : TheDarkMac pour les dimensions (liste du catalogue), parmi les options proposées par l'assistant ; pour le reste, sur proposition de l'assistant non posée en question, validée pendant la revue de la PR de T23
 - **Tâche** : T23
 - **Exigences liées** : F-13, F-26 ; A-32 ; ADR-0084, ADR-0144, ADR-0147, ADR-0148, ADR-0149
 
@@ -70,3 +70,4 @@ Dimensions A, dates A, logiciel et appareil A : trente-huit règles, dont douze 
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR de T23 (« Yes, all three ») : statut « Accepté » |

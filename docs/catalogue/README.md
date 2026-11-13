@@ -1,6 +1,6 @@
 # Catalogue de règles
 
-> Statut : **v1.3** ; v1.0 mergée avec T15, v1.1 avec T16, v1.2 avec T17, v1.3 proposée dans la PR de T22. Document vivant : toute modification est inscrite à l'historique (§6).
+> Statut : **v1.4** ; v1.0 mergée avec T15, v1.1 avec T16, v1.2 avec T17, v1.3 avec T22, v1.4 proposée dans la PR de T23. Document vivant : toute modification est inscrite à l'historique (§6).
 > Exigences : F-12, F-24, F-26, NF-06, NF-07 ; ES-09 du [modèle de menace](../modele-de-menace/modele-de-menace.md).
 > Décisions : [ADR-0029](../decisions/ADR-0029-integrite-du-catalogue.md), [ADR-0038](../decisions/ADR-0038-format-du-catalogue.md), [ADR-0039](../decisions/ADR-0039-expressions-regulieres-re2.md), [ADR-0084](../decisions/ADR-0084-langage-des-regles.md) à [ADR-0091](../decisions/ADR-0091-texte-des-phrases-dans-la-regle.md).
 
