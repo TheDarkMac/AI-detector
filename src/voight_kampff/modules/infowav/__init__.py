@@ -99,7 +99,10 @@ def _bext(contexte: Contexte, bloc: Bloc) -> None:
         _texte(contexte, bloc, nom, donnees[debut:fin])
     reference = int.from_bytes(donnees[338:346], "little")
     contexte.observer(
-        "infowav.bext.TimeReference", reference, unite="échantillons", localisation=localisation
+        "infowav.bext.TimeReference",
+        valeurs.entier(reference),
+        unite="échantillons",
+        localisation=localisation,
     )
     version = int.from_bytes(donnees[346:348], "little")
     contexte.observer("infowav.bext.Version", version, localisation=localisation)

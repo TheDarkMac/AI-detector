@@ -383,6 +383,13 @@ def test_infowav_bext_version_0_et_umid_nul() -> None:
     assert lu("infowav", wav(bext()), "wav")["infowav.bext.Version"] == 1
 
 
+def test_infowav_reference_temporelle_hors_bornes() -> None:
+    # Entier non signé de 64 bits : au-delà de 2**63 - 1, écrit en texte (ADR-0118). Trouvé par
+    # la campagne de fuzzing, qui faisait lever le modèle.
+    valeurs = lu("infowav", wav(bext(temps=2**64 - 1)), "wav")
+    assert valeurs["infowav.bext.TimeReference"] == str(2**64 - 1)
+
+
 @pytest.mark.parametrize(
     "bloc",
     [
