@@ -61,3 +61,4 @@ Option A.
 | --- | --- |
 | 2026-10-28 | Création |
 | 2026-11-12 | Renvoi : PDF ajouté aux formats de `xmp`, module `infopdf` pour le dictionnaire d'information (ADR-0127) (T21) |
+| 2026-11-13 | Renvoi : modules `id3`, `infowav`, `vorbis`, `quicktime`, `matroska` pour les balises audio et vidéo, `xmp` étendu à WAV, M4A, MP4 et MOV (ADR-0131, ADR-0134) (T21, complément audio et vidéo) |

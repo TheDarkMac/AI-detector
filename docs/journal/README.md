@@ -30,4 +30,5 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T17](T17-banc-d-evaluation.md) | Banc d'évaluation | `tache/T17-banc-d-evaluation` | [#17](https://github.com/TheDarkMac/AI-detector/pull/17) |
 | [T18](T18-reproductibilite.md) | Test de reproductibilité | `tache/T18-reproductibilite` | [#18](https://github.com/TheDarkMac/AI-detector/pull/18) |
 | [T20](T20-extraction-image.md) | Extraction image | `tache/T20-extraction-image` | [#19](https://github.com/TheDarkMac/AI-detector/pull/19) |
-| [T21](T21-extraction-pdf.md) | Extraction PDF | `tache/T21-extraction-pdf` | à venir |
+| [T21](T21-extraction-pdf.md) | Extraction PDF | `tache/T21-extraction-pdf` | [#20](https://github.com/TheDarkMac/AI-detector/pull/20) |
+| [T21 (complément)](T21-extraction-audio-video.md) | Extraction audio et vidéo : balises des conteneurs | `tache/T21-extraction-audio-video` | à venir |
