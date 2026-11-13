@@ -516,6 +516,8 @@ def test_import_des_modules_livres() -> None:
         "infowav",
         "iptc",
         "matroska",
+        "odf",
+        "ooxml",
         "quicktime",
         "textepng",
         "vorbis",
