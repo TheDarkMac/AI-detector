@@ -1,0 +1,12 @@
+# Module matroska : éléments Info et Tags d'un WebM (ADR-0114, ADR-0131). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "matroska"
+version = "0.1.0"
+formats = ["webm"]
+exigences = ["F-10", "ES-13"]
+regles = []
+fiche = "metadonnees-matroska"
+# Extraction seule : aucun constat, donc aucune direction autre que « rien de particulier ».
+directions = ["rien_de_particulier"]
+requiert = []
+bibliotheques = []

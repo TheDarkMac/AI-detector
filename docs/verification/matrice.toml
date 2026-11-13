@@ -113,7 +113,7 @@ id = "F-10"
 etat = "partielle"
 taches = ["T20", "T21"]
 methodes = ["test"]
-note = "Images (JPEG, PNG, WebP, HEIC) : EXIF, XMP, IPTC-IIM et blocs texte PNG, vérifiés contre exiftool (T20, ADR-0122) ; PDF : dictionnaire Info et XMP du catalogue, vérifiés contre exiftool (T21, ADR-0127) ; conteneurs audio et vidéo, documents bureautiques aux compléments de T21 (ADR-0123)."
+note = "Images (JPEG, PNG, WebP, HEIC) : EXIF, XMP, IPTC-IIM et blocs texte PNG, vérifiés contre exiftool (T20, ADR-0122) ; PDF : dictionnaire Info et XMP du catalogue, vérifiés contre exiftool (T21, ADR-0127) ; audio et vidéo (WAV, MP3, AAC, M4A, FLAC, Ogg, MP4, MOV, WebM) : ID3, RIFF `INFO` et `bext`, commentaires Vorbis, `moov` d'ISOBMFF, `Info` et `Tags` de WebM, XMP, vérifiés contre exiftool sur des échantillons de ffmpeg (complément de T21, ADR-0132, ADR-0135) ; documents bureautiques au dernier complément de T21 (ADR-0123)."
 
 [[exigence]]
 id = "F-11"
@@ -138,7 +138,7 @@ id = "F-14"
 etat = "partielle"
 taches = ["T20", "T21", "T23"]
 methodes = ["test"]
-note = "Absence de métadonnées observée par chaque module (`<famille>.present`), jamais un constat (T20, T21) ; règles et présentation à T23."
+note = "Absence de métadonnées observée par chaque module (`<famille>.present`), jamais un constat (T20, T21 et son complément audio et vidéo) ; règles et présentation à T23."
 
 # 5.3 Provenance et marquages
 
@@ -578,7 +578,7 @@ id = "ES-05"
 etat = "partielle"
 taches = ["T20", "T21"]
 methodes = ["test"]
-note = "XML de XMP lu par expat, DOCTYPE et entités refusés (T20, ADR-0116), y compris le XMP d'un PDF (T21) ; XML et archives de DOCX et ODT au complément de T21 (ADR-0123)."
+note = "XML de XMP lu par expat, DOCTYPE et entités refusés (T20, ADR-0116), y compris le XMP d'un PDF (T21) et des fichiers audio et vidéo (complément de T21, ADR-0134) ; XML et archives de DOCX et ODT au dernier complément de T21 (ADR-0123)."
 
 [[exigence]]
 id = "ES-06"
@@ -667,9 +667,9 @@ resultat = "Deux dépendances directes ; verrou à empreintes vérifié par la C
 [[exigence]]
 id = "ES-19"
 etat = "partielle"
-taches = ["T14", "T20", "T100", "T102"]
+taches = ["T14", "T20", "T21", "T100", "T102"]
 methodes = ["test"]
-note = "Fuzzing des analyseurs livrés, dont les modules de métadonnées et leurs lecteurs (T20) ; catégorie « malformés » du corpus de référence à T100."
+note = "Fuzzing des analyseurs livrés, dont les modules de métadonnées et leurs lecteurs : images (T20), PDF, conteneurs audio et vidéo (T21) ; catégorie « malformés » du corpus de référence à T100."
 
 [[exigence]]
 id = "ES-20"

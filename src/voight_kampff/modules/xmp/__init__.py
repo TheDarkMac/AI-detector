@@ -1,9 +1,10 @@
-"""Module ``xmp`` : métadonnées XMP d'une image ou d'un PDF (F-10, ES-05, ADR-0114, ADR-0127 ;
-fiche ``metadonnees-xmp``).
+"""Module ``xmp`` : métadonnées XMP d'une image, d'un PDF, d'un fichier audio ou vidéo (F-10,
+ES-05, ADR-0114, ADR-0127, ADR-0134 ; fiche ``metadonnees-xmp``).
 
 Lit chaque paquet XMP de la partie (segment APP1 d'un JPEG et ses morceaux étendus, bloc ``iTXt``
 ``XML:com.adobe.xmp`` d'un PNG, bloc ``XMP`` d'un WebP, élément XMP d'un HEIC, flux
-``/Metadata`` du catalogue d'un PDF). Chaque propriété
+``/Metadata`` du catalogue d'un PDF, bloc ``_PMX`` d'un WAV, boîte ``uuid`` XMP ou
+``moov/udta/XMP_`` d'un M4A, d'un MP4 ou d'un MOV). Chaque propriété
 est observée sous le nom ``xmp.<préfixe>:<propriété>``, les champs d'une structure à la suite,
 séparés par un point (ADR-0117). Observe aussi ``xmp.present`` dans tous les cas (F-14).
 

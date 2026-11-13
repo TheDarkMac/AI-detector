@@ -1,9 +1,12 @@
-"""Blocs de métadonnées d'une image : où ils sont, sans les interpréter (ADR-0115).
+"""Blocs de métadonnées d'une image, d'un fichier audio ou vidéo : où ils sont, sans les
+interpréter (ADR-0115, ADR-0131).
 
 Le conteneur est parcouru par sa structure seule : segments JPEG jusqu'au premier SOS, blocs PNG
-jusqu'à IEND, blocs RIFF de WebP, boîtes ISOBMFF de HEIC (``meta``, ``iinf``, ``iloc``). Aucune
-donnée d'image n'est décodée. Chaque module garde les blocs de la nature qu'il lit ; le parcours
-est refait par chacun, ce qui garde leurs erreurs séparées (ADR-0114).
+jusqu'à IEND, blocs RIFF de WebP et de WAV, boîtes ISOBMFF de HEIC (``meta``, ``iinf``,
+``iloc``) et de M4A, MP4 et MOV (``moov``), balises ID3 d'un MP3 ou d'un AAC, blocs de
+métadonnées d'un FLAC, pages Ogg, éléments EBML d'un WebM. Aucune donnée d'image ni de son n'est
+décodée. Chaque module garde les blocs de la nature qu'il lit ; le parcours est refait par
+chacun, ce qui garde leurs erreurs séparées (ADR-0114).
 
 Un parcours interrompu rend les blocs trouvés jusque-là et la raison de l'arrêt : fichier
 tronqué si la structure annonce plus d'octets que la partie n'en a, format partiel si elle est
@@ -11,12 +14,13 @@ incohérente ou emploie ce que le lecteur ne sait pas lire.
 """
 
 import zlib
-from collections.abc import Iterator
+from collections.abc import Generator, Iterator
 from dataclasses import dataclass
 from enum import StrEnum
 
 from voight_kampff._protocole import TAILLE_MAX_LECTURE
 from voight_kampff._travail.contexte import Contexte
+from voight_kampff.modules._lecture import ebml
 from voight_kampff.rapport.modele import Localisation, Plage, RaisonNonMenee
 
 __all__ = ["Bloc", "Nature", "Releve", "TextePng", "lire_bloc", "relever", "texte_png"]
@@ -35,6 +39,20 @@ class Nature(StrEnum):
     """Ressources Photoshop (APP13), dont l'IPTC-IIM."""
     TEXTE_PNG = "texte_png"
     """Bloc ``tEXt``, ``zTXt`` ou ``iTXt`` d'un PNG, hors XMP."""
+    ID3V2 = "id3v2"
+    """Balise ID3v2 entière, en-tête de dix octets compris."""
+    ID3V1 = "id3v1"
+    """Balise ID3v1 : les 128 derniers octets, ``TAG`` compris."""
+    INFO_RIFF = "info_riff"
+    """Sous-blocs d'une liste ``LIST`` de type ``INFO`` (WAV), après le type."""
+    BEXT = "bext"
+    """Bloc ``bext`` d'un WAV de diffusion (EBU Tech 3285)."""
+    VORBIS = "vorbis"
+    """Commentaires Vorbis : chaîne du fournisseur puis champs, sans l'en-tête du paquet."""
+    QUICKTIME = "quicktime"
+    """Contenu d'une boîte ``mvhd``, ``udta`` ou ``meta`` de ``moov`` (M4A, MP4, MOV)."""
+    MATROSKA = "matroska"
+    """Contenu d'un élément ``Info`` ou ``Tags`` du segment (WebM)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,7 +63,8 @@ class Bloc:
     chemin: str
     """Élément de la structure qui le porte : segment, bloc, élément HEIC."""
     etendues: tuple[Plage, ...]
-    """Plages de la partie, dans l'ordre ; plusieurs seulement pour un élément HEIC morcelé."""
+    """Plages de la partie, dans l'ordre ; plusieurs pour un élément HEIC morcelé ou un paquet
+    Ogg réparti sur plusieurs pages."""
 
     def localisation(self, suite: str | None = None) -> Localisation:
         """Chemin du bloc, suivi de ``suite`` ; plage d'octets si le bloc est d'un seul tenant."""
@@ -248,10 +267,11 @@ def texte_png(contexte: Contexte, bloc: Bloc) -> TextePng:
         return TextePng(nom, None)
 
 
-# WebP (RFC 9649)
+# RIFF : WebP (RFC 9649), WAV (Microsoft RIFF ; EBU Tech 3285)
 
 
-def _webp(contexte: Contexte) -> Iterator[Bloc]:
+def _blocs_riff(contexte: Contexte) -> Iterator[tuple[bytes, int, int, int]]:
+    """Nature, début, longueur et position de chaque bloc après l'en-tête ``RIFF``."""
     tete = contexte.lire(0, 12)
     if len(tete) < 12:
         raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, 0)
@@ -264,6 +284,14 @@ def _webp(contexte: Contexte) -> Iterator[Bloc]:
         debut = position + 8
         if debut + longueur > fin:
             raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
+        yield nature, debut, longueur, position
+        position = debut + longueur + (longueur & 1)
+    if position < fin:
+        raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
+
+
+def _webp(contexte: Contexte) -> Iterator[Bloc]:
+    for nature, debut, longueur, position in _blocs_riff(contexte):
         if nature in (b"EXIF", b"XMP ") and longueur:
             plage = _plage(contexte, debut, longueur, position)
             if nature == b"XMP ":
@@ -273,9 +301,177 @@ def _webp(contexte: Contexte) -> Iterator[Bloc]:
             elif (bloc := _decoupe(Nature.EXIF, "EXIF", debut, longueur, 6)) is not None:
                 # Préfixe de JPEG que certains outils recopient (RFC 9649 le déconseille).
                 yield bloc
-        position = debut + longueur + (longueur & 1)
-    if position < fin:
-        raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
+
+
+_BLOCS_WAV = {
+    b"bext": Nature.BEXT,
+    b"id3 ": Nature.ID3V2,
+    b"ID3 ": Nature.ID3V2,
+    b"_PMX": Nature.XMP,
+}
+"""Blocs lus d'un WAV, hors ``LIST`` : ``id3 `` en minuscules chez la plupart des outils."""
+
+
+def _wav(contexte: Contexte) -> Iterator[Bloc]:
+    for nature, debut, longueur, position in _blocs_riff(contexte):
+        if nature == b"LIST" and longueur > 4 and contexte.lire(debut, 4) == b"INFO":
+            plage = _plage(contexte, debut + 4, longueur - 4, position)
+            yield Bloc(Nature.INFO_RIFF, "LIST INFO", (plage,))
+        elif nature in _BLOCS_WAV and longueur:
+            plage = _plage(contexte, debut, longueur, position)
+            yield Bloc(_BLOCS_WAV[nature], nature.decode("latin-1"), (plage,))
+
+
+# ID3 (id3.org : ID3v2.2, v2.3, v2.4 ; ID3v1) devant un MP3, un AAC ou un FLAC
+
+
+def _id3v2(contexte: Contexte, position: int) -> Generator[Bloc, None, int]:
+    """Balises ID3v2 consécutives depuis ``position`` ; rend la position qui suit la dernière."""
+    while True:
+        tete = contexte.lire(position, 10)
+        if not tete.startswith(b"ID3"):
+            return position
+        if len(tete) < 10:
+            raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
+        if tete[3] not in (2, 3, 4) or any(octet & 0x80 for octet in tete[6:10]):
+            raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
+        contexte.compter_objets()
+        longueur = 10 + sum(octet << (7 * (3 - i)) for i, octet in enumerate(tete[6:10]))
+        longueur += 10 if tete[3] == 4 and tete[5] & 0x10 else 0  # pied de balise
+        yield Bloc(Nature.ID3V2, "ID3v2", (_plage(contexte, position, longueur, position),))
+        position += longueur
+
+
+def _mpeg(contexte: Contexte) -> Iterator[Bloc]:
+    """MP3 ou AAC : balises ID3v2 en tête ; ID3v1 en fin d'un MP3 seulement, comme
+    l'identification (ADR-0070)."""
+    fin = yield from _id3v2(contexte, 0)
+    debut = contexte.taille - 128
+    if contexte.format_reel == "mp3" and debut >= fin and contexte.lire(debut, 3) == b"TAG":
+        yield Bloc(Nature.ID3V1, "ID3v1", (Plage(debut, 128),))
+
+
+def _flac(contexte: Contexte) -> Iterator[Bloc]:
+    """Blocs de métadonnées d'un FLAC (RFC 9639, §8), après d'éventuelles balises ID3v2."""
+    position = yield from _id3v2(contexte, 0)
+    if contexte.lire(position, 4) != b"fLaC":
+        raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
+    position += 4
+    while True:
+        tete = contexte.lire(position, 4)
+        if len(tete) < 4:
+            raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
+        contexte.compter_objets()
+        nature, longueur, debut = tete[0] & 0x7F, _gros(tete[1:4]), position + 4
+        if nature == 127:  # interdit : ne peut se distinguer d'une trame
+            raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
+        _verifier(contexte, debut, longueur, position)
+        if nature == 4 and longueur:
+            yield Bloc(Nature.VORBIS, "VORBIS_COMMENT", (Plage(debut, longueur),))
+        if tete[0] & 0x80:  # dernier bloc de métadonnées
+            return
+        position = debut + longueur
+
+
+# Ogg (RFC 3533) : Vorbis, Opus (RFC 7845), Theora, Speex, FLAC (RFC 9639)
+
+_OGG = (
+    (b"\x01vorbis", b"\x03vorbis"),
+    (b"OpusHead", b"OpusTags"),
+    (b"\x80theora", b"\x81theora"),
+    (b"Speex   ", b""),
+)
+"""Premier paquet d'un flux, et début de son paquet de commentaires, le second."""
+_OGG_FLAC = b"\x7fFLAC"
+
+
+@dataclass(slots=True)
+class _Flux:
+    """Flux logique d'un Ogg : paquet en cours et paquets complets."""
+
+    morceaux: list[Plage]
+    paquets: int = 0
+    premier: bytes = b""
+    """Début du premier paquet, qui nomme le codec."""
+    fini: bool = False
+
+
+def _ogg(contexte: Contexte) -> Iterator[Bloc]:
+    """Paquet de commentaires de chaque flux du premier maillon de la chaîne.
+
+    Les paquets d'en-tête précèdent les données dans la correspondance de chaque codec avec
+    Ogg : le parcours s'arrête dès que chaque flux connu a donné son second paquet.
+    """
+    flux: dict[int, _Flux] = {}
+    position = 0
+    while position < contexte.taille:
+        tete = contexte.lire(position, 27)
+        if not tete.startswith(b"OggS\x00"):
+            raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
+        if len(tete) < 27:
+            raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
+        contexte.compter_objets()
+        table = contexte.lire(position + 27, tete[26])
+        if len(table) < tete[26]:
+            raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
+        debut = position + 27 + len(table)
+        if debut + sum(table) > contexte.taille:
+            raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
+        courant = flux.setdefault(_petit(tete[14:18]), _Flux([]))
+        if bool(tete[5] & 1) != bool(courant.morceaux) and not courant.fini:
+            # Suite annoncée sans paquet commencé, ou paquet commencé sans suite annoncée.
+            raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
+        for longueur in table:
+            if not courant.fini:
+                bloc = _segment_ogg(contexte, courant, _petit(tete[14:18]), debut, longueur)
+                if bloc is not None:
+                    yield bloc
+            debut += longueur
+        if all(f.fini for f in flux.values()):
+            return
+        position = debut
+
+
+def _segment_ogg(
+    contexte: Contexte, courant: _Flux, numero: int, debut: int, longueur: int
+) -> Bloc | None:
+    """Ajoute un segment au paquet en cours ; rend le bloc de commentaires qu'il achève."""
+    if longueur:
+        dernier = courant.morceaux[-1] if courant.morceaux else None
+        if dernier is not None and dernier.debut + dernier.longueur == debut:
+            courant.morceaux[-1] = Plage(dernier.debut, dernier.longueur + longueur)
+        else:
+            courant.morceaux.append(Plage(debut, longueur))
+        if sum(m.longueur for m in courant.morceaux) > TAILLE_MAX_LECTURE:
+            raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, debut)
+    if longueur == 255:
+        return None  # le paquet continue
+    morceaux, courant.morceaux = courant.morceaux, []
+    courant.paquets += 1
+    tete = b""
+    for morceau in morceaux:
+        if len(tete) >= 16:
+            break
+        tete += contexte.lire(morceau.debut, min(morceau.longueur, 16))
+    if courant.paquets == 1:
+        courant.premier = tete
+        courant.fini = not tete.startswith(_OGG_FLAC) and not any(
+            tete.startswith(premier) for premier, _ in _OGG
+        )
+        return None
+    courant.fini = True
+    if courant.premier.startswith(_OGG_FLAC):
+        # Chaque paquet d'en-tête est un bloc de métadonnées, en-tête de quatre octets compris.
+        entete = 4 if tete[:1] and tete[0] & 0x7F == 4 else None
+    else:
+        commentaires = next(c for p, c in _OGG if courant.premier.startswith(p))
+        entete = len(commentaires) if tete.startswith(commentaires) else None
+    # Un paquet qui continue sur la page suivante y a au moins 255 octets : l'en-tête, de huit
+    # octets au plus, tient dans son premier morceau.
+    if entete is None or not morceaux or morceaux[0].longueur <= entete:
+        return None
+    premier = Plage(morceaux[0].debut + entete, morceaux[0].longueur - entete)
+    return Bloc(Nature.VORBIS, f"flux {numero:08x} / commentaires", (premier, *morceaux[1:]))
 
 
 # HEIC (ISO/CEI 14496-12 ; ISO/CEI 23008-12)
@@ -289,7 +485,11 @@ class _Boite:
     fin: int
 
 
-def _boites(contexte: Contexte, debut: int, fin: int) -> Iterator[_Boite]:
+def _boites(
+    contexte: Contexte, debut: int, fin: int, *, terminal: bool = False
+) -> Iterator[_Boite]:
+    """Boîtes de ``debut`` à ``fin`` ; avec ``terminal``, quatre octets nuls peuvent clore la
+    liste, comme dans ``udta`` (QuickTime File Format)."""
     position = debut
     while position + 8 <= fin:
         tete = contexte.lire(position, 16)
@@ -307,6 +507,8 @@ def _boites(contexte: Contexte, debut: int, fin: int) -> Iterator[_Boite]:
             raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
         yield _Boite(nature, position + entete, position + taille)
         position += taille
+    if terminal and fin - position == 4 and contexte.lire(position, 4) == b"\x00" * 4:
+        return
     if position < fin:
         raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
 
@@ -454,4 +656,125 @@ def _etendues(
     return tuple(plages)
 
 
-_PARCOURS = {"jpeg": _jpeg, "png": _png, "webp": _webp, "heic": _heic}
+# M4A, MP4, MOV (ISO/CEI 14496-12 ; Apple, QuickTime File Format ; XMP, partie 3)
+
+_UUID_XMP = bytes.fromhex("be7acfcb97a942e89c71999491e3afac")
+
+
+def _quicktime(contexte: Contexte) -> Iterator[Bloc]:
+    """Boîtes ``mvhd``, ``udta`` et ``meta`` du premier ``moov`` ; paquets XMP d'une boîte
+    ``uuid`` de premier niveau ou d'une boîte ``XMP_`` de ``moov/udta``.
+
+    Les métadonnées des pistes (``trak``) ne sont pas relevées (ADR-0132).
+    """
+    moov_lu = False
+    for boite in _boites(contexte, 0, contexte.taille):
+        if boite.nature == b"uuid" and boite.fin - boite.debut > 16:
+            if contexte.lire(boite.debut, 16) == _UUID_XMP:
+                longueur = boite.fin - boite.debut - 16
+                plage = _plage(contexte, boite.debut + 16, longueur, boite.debut)
+                yield Bloc(Nature.XMP, "uuid XMP", (plage,))
+        elif boite.nature == b"moov" and not moov_lu:
+            moov_lu = True
+            for enfant in _boites(contexte, boite.debut, boite.fin):
+                if enfant.nature not in (b"mvhd", b"udta", b"meta"):
+                    continue
+                chemin = f"moov/{enfant.nature.decode('latin-1')}"
+                if enfant.fin > enfant.debut:
+                    longueur = enfant.fin - enfant.debut
+                    plage = _plage(contexte, enfant.debut, longueur, enfant.debut)
+                    yield Bloc(Nature.QUICKTIME, chemin, (plage,))
+                if enfant.nature == b"udta":
+                    yield from _xmp_udta(contexte, enfant)
+
+
+def _xmp_udta(contexte: Contexte, udta: _Boite) -> Iterator[Bloc]:
+    for boite in _boites(contexte, udta.debut, udta.fin, terminal=True):
+        if boite.nature == b"XMP_" and boite.fin > boite.debut:
+            plage = _plage(contexte, boite.debut, boite.fin - boite.debut, boite.debut)
+            yield Bloc(Nature.XMP, "moov/udta/XMP_", (plage,))
+
+
+# WebM (RFC 8794 ; RFC 9559)
+
+_EBML = 0x1A45DFA3
+_SEGMENT = 0x18538067
+_INFO = 0x1549A966
+_TAGS = 0x1254C367
+_CLUSTER = 0x1F43B675
+_NIVEAU_1 = frozenset(
+    {0x114D9B74, _INFO, 0x1654AE6B, 0x1043A770, _CLUSTER, 0x1C53BB6B, 0x1941A469, _TAGS}
+)
+"""Éléments de premier niveau du segment : l'un d'eux clôt un élément de taille inconnue."""
+
+
+def _element(contexte: Contexte, position: int) -> tuple[int, int, int | None]:
+    """Identifiant, longueur de l'en-tête et taille (``None`` si inconnue) d'un élément."""
+    tete = contexte.lire(position, 12)
+    try:
+        return ebml.entete(tete, 0)
+    except ebml.Incomplet:
+        raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position) from None
+    except ebml.Invalide:
+        raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position) from None
+
+
+def _webm(contexte: Contexte) -> Iterator[Bloc]:
+    """Éléments ``Info`` et ``Tags`` du segment, parcouru élément par élément."""
+    identifiant, entete, taille = _element(contexte, 0)
+    if identifiant != _EBML or taille is None:
+        raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, 0)
+    position = entete + taille
+    identifiant, entete, taille = _element(contexte, position)
+    if identifiant != _SEGMENT:
+        raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
+    position += entete
+    fin = contexte.taille if taille is None else position + taille
+    while position < min(fin, contexte.taille):
+        identifiant, entete, taille = _element(contexte, position)
+        contexte.compter_objets()
+        debut = position + entete
+        if taille is None:
+            if identifiant != _CLUSTER:
+                raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
+            position = _fin_inconnue(contexte, debut, fin)
+            continue
+        if debut + taille > min(fin, contexte.taille):
+            raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
+        if identifiant in (_INFO, _TAGS) and taille:
+            chemin = "Segment/Info" if identifiant == _INFO else "Segment/Tags"
+            yield Bloc(Nature.MATROSKA, chemin, (_plage(contexte, debut, taille, position),))
+        position = debut + taille
+    if fin > contexte.taille:
+        raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, contexte.taille)
+
+
+def _fin_inconnue(contexte: Contexte, position: int, fin: int) -> int:
+    """Fin d'un ``Cluster`` de taille inconnue : le premier élément de premier niveau qui le
+    suit (RFC 8794, §6.2), ou la fin du segment."""
+    while position < min(fin, contexte.taille):
+        identifiant, entete, taille = _element(contexte, position)
+        if identifiant in _NIVEAU_1:
+            return position
+        contexte.compter_objets()
+        if taille is None:
+            raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
+        position += entete + taille
+    return position
+
+
+_PARCOURS = {
+    "jpeg": _jpeg,
+    "png": _png,
+    "webp": _webp,
+    "heic": _heic,
+    "wav": _wav,
+    "mp3": _mpeg,
+    "aac": _mpeg,
+    "flac": _flac,
+    "ogg": _ogg,
+    "m4a": _quicktime,
+    "mp4": _quicktime,
+    "mov": _quicktime,
+    "webm": _webm,
+}

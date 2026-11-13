@@ -8,15 +8,15 @@
     "id": 0,
     "val": "1 1"
   },
-  "JFIF:ResolutionUnit": {
+  "JFIF:Copy1:ResolutionUnit": {
     "id": 2,
     "val": 0
   },
-  "JFIF:XResolution": {
+  "JFIF:Copy1:XResolution": {
     "id": 3,
     "val": 1
   },
-  "JFIF:YResolution": {
+  "JFIF:Copy1:YResolution": {
     "id": 5,
     "val": 1
   },
@@ -100,15 +100,15 @@
     "id": 1,
     "val": "N"
   },
-  "GPS:GPSLatitude": {
-    "id": 2,
-    "val": 48.8566
-  },
   "GPS:GPSLongitudeRef": {
     "id": 3,
     "val": "E"
   },
-  "GPS:GPSLongitude": {
+  "GPS:Copy1:GPSLatitude": {
+    "id": 2,
+    "val": 48.8566
+  },
+  "GPS:Copy1:GPSLongitude": {
     "id": 4,
     "val": 2.3522
   },
@@ -251,10 +251,6 @@
     "id": 272,
     "val": "Modèle 1"
   },
-  "IFD0:Software": {
-    "id": 305,
-    "val": "Logiciel 2.1"
-  },
   "IFD0:Artist": {
     "id": 315,
     "val": "Jeanne Exemple"
@@ -266,6 +262,10 @@
   "IFD0:Copyright": {
     "id": 33432,
     "val": "© Exemple"
+  },
+  "IFD0:Copy1:Software": {
+    "id": 305,
+    "val": "Logiciel 2.1"
   },
   "ExifIFD:ExposureTime": {
     "id": 33434,
@@ -311,15 +311,15 @@
     "id": 1,
     "val": "N"
   },
-  "GPS:GPSLatitude": {
-    "id": 2,
-    "val": 48.8566
-  },
   "GPS:GPSLongitudeRef": {
     "id": 3,
     "val": "E"
   },
-  "GPS:GPSLongitude": {
+  "GPS:Copy1:GPSLatitude": {
+    "id": 2,
+    "val": 48.8566
+  },
+  "GPS:Copy1:GPSLongitude": {
     "id": 4,
     "val": 2.3522
   }
@@ -353,6 +353,14 @@
   "RIFF:VerticalScale": {
     "id": 8.1,
     "val": 0
+  },
+  "RIFF:Copy1:ImageWidth": {
+    "id": 6,
+    "val": 8
+  },
+  "RIFF:Copy1:ImageHeight": {
+    "id": 8,
+    "val": 8
   },
   "IFD0:Make": {
     "id": 271,
@@ -422,15 +430,15 @@
     "id": 1,
     "val": "N"
   },
-  "GPS:GPSLatitude": {
-    "id": 2,
-    "val": 48.8566
-  },
   "GPS:GPSLongitudeRef": {
     "id": 3,
     "val": "E"
   },
-  "GPS:GPSLongitude": {
+  "GPS:Copy1:GPSLatitude": {
+    "id": 2,
+    "val": 48.8566
+  },
+  "GPS:Copy1:GPSLongitude": {
     "id": 4,
     "val": 2.3522
   },
@@ -637,15 +645,15 @@
     "id": 1,
     "val": "N"
   },
-  "GPS:GPSLatitude": {
-    "id": 2,
-    "val": 48.8566
-  },
   "GPS:GPSLongitudeRef": {
     "id": 3,
     "val": "E"
   },
-  "GPS:GPSLongitude": {
+  "GPS:Copy1:GPSLatitude": {
+    "id": 2,
+    "val": 48.8566
+  },
+  "GPS:Copy1:GPSLongitude": {
     "id": 4,
     "val": 2.3522
   },
@@ -684,9 +692,25 @@
     "id": "ExifToolVersion",
     "val": 13.25
   },
-  "PDF:PDFVersion": {
+  "PDF:Copy1:PDFVersion": {
     "id": "Version",
     "val": 1.7
+  },
+  "PDF:Copy1:Creator": {
+    "id": "Creator",
+    "val": "Outil 3"
+  },
+  "PDF:Copy1:Producer": {
+    "id": "Producer",
+    "val": "LibreOffice 25.2.3.2 (X86_64) / LibreOffice Community"
+  },
+  "PDF:Copy1:CreateDate": {
+    "id": "CreationDate",
+    "val": "2026:11:12 23:42:28+03:00"
+  },
+  "PDF:Copy1:Title": {
+    "id": "Title",
+    "val": "Titre accentué"
   },
   "PDF:Linearized": {
     "id": "_linearized",
@@ -708,18 +732,6 @@
     "id": "Marked",
     "val": true
   },
-  "PDF:Creator": {
-    "id": "Creator",
-    "val": "Outil 3"
-  },
-  "PDF:Producer": {
-    "id": "Producer",
-    "val": "LibreOffice 25.2.3.2 (X86_64) / LibreOffice Community"
-  },
-  "PDF:CreateDate": {
-    "id": "CreationDate",
-    "val": "2026:11:12 23:42:28+03:00"
-  },
   "PDF:Author": {
     "id": "Author",
     "val": "Jeanne Exemple"
@@ -731,10 +743,6 @@
   "PDF:Subject": {
     "id": "Subject",
     "val": "Sujet"
-  },
-  "PDF:Title": {
-    "id": "Title",
-    "val": "Titre accentué"
   },
   "XMP-x:XMPToolkit": {
     "id": "xmptk",
@@ -752,7 +760,7 @@
     "id": "title",
     "val": "Titre"
   },
-  "XMP-pdf:Keywords": {
+  "XMP-pdf:Copy1:Keywords": {
     "id": "Keywords",
     "val": "mot1, mot2"
   },
@@ -799,25 +807,9 @@
     "id": "Count",
     "val": 1
   },
-  "PDF:Producer": {
-    "id": "Producer",
-    "val": "GPL Ghostscript 10.05.1"
-  },
-  "PDF:CreateDate": {
-    "id": "CreationDate",
-    "val": "2026:11:12 23:42:29+03:00"
-  },
-  "PDF:ModifyDate": {
-    "id": "ModDate",
-    "val": "2026:11:12 23:42:29+03:00"
-  },
   "PDF:Author": {
     "id": "Author",
     "val": "Jeanne Exemple"
-  },
-  "PDF:Creator": {
-    "id": "Creator",
-    "val": "Outil 3"
   },
   "PDF:Keywords": {
     "id": "Keywords",
@@ -826,10 +818,6 @@
   "PDF:Subject": {
     "id": "Subject",
     "val": "Sujet"
-  },
-  "PDF:Title": {
-    "id": "Title",
-    "val": "Titre accentué"
   },
   "XMP-x:XMPToolkit": {
     "id": "xmptk",
@@ -851,7 +839,7 @@
     "id": "title",
     "val": "Titre"
   },
-  "XMP-pdf:Keywords": {
+  "XMP-pdf:Copy1:Keywords": {
     "id": "Keywords",
     "val": "mot1, mot2"
   },
@@ -886,5 +874,1171 @@
   "XMP-xmpMM:VersionID": {
     "id": "VersionID",
     "val": 1
+  },
+  "PDF:Copy1:Producer": {
+    "id": "Producer",
+    "val": "GPL Ghostscript 10.05.1"
+  },
+  "PDF:Copy1:CreateDate": {
+    "id": "CreationDate",
+    "val": "2026:11:12 23:42:29+03:00"
+  },
+  "PDF:Copy1:ModifyDate": {
+    "id": "ModDate",
+    "val": "2026:11:12 23:42:29+03:00"
+  },
+  "PDF:Copy1:Creator": {
+    "id": "Creator",
+    "val": "Outil 3"
+  },
+  "PDF:Copy1:Title": {
+    "id": "Title",
+    "val": "Titre accentué"
+  }
+},
+{
+  "SourceFile": "son.wav",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "RIFF:Encoding": {
+    "id": 0,
+    "val": 1
+  },
+  "RIFF:NumChannels": {
+    "id": 1,
+    "val": 1
+  },
+  "RIFF:SampleRate": {
+    "id": 2,
+    "val": 8000
+  },
+  "RIFF:AvgBytesPerSec": {
+    "id": 4,
+    "val": 16000
+  },
+  "RIFF:BitsPerSample": {
+    "id": 7,
+    "val": 16
+  },
+  "RIFF:Description": {
+    "id": 0,
+    "val": "Prise de son"
+  },
+  "RIFF:Originator": {
+    "id": 256,
+    "val": "Enregistreur"
+  },
+  "RIFF:OriginatorReference": {
+    "id": 288,
+    "val": "FRXYZ0123456789"
+  },
+  "RIFF:DateTimeOriginal": {
+    "id": 320,
+    "val": "2026:11:13 10:00:00"
+  },
+  "RIFF:TimeReference": {
+    "id": 338,
+    "val": 0
+  },
+  "RIFF:BWFVersion": {
+    "id": 346,
+    "val": 1
+  },
+  "RIFF:BWF_UMID": {
+    "id": 348,
+    "val": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "RIFF:CodingHistory": {
+    "id": 602,
+    "val": "A=PCM,F=8000,W=16,M=mono"
+  },
+  "RIFF:Artist": {
+    "id": "IART",
+    "val": "Jeanne Exemple"
+  },
+  "RIFF:Comment": {
+    "id": "ICMT",
+    "val": "Commentaire"
+  },
+  "RIFF:DateCreated": {
+    "id": "ICRD",
+    "val": "2026:11:13"
+  },
+  "RIFF:Title": {
+    "id": "INAM",
+    "val": "Titre accentuÃ©"
+  },
+  "RIFF:Software": {
+    "id": "ISFT",
+    "val": "Lavf61.7.103"
+  }
+},
+{
+  "SourceFile": "son.mp3",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "MPEG:MPEGAudioVersion": {
+    "id": "Bit11-12",
+    "val": 0
+  },
+  "MPEG:AudioLayer": {
+    "id": "Bit13-14",
+    "val": 1
+  },
+  "MPEG:AudioBitrate": {
+    "id": "Bit16-19",
+    "val": 24000
+  },
+  "MPEG:SampleRate": {
+    "id": "Bit20-21",
+    "val": 2
+  },
+  "MPEG:ChannelMode": {
+    "id": "Bit24-25",
+    "val": 3
+  },
+  "MPEG:MSStereo": {
+    "id": "Bit26",
+    "val": 0
+  },
+  "MPEG:IntensityStereo": {
+    "id": "Bit27",
+    "val": 0
+  },
+  "MPEG:CopyrightFlag": {
+    "id": "Bit28",
+    "val": 0
+  },
+  "MPEG:OriginalMedia": {
+    "id": "Bit29",
+    "val": 0
+  },
+  "MPEG:Emphasis": {
+    "id": "Bit30-31",
+    "val": 0
+  },
+  "ID3v2_4:Title": {
+    "id": "TIT2",
+    "val": "Titre accentué"
+  },
+  "ID3v2_4:Artist": {
+    "id": "TPE1",
+    "val": "Jeanne Exemple"
+  },
+  "ID3v2_4:Comment": {
+    "id": "TXXX_comment",
+    "val": "Commentaire"
+  },
+  "ID3v2_4:RecordingTime": {
+    "id": "TDRC",
+    "val": "2026:11:13"
+  },
+  "ID3v2_4:EncoderSettings": {
+    "id": "TSSE",
+    "val": "Lavf61.7.103"
+  },
+  "ID3v1:Copy1:Title": {
+    "id": 3,
+    "val": "Titre accentuÃ©"
+  },
+  "ID3v1:Copy1:Artist": {
+    "id": 33,
+    "val": "Jeanne Exemple"
+  },
+  "ID3v1:Copy1:Comment": {
+    "id": 97,
+    "val": "Commentaire"
+  },
+  "ID3v1:Album": {
+    "id": 63,
+    "val": ""
+  },
+  "ID3v1:Year": {
+    "id": 93,
+    "val": 2026
+  },
+  "ID3v1:Genre": {
+    "id": 127,
+    "val": 255
+  }
+},
+{
+  "SourceFile": "son.aac",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "ID3v2_4:Title": {
+    "id": "TIT2",
+    "val": "Titre accentué"
+  },
+  "ID3v2_4:Artist": {
+    "id": "TPE1",
+    "val": "Jeanne Exemple"
+  },
+  "ID3v2_4:EncoderSettings": {
+    "id": "TSSE",
+    "val": "Lavf61.7.103"
+  }
+},
+{
+  "SourceFile": "son.m4a",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "QuickTime:MajorBrand": {
+    "id": 0,
+    "val": "M4A "
+  },
+  "QuickTime:MinorVersion": {
+    "id": 1,
+    "val": "0.2.0"
+  },
+  "QuickTime:CompatibleBrands": {
+    "id": 2,
+    "val": ["M4A ","isom","iso2"]
+  },
+  "QuickTime:MediaDataSize": {
+    "id": "mdat-size",
+    "val": 29
+  },
+  "QuickTime:MediaDataOffset": {
+    "id": "mdat-offset",
+    "val": 44
+  },
+  "QuickTime:MovieHeaderVersion": {
+    "id": 0,
+    "val": 0
+  },
+  "QuickTime:CreateDate": {
+    "id": 1,
+    "val": "2026:11:13 10:00:00"
+  },
+  "QuickTime:ModifyDate": {
+    "id": 2,
+    "val": "2026:11:13 10:00:00"
+  },
+  "QuickTime:TimeScale": {
+    "id": 3,
+    "val": 1000
+  },
+  "QuickTime:Duration": {
+    "id": 4,
+    "val": 0.2
+  },
+  "QuickTime:PreferredRate": {
+    "id": 5,
+    "val": 1
+  },
+  "QuickTime:PreferredVolume": {
+    "id": 6,
+    "val": 1
+  },
+  "QuickTime:PreviewTime": {
+    "id": 18,
+    "val": 0
+  },
+  "QuickTime:PreviewDuration": {
+    "id": 19,
+    "val": 0
+  },
+  "QuickTime:PosterTime": {
+    "id": 20,
+    "val": 0
+  },
+  "QuickTime:SelectionTime": {
+    "id": 21,
+    "val": 0
+  },
+  "QuickTime:SelectionDuration": {
+    "id": 22,
+    "val": 0
+  },
+  "QuickTime:CurrentTime": {
+    "id": 23,
+    "val": 0
+  },
+  "QuickTime:NextTrackID": {
+    "id": 24,
+    "val": 2
+  },
+  "QuickTime:HandlerType": {
+    "id": 8,
+    "val": "mdir"
+  },
+  "QuickTime:HandlerVendorID": {
+    "id": 12,
+    "val": "appl"
+  },
+  "QuickTime:Copy1:MatrixStructure": {
+    "id": 9,
+    "val": "1 0 0 0 1 0 0 0 1"
+  },
+  "Track1:TrackHeaderVersion": {
+    "id": 0,
+    "val": 0
+  },
+  "Track1:TrackCreateDate": {
+    "id": 1,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:TrackModifyDate": {
+    "id": 2,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:TrackID": {
+    "id": 3,
+    "val": 1
+  },
+  "Track1:TrackDuration": {
+    "id": 5,
+    "val": 0.2
+  },
+  "Track1:TrackLayer": {
+    "id": 8,
+    "val": 0
+  },
+  "Track1:TrackVolume": {
+    "id": 9,
+    "val": 1
+  },
+  "Track1:MatrixStructure": {
+    "id": 10,
+    "val": "1 0 0 0 1 0 0 0 1"
+  },
+  "Track1:MediaHeaderVersion": {
+    "id": 0,
+    "val": 0
+  },
+  "Track1:MediaCreateDate": {
+    "id": 1,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:MediaModifyDate": {
+    "id": 2,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:MediaTimeScale": {
+    "id": 3,
+    "val": 8000
+  },
+  "Track1:MediaDuration": {
+    "id": 4,
+    "val": 0.328
+  },
+  "Track1:MediaLanguageCode": {
+    "id": 5,
+    "val": "und"
+  },
+  "Track1:HandlerDescription": {
+    "id": 24,
+    "val": "SoundHandler"
+  },
+  "Track1:Balance": {
+    "id": 2,
+    "val": 0
+  },
+  "Track1:AudioFormat": {
+    "id": 4,
+    "val": "mp4a"
+  },
+  "Track1:AudioChannels": {
+    "id": 24,
+    "val": 1
+  },
+  "Track1:AudioBitsPerSample": {
+    "id": 26,
+    "val": 16
+  },
+  "Track1:AudioSampleRate": {
+    "id": 32,
+    "val": 8000
+  },
+  "Track1:Copy1:HandlerType": {
+    "id": 8,
+    "val": "soun"
+  },
+  "ItemList:Title": {
+    "id": "?nam",
+    "val": "Titre accentué"
+  },
+  "ItemList:Artist": {
+    "id": "?ART",
+    "val": "Jeanne Exemple"
+  },
+  "ItemList:ContentCreateDate": {
+    "id": "?day",
+    "val": "2026:11:13"
+  },
+  "ItemList:Encoder": {
+    "id": "?too",
+    "val": "Lavf61.7.103"
+  },
+  "ItemList:Comment": {
+    "id": "?cmt",
+    "val": "Commentaire"
+  }
+},
+{
+  "SourceFile": "son.flac",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "FLAC:BlockSizeMin": {
+    "id": "Bit000-015",
+    "val": 576
+  },
+  "FLAC:BlockSizeMax": {
+    "id": "Bit016-031",
+    "val": 576
+  },
+  "FLAC:FrameSizeMin": {
+    "id": "Bit032-055",
+    "val": 11
+  },
+  "FLAC:FrameSizeMax": {
+    "id": "Bit056-079",
+    "val": 13
+  },
+  "FLAC:SampleRate": {
+    "id": "Bit080-099",
+    "val": 8000
+  },
+  "FLAC:Channels": {
+    "id": "Bit100-102",
+    "val": 1
+  },
+  "FLAC:BitsPerSample": {
+    "id": "Bit103-107",
+    "val": 16
+  },
+  "FLAC:TotalSamples": {
+    "id": "Bit108-143",
+    "val": 1600
+  },
+  "FLAC:MD5Signature": {
+    "id": "Bit144-271",
+    "val": "9f0adfdbe740cb9cd8188a35761e2476"
+  },
+  "Vorbis:Vendor": {
+    "id": "vendor",
+    "val": "Lavf61.7.103"
+  },
+  "Vorbis:Title": {
+    "id": "TITLE",
+    "val": "Titre accentué"
+  },
+  "Vorbis:Artist": {
+    "id": "ARTIST",
+    "val": "Jeanne Exemple"
+  },
+  "Vorbis:Description": {
+    "id": "DESCRIPTION",
+    "val": "Commentaire"
+  },
+  "Vorbis:Date": {
+    "id": "DATE",
+    "val": "2026-11-13"
+  },
+  "Vorbis:Encoder": {
+    "id": "ENCODER",
+    "val": "Lavf61.7.103"
+  }
+},
+{
+  "SourceFile": "son.ogg",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "Vorbis:VorbisVersion": {
+    "id": 0,
+    "val": 0
+  },
+  "Vorbis:AudioChannels": {
+    "id": 4,
+    "val": 1
+  },
+  "Vorbis:SampleRate": {
+    "id": 5,
+    "val": 8000
+  },
+  "Vorbis:NominalBitrate": {
+    "id": 13,
+    "val": 22400
+  },
+  "Vorbis:Vendor": {
+    "id": "vendor",
+    "val": "Lavf61.7.103"
+  },
+  "Vorbis:Encoder": {
+    "id": "ENCODER",
+    "val": "Lavc61.19.101 libvorbis"
+  },
+  "Vorbis:Title": {
+    "id": "TITLE",
+    "val": "Titre accentué"
+  },
+  "Vorbis:Artist": {
+    "id": "ARTIST",
+    "val": "Jeanne Exemple"
+  }
+},
+{
+  "SourceFile": "son.opus",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "Opus:OpusVersion": {
+    "id": 0,
+    "val": 1
+  },
+  "Opus:AudioChannels": {
+    "id": 1,
+    "val": 1
+  },
+  "Opus:SampleRate": {
+    "id": 4,
+    "val": 48000
+  },
+  "Opus:OutputGain": {
+    "id": 8,
+    "val": 1
+  },
+  "Vorbis:Vendor": {
+    "id": "vendor",
+    "val": "Lavf61.7.103"
+  },
+  "Vorbis:Encoder": {
+    "id": "ENCODER",
+    "val": "Lavc61.19.101 libopus"
+  },
+  "Vorbis:Title": {
+    "id": "TITLE",
+    "val": "Titre accentué"
+  },
+  "Vorbis:Artist": {
+    "id": "ARTIST",
+    "val": "Jeanne Exemple"
+  }
+},
+{
+  "SourceFile": "video.mp4",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "QuickTime:MajorBrand": {
+    "id": 0,
+    "val": "isom"
+  },
+  "QuickTime:MinorVersion": {
+    "id": 1,
+    "val": "0.2.0"
+  },
+  "QuickTime:CompatibleBrands": {
+    "id": 2,
+    "val": ["isom","iso2","mp41"]
+  },
+  "QuickTime:MovieHeaderVersion": {
+    "id": 0,
+    "val": 0
+  },
+  "QuickTime:CreateDate": {
+    "id": 1,
+    "val": "2026:11:13 10:00:00"
+  },
+  "QuickTime:ModifyDate": {
+    "id": 2,
+    "val": "2026:11:13 10:00:00"
+  },
+  "QuickTime:TimeScale": {
+    "id": 3,
+    "val": 1000
+  },
+  "QuickTime:Duration": {
+    "id": 4,
+    "val": 0.4
+  },
+  "QuickTime:PreferredRate": {
+    "id": 5,
+    "val": 1
+  },
+  "QuickTime:PreferredVolume": {
+    "id": 6,
+    "val": 1
+  },
+  "QuickTime:PreviewTime": {
+    "id": 18,
+    "val": 0
+  },
+  "QuickTime:PreviewDuration": {
+    "id": 19,
+    "val": 0
+  },
+  "QuickTime:PosterTime": {
+    "id": 20,
+    "val": 0
+  },
+  "QuickTime:SelectionTime": {
+    "id": 21,
+    "val": 0
+  },
+  "QuickTime:SelectionDuration": {
+    "id": 22,
+    "val": 0
+  },
+  "QuickTime:CurrentTime": {
+    "id": 23,
+    "val": 0
+  },
+  "QuickTime:NextTrackID": {
+    "id": 24,
+    "val": 2
+  },
+  "QuickTime:HandlerType": {
+    "id": 8,
+    "val": "mdta"
+  },
+  "QuickTime:MediaDataSize": {
+    "id": "mdat-size",
+    "val": 25
+  },
+  "QuickTime:MediaDataOffset": {
+    "id": "mdat-offset",
+    "val": 4393
+  },
+  "QuickTime:Copy1:MatrixStructure": {
+    "id": 9,
+    "val": "1 0 0 0 1 0 0 0 1"
+  },
+  "Track1:TrackHeaderVersion": {
+    "id": 0,
+    "val": 0
+  },
+  "Track1:TrackCreateDate": {
+    "id": 1,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:TrackModifyDate": {
+    "id": 2,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:TrackID": {
+    "id": 3,
+    "val": 1
+  },
+  "Track1:TrackDuration": {
+    "id": 5,
+    "val": 0.4
+  },
+  "Track1:TrackLayer": {
+    "id": 8,
+    "val": 0
+  },
+  "Track1:TrackVolume": {
+    "id": 9,
+    "val": 0
+  },
+  "Track1:MatrixStructure": {
+    "id": 10,
+    "val": "1 0 0 0 1 0 0 0 1"
+  },
+  "Track1:ImageWidth": {
+    "id": 19,
+    "val": 16
+  },
+  "Track1:ImageHeight": {
+    "id": 20,
+    "val": 16
+  },
+  "Track1:MediaHeaderVersion": {
+    "id": 0,
+    "val": 0
+  },
+  "Track1:MediaCreateDate": {
+    "id": 1,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:MediaModifyDate": {
+    "id": 2,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:MediaTimeScale": {
+    "id": 3,
+    "val": 10240
+  },
+  "Track1:MediaDuration": {
+    "id": 4,
+    "val": 0.4
+  },
+  "Track1:MediaLanguageCode": {
+    "id": 5,
+    "val": "und"
+  },
+  "Track1:HandlerDescription": {
+    "id": 24,
+    "val": "VideoHandler"
+  },
+  "Track1:GraphicsMode": {
+    "id": 2,
+    "val": 0
+  },
+  "Track1:OpColor": {
+    "id": 3,
+    "val": "0 0 0"
+  },
+  "Track1:CompressorID": {
+    "id": 2,
+    "val": "mp4v"
+  },
+  "Track1:SourceImageWidth": {
+    "id": 16,
+    "val": 16
+  },
+  "Track1:SourceImageHeight": {
+    "id": 17,
+    "val": 16
+  },
+  "Track1:XResolution": {
+    "id": 18,
+    "val": 72
+  },
+  "Track1:YResolution": {
+    "id": 20,
+    "val": 72
+  },
+  "Track1:CompressorName": {
+    "id": 25,
+    "val": "Lavc61.19.101 mpeg4"
+  },
+  "Track1:BitDepth": {
+    "id": 41,
+    "val": 24
+  },
+  "Track1:PixelAspectRatio": {
+    "id": "pasp",
+    "val": "1:1"
+  },
+  "Track1:BufferSize": {
+    "id": 0,
+    "val": 0
+  },
+  "Track1:MaxBitrate": {
+    "id": 1,
+    "val": 200000
+  },
+  "Track1:AverageBitrate": {
+    "id": 2,
+    "val": 500
+  },
+  "Track1:VideoFrameRate": {
+    "id": "stts",
+    "val": 5
+  },
+  "Track1:Copy1:HandlerType": {
+    "id": 8,
+    "val": "vide"
+  },
+  "Keys:Title": {
+    "id": "title",
+    "val": "Titre accentué"
+  },
+  "Keys:Software": {
+    "id": "software",
+    "val": "Logiciel 1.0"
+  },
+  "Keys:CreationTime": {
+    "id": "creation_time",
+    "val": "2026:11:13 10:00:00Z"
+  },
+  "Keys:Encoder": {
+    "id": "encoder",
+    "val": "Lavf61.7.103"
+  },
+  "XMP-x:XMPToolkit": {
+    "id": "xmptk",
+    "val": "Image::ExifTool 13.25"
+  },
+  "XMP-iptcExt:DigitalSourceType": {
+    "id": "DigitalSourceType",
+    "val": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "XMP-dc:Creator": {
+    "id": "creator",
+    "val": ["Jeanne Exemple"]
+  },
+  "XMP-xmp:CreatorTool": {
+    "id": "CreatorTool",
+    "val": "Outil 3"
+  }
+},
+{
+  "SourceFile": "video.mov",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "QuickTime:MajorBrand": {
+    "id": 0,
+    "val": "qt  "
+  },
+  "QuickTime:MinorVersion": {
+    "id": 1,
+    "val": "0.2.0"
+  },
+  "QuickTime:CompatibleBrands": {
+    "id": 2,
+    "val": ["qt  "]
+  },
+  "QuickTime:MovieHeaderVersion": {
+    "id": 0,
+    "val": 0
+  },
+  "QuickTime:CreateDate": {
+    "id": 1,
+    "val": "2026:11:13 10:00:00"
+  },
+  "QuickTime:ModifyDate": {
+    "id": 2,
+    "val": "2026:11:13 10:00:00"
+  },
+  "QuickTime:TimeScale": {
+    "id": 3,
+    "val": 1000
+  },
+  "QuickTime:Duration": {
+    "id": 4,
+    "val": 0.4
+  },
+  "QuickTime:PreferredRate": {
+    "id": 5,
+    "val": 1
+  },
+  "QuickTime:PreferredVolume": {
+    "id": 6,
+    "val": 1
+  },
+  "QuickTime:PreviewTime": {
+    "id": 18,
+    "val": 0
+  },
+  "QuickTime:PreviewDuration": {
+    "id": 19,
+    "val": 0
+  },
+  "QuickTime:PosterTime": {
+    "id": 20,
+    "val": 0
+  },
+  "QuickTime:SelectionTime": {
+    "id": 21,
+    "val": 0
+  },
+  "QuickTime:SelectionDuration": {
+    "id": 22,
+    "val": 0
+  },
+  "QuickTime:CurrentTime": {
+    "id": 23,
+    "val": 0
+  },
+  "QuickTime:NextTrackID": {
+    "id": 24,
+    "val": 2
+  },
+  "QuickTime:MediaDataSize": {
+    "id": "mdat-size",
+    "val": 25
+  },
+  "QuickTime:MediaDataOffset": {
+    "id": "mdat-offset",
+    "val": 4153
+  },
+  "QuickTime:Copy1:MatrixStructure": {
+    "id": 9,
+    "val": "1 0 0 0 1 0 0 0 1"
+  },
+  "Track1:TrackHeaderVersion": {
+    "id": 0,
+    "val": 0
+  },
+  "Track1:TrackCreateDate": {
+    "id": 1,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:TrackModifyDate": {
+    "id": 2,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:TrackID": {
+    "id": 3,
+    "val": 1
+  },
+  "Track1:TrackDuration": {
+    "id": 5,
+    "val": 0.4
+  },
+  "Track1:TrackLayer": {
+    "id": 8,
+    "val": 0
+  },
+  "Track1:TrackVolume": {
+    "id": 9,
+    "val": 0
+  },
+  "Track1:MatrixStructure": {
+    "id": 10,
+    "val": "1 0 0 0 1 0 0 0 1"
+  },
+  "Track1:ImageWidth": {
+    "id": 19,
+    "val": 16
+  },
+  "Track1:ImageHeight": {
+    "id": 20,
+    "val": 16
+  },
+  "Track1:MediaHeaderVersion": {
+    "id": 0,
+    "val": 0
+  },
+  "Track1:MediaCreateDate": {
+    "id": 1,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:MediaModifyDate": {
+    "id": 2,
+    "val": "2026:11:13 10:00:00"
+  },
+  "Track1:MediaTimeScale": {
+    "id": 3,
+    "val": 10240
+  },
+  "Track1:MediaDuration": {
+    "id": 4,
+    "val": 0.4
+  },
+  "Track1:MediaLanguageCode": {
+    "id": 5,
+    "val": 32767
+  },
+  "Track1:GraphicsMode": {
+    "id": 2,
+    "val": 0
+  },
+  "Track1:OpColor": {
+    "id": 3,
+    "val": "0 0 0"
+  },
+  "Track1:HandlerClass": {
+    "id": 4,
+    "val": "dhlr"
+  },
+  "Track1:HandlerType": {
+    "id": 8,
+    "val": "url "
+  },
+  "Track1:HandlerDescription": {
+    "id": 24,
+    "val": "DataHandler"
+  },
+  "Track1:CompressorID": {
+    "id": 2,
+    "val": "mp4v"
+  },
+  "Track1:VendorID": {
+    "id": 10,
+    "val": "FFMP"
+  },
+  "Track1:SourceImageWidth": {
+    "id": 16,
+    "val": 16
+  },
+  "Track1:SourceImageHeight": {
+    "id": 17,
+    "val": 16
+  },
+  "Track1:XResolution": {
+    "id": 18,
+    "val": 72
+  },
+  "Track1:YResolution": {
+    "id": 20,
+    "val": 72
+  },
+  "Track1:CompressorName": {
+    "id": 25,
+    "val": "Lavc61.19.101 mpeg4"
+  },
+  "Track1:BitDepth": {
+    "id": 41,
+    "val": 24
+  },
+  "Track1:PixelAspectRatio": {
+    "id": "pasp",
+    "val": "1:1"
+  },
+  "Track1:VideoFrameRate": {
+    "id": "stts",
+    "val": 5
+  },
+  "Track1:Copy1:HandlerClass": {
+    "id": 4,
+    "val": "mhlr"
+  },
+  "Track1:Copy1:HandlerType": {
+    "id": 8,
+    "val": "vide"
+  },
+  "Track1:Copy1:HandlerDescription": {
+    "id": 24,
+    "val": "VideoHandler"
+  },
+  "UserData:Artist": {
+    "id": "?ART",
+    "val": "Jeanne Exemple"
+  },
+  "UserData:Title": {
+    "id": "?nam",
+    "val": "Titre accentué"
+  },
+  "UserData:SoftwareVersion": {
+    "id": "?swr",
+    "val": "Lavf61.7.103"
+  },
+  "XMP-x:XMPToolkit": {
+    "id": "xmptk",
+    "val": "Image::ExifTool 13.25"
+  },
+  "XMP-iptcExt:DigitalSourceType": {
+    "id": "DigitalSourceType",
+    "val": "http://cv.iptc.org/newscodes/digitalsourcetype/trainedAlgorithmicMedia"
+  },
+  "XMP-dc:Creator": {
+    "id": "creator",
+    "val": ["Jeanne Exemple"]
+  },
+  "XMP-xmp:CreatorTool": {
+    "id": "CreatorTool",
+    "val": "Outil 3"
+  }
+},
+{
+  "SourceFile": "video.webm",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "Matroska:EBMLVersion": {
+    "id": 646,
+    "val": 1
+  },
+  "Matroska:EBMLReadVersion": {
+    "id": 759,
+    "val": 1
+  },
+  "Matroska:DocType": {
+    "id": 642,
+    "val": "webm"
+  },
+  "Matroska:DocTypeVersion": {
+    "id": 647,
+    "val": 2
+  },
+  "Matroska:DocTypeReadVersion": {
+    "id": 645,
+    "val": 2
+  },
+  "Matroska:TimecodeScale": {
+    "id": 710577,
+    "val": 0.001
+  },
+  "Matroska:Title": {
+    "id": 15273,
+    "val": "Titre accentué"
+  },
+  "Matroska:MuxingApp": {
+    "id": 3456,
+    "val": "Lavf61.7.103"
+  },
+  "Matroska:WritingApp": {
+    "id": 5953,
+    "val": "Lavf61.7.103"
+  },
+  "Matroska:DateTimeOriginal": {
+    "id": 1121,
+    "val": "2026:11:13 10:00:00Z"
+  },
+  "Matroska:Comment": {
+    "id": "COMMENT",
+    "val": "Commentaire"
+  },
+  "Matroska:TagTrackUID": {
+    "id": 9157,
+    "val": "9a08639c2d1a0dd3"
+  },
+  "Matroska:Encoder": {
+    "id": "ENCODER",
+    "val": "Lavc61.19.101 libvpx"
+  },
+  "Matroska:Duration": {
+    "id": "DURATION",
+    "val": "00:00:00.400000000"
+  },
+  "Matroska:Copy1:Duration": {
+    "id": 1161,
+    "val": 0.4
+  },
+  "Matroska:Copy1:Encoder": {
+    "id": "ENCODER",
+    "val": "Lavf61.7.103"
+  },
+  "Track1:TrackNumber": {
+    "id": 87,
+    "val": 1
+  },
+  "Track1:TrackUID": {
+    "id": 13253,
+    "val": "9a08639c2d1a0dd3"
+  },
+  "Track1:TrackLanguage": {
+    "id": 177564,
+    "val": "und"
+  },
+  "Track1:TrackDefault": {
+    "id": 8,
+    "val": 0
+  },
+  "Track1:CodecID": {
+    "id": 6,
+    "val": "V_VP8"
+  },
+  "Track1:TrackType": {
+    "id": 3,
+    "val": 1
+  },
+  "Track1:VideoFrameRate": {
+    "id": 254851,
+    "val": 5
+  },
+  "Track1:ImageWidth": {
+    "id": 48,
+    "val": 16
+  },
+  "Track1:ImageHeight": {
+    "id": 58,
+    "val": 16
+  },
+  "Track1:VideoScanType": {
+    "id": 26,
+    "val": 2
   }
 }]
