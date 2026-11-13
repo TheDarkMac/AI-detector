@@ -110,10 +110,10 @@ methodes = ["test"]
 
 [[exigence]]
 id = "F-10"
-etat = "partielle"
+etat = "realisee"
 taches = ["T20", "T21"]
 methodes = ["test"]
-note = "Images (JPEG, PNG, WebP, HEIC) : EXIF, XMP, IPTC-IIM et blocs texte PNG, vérifiés contre exiftool (T20, ADR-0122) ; PDF : dictionnaire Info et XMP du catalogue, vérifiés contre exiftool (T21, ADR-0127) ; audio et vidéo (WAV, MP3, AAC, M4A, FLAC, Ogg, MP4, MOV, WebM) : ID3, RIFF `INFO` et `bext`, commentaires Vorbis, `moov` d'ISOBMFF, `Info` et `Tags` de WebM, XMP, vérifiés contre exiftool sur des échantillons de ffmpeg (complément de T21, ADR-0132, ADR-0135) ; documents bureautiques au dernier complément de T21 (ADR-0123)."
+note = "Images (JPEG, PNG, WebP, HEIC) : EXIF, XMP, IPTC-IIM et blocs texte PNG, vérifiés contre exiftool (T20, ADR-0122) ; PDF : dictionnaire Info et XMP du catalogue, vérifiés contre exiftool (T21, ADR-0127) ; audio et vidéo (WAV, MP3, AAC, M4A, FLAC, Ogg, MP4, MOV, WebM) : ID3, RIFF `INFO` et `bext`, commentaires Vorbis, `moov` d'ISOBMFF, `Info` et `Tags` de WebM, XMP, vérifiés contre exiftool sur des échantillons de ffmpeg (complément de T21, ADR-0132, ADR-0135) ; DOCX et ODT : propriétés principales, étendues et personnalisées, `meta.xml`, vérifiées contre exiftool sur des échantillons de LibreOffice (complément bureautique de T21, ADR-0139, ADR-0141). Le texte brut et le texte collé n'ont pas de métadonnées."
 
 [[exigence]]
 id = "F-11"
@@ -575,16 +575,17 @@ methodes = ["test"]
 
 [[exigence]]
 id = "ES-05"
-etat = "partielle"
+etat = "realisee"
 taches = ["T20", "T21"]
 methodes = ["test"]
-note = "XML de XMP lu par expat, DOCTYPE et entités refusés (T20, ADR-0116), y compris le XMP d'un PDF (T21) et des fichiers audio et vidéo (complément de T21, ADR-0134) ; XML et archives de DOCX et ODT au dernier complément de T21 (ADR-0123)."
+note = "XML de XMP lu par expat, DOCTYPE et entités refusés (T20, ADR-0116), y compris le XMP d'un PDF (T21) et des fichiers audio et vidéo (complément de T21, ADR-0134) ; archives DOCX et ODT lues en mémoire par le lecteur ZIP du projet, décompression comptée contre le budget, et leur XML par le même lecteur (complément bureautique de T21, ADR-0137)."
 
 [[exigence]]
 id = "ES-06"
-etat = "a_venir"
+etat = "partielle"
 taches = ["T21", "T30", "T52"]
 methodes = ["test"]
+note = "DOCX et ODT : aucune relation ni référence lue ou suivie, modèle distant compris (complément bureautique de T21, ADR-0138) ; manifestes C2PA distants à T30, liens et actions des PDF à T52."
 
 [[exigence]]
 id = "ES-07"
