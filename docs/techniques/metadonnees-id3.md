@@ -1,7 +1,7 @@
 # Fiche technique — Balises ID3
 
 - **Module** : `id3` (version 0.2.0)
-- **Tâche** : T21, T22
+- **Tâche** : T21, T22, T23
 - **Exigences** : F-10, F-12, ES-13
 - **Formats** : `mp3`, `aac`, `flac`, `wav`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
@@ -45,7 +45,7 @@ Noms d'observation ([ADR-0133](../decisions/ADR-0133-noms-et-valeurs-des-balises
 
 - Trames usuelles : `TIT2` titre, `TPE1` interprète, `TALB` album, `TDRC` date d'enregistrement (v2.4), `TYER` année (v2.3), `TSSE` logiciel et réglages d'encodage, `TENC` encodé par, `TCON` genre ; en v2.2, identifiants de trois lettres (`TT2`, `TP1`, `TSS`…), observés tels quels.
 - Encodage : 0 Latin-1, 1 UTF-16 (marque d'ordre ; sans elle, petit-boutiste), 2 UTF-16BE, 3 UTF-8 ; un octet invalide devient le caractère de remplacement. Une description passe par la règle des composants d'ADR-0117.
-- Date : telle qu'écrite (`2026-11-13T10:00`), sans conversion ; T23 l'interprétera.
+- Date : telle qu'écrite (`2026-11-13T10:00`), sans conversion ; T23 ne la compare pas, faute de paire de dates que fixe la norme ([ADR-0150](../decisions/ADR-0150-incoherences-retenues.md)).
 - Trame vide : rien n'est observé.
 
 Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
@@ -78,11 +78,17 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | --- | --- | --- | --- |
 | `R-ID3-001` Générateur nommé par la trame ID3 du logiciel d'encodage ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `id3.TSSE` | liste des générateurs (ADR-0144) | origine IA |
 
-Une absence de balise est l'observation `id3.present` à faux (F-14).
+Règles de T23, des informations neutres fondées sur une déclaration du fichier, ou pour l'absence sur la lecture de sa structure ([ADR-0149](../decisions/ADR-0149-constat-d-une-incoherence.md), [ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)) :
+
+| Règle | Observations | Test |
+| --- | --- | --- |
+| `R-ID3-002` Aucune balise ID3 | `id3.present` | faux |
+
+Une absence de balise est l'observation `id3.present` à faux ; la règle `R-ID3-002` en fait une information neutre, jamais un indice (F-14).
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un MP3 (ID3v2.4 et ID3v1) et un AAC écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)) ; ffmpeg n'écrit d'ID3 ni dans un WAV ni dans un FLAC, ces emplacements sont vérifiés par les échantillons construits des tests. ffmpeg écrit le texte UTF-8 de son titre dans la balise ID3v1, en Latin-1 : `id3.v1.Title` le lit en Latin-1, comme exiftool, et montre donc des caractères mal décodés.
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un MP3 (ID3v2.4 et ID3v1) et un AAC écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)) ; ffmpeg n'écrit d'ID3 ni dans un WAV ni dans un FLAC, ces emplacements sont vérifiés par les échantillons construits des tests. ffmpeg écrit le texte UTF-8 de son titre dans la balise ID3v1, en Latin-1 : `id3.v1.Title` le lit en Latin-1, comme exiftool, et montre donc des caractères mal décodés. Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 
@@ -106,3 +112,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | --- | --- | --- |
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
+| 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |

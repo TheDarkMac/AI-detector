@@ -1,7 +1,7 @@
 # Fiche technique — Propriétés d'un document DOCX
 
 - **Module** : `ooxml` (version 0.2.0)
-- **Tâche** : T21 (complément bureautique), T22
+- **Tâche** : T21 (complément bureautique), T22, T23
 - **Exigences** : F-10, F-12, ES-05, ES-06, ES-13
 - **Formats** : `docx`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
@@ -48,7 +48,7 @@ Noms d'observation ([ADR-0140](../decisions/ADR-0140-noms-et-valeurs-des-proprie
 - Préfixes de la norme, quel que soit celui qu'écrit le fichier : `cp`, `dc`, `dcterms`, `dcmitype` ; un espace inconnu prend `ns1`, `ns2`… ([ADR-0117](../decisions/ADR-0117-vocabulaire-des-observations.md)). Un nom tiré du fichier passe par la règle des composants : tout caractère hors des lettres ASCII, des chiffres et du tiret devient un tiret.
 - Valeurs : textes tels qu'écrits ; entiers et booléens que le schéma type comme tels (`TotalTime`, `Pages`, `Words`, `Characters`, `Lines`, `Paragraphs`, `DocSecurity`… ; `ScaleCrop`, `LinksUpToDate`, `SharedDoc`, `HyperlinksChanged`) ; une écriture que le type n'admet pas reste un texte. `cp:revision` et `AppVersion` sont des textes dans le schéma.
 - Propriétés personnalisées : type `docPropsVTypes` ; textes (`lpwstr`, `lpstr`, `bstr`, et `filetime`, `date` tels qu'écrits), entiers (`i1` à `i8`, `ui1` à `ui8`, `int`, `uint`), réels (`r4`, `r8`, `decimal`), booléens (`bool`), listes (`vector`, `array`, dont les `variant` sont remplacés par leur valeur), taille des binaires (`blob`, `stream`, `storage`…, base 64).
-- Dates (`dcterms:created`, `dcterms:modified`, `cp:lastPrinted`) : telles qu'écrites (W3CDTF), sans conversion ; T23 les interprétera.
+- Dates (`dcterms:created`, `dcterms:modified`, `cp:lastPrinted`) : telles qu'écrites (W3CDTF), sans conversion ; les règles de T23 lisent les deux premières par la lecture `date-iso8601` ([ADR-0148](../decisions/ADR-0148-lecture-des-dates.md)), `cp:lastPrinted` n'est pas comparée (ADR-0150).
 - Propriété répétée : une liste, dans l'ordre du document. Texte vide : rien n'est observé.
 
 Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
@@ -81,11 +81,20 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | --- | --- | --- | --- |
 | `R-OOXML-001` Générateur nommé par l'application d'un DOCX ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `ooxml.app.Application` | liste des générateurs (ADR-0144) | origine IA |
 
-Une absence de propriétés est l'observation `ooxml.present` à faux (F-14).
+Règles de T23, des informations neutres fondées sur une déclaration du fichier, ou pour l'absence sur la lecture de sa structure ([ADR-0149](../decisions/ADR-0149-constat-d-une-incoherence.md), [ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)) :
+
+| Règle | Observations | Test |
+| --- | --- | --- |
+| `R-OOXML-002` Date de création impossible (dcterms:created) | `ooxml.core.dcterms:created` | date impossible (`date-iso8601`) |
+| `R-OOXML-003` Date de modification impossible (dcterms:modified) | `ooxml.core.dcterms:modified` | date impossible (`date-iso8601`) |
+| `R-OOXML-004` Création postérieure à la modification (dcterms:created, dcterms:modified) | `ooxml.core.dcterms:created`, `ooxml.core.dcterms:modified` | certainement postérieure à `ooxml.core.dcterms:modified`, lues par `date-iso8601` |
+| `R-OOXML-005` Aucune propriété de document OOXML | `ooxml.present` | faux |
+
+Une absence de propriétés est l'observation `ooxml.present` à faux ; la règle `R-OOXML-005` en fait une information neutre, jamais un indice (F-14).
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, dans les deux sens, sur un DOCX écrit par LibreOffice avec les trois parties de propriétés ([ADR-0141](../decisions/ADR-0141-oracle-bureautique-par-libreoffice.md)). Les propriétés étendues que LibreOffice n'écrit pas (`Company`, `Pages`, `HeadingPairs`…) sont vérifiées par les tests construits seulement.
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, dans les deux sens, sur un DOCX écrit par LibreOffice avec les trois parties de propriétés ([ADR-0141](../decisions/ADR-0141-oracle-bureautique-par-libreoffice.md)). Les propriétés étendues que LibreOffice n'écrit pas (`Company`, `Pages`, `HeadingPairs`…) sont vérifiées par les tests construits seulement. Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 
@@ -110,3 +119,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | --- | --- | --- |
 | 2026-11-13 | 0.1.0 | Création (T21, complément bureautique) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
+| 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |

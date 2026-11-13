@@ -1,7 +1,7 @@
 # Fiche technique — Liste INFO et bloc bext d'un WAV
 
 - **Module** : `infowav` (version 0.2.0)
-- **Tâche** : T21, T22
+- **Tâche** : T21, T22, T23
 - **Exigences** : F-10, F-12, ES-13
 - **Formats** : `wav`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
@@ -39,7 +39,7 @@ Noms d'observation ([ADR-0133](../decisions/ADR-0133-noms-et-valeurs-des-balises
 | `infowav.bext.UMID` | UMID en hexadécimal, sans les nuls de fin (version 1 et suivantes, s'il n'est pas nul) |
 
 - Textes : UTF-8 s'ils sont valides, Latin-1 sinon, la spécification ne fixant pas l'encodage ([ADR-0118](../decisions/ADR-0118-valeurs-tirees-du-fichier.md)). Texte vide : rien n'est observé.
-- Dates telles qu'écrites (`ICRD`, `OriginationDate` `AAAA-MM-JJ`, `OriginationTime` `HH:MM:SS`) ; T23 les interprétera.
+- Dates telles qu'écrites (`ICRD`, `OriginationDate` `AAAA-MM-JJ`, `OriginationTime` `HH:MM:SS`) ; T23 ne les compare pas, faute de paire de dates que fixe la norme ([ADR-0150](../decisions/ADR-0150-incoherences-retenues.md)).
 
 Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
 
@@ -71,11 +71,17 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | --- | --- | --- | --- |
 | `R-INFOWAV-001` Générateur nommé par le logiciel d'un WAV ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `infowav.ISFT` | liste des générateurs (ADR-0144) | origine IA |
 
-Une absence de liste et de bloc est l'observation `infowav.present` à faux (F-14).
+Règles de T23, des informations neutres fondées sur une déclaration du fichier, ou pour l'absence sur la lecture de sa structure ([ADR-0149](../decisions/ADR-0149-constat-d-une-incoherence.md), [ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)) :
+
+| Règle | Observations | Test |
+| --- | --- | --- |
+| `R-INFOWAV-002` Aucune métadonnée RIFF (INFO, bext) | `infowav.present` | faux |
+
+Une absence de liste et de bloc est l'observation `infowav.present` à faux ; la règle `R-INFOWAV-002` en fait une information neutre, jamais un indice (F-14).
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un WAV écrit par ffmpeg, liste `INFO` et bloc `bext` ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Écarts connus : exiftool lit les textes `INFO` en Latin-1 (« Titre accentuÃ© » pour un titre écrit en UTF-8 par ffmpeg), et joint `OriginationDate` et `OriginationTime` en une seule date.
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un WAV écrit par ffmpeg, liste `INFO` et bloc `bext` ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Écarts connus : exiftool lit les textes `INFO` en Latin-1 (« Titre accentuÃ© » pour un titre écrit en UTF-8 par ffmpeg), et joint `OriginationDate` et `OriginationTime` en une seule date. Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 
@@ -95,3 +101,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | --- | --- | --- |
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
+| 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |

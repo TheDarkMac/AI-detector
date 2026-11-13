@@ -1,7 +1,7 @@
 # Fiche technique — Éléments Info et Tags d'un WebM
 
 - **Module** : `matroska` (version 0.2.0)
-- **Tâche** : T21, T22
+- **Tâche** : T21, T22, T23
 - **Exigences** : F-10, F-12, ES-13
 - **Formats** : `webm`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
@@ -75,11 +75,17 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | `R-MATROSKA-001` Générateur nommé par le logiciel d'écriture d'un WebM ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `matroska.WritingApp` | liste des générateurs (ADR-0144) | origine IA |
 | `R-MATROSKA-002` Générateur nommé par la balise globale de l'encodeur d'un WebM ([ADR-0144](../decisions/ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md)) | `matroska.tag.ENCODER` | liste des générateurs (ADR-0144) | origine IA |
 
-Une absence d'`Info` et de `Tags` est l'observation `matroska.present` à faux (F-14).
+Règles de T23, des informations neutres fondées sur une déclaration du fichier, ou pour l'absence sur la lecture de sa structure ([ADR-0149](../decisions/ADR-0149-constat-d-une-incoherence.md), [ADR-0151](../decisions/ADR-0151-absence-de-metadonnees.md)) :
+
+| Règle | Observations | Test |
+| --- | --- | --- |
+| `R-MATROSKA-003` Aucune métadonnée Matroska (Info, Tags) | `matroska.present` | faux |
+
+Une absence d'`Info` et de `Tags` est l'observation `matroska.present` à faux ; la règle `R-MATROSKA-003` en fait une information neutre, jamais un indice (F-14).
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un WebM écrit par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un WebM écrit par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 
@@ -99,3 +105,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | --- | --- | --- |
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
+| 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |

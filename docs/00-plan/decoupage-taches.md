@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.20** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 proposée dans la PR de T22. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.23** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 proposée dans la PR de T23. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -69,7 +69,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 | T20 | Extraction image : EXIF, XMP, IPTC, blocs texte PNG ; un module par famille, JPEG, PNG, WebP et HEIC, XML par expat sans DTD, oracle exiftool, premières fiches techniques (`docs/techniques/`) ; décisions : ADR-0114 à ADR-0122 | F-10, F-14 (absence observée), ES-05 (XMP), ES-13 |
 | T21 | Extraction PDF : dictionnaire Info et XMP du catalogue, lecteur de structure PDF du projet, PDF chiffré non déchiffré ; décisions : ADR-0123 à ADR-0128. Compléments, une branche et une PR chacun (ADR-0123) : audio et vidéo (balises ID3, RIFF `INFO` et `bext`, commentaires Vorbis, `moov` d'ISOBMFF, `Info` et `Tags` de WebM, XMP de WAV, M4A, MP4 et MOV ; oracle écrit par ffmpeg ; décisions : ADR-0130 à ADR-0135), puis DOCX et ODT (propriétés principales, étendues et personnalisées d'un DOCX, `meta.xml` d'un ODT, lecteur ZIP du projet, relations et références ni lues ni suivies ; oracle écrit par LibreOffice ; décisions : ADR-0136 à ADR-0141) | F-10 |
 | T22 | Règles d'origine IA déclarée (IPTC DigitalSourceType) et catalogue des signatures de générateurs (paramètres, logiciel) ; indices faibles d'une déclaration, directions des modules de métadonnées étendues, catalogue 0.2.0 ; décisions : ADR-0142 à ADR-0146 | F-11, F-12 |
-| T23 | Incohérences internes (dates, logiciel/appareil, dimensions) ; absence = information neutre ; comparaison de deux observations : règle « module » ou nouveau format du catalogue (ADR-0084) | F-13, F-14 |
+| T23 | Incohérences internes (dates, logiciel/appareil, dimensions) ; absence = information neutre ; comparaison de deux observations par un test du catalogue, format 2, et lecture des dates ; informations neutres, catalogue 0.3.0 ; décisions : ADR-0147 à ADR-0152 | F-13, F-14 |
 | T24 | Indices de transfert par messagerie / capture d'écran | F-06 |
 | T25 | Contrôle avant publication — marques identifiantes issues des métadonnées (auteur, n° de série, GPS) | F-90 (partie métadonnées) |
 
@@ -202,3 +202,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-11-13 | 0.20 | Complément audio et vidéo de T21 : les neuf formats en une branche, renvoi à ses décisions (ADR-0130 à ADR-0135) | T21 (complément) |
 | 2026-11-13 | 0.21 | Complément bureautique de T21 : renvoi à ses décisions (ADR-0136 à ADR-0141) ; T21 complète | T21 (complément bureautique) |
 | 2026-11-13 | 0.22 | T22 renvoie à ses décisions (ADR-0142 à ADR-0146) | T22 |
+| 2026-11-13 | 0.23 | T23 renvoie à ses décisions (ADR-0147 à ADR-0152) ; comparaison par un test du catalogue (ADR-0147) | T23 |

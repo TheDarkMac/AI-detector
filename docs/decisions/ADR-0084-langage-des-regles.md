@@ -64,3 +64,4 @@ Option A.
 | 2026-10-27 | Création |
 | 2026-10-28 | Complété en T16 : la règle porte aussi le texte de sa phrase, `phrase.fr` (ADR-0091) |
 | 2026-10-28 | Précisé en T17 : l'évaluation porte aussi l'effectif et la borne supérieure de l'intervalle ; un niveau supérieur à ce qu'elle permet est refusé (ADR-0107) |
+| 2026-11-13 | Complété en T23 : deux tests de plus, `comparer` (deux observations d'un même module) et `impossible` (date), avec la `lecture` des dates, au format 2 du catalogue (ADR-0147, ADR-0148) |
