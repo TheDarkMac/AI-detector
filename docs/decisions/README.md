@@ -150,3 +150,9 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0133](ADR-0133-noms-et-valeurs-des-balises-audio-et-video.md) | Noms et valeurs des balises audio et vidéo | Accepté | 2026-11-13 |
 | [ADR-0134](ADR-0134-xmp-des-fichiers-audio-et-video.md) | XMP des fichiers audio et vidéo lu par `xmp` | Accepté | 2026-11-13 |
 | [ADR-0135](ADR-0135-oracle-des-balises-par-ffmpeg.md) | Oracle des balises audio et vidéo : échantillons écrits par ffmpeg | Accepté | 2026-11-13 |
+| [ADR-0136](ADR-0136-un-module-par-famille-de-proprietes-bureautiques.md) | Un module par famille de propriétés bureautiques : `ooxml` et `odf` | Accepté | 2026-11-13 |
+| [ADR-0137](ADR-0137-lecteur-zip-du-projet.md) | Lecteur ZIP écrit par le projet ; `zipfile` écarté | Accepté | 2026-11-13 |
+| [ADR-0138](ADR-0138-relations-et-references-non-suivies.md) | Relations et références des documents bureautiques ni lues ni suivies | Accepté | 2026-11-13 |
+| [ADR-0139](ADR-0139-parties-lues-dans-docx-et-odt.md) | Parties lues dans un DOCX et dans un ODT | Accepté | 2026-11-13 |
+| [ADR-0140](ADR-0140-noms-et-valeurs-des-proprietes-bureautiques.md) | Noms et valeurs des propriétés de DOCX et d'ODT | Accepté | 2026-11-13 |
+| [ADR-0141](ADR-0141-oracle-bureautique-par-libreoffice.md) | Oracle des propriétés bureautiques : échantillons écrits par LibreOffice | Accepté | 2026-11-13 |

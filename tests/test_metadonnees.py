@@ -53,8 +53,7 @@ from metadonnees import (
 from voight_kampff._limites import RESULTATS_MAX
 from voight_kampff._travail import garde
 from voight_kampff._travail.contexte import LimiteDepassee
-from voight_kampff.modules._lecture import valeurs
-from voight_kampff.modules._lecture import xmp as lecture_xmp
+from voight_kampff.modules._lecture import arbre, valeurs
 from voight_kampff.modules._lecture.conteneurs import Nature, relever
 from voight_kampff.rapport.modele import (
     LONGUEUR_MAX_TEXTE,
@@ -651,7 +650,7 @@ def test_xmp_entite_externe_refusee(monkeypatch: pytest.MonkeyPatch) -> None:
     [lecteur] = lecteurs
     gestionnaire = lecteur.ExternalEntityRefHandler
     assert gestionnaire is not None
-    with pytest.raises(lecture_xmp._Refus):
+    with pytest.raises(arbre.Refus):
         gestionnaire("contexte", None, "http://x", None)
 
 

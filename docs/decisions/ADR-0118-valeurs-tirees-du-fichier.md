@@ -57,3 +57,4 @@ Option A, dans `modules/_lecture/valeurs.py` :
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-11-12 | Validé par TheDarkMac au début de T21, la PR de T20 ayant été mergée sans changement de statut (ERR-0008) : statut « Accepté » |
+| 2026-11-13 | Renvoi : valeurs typées par leur schéma (entiers, booléens, réels de XML Schema) dans les propriétés bureautiques ; écriture que le type n'admet pas gardée en texte (ADR-0140) (T21, complément bureautique) |

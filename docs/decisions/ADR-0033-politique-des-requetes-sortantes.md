@@ -56,3 +56,4 @@ Ce point n'a pas été posé en question : il a été identifié en rédigeant l
 | --- | --- |
 | 2026-10-26 | Création, statut « Proposé » |
 | 2026-10-26 | Validé par TheDarkMac pendant la revue de la PR de T03 : statut « Accepté » |
+| 2026-11-13 | Renvoi : relations et références des DOCX et ODT ni lues ni suivies, garantie testée (ADR-0138) (T21, complément bureautique) |

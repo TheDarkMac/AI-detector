@@ -87,6 +87,8 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
             ("infowav", "0.1.0"),
             ("iptc", "0.1.0"),
             ("matroska", "0.1.0"),
+            ("odf", "0.1.0"),
+            ("ooxml", "0.1.0"),
             ("quicktime", "0.1.0"),
             ("textepng", "0.1.0"),
             ("vorbis", "0.1.0"),

@@ -175,7 +175,7 @@ def test_fiche_et_manifeste_concordent() -> None:
 
 
 def test_modules_de_metadonnees_livres() -> None:
-    # T20 et T21 : un module par famille de métadonnées (ADR-0114, ADR-0127, ADR-0130).
+    # T20 et T21 : un module par famille de métadonnées (ADR-0114, ADR-0127, ADR-0131, ADR-0136).
     livres = {manifeste.identifiant: manifeste for manifeste in decouvrir()}
     assert sorted(livres) == [
         "exif",
@@ -184,6 +184,8 @@ def test_modules_de_metadonnees_livres() -> None:
         "infowav",
         "iptc",
         "matroska",
+        "odf",
+        "ooxml",
         "quicktime",
         "textepng",
         "vorbis",
@@ -198,7 +200,10 @@ def test_modules_de_metadonnees_livres() -> None:
     assert livres["matroska"].formats == ("webm",)
     assert livres["iptc"].formats == ("jpeg",)
     assert livres["textepng"].formats == ("png",)
-    assert livres["xmp"].bibliotheques == ("expat",)
+    assert livres["ooxml"].formats == ("docx",)
+    assert livres["odf"].formats == ("odt",)
+    for module in ("xmp", "ooxml", "odf"):
+        assert livres[module].bibliotheques == ("expat",)
     for manifeste in livres.values():
         assert "F-10" in manifeste.exigences
         assert manifeste.directions == (Direction.RIEN_DE_PARTICULIER,)

@@ -2041,4 +2041,183 @@
     "id": 26,
     "val": 2
   }
+},
+{
+  "SourceFile": "document.docx",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "XML:CreateDate": {
+    "id": "created",
+    "val": "2026:11:01 10:20:30Z"
+  },
+  "XML:Keywords": {
+    "id": "keywords",
+    "val": "mot1 mot2"
+  },
+  "XML:LastModifiedBy": {
+    "id": "lastModifiedBy",
+    "val": "Paul Relecteur"
+  },
+  "XML:ModifyDate": {
+    "id": "modified",
+    "val": "2026:11:02 11:21:31Z"
+  },
+  "XML:RevisionNumber": {
+    "id": "revision",
+    "val": 7
+  },
+  "XML:Template": {
+    "id": "Template",
+    "val": ""
+  },
+  "XML:TotalEditTime": {
+    "id": "TotalTime",
+    "val": 62
+  },
+  "XML:Application": {
+    "id": "Application",
+    "val": "LibreOffice/25.2.3.2$Linux_X86_64 LibreOffice_project/520$Build-2"
+  },
+  "XML:AppVersion": {
+    "id": "AppVersion",
+    "val": 15.0000
+  },
+  "XML:Note": {
+    "id": "Note",
+    "val": 4.5
+  },
+  "XML:Outil": {
+    "id": "Outil",
+    "val": "Générateur 3"
+  },
+  "XML:Relu": {
+    "id": "Relu",
+    "val": 1
+  },
+  "XMP-dc:Creator": {
+    "id": "creator",
+    "val": "Jeanne Exemple"
+  },
+  "XMP-dc:Description": {
+    "id": "description",
+    "val": "Commentaire"
+  },
+  "XMP-dc:Language": {
+    "id": "language",
+    "val": "fr-FR"
+  },
+  "XMP-dc:Subject": {
+    "id": "subject",
+    "val": "Sujet"
+  },
+  "XMP-dc:Title": {
+    "id": "title",
+    "val": "Titre accentué"
+  }
+},
+{
+  "SourceFile": "document.odt",
+  "ExifTool:ExifToolVersion": {
+    "id": "ExifToolVersion",
+    "val": 13.25
+  },
+  "XMP-dc:Title": {
+    "id": "title",
+    "val": "Titre accentué"
+  },
+  "XMP-dc:Subject": {
+    "id": "subject",
+    "val": "Sujet"
+  },
+  "XMP-dc:Description": {
+    "id": "description",
+    "val": "Commentaire"
+  },
+  "XMP-dc:Creator": {
+    "id": "creator",
+    "val": "Paul Relecteur"
+  },
+  "XMP-dc:Date": {
+    "id": "date",
+    "val": "2026:11:02 11:21:31"
+  },
+  "XMP-dc:Language": {
+    "id": "language",
+    "val": "fr-FR"
+  },
+  "XMP-meta:Keyword": {
+    "id": "meta:keyword",
+    "val": "mot1"
+  },
+  "XMP-meta:Initial-creator": {
+    "id": "meta:initial-creator",
+    "val": "Jeanne Exemple"
+  },
+  "XMP-meta:Creation-date": {
+    "id": "meta:creation-date",
+    "val": "2026:11:01 10:20:30"
+  },
+  "XMP-meta:Editing-cycles": {
+    "id": "meta:editing-cycles",
+    "val": 7
+  },
+  "XMP-meta:Editing-duration": {
+    "id": "meta:editing-duration",
+    "val": "PT1H2M3S"
+  },
+  "XMP-meta:Document-statistic": {
+    "id": "meta:document-statistic",
+    "val": {
+      "Character-count": 7,
+      "Image-count": 0,
+      "Non-whitespace-character-count": 7,
+      "Object-count": 0,
+      "Page-count": 1,
+      "Paragraph-count": 1,
+      "Table-count": 0,
+      "Word-count": 1
+    }
+  },
+  "XMP-meta:Generator": {
+    "id": "meta:generator",
+    "val": "LibreOffice/25.2.3.2$Linux_X86_64 LibreOffice_project/520$Build-2"
+  },
+  "XMP-meta:User-definedName": {
+    "id": "meta:user-definedName",
+    "val": "Note"
+  },
+  "XMP-meta:User-definedValue-type": {
+    "id": "meta:user-definedValue-type",
+    "val": "float"
+  },
+  "XMP-meta:User-defined": {
+    "id": "meta:user-defined",
+    "val": 4.5
+  },
+  "XMP-meta:Copy1:Keyword": {
+    "id": "meta:keyword",
+    "val": "mot2"
+  },
+  "XMP-meta:Copy1:User-definedName": {
+    "id": "meta:user-definedName",
+    "val": "Outil"
+  },
+  "XMP-meta:Copy1:User-defined": {
+    "id": "meta:user-defined",
+    "val": "Générateur 3"
+  },
+  "XMP-meta:Copy1:User-definedValue-type": {
+    "id": "meta:user-definedValue-type",
+    "val": "boolean"
+  },
+  "XMP-meta:Copy2:User-definedName": {
+    "id": "meta:user-definedName",
+    "val": "Relu"
+  },
+  "XMP-meta:Copy2:User-defined": {
+    "id": "meta:user-defined",
+    "val": true
+  }
 }]

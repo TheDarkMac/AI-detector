@@ -45,3 +45,4 @@ Option A : `tache/T21-extraction-pdf` livre l'extraction PDF ; l'audio et la vid
 | --- | --- |
 | 2026-11-12 | Création ; option choisie par TheDarkMac au début de T21 |
 | 2026-11-13 | Renvoi : complément audio et vidéo réalisé, les neuf formats en une branche (ADR-0130) ; reste DOCX et ODT (T21, complément audio et vidéo) |
+| 2026-11-13 | Renvoi : complément bureautique réalisé, modules `ooxml` et `odf` (ADR-0136) ; T21 complète (T21, complément bureautique) |

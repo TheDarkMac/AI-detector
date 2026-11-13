@@ -72,3 +72,4 @@ Chaque bibliothèque qui lit le fichier est une surface d'attaque (M-01), une so
 | 2026-10-28 | Renvoi : `defusedxml` écarté au profit d'expat, DTD refusée (ADR-0116) ; oracle exiftool réalisé (ADR-0122) ; analyseurs de structure des métadonnées d'image écrits et soumis au fuzzing (T20) |
 | 2026-11-12 | Renvoi : structure PDF (références croisées, objets, flux) lue par un lecteur écrit par le projet dès T21 ; `pypdf` n'est plus prévue pour T50, reste candidate pour T51 à T53 (ADR-0124) |
 | 2026-11-13 | Renvoi : conteneurs audio et vidéo (RIFF, ID3, FLAC, Ogg, ISOBMFF, EBML) lus par des analyseurs écrits par le projet et soumis au fuzzing ; `mutagen` reste exclue (ADR-0131) (T21, complément audio et vidéo) |
+| 2026-11-13 | Renvoi : archives DOCX et ODT lues par un lecteur ZIP écrit par le projet plutôt que par `zipfile`, qui ne sert plus qu'aux tests (ADR-0137) (T21, complément bureautique) |

@@ -3,8 +3,8 @@
 Quatre familles d'analyseurs lisent aujourd'hui des données hostiles :
 
 - l'identification, dans le processus de travail, lit le fichier (ADR-0070) ;
-- les modules de métadonnées d'image et de PDF et leurs lecteurs de structure (T20, T21,
-  ADR-0114, ADR-0124) ;
+- les modules de métadonnées (image, PDF, audio, vidéo, DOCX, ODT) et leurs lecteurs de
+  structure (T20, T21, ADR-0114, ADR-0124, ADR-0131, ADR-0137) ;
 - le décodage strict des lignes, dans le processus principal, lit ce qu'envoie un processus de
   travail peut-être compromis (ES-04) ;
 - la réception, qui valide chaque message par le schéma puis par le modèle (ADR-0065).
@@ -25,6 +25,20 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from bureautique import (
+    TYPE_CORE as RELATION_CORE,
+)
+from bureautique import (
+    Brute,
+    app,
+    archive_brute,
+    core,
+    custom,
+    docx_,
+    meta,
+    odt_,
+    relations,
+)
 from catalogues import CATALOGUE
 from echantillons import (
     PDF,
@@ -423,7 +437,41 @@ ECHANTILLONS_METADONNEES = (
             ("video.mp4", "mp4"),
             ("video.mov", "mov"),
             ("video.webm", "webm"),
+            ("document.docx", "docx"),
+            ("document.odt", "odt"),
         )
+    ),
+    (
+        "docx",
+        docx_(
+            core("<dc:creator>A</dc:creator><cp:keywords>a<cp:value>b</cp:value></cp:keywords>"),
+            app(
+                "<TotalTime>3</TotalTime><ScaleCrop>false</ScaleCrop><TitlesOfParts>"
+                "<vt:vector size='1' baseType='lpstr'><vt:lpstr>T</vt:lpstr></vt:vector>"
+                "</TitlesOfParts><DigSig><vt:blob>AAEC</vt:blob></DigSig>"
+            ),
+            custom(("N", "<vt:r8>1.5</vt:r8>"), ("V", "<vt:variant><vt:i4>2</vt:i4></vt:variant>")),
+        ),
+    ),
+    (
+        "docx",
+        archive_brute(
+            Brute(b"_rels/.rels", relations((RELATION_CORE, "/docProps/c%6Fre.xml"))),
+            Brute(b"docProps/core.xml", core("<dc:title>T</dc:title>"), methode=0),
+            prefixe=b"MZ" + bytes(30),
+            zip64=True,
+        ),
+    ),
+    (
+        "odt",
+        odt_(
+            meta(
+                "<meta:generator>G</meta:generator><meta:keyword>a</meta:keyword>"
+                '<meta:document-statistic meta:page-count="1"/>'
+                '<meta:user-defined meta:name="N" meta:value-type="float">1</meta:user-defined>'
+                '<meta:template xlink:href="http://exemple.invalid/" meta:date="2026"/>'
+            )
+        ),
     ),
 )
 """Échantillons par format : toutes les familles, toutes les formes de conteneur lues."""
@@ -442,6 +490,8 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "mp4": ("quicktime", "xmp"),
     "mov": ("quicktime", "xmp"),
     "webm": ("matroska",),
+    "docx": ("ooxml",),
+    "odt": ("odf",),
 }
 
 

@@ -62,7 +62,7 @@ Les tests de fuzzing (ADR-0082) tirent 300 exemples par test d'une graine fixe. 
 VK_FUZZING=campagne uv run --locked pytest tests/test_fuzzing.py
 ```
 
-Les modules de métadonnées sont comparés à exiftool (ADR-0122) : `tests/donnees/metadonnees/exiftool.json` est la sortie d'exiftool sur les échantillons du même dossier, et les tests la lisent sans qu'exiftool soit installé. Pour changer les échantillons, installer ImageMagick et exiftool pour les images, LibreOffice, Ghostscript et exiftool pour les PDF, ffmpeg et exiftool pour l'audio et la vidéo (ADR-0135) (versions indiquées dans chaque script), relancer le script depuis ce dossier, puis les tests ; les trois scripts finissent par `relire.sh`, qui écrit `exiftool.json`. Si exiftool est installé dans la version enregistrée, un test vérifie aussi que sa sortie n'a pas changé :
+Les modules de métadonnées sont comparés à exiftool (ADR-0122) : `tests/donnees/metadonnees/exiftool.json` est la sortie d'exiftool sur les échantillons du même dossier, et les tests la lisent sans qu'exiftool soit installé. Pour changer les échantillons, installer ImageMagick et exiftool pour les images, LibreOffice, Ghostscript et exiftool pour les PDF, ffmpeg et exiftool pour l'audio et la vidéo (ADR-0135), LibreOffice et exiftool pour DOCX et ODT (ADR-0141) (versions indiquées dans chaque script), relancer le script depuis ce dossier, puis les tests ; les quatre scripts finissent par `relire.sh`, qui écrit `exiftool.json`. Si exiftool est installé dans la version enregistrée, un test vérifie aussi que sa sortie n'a pas changé :
 
 ```bash
 sh generer.sh
@@ -74,6 +74,10 @@ sh generer_pdf.sh
 
 ```bash
 sh generer_media.sh
+```
+
+```bash
+sh generer_bureautique.sh
 ```
 
 Les tests d'isolation (ADR-0083) vérifient l'effet des restrictions depuis un vrai processus de travail ; leurs attentes par système sont dans `tests/systeme.py`.

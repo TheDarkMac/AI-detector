@@ -52,3 +52,4 @@ Option A, dans `modules/_lecture/xmp.py` :
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création |
+| 2026-11-13 | Renvoi : XML de DOCX et d'ODT lu de la même façon ; lecture du XML déplacée dans `modules/_lecture/arbre.py`, commune à `xmp`, `ooxml` et `odf`, sans changement de comportement (ADR-0136) (T21, complément bureautique) |

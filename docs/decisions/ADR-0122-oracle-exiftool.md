@@ -58,3 +58,4 @@ Option A.
 | 2026-11-12 | Validé par TheDarkMac au début de T21, la PR de T20 ayant été mergée sans changement de statut (ERR-0008) : statut « Accepté » |
 | 2026-11-12 | Renvoi : PDF ajoutés par `generer_pdf.sh` plutôt que par `generer.sh`, sortie écrite par `relire.sh` (ADR-0127) ; audio, vidéo, DOCX et ODT avec les compléments de T21 (ADR-0123) |
 | 2026-11-13 | Renvoi : échantillons audio et vidéo écrits par ffmpeg, produits par `generer_media.sh` (ADR-0135) (T21, complément audio et vidéo) |
+| 2026-11-13 | Renvoi : DOCX et ODT écrits par LibreOffice, produits par `generer_bureautique.sh` ; groupe ZIP exclu de la relecture (ADR-0141) (T21, complément bureautique) |

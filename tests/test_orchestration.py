@@ -242,6 +242,42 @@ def test_vrai_processus_extrait_les_balises_d_une_video(tmp_path: Path) -> None:
     analyse_de(resultat, len(contenu))
 
 
+@pytest.mark.exigence("F-10", "ES-05")
+@pytest.mark.parametrize(
+    ("fichier", "module", "attendus"),
+    [
+        (
+            "document.docx",
+            "ooxml",
+            {"ooxml.core.dc:creator": "Jeanne Exemple", "ooxml.custom.Relu": True},
+        ),
+        (
+            "document.odt",
+            "odf",
+            {"odf.meta:initial-creator": "Jeanne Exemple", "odf.meta:editing-cycles": 7},
+        ),
+    ],
+)
+def test_vrai_processus_extrait_les_proprietes_d_un_document(
+    tmp_path: Path, fichier: str, module: str, attendus: dict[str, object]
+) -> None:
+    # Archive écrite par LibreOffice (T21, complément bureautique) : noms d'entrées en CP437,
+    # décompression deflate et XML par expat, après les restrictions.
+    contenu = (Path(__file__).parent / "donnees" / "metadonnees" / fichier).read_bytes()
+    ouvert = ouvrir(tmp_path / fichier, contenu)
+    try:
+        resultat = executer(ouvert, manifestes.decouvrir())
+    finally:
+        os.close(ouvert)
+    valeurs = {o.nom: o.valeur for o in resultat.observations}
+    assert {cle: valeurs.get(cle) for cle in attendus} == attendus
+    etats = {t.module: t.etat for t in resultat.couverture.techniques if t.version is not None}
+    assert etats.pop(module) is EtatTechnique.APPLIQUEE
+    assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
+    assert not resultat.interrompue
+    analyse_de(resultat, len(contenu))
+
+
 @pytest.mark.exigence("F-10")
 def test_vrai_processus_decode_les_textes_utf16_et_jis(tmp_path: Path) -> None:
     # Codecs chargés avant les restrictions (ADR-0079, ERR-0009) : étiquette XP en UTF-16LE,
@@ -301,7 +337,8 @@ def test_vrai_processus_bibliotheques_des_seuls_modules_actifs(tmp_path: Path) -
     contenu = (Path(__file__).parent / "donnees" / "metadonnees" / "photo.jpg").read_bytes()
     ouvert = ouvrir(tmp_path / "photo.jpg", contenu)
     try:
-        resultat = executer(ouvert, manifestes.decouvrir(), desactives={"xmp"})
+        # expat sert à xmp, ooxml et odf : désactivés, il n'est plus cité (ADR-0120).
+        resultat = executer(ouvert, manifestes.decouvrir(), desactives={"xmp", "ooxml", "odf"})
     finally:
         os.close(ouvert)
     assert resultat.dependances == ()

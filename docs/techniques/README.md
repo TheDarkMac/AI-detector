@@ -24,5 +24,7 @@ Une fiche par module d'analyse (NF-09, livrable 4), livrée avec son code, ses t
 | [Commentaires Vorbis](metadonnees-vorbis.md) | `vorbis` | T21 | FLAC, Ogg |
 | [Métadonnées QuickTime et ISOBMFF](metadonnees-quicktime.md) | `quicktime` | T21 | M4A, MP4, MOV |
 | [Éléments Info et Tags d'un WebM](metadonnees-matroska.md) | `matroska` | T21 | WebM |
+| [Propriétés d'un document DOCX](metadonnees-ooxml.md) | `ooxml` | T21 | DOCX |
+| [Métadonnées d'un document ODT](metadonnees-odf.md) | `odf` | T21 | ODT |
 
-Les modules de métadonnées partagent leurs lecteurs de structure (`voight_kampff/modules/_lecture/`, [ADR-0114](../decisions/ADR-0114-un-module-par-famille-de-metadonnees.md)) : conteneurs, TIFF, XMP, ressources Photoshop et IIM, valeurs (T20) ; structure PDF (T21, [ADR-0124](../decisions/ADR-0124-lecteur-pdf-du-projet.md)) ; conteneurs audio et vidéo et éléments EBML (T21, [ADR-0131](../decisions/ADR-0131-un-module-par-famille-de-balises.md)).
+Les modules de métadonnées partagent leurs lecteurs de structure (`voight_kampff/modules/_lecture/`, [ADR-0114](../decisions/ADR-0114-un-module-par-famille-de-metadonnees.md)) : conteneurs, TIFF, XMP, ressources Photoshop et IIM, valeurs (T20) ; structure PDF (T21, [ADR-0124](../decisions/ADR-0124-lecteur-pdf-du-projet.md)) ; conteneurs audio et vidéo et éléments EBML (T21, [ADR-0131](../decisions/ADR-0131-un-module-par-famille-de-balises.md)) ; archives ZIP, XML et propriétés bureautiques (T21, [ADR-0136](../decisions/ADR-0136-un-module-par-famille-de-proprietes-bureautiques.md), [ADR-0137](../decisions/ADR-0137-lecteur-zip-du-projet.md)).
