@@ -3,7 +3,7 @@
 Un texte garde au plus 4 096 caractères ; une liste, au plus 4 096 éléments et 32 768 caractères
 en tout. Au-delà, l'observation garde le début, et une observation ``<nom>.longueur`` dit la
 longueur entière : en caractères pour un texte, en éléments pour une liste. Un nombre réel non
-fini ou hors des bornes du modèle est rendu en texte.
+fini ou hors des bornes du modèle est rendu en texte, comme un entier hors de ces bornes.
 """
 
 import math
@@ -19,7 +19,7 @@ from voight_kampff.rapport.modele import (
     Scalaire,
 )
 
-__all__ = ["CARACTERES_MAX_LISTE", "borner", "composant", "nombre", "observer"]
+__all__ = ["CARACTERES_MAX_LISTE", "borner", "composant", "entier", "nombre", "observer", "texte"]
 
 CARACTERES_MAX_LISTE = 32768
 """Caractères d'une liste, tous éléments compris : une observation tient dans une ligne."""
@@ -49,6 +49,19 @@ def nombre(valeur: float) -> Scalaire:
     if math.isfinite(valeur) and -_BORNE < valeur < _BORNE:
         return valeur
     return repr(valeur)
+
+
+def entier(valeur: int) -> Scalaire:
+    """Entier, ou son écriture décimale s'il sort des bornes du modèle (64 bits signés)."""
+    return valeur if -_BORNE <= valeur < _BORNE else str(valeur)
+
+
+def texte(octets: bytes) -> str:
+    """Texte d'encodage non déclaré : UTF-8 s'il est valide, Latin-1 sinon (ADR-0118)."""
+    try:
+        return octets.decode("utf-8")
+    except UnicodeDecodeError:
+        return octets.decode("latin-1")
 
 
 def observer(

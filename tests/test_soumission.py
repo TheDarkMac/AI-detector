@@ -74,15 +74,24 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
     assert identification.empreinte == hashlib.sha256(PDF).hexdigest()
     assert identification.extension_concordante is True
     assert identification.date_analyse.microsecond == 0
-    # Modules d'image non applicables ; modules du PDF partiels, l'échantillon n'ayant pas de
-    # startxref ; techniques hors V1 qui s'appliquent au PDF.
+    # Modules d'image, audio et vidéo non applicables ; modules du PDF partiels, l'échantillon
+    # n'ayant pas de startxref ; techniques hors V1 qui s'appliquent au PDF.
     assert {(t.module, t.etat, t.version) for t in analyse.couverture.techniques} == {
         (technique, EtatTechnique.NON_MENEE, None)
         for technique in ("referencepdf", "references", "pointstracage")
     } | {
         (module, EtatTechnique.NON_APPLICABLE, version)
-        for module, version in (("exif", "0.1.1"), ("iptc", "0.1.0"), ("textepng", "0.1.0"))
-    } | {("infopdf", EtatTechnique.PARTIELLE, "0.1.0"), ("xmp", EtatTechnique.PARTIELLE, "0.2.0")}
+        for module, version in (
+            ("exif", "0.1.1"),
+            ("id3", "0.1.0"),
+            ("infowav", "0.1.0"),
+            ("iptc", "0.1.0"),
+            ("matroska", "0.1.0"),
+            ("quicktime", "0.1.0"),
+            ("textepng", "0.1.0"),
+            ("vorbis", "0.1.0"),
+        )
+    } | {("infopdf", EtatTechnique.PARTIELLE, "0.1.0"), ("xmp", EtatTechnique.PARTIELLE, "0.3.0")}
     assert {n.raison for n in analyse.non_menees} == {
         RaisonNonMenee.HORS_V1,
         RaisonNonMenee.FORMAT_PARTIEL,
