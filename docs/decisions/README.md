@@ -159,5 +159,5 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0142](ADR-0142-constats-d-une-declaration-du-fichier.md) | Constats tirés d'une déclaration du fichier : indices faibles, dirigés par ce que le champ déclare | Accepté | 2026-11-13 |
 | [ADR-0143](ADR-0143-valeurs-iptc-de-la-source-numerique.md) | Valeurs IPTC de la source numérique : trois valeurs, une direction chacune, comparaison tolérante | Accepté | 2026-11-13 |
 | [ADR-0144](ADR-0144-noms-de-generateurs-dans-les-champs-logiciels.md) | Noms de générateurs : une liste de noms distinctifs, appliquée à chaque champ logiciel | Accepté | 2026-11-13 |
-| [ADR-0145](ADR-0145-signatures-de-parametres-de-generation.md) | Signatures de paramètres de génération : celles que montre le code public d'un outil | Proposé | 2026-11-13 |
-| [ADR-0146](ADR-0146-versions-des-modules-et-du-catalogue-de-t22.md) | Versions des modules et du catalogue de T22 ; forme des règles | Proposé | 2026-11-13 |
+| [ADR-0145](ADR-0145-signatures-de-parametres-de-generation.md) | Signatures de paramètres de génération : celles que montre le code public d'un outil | Accepté | 2026-11-13 |
+| [ADR-0146](ADR-0146-versions-des-modules-et-du-catalogue-de-t22.md) | Versions des modules et du catalogue de T22 ; forme des règles | Accepté | 2026-11-13 |

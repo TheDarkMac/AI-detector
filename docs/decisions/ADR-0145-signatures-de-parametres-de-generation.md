@@ -1,8 +1,8 @@
 # ADR-0145 — Signatures de paramètres de génération : celles que montre le code public d'un outil
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-13
-- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T22, à valider pendant la revue de la PR de T22
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T22, validée pendant la revue de la PR de T22
 - **Tâche** : T22
 - **Exigences liées** : F-12, F-14, F-26 ; ES-09, ES-20 ; C-02 ; ADR-0084, ADR-0089, ADR-0117, ADR-0118, ADR-0142, ADR-0144
 
@@ -63,7 +63,7 @@ Option A.
 
 ## Raisons
 
-- Option A proposée : elle tient la règle du projet sur les sources, et chaque motif porte sur un trait du format que l'outil documente par son code.
+- Option A proposée par l'assistant et validée par TheDarkMac : elle tient la règle du projet sur les sources, et chaque motif porte sur un trait du format que l'outil documente par son code.
 - Option B écartée : un faux positif sur un logiciel qui emploie le mot-clé `prompt` pour autre chose.
 - Option C écartée : la coupe protège le rapport d'un texte démesuré ; une requête de plus de 4 096 caractères est rare, et la limite est écrite dans la règle.
 
@@ -78,3 +78,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR de T22 (« Oui, les deux ») : statut « Accepté » |

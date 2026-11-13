@@ -3,7 +3,7 @@
 - **Branche** : `tache/T22-origine-ia-et-signatures`
 - **Dates** : 2026-11-13
 - **Exigences couvertes** : F-11 (réalisée), F-12 (réalisée), F-14 (absence sans constat), ES-20 (déclaration restituée en indice), NF-09
-- **Décisions** : ADR-0142, ADR-0143, ADR-0144 acceptés ; ADR-0145, ADR-0146 proposés
+- **Décisions** : ADR-0142 à ADR-0146, tous acceptés
 - **Errata** : ERR-0010
 
 ## Objectif
@@ -33,7 +33,7 @@
    - nom du logiciel : liste de noms distinctifs appliquée à chaque champ logiciel (ADR-0144) ;
    - comparaison de `DigitalSourceType` : motif tolérant (ADR-0143).
 
-   Les autres choix, faits par l'assistant, sont soumis dans la PR : ADR-0145 (signatures de paramètres retenues), [ADR-0146](../decisions/ADR-0146-versions-des-modules-et-du-catalogue-de-t22.md) (versions des modules et du catalogue, forme des règles).
+   Les autres choix, faits par l'assistant, ont été soumis dans la PR et validés par TheDarkMac pendant sa revue (« Oui, les deux », 2026-11-13) : ADR-0145 (signatures de paramètres retenues), [ADR-0146](../decisions/ADR-0146-versions-des-modules-et-du-catalogue-de-t22.md) (versions des modules et du catalogue, forme des règles).
 4. Branche `tache/T22-origine-ia-et-signatures` créée depuis `detector` à jour (`6126686`).
 5. Catalogue 0.2.0 : vingt-quatre règles « moteur » dans douze fichiers `regles/<module>.toml` ; les seize règles de nom du logiciel écrites à partir d'une même table, par un script temporaire hors du dépôt, puis relues ; description de l'en-tête réécrite ; entrée ajoutée au registre `versions.toml`.
 6. Manifestes des douze modules : directions `origine_ia` (et `retouche` pour `xmp`), exigence F-12 (et F-11 pour `xmp`), version augmentée (ADR-0146) ; docstrings des modules mises à jour. Code des modules inchangé.
@@ -46,6 +46,7 @@
 9. Fiches des douze modules : en-tête, hypothèses distinguées, règles qui lisent leurs observations, taux d'erreur, historique ; index des fiches.
 10. Vérification locale : Ruff (format et analyse) et mypy sans remarque ; lint Markdown (`npx --yes markdownlint-cli2@0.23.2`) sans erreur ; matrice régénérée (F-11 et F-12 réalisées) ; suite complète verte, couverture de 100 % des lignes et des branches ; banc sur le corpus d'essai, sans réseau (`unshare -rn`) : code 1 et le seul écart attendu, la cible par fichier non établie sur quatre authentiques (ADR-0105) ; aucune des vingt-quatre règles ne se déclenche sur les fichiers authentiques. Code des modules inchangé : campagne de fuzzing non relancée.
 11. Documentation : ADR-0142 à ADR-0146 ; ERR-0010 ; renvois dans ADR-0022, ADR-0064, ADR-0088, ADR-0117, ADR-0118 ; analyse critique v1.2 (A-33 vérifiée) ; guide du catalogue v1.3 ; découpage v0.22 ; matrice ; index des ADR, des errata, du journal et des fiches.
+12. PR [#23](https://github.com/TheDarkMac/AI-detector/pull/23) ouverte ; `lint-markdown` rouge sur l'étape « Aucun ADR au statut Proposé », comme prévu (ADR-0129). ADR-0145 et ADR-0146 validés par TheDarkMac pendant la revue, le 2026-11-13 : statut « Accepté ».
 
 ## Problèmes rencontrés
 

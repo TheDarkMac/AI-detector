@@ -1,8 +1,8 @@
 # ADR-0146 — Versions des modules et du catalogue de T22 ; forme des règles
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-13
-- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T22, à valider pendant la revue de la PR de T22
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T22, validée pendant la revue de la PR de T22
 - **Tâche** : T22
 - **Exigences liées** : NF-06, NF-07, F-26 ; ADR-0019, ADR-0064, ADR-0068, ADR-0085, ADR-0091, ADR-0142
 
@@ -52,3 +52,4 @@ Option A dans les deux cas.
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création, statut « Proposé » |
+| 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR de T22 (« Oui, les deux ») : statut « Accepté » |
