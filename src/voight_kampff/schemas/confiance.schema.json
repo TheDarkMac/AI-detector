@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:voight-kampff:schema:confiance",
+  "title": "En-tête de la liste de confiance C2PA de Voight-Kampff",
+  "description": "Fichier confiance.toml à la racine du dossier de la liste de confiance (ADR-0165, ADR-0171). Les certificats sont dans signataires.pem et, facultatif, horodatage.pem, dans le format publié par la C2PA. Le code vérifie en plus que les dates existent et la forme des fichiers PEM.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "nom", "version", "date", "description"],
+  "properties": {
+    "format": {
+      "description": "Format du dossier : 1 seulement dans cette version de l'outil.",
+      "const": 1
+    },
+    "nom": {
+      "description": "Nom de la liste, inscrit au rapport.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "version": {
+      "description": "Version donnée par la source de la liste : numéro de séquence pour la liste de la C2PA.",
+      "$ref": "urn:voight-kampff:schema:rapport#/$defs/version"
+    },
+    "date": {
+      "description": "Date d'émission de la liste, AAAA-MM-JJ.",
+      "$ref": "urn:voight-kampff:schema:rapport#/$defs/version_catalogue/properties/date"
+    },
+    "prochaine_mise_a_jour": {
+      "description": "Date de la prochaine émission annoncée par la source, AAAA-MM-JJ.",
+      "$ref": "urn:voight-kampff:schema:rapport#/$defs/version_catalogue/properties/date"
+    },
+    "source": {
+      "description": "Adresse d'où la liste a été recopiée ; jamais consultée par l'outil.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "licence": {
+      "description": "Licence de la liste, en expression SPDX.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "attribution": {
+      "description": "Mention que la licence de la liste demande.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "description": {
+      "description": "Ce que contient la liste, en une phrase ou deux.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    }
+  }
+}

@@ -515,6 +515,7 @@ def test_dependance_en_double_refusee(rapport: Rapport) -> None:
             "0.1.0",
             rapport.versions.interpreteur,
             rapport.versions.catalogue,
+            rapport.versions.confiance,
             (Dependance("a", "1"), Dependance("a", "2")),
         )
 

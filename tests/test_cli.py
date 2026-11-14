@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from catalogues import VERSION, ecrire_catalogue, moteur, regle_dict, toml_regles
+from catalogues import CONFIANCE, VERSION, ecrire_catalogue, moteur, regle_dict, toml_regles
 from echantillons import PDF, archive, jpeg
 
 from voight_kampff import Analyse, __version__
@@ -52,9 +52,9 @@ def test_sans_argument_affiche_l_aide(capsys: pytest.CaptureFixture[str]) -> Non
 def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--modules"]) == 0
     assert capsys.readouterr().out == (
-        "exif 0.4.0\nid3 0.3.0\nimage 0.1.0\ninfopdf 0.3.0\ninfowav 0.3.0\niptc 0.4.0\n"
-        "matroska 0.3.0\nodf 0.3.0\nooxml 0.3.0\nquicktime 0.3.0\ntextepng 0.4.0\nvorbis 0.3.0\n"
-        "xmp 0.6.0\n"
+        "c2pa 0.1.0\nexif 0.4.0\nid3 0.3.0\nimage 0.1.0\ninfopdf 0.3.0\ninfowav 0.3.0\n"
+        "iptc 0.4.0\nmatroska 0.3.0\nodf 0.3.0\nooxml 0.3.0\nquicktime 0.3.0\ntextepng 0.4.0\n"
+        "vorbis 0.3.0\nxmp 0.6.0\n"
     )
 
 
@@ -239,6 +239,7 @@ def test_resume_de_chaque_element() -> None:
         ),
         dependances=(),
         catalogue=VERSION,
+        confiance=CONFIANCE,
     )
     tronque = "Structure interrompue avant sa fin : fichier tronqué ou corrompu."
     assert resume(analyse) == [

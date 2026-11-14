@@ -10,9 +10,11 @@ from typing import Any
 
 from voight_kampff._orchestration.catalogue import Catalogue
 from voight_kampff._regles import Regle
-from voight_kampff.rapport.modele import VersionCatalogue
+from voight_kampff.rapport.modele import VersionCatalogue, VersionConfiance
 
 VERSION = VersionCatalogue("0.0.1", date(2026, 10, 27), "c" * 64, fourni_par_utilisateur=False)
+CONFIANCE = VersionConfiance("Liste de test", "1", date(2026, 11, 14), "d" * 64, False)
+"""Version d'une liste de confiance C2PA, pour les analyses construites par les tests (T30)."""
 
 
 def regle_dict(

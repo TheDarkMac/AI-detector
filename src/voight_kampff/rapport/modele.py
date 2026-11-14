@@ -24,6 +24,7 @@ from voight_kampff import formats
 
 __all__ = [
     "LONGUEUR_MAX_IDENTIFIANT",
+    "LONGUEUR_MAX_NOM_DE_LISTE",
     "LONGUEUR_MAX_TEXTE",
     "LONGUEUR_MAX_UNITE",
     "LONGUEUR_MAX_VERSION",
@@ -63,6 +64,7 @@ __all__ = [
     "TechniqueCouverte",
     "Valeur",
     "VersionCatalogue",
+    "VersionConfiance",
     "Versions",
     "Zone",
     "plages_non_reconnues",
@@ -71,7 +73,7 @@ __all__ = [
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.4.0"
+VERSION_SCHEMA = "0.5.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -79,6 +81,7 @@ LONGUEUR_MAX_IDENTIFIANT = 128
 LONGUEUR_MAX_VERSION = 64
 LONGUEUR_MAX_TEXTE = 4096
 LONGUEUR_MAX_UNITE = 32
+LONGUEUR_MAX_NOM_DE_LISTE = 128
 NOMBRE_MAX_ELEMENTS = 4096
 NOMBRE_MAX_DONNEES = 256
 NOMBRE_MAX_PARAMETRES = 32
@@ -1005,6 +1008,48 @@ class VersionCatalogue:
 
 
 @dataclass(frozen=True, slots=True)
+class VersionConfiance:
+    """Liste de confiance C2PA employée (ADR-0023, ADR-0029, ADR-0171)."""
+
+    nom: str
+    """Nom de la liste, tel que son en-tête le donne : « C2PA Trust List » pour la liste livrée."""
+    version: str
+    """Version donnée par sa source : numéro de séquence de la liste de la C2PA."""
+    date: date
+    """Date d'émission de la liste."""
+    empreinte: str
+    """Empreinte du dossier, calculée comme celle du catalogue (ADR-0088)."""
+    fourni_par_utilisateur: bool
+    """Vrai si l'utilisateur a remplacé la liste livrée ; le rapport le signale (ES-09)."""
+
+    def __post_init__(self) -> None:
+        if not 0 < len(self.nom) <= LONGUEUR_MAX_NOM_DE_LISTE:
+            raise ValueError("confiance.nom : longueur invalide")
+        _texte(self.nom, "confiance.nom", LONGUEUR_MAX_NOM_DE_LISTE)
+        _version(self.version, "confiance.version")
+        _empreinte(self.empreinte, "confiance.empreinte")
+
+    def vers_dict(self) -> Document:
+        return {
+            "nom": self.nom,
+            "version": self.version,
+            "date": self.date.isoformat(),
+            "empreinte": self.empreinte,
+            "fourni_par_utilisateur": self.fourni_par_utilisateur,
+        }
+
+    @classmethod
+    def depuis_dict(cls, document: Mapping[str, Any]) -> "VersionConfiance":
+        return cls(
+            nom=document["nom"],
+            version=document["version"],
+            date=date.fromisoformat(document["date"]),
+            empreinte=document["empreinte"],
+            fourni_par_utilisateur=document["fourni_par_utilisateur"],
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class Versions:
     """Rubrique « Versions » (§6 du cahier, ADR-0023)."""
 
@@ -1012,6 +1057,8 @@ class Versions:
     interpreteur: Dependance
     """Interpréteur qui a mené l'analyse : implémentation et version (ADR-0111)."""
     catalogue: VersionCatalogue
+    confiance: VersionConfiance
+    """Liste de confiance C2PA chargée pour l'analyse, que le module c2pa soit actif ou non."""
     dependances: tuple[Dependance, ...] = ()
 
     def __post_init__(self) -> None:
@@ -1023,6 +1070,7 @@ class Versions:
             "outil": self.outil,
             "interpreteur": self.interpreteur.vers_dict(),
             "catalogue": self.catalogue.vers_dict(),
+            "confiance": self.confiance.vers_dict(),
             "dependances": [dependance.vers_dict() for dependance in self.dependances],
         }
 
@@ -1032,6 +1080,7 @@ class Versions:
             outil=document["outil"],
             interpreteur=Dependance.depuis_dict(document["interpreteur"]),
             catalogue=VersionCatalogue.depuis_dict(document["catalogue"]),
+            confiance=VersionConfiance.depuis_dict(document["confiance"]),
             dependances=tuple(Dependance.depuis_dict(d) for d in document["dependances"]),
         )
 

@@ -12,7 +12,7 @@ from html.parser import HTMLParser
 from typing import Any
 
 import pytest
-from catalogues import VERSION, regle
+from catalogues import CONFIANCE, VERSION, regle
 from conftest import EMPREINTE, construire_rapport
 from hypothesis import given
 from hypothesis import strategies as st
@@ -89,6 +89,7 @@ def analyse_de(rapport: Rapport, **champs: Any) -> Analyse:
         non_menees=rapport.non_menees,
         dependances=rapport.versions.dependances,
         catalogue=VERSION,
+        confiance=CONFIANCE,
         regles=tuple(regle_de(constat) for constat in rapport.constats),
     )
     return dataclasses.replace(analyse, **champs) if champs else analyse

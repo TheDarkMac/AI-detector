@@ -19,7 +19,7 @@ from typing import Any, cast
 from xml.parsers import expat
 
 import pytest
-from catalogues import CATALOGUE
+from catalogues import CATALOGUE, CONFIANCE
 from echantillons import boite
 from medias import (
     donnee,
@@ -151,6 +151,7 @@ def analyse_de(resultat: ResultatTravail, taille: int = len(CONTENU)) -> Analyse
         non_menees=resultat.non_menees,
         dependances=resultat.dependances,
         catalogue=CATALOGUE.version,
+        confiance=CONFIANCE,
         regles=CATALOGUE.regles,
     )
 

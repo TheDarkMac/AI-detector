@@ -1,10 +1,10 @@
 """Interface publique d'analyse : un fichier, analysé par un processus de travail (ES-17).
 
-Une analyse rend l'identification, les résultats validés, la version du catalogue employé et
-les règles que citent ses constats (ADR-0073, ADR-0097) ; le rapport en est construit par
-:meth:`Analyse.rapport`, et exporté, masqué par défaut, par :mod:`voight_kampff.rapport.export`
-(T16). Ce module n'importe le processus principal qu'à l'appel de :func:`analyser` : le
-processus de travail, qui importe le paquet, n'en charge rien.
+Une analyse rend l'identification, les résultats validés, les versions du catalogue et de la liste
+de confiance employés, et les règles que citent ses constats (ADR-0073, ADR-0097, ADR-0171) ; le
+rapport en est construit par :meth:`Analyse.rapport`, et exporté, masqué par défaut, par
+:mod:`voight_kampff.rapport.export` (T16). Ce module n'importe le processus principal qu'à l'appel
+de :func:`analyser` : le processus de travail, qui importe le paquet, n'en charge rien.
 """
 
 import os
@@ -29,6 +29,7 @@ from voight_kampff.rapport.modele import (
     RaisonNonMenee,
     Rapport,
     VersionCatalogue,
+    VersionConfiance,
     Versions,
     verifier_resultats,
 )
@@ -121,6 +122,9 @@ class Analyse:
     """Bibliothèques qui ont lu le fichier, avec leur version réelle (ADR-0023)."""
     catalogue: VersionCatalogue
     """Catalogue de règles employé : version, date, empreinte, livré ou fourni (ADR-0029)."""
+    confiance: VersionConfiance
+    """Liste de confiance C2PA employée : nom, version, date, empreinte, livrée ou fournie
+    (ADR-0171)."""
     regles: tuple[Regle, ...] = ()
     """Règles du catalogue que citent les constats : titre, phrase, limites, évaluation, lus
     par l'export (ADR-0097). Chaque constat est conforme à la sienne."""
@@ -157,6 +161,7 @@ class Analyse:
                 outil=version("voight-kampff-forensics"),
                 interpreteur=interpreteur(),
                 catalogue=self.catalogue,
+                confiance=self.confiance,
                 dependances=self.dependances,
             ),
             isolation=self.isolation,
@@ -177,14 +182,18 @@ def analyser(
     *,
     desactiver: Collection[str] = (),
     catalogue: str | os.PathLike[str] | None = None,
+    confiance: str | os.PathLike[str] | None = None,
 ) -> Analyse:
     """Analyse un fichier dans un processus de travail neuf et isolé (ADR-0036).
 
     ``desactiver`` nomme des modules à ne pas exécuter (ADR-0063) ; un nom inconnu lève
     ``ModuleInconnu`` avant toute lecture. ``catalogue`` nomme le dossier d'un catalogue fourni
     par l'utilisateur, qui remplace le catalogue livré (ADR-0086) ; un catalogue invalide lève
-    ``CatalogueInvalide`` avant toute lecture. Un fichier refusé lève :class:`AnalyseRefusee`.
+    ``CatalogueInvalide`` avant toute lecture. ``confiance`` nomme le dossier d'une liste de
+    confiance C2PA fournie par l'utilisateur, qui remplace la liste livrée (ADR-0171) ; une liste
+    invalide lève ``ConfianceInvalide`` avant toute lecture. Un fichier refusé lève
+    :class:`AnalyseRefusee`.
     """
     from voight_kampff._orchestration import soumission  # importé ici : voir le docstring
 
-    return soumission.soumettre(chemin, desactiver, catalogue=catalogue)
+    return soumission.soumettre(chemin, desactiver, catalogue=catalogue, confiance=confiance)

@@ -94,7 +94,12 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
             ("textepng", "0.4.0"),
             ("vorbis", "0.3.0"),
         )
-    } | {("infopdf", EtatTechnique.PARTIELLE, "0.3.0"), ("xmp", EtatTechnique.PARTIELLE, "0.6.0")}
+    } | {
+        ("infopdf", EtatTechnique.PARTIELLE, "0.3.0"),
+        ("xmp", EtatTechnique.PARTIELLE, "0.6.0"),
+        # c2pa-rs ne lit pas un PDF sans table de références : recherche non menée (ADR-0169).
+        ("c2pa", EtatTechnique.NON_MENEE, "0.1.0"),
+    }
     assert {n.raison for n in analyse.non_menees} == {
         RaisonNonMenee.HORS_V1,
         RaisonNonMenee.FORMAT_PARTIEL,

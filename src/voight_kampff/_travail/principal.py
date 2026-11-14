@@ -3,8 +3,8 @@
 1. Importer les modules livrés, tant que le système de fichiers est accessible.
 2. Appliquer les restrictions du système (ADR-0035, ADR-0079 à ADR-0081), se déclarer
    verrouillé, envoyer l'état de l'isolation : aucun octet du fichier n'a encore été lu.
-3. Lire la configuration : modules actifs, dans l'ordre d'exécution, et règles du catalogue
-   qui relèvent d'eux (ADR-0084).
+3. Lire la configuration : modules actifs, dans l'ordre d'exécution, règles du catalogue qui
+   relèvent d'eux (ADR-0084) et ancres de la liste de confiance C2PA (ADR-0171).
 4. Identifier les formats et envoyer les parties reconnues (ADR-0070, ADR-0071).
 5. Pour chaque partie du périmètre, exécuter chaque module actif, lui appliquer ses règles
    « moteur », envoyer ses résultats puis son message « module » (ADR-0062).
@@ -24,6 +24,7 @@ import os
 import sys
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
+from importlib import metadata
 from typing import BinaryIO
 from xml.parsers import expat
 
@@ -35,7 +36,7 @@ from voight_kampff._protocole import (
 )
 from voight_kampff._regles import Regle
 from voight_kampff._travail import garde, identification, restrictions
-from voight_kampff._travail.contexte import Contexte, LimiteDepassee
+from voight_kampff._travail.contexte import Ancres, Contexte, LimiteDepassee
 from voight_kampff._travail.fichier import Fichier, ouvrir_herite
 from voight_kampff.rapport.modele import (
     VERSION_SCHEMA,
@@ -48,6 +49,7 @@ from voight_kampff.rapport.modele import (
 
 __all__ = [
     "Analyseur",
+    "Configuration",
     "Identifieur",
     "ModuleConfigure",
     "Restricteur",
@@ -79,12 +81,27 @@ class ModuleConfigure:
     """Bibliothèques qui lisent le fichier pour le module (ADR-0120)."""
 
 
+@dataclass(frozen=True, slots=True)
+class Configuration:
+    """Configuration envoyée par le processus principal, une fois l'isolation annoncée."""
+
+    modules: tuple[ModuleConfigure, ...]
+    """Modules actifs, dans l'ordre d'exécution."""
+    ancres: Ancres
+    """Ancres de la liste de confiance C2PA, remises à chaque module (ADR-0171)."""
+
+
 def versions_des_bibliotheques() -> dict[str, str]:
     """Version réelle de chaque bibliothèque qu'un manifeste peut citer (ADR-0120).
 
     Lue avant les restrictions, comme les modules : après, rien n'est plus chargé du disque.
+    La version de ``c2pa-python`` est celle de son paquet installé, lue sans charger sa
+    bibliothèque native ; chaque version embarque une seule version de c2pa-rs (ADR-0164).
     """
-    return {"expat": ".".join(str(n) for n in expat.version_info)}
+    return {
+        "c2pa-python": metadata.version("c2pa-python"),
+        "expat": ".".join(str(n) for n in expat.version_info),
+    }
 
 
 def canal_du_protocole() -> BinaryIO:
@@ -121,7 +138,7 @@ def importer() -> tuple[dict[str, Analyseur], frozenset[str]]:
     return analyseurs, frozenset(echecs)
 
 
-def lire_configuration(entree: BinaryIO) -> tuple[ModuleConfigure, ...]:
+def lire_configuration(entree: BinaryIO) -> Configuration:
     """Lit la configuration envoyée par le processus principal (ADR-0065).
 
     Elle vient d'un processus de confiance : une configuration mal formée est un défaut de
@@ -137,7 +154,7 @@ def lire_configuration(entree: BinaryIO) -> tuple[ModuleConfigure, ...]:
     regles: dict[str, list[Regle]] = {}
     for regle in map(Regle.depuis_dict, document["regles"]):
         regles.setdefault(regle.module, []).append(regle)
-    return tuple(
+    modules = tuple(
         ModuleConfigure(
             identifiant=str(module["identifiant"]),
             formats=frozenset(str(f) for f in module["formats"]),
@@ -147,6 +164,9 @@ def lire_configuration(entree: BinaryIO) -> tuple[ModuleConfigure, ...]:
         )
         for module in document["modules"]
     )
+    confiance = document["confiance"]
+    ancres = Ancres(str(confiance["signataires"]), str(confiance["horodatage"]))
+    return Configuration(modules, ancres)
 
 
 class _Canal:
@@ -175,6 +195,7 @@ def _executer(
     partie: Partie,
     canal: _Canal,
     numero: int,
+    ancres: Ancres,
 ) -> int:
     """Exécute le module sur une partie ; renvoie le numéro de sa dernière observation."""
     raison: RaisonNonMenee | None = RaisonNonMenee.ERREUR_MODULE
@@ -182,7 +203,14 @@ def _executer(
     if analyseur is not None:
         budget = TAILLE_MAX_SORTIE - canal.envoye - _RESERVE
         contexte = Contexte(
-            module.identifiant, module.directions, fichier, partie, budget, numero, module.regles
+            module.identifiant,
+            module.directions,
+            fichier,
+            partie,
+            budget,
+            numero,
+            module.regles,
+            ancres,
         )
         try:
             analyseur(contexte)
@@ -236,7 +264,8 @@ def principal(
         {"type": "isolation", "version_schema": VERSION_SCHEMA, "isolation": isolation.vers_dict()}
     )
 
-    configures = lire_configuration(entree)
+    configuration = lire_configuration(entree)
+    configures = configuration.modules
     fichier = Fichier(ouvrir_herite(descripteur))
     parties = identifier(fichier, fichier.taille())
     canal.message({"type": "identification", "parties": [p.vers_dict() for p in parties]})
@@ -251,7 +280,13 @@ def principal(
                     None if module.identifiant in echecs else analyseurs.get(module.identifiant)
                 )
                 numeros[module.identifiant] = _executer(
-                    module, analyseur, fichier, partie, canal, numeros[module.identifiant]
+                    module,
+                    analyseur,
+                    fichier,
+                    partie,
+                    canal,
+                    numeros[module.identifiant],
+                    configuration.ancres,
                 )
             canal.message(
                 {

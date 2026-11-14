@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from catalogues import VERSION, regle
+from catalogues import CONFIANCE, VERSION, regle
 
 from banc import cli, evaluation, reseau, sortie
 from banc import corpus as corpora
@@ -516,6 +516,7 @@ def analyse_alpha(*etats: EtatTechnique, constat: bool = False) -> Analyse:
         ),
         dependances=(),
         catalogue=VERSION,
+        confiance=CONFIANCE,
         regles=REGLES[:1] if constat else (),
     )
 

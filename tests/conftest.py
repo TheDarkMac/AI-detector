@@ -5,6 +5,7 @@ import os
 from datetime import UTC, date, datetime
 
 import pytest
+from catalogues import CONFIANCE
 from hypothesis import settings
 
 from banc import matrice
@@ -164,6 +165,7 @@ def construire_rapport() -> Rapport:
             outil="0.1.0.dev0",
             interpreteur=Dependance("cpython", "3.13.9"),
             catalogue=VersionCatalogue("2026.10.0", date(2026, 10, 26), EMPREINTE, False),
+            confiance=CONFIANCE,
             dependances=(Dependance("numpy", "2.5.4"), Dependance("c2pa-python", "0.38.1")),
         ),
         isolation=EtatIsolation(NiveauIsolation.REDUITE, (ManqueIsolation.RESEAU,)),

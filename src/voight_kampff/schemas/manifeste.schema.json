@@ -64,7 +64,7 @@
       "type": "array",
       "maxItems": 8,
       "uniqueItems": true,
-      "items": { "enum": ["expat"] }
+      "items": { "enum": ["c2pa-python", "expat"] }
     }
   }
 }
