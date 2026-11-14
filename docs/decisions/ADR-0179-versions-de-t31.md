@@ -1,8 +1,8 @@
 # ADR-0179 — Versions de T31 : schéma 0.6.0, catalogue 0.6.0 au format 3, modules inchangés
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : assistant, proposition non posée en question pendant T31, soumise dans la PR
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T31, validée pendant la revue de la PR de T31
 - **Tâche** : T31
 - **Exigences liées** : NF-06, NF-07 ; ADR-0054, ADR-0085, ADR-0147, ADR-0152, ADR-0172
 
@@ -39,3 +39,4 @@ Option A. Registre du catalogue : entrée 0.6.0 ajoutée.
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T31 (« Yes, all four ») : statut « Accepté » |

@@ -36,7 +36,7 @@ Option A. T31 livre l'inventaire et le point d'extension ; le lecteur dwtDct dev
 ## Conséquences
 
 - Le catalogue 0.6.0 inscrit `M-DWTDCT` avec la raison `lecteur_a_venir` : le rapport d'une image le dit non recherché.
-- T32 est inscrite en V1, après T40 et T41, dont elle partage le décodage des pixels : statut et placement proposés par l'assistant, soumis dans la PR. ADR-0012 ne retient en V1 que le point d'extension de F-24 : la question du statut de T32 (V1 ou candidate V2) reste ouverte jusqu'à la validation de TheDarkMac.
+- T32 est inscrite en V1, après T40 et T41, dont elle partage le décodage des pixels : statut et placement proposés par l'assistant, validés par TheDarkMac pendant la revue de la PR (« Yes, all four »). ADR-0012 ne retenait en V1 que le point d'extension de F-24 : T32 y ajoute le lecteur.
 - T32 devra choisir le décodage des pixels (nouvel ADR, avec T40 et T41), mesurer les faux positifs du seuil de bits concordants sur le corpus, et fixer la direction et le niveau du constat ; ce n'est jamais une preuve (ADR-0021 : message public et fixe, schéma non cryptographique).
 
 ## Historique
@@ -44,3 +44,4 @@ Option A. T31 livre l'inventaire et le point d'extension ; le lecteur dwtDct dev
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Accepté » (réponse de TheDarkMac à la question posée pendant T31) |
+| 2026-11-14 | Statut V1 de T32, après T40 et T41, validé par TheDarkMac pendant la revue de la PR (« Yes, all four ») |

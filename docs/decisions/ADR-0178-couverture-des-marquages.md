@@ -1,8 +1,8 @@
 # ADR-0178 — Couverture des marquages : marquages qui pourraient se trouver dans le fichier, calculée par P1
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : assistant, proposition non posée en question pendant T31, soumise dans la PR
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T31, validée pendant la revue de la PR de T31
 - **Tâche** : T31
 - **Exigences liées** : F-25, NF-06 ; ADR-0059, ADR-0071, ADR-0087, ADR-0097, ADR-0176, ADR-0177
 
@@ -46,3 +46,4 @@ Option A. Les marquages sont listés dans l'ordre de leurs identifiants ; l'anal
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T31 (« Yes, all four ») : statut « Accepté » |

@@ -1,8 +1,8 @@
 # ADR-0175 — Marquages au catalogue : fichier `marquages.toml`, format 3
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : assistant, proposition non posée en question pendant T31, soumise dans la PR
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T31, validée pendant la revue de la PR de T31
 - **Tâche** : T31
 - **Exigences liées** : F-24, F-25, F-26 ; ES-09 ; ADR-0029, ADR-0038, ADR-0085, ADR-0088, ADR-0147
 
@@ -48,3 +48,4 @@ Option A. `marquages.toml` est facultatif et n'est admis qu'au format 3 ; le cat
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T31 (« Yes, all four ») : statut « Accepté » |
