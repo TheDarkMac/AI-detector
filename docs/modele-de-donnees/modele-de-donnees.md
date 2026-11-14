@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.8** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 proposée dans la PR de T30. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.9** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 proposée dans la PR de T31. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -47,6 +47,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md) | Catégories identifiantes `lieu` et `texte_libre` ; `VERSION_SCHEMA` 0.4.0 |
 | [ADR-0112](../decisions/ADR-0112-comparaison-de-deux-rapports.md) | Comparaison de deux exports : écarts de condition, d'environnement, de résultat |
 | [ADR-0171](../decisions/ADR-0171-liste-de-confiance-au-rapport.md) | `Versions.confiance` : liste de confiance C2PA employée ; `VERSION_SCHEMA` 0.5.0 (T30) |
+| [ADR-0177](../decisions/ADR-0177-marquages-non-recherches-au-rapport.md), [ADR-0178](../decisions/ADR-0178-couverture-des-marquages.md) | `Couverture.marquages_non_recherches`, raisons ; marquages joints à l'analyse ; `VERSION_SCHEMA` 0.6.0 (T31, ADR-0179) |
 
 ### Où se trouve le code
 
@@ -64,7 +65,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Exports JSON et HTML, masquage (T16) | `src/voight_kampff/rapport/export.py`, `rapport/_html.py`, `rapport/_presentation.py`, `rapport/textes.toml` |
 | Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py` |
 
-Version commune : `0.5.0` (`VERSION_SCHEMA`, ADR-0171 ; 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
+Version commune : `0.6.0` (`VERSION_SCHEMA`, ADR-0179 ; 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
 
 ## 2. Vue d'ensemble
 
@@ -110,6 +111,10 @@ classDiagram
   }
   class Couverture {
     marquages_recherches
+  }
+  class MarquageNonRecherche {
+    identifiant
+    raison
   }
   class TechniqueCouverte {
     module
@@ -165,6 +170,7 @@ classDiagram
   Rapport *-- EtatIsolation
   Rapport *-- Couverture
   Couverture *-- "0..*" TechniqueCouverte
+  Couverture *-- "0..*" MarquageNonRecherche
   Rapport *-- "0..*" Observation
   Rapport *-- "0..*" Constat
   Rapport *-- "0..*" NonMenee
@@ -265,7 +271,7 @@ Les observations `c2pa/1` à `c2pa/3` portent l'état de la signature, le signat
 
 Le processus principal tire de l'identification trois sortes d'analyses non menées, sans module (ADR-0071) : `hors_perimetre` pour chaque partie hors périmètre, `fichier_tronque` pour chaque partie tronquée, `format_partiel` pour chaque plage non reconnue, avec la plage en localisation. Le modèle exige leur présence.
 
-**Couverture** (ADR-0059) : la liste des techniques, une fois par partie du périmètre (ADR-0071), chacune avec sa version et son état (`appliquee`, `partielle`, `non_menee`, `non_applicable`), et les identifiants des marquages recherchés (F-25). Une technique hors de cette version de l'outil y figure sans version, à l'état non menée, avec la seule raison `hors_v1` (ADR-0012) ; sur une autre partie d'un polyglotte, qui n'est pas de ses formats, elle est non applicable, toujours sans version. Ces techniques sont lues dans `modules/hors_v1.toml` et ne figurent que si une partie analysée est d'un de leurs formats (ADR-0087).
+**Couverture** (ADR-0059) : la liste des techniques, une fois par partie du périmètre (ADR-0071), chacune avec sa version et son état (`appliquee`, `partielle`, `non_menee`, `non_applicable`), et les marquages du catalogue qui pourraient se trouver dans le fichier, d'après les formats de ses parties analysées : identifiants des marquages recherchés (F-25), puis marquages non recherchés, chacun avec sa raison (`lecteur_neuronal`, `lecteur_proprietaire`, `cle_du_fournisseur`, `lecteur_a_venir`, inscrites au catalogue ; `technique_non_menee`, constatée quand le module qui recherche le marquage n'a été appliqué à aucune de ces parties). Un marquage y figure au plus une fois. Le processus principal les calcule après le processus de travail ; l'analyse joint les entrées du catalogue qu'ils citent et vérifie que chaque raison est la leur (ADR-0176 à ADR-0178). Une technique hors de cette version de l'outil y figure sans version, à l'état non menée, avec la seule raison `hors_v1` (ADR-0012) ; sur une autre partie d'un polyglotte, qui n'est pas de ses formats, elle est non applicable, toujours sans version. Ces techniques sont lues dans `modules/hors_v1.toml` et ne figurent que si une partie analysée est d'un de leurs formats (ADR-0087).
 
 ## 6. Localisation, identification, versions, isolation
 
@@ -351,3 +357,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-10-28 | 1.7 | Message `versions` contrôlé par les manifestes (§6, ADR-0120) ; vocabulaire des premières observations (§4, ADR-0117) ; exigences (§9) | T20 |
 | 2026-11-14 | 1.8 | Catégories identifiantes `lieu` et `texte_libre`, `VERSION_SCHEMA` 0.4.0 (§1, §2, §4, §7, ADR-0159) ; contrôle avant publication produit à l'export, comme le résumé (ADR-0158) | T25 |
 | 2026-11-14 | 1.9 | `Versions.confiance`, `VERSION_SCHEMA` 0.5.0 (§1, §6, ADR-0171) ; exemple du constat du cahier avec la règle R-C2PA-001 (§4, ADR-0170) | T30 |
+| 2026-11-14 | 1.10 | Marquages non recherchés de la couverture, `VERSION_SCHEMA` 0.6.0 (§1, §2, §5, ADR-0177 à ADR-0179) | T31 |

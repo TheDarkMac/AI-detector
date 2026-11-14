@@ -18,6 +18,7 @@ __all__ = [
     "DELAI",
     "DELAI_ARRET",
     "FICHIERS_MAX_CATALOGUE",
+    "MARQUAGES_MAX",
     "MEMOIRE_MAX",
     "MEMOIRE_MAX_MOTIF",
     "OBJETS_MAX",
@@ -93,6 +94,8 @@ FICHIERS_MAX_CATALOGUE = 256
 """Fichiers d'un catalogue, en-tête compris."""
 REGLES_MAX = 4096
 """Règles d'un catalogue."""
+MARQUAGES_MAX = 256
+"""Marquages d'un catalogue (ADR-0175) ; le catalogue livré en inscrit dix."""
 PROGRAMME_MAX_MOTIF = 5000
 """Taille du programme compilé d'un motif RE2, en instructions : assez pour une classe
 Unicode (``\\pL`` en compte environ 1 200) et une répétition bornée."""

@@ -65,11 +65,12 @@ glossaire = "Glossaire"
 
 # Introductions et légendes des tableaux.
 [intros]
-couverture = "Un résultat négatif ne vaut que pour les techniques appliquées et les marquages recherchés ci-dessous."
+couverture = "Un résultat négatif ne vaut que pour les techniques appliquées et les marquages recherchés ci-dessous. Les marquages connus non recherchés peuvent se trouver dans le fichier sans que l'outil le voie."
 donnees_identifiantes = "Les données qui peuvent désigner une source sont masquées par défaut : elles sont absentes de ce rapport, pas seulement cachées."
 observations = "Toutes les données relevées dans le fichier, sans interprétation ; les constats y renvoient."
 legende_couverture = "Techniques, par partie du fichier"
 legende_non_menees = "Analyses non menées, avec leur raison"
+legende_marquages = "Marquages connus non recherchés, avec leur raison"
 legende_identifiantes = "Masquage, par catégorie de données identifiantes"
 controle_publication = "Données des métadonnées qui peuvent identifier la source si le fichier est publié tel quel (F-90). Elles sont nommées ici sans leur valeur ; la rubrique Observations montre la valeur de celles dont la catégorie est levée."
 controle_limites = "Le contrôle porte sur les métadonnées que l'outil lit et sur les champs que ses modules marquent. Il ne porte ni sur le contenu (texte visible, visages, lieux reconnaissables, points de traçage d'imprimante), ni sur le nom du fichier, ni sur les noms des données, qui peuvent venir du fichier. L'outil ne modifie pas le fichier : il indique les marques à retirer, il ne les retire pas."
@@ -108,6 +109,9 @@ version = "Version"
 etat = "État"
 raison = "Raison"
 marquages = "Marquages recherchés"
+non_recherches = "Marquages connus non recherchés"
+marquage = "Marquage"
+nature = "Nature"
 identifiant = "Identifiant"
 nom_observation = "Donnée"
 valeur = "Valeur"
@@ -118,6 +122,7 @@ donnees_identifiantes = "Données"
 octets = "Octets"
 
 [formes]
+marquage = "{nom} ({identifiant})"
 taille = "{octets} octets"
 octets = "octets {debut} à {fin}"
 catalogue = "{version} du {date}, empreinte {empreinte}"
@@ -156,6 +161,8 @@ catalogue = "catalogue : {catalogue}"
 confiance = "liste de confiance C2PA : {confiance}"
 rapport = "rapport : {html} et {json}"
 marque = "marques identifiantes, {categorie} : {donnees}"
+marquages = "marquages recherchés : {marquages}"
+non_recherche = "marquage non recherché : {nom} ({raison})"
 
 # Comparaison de deux rapports du même fichier (vk --comparer, ADR-0112).
 [comparaison]
@@ -260,6 +267,19 @@ delai_depasse = "Délai dépassé : l'analyse a été interrompue."
 arret_processus = "Le processus qui lisait le fichier s'est arrêté anormalement : l'analyse a été interrompue."
 message_invalide = "Le processus qui lisait le fichier a envoyé un message non conforme : l'analyse a été interrompue."
 
+# Raisons pour lesquelles un marquage connu n'est pas recherché (ADR-0177).
+[raisons_marquage]
+lecteur_neuronal = "lecteur public, mais lui-même un réseau de neurones, que l'outil n'embarque pas"
+lecteur_proprietaire = "aucun lecteur public : seul son fournisseur le lit"
+cle_du_fournisseur = "lecture impossible sans la clé secrète du fournisseur"
+lecteur_a_venir = "lecteur public et déterministe, pas encore livré dans cette version"
+technique_non_menee = "la technique qui le recherche n'a pas été appliquée à ce fichier"
+
+[natures_marquage]
+manifeste = "manifeste signé"
+declaration = "déclaration dans les métadonnées"
+filigrane = "filigrane invisible"
+
 # Termes du rapport, repris du glossaire du projet (docs/glossaire.md) en langage courant (NF-11).
 [glossaire]
 preuve = ["Preuve", "Fait établi par une vérification cryptographique ou déterministe, accompagné de l'énoncé exact de ce qu'il établit, et seulement cela."]
@@ -272,6 +292,7 @@ regle = ["Règle", "Élément public et versionné du catalogue qui tire un cons
 observation = ["Observation", "Donnée relevée dans le fichier (valeur d'un champ, mesure), sans interprétation."]
 metadonnees = ["Métadonnées", "Données qu'un fichier déclare sur lui-même (appareil, logiciel, dates, auteur, position), écrites selon une norme : EXIF, XMP, IPTC, blocs texte PNG. Elles se réécrivent librement : l'outil les relève telles qu'elles sont écrites."]
 couverture = ["Couverture", "Techniques appliquées ou non au fichier et marquages recherchés : un résultat négatif ne vaut que pour eux."]
+marquage = ["Marquage", "Signal lisible par machine, posé exprès pour dire l'origine d'un contenu : manifeste C2PA, déclaration IPTC, filigrane invisible. Il ne couvre que les contenus de ceux qui le posent : son absence ne prouve rien."]
 non_menee = ["Analyse non menée", "Analyse qui aurait pu s'appliquer au fichier et ne l'a pas été, avec sa raison."]
 interrompue = ["Analyse interrompue", "Analyse dont une partie n'a pas abouti pour une raison qui dépend de la machine (délai, mémoire, arrêt) : ses résultats ne sont pas garantis reproductibles."]
 format_reel = ["Format réel", "Format identifié par le contenu du fichier, non par son extension."]

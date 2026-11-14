@@ -318,6 +318,10 @@ def test_regles_du_catalogue_livre(capsys: pytest.CaptureFixture[str]) -> None:
         f"catalogue : {version.version} du {version.date.isoformat()}, "
         f"empreinte {version.empreinte}",
         *(f"{r.identifiant} version {r.version} ({r.module}) : {r.titre}" for r in livre.regles),
+        *(
+            f"{m.identifiant} ({m.module or f'non recherché : {m.raison}'}) : {m.nom}"
+            for m in livre.marquages
+        ),
     ]
 
 

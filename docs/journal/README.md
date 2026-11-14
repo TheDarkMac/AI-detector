@@ -38,3 +38,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T24](T24-indices-de-transfert.md) | Indices de transfert par messagerie ou capture d'écran | `tache/T24-indices-de-transfert` | [#25](https://github.com/TheDarkMac/AI-detector/pull/25) |
 | [T25](T25-controle-avant-publication.md) | Contrôle avant publication : marques identifiantes des métadonnées | `tache/T25-controle-avant-publication` | [#26](https://github.com/TheDarkMac/AI-detector/pull/26) |
 | [T30](T30-c2pa.md) | C2PA : détection, vérification, états et déclarations | `tache/T30-c2pa` | [#27](https://github.com/TheDarkMac/AI-detector/pull/27) |
+| [T31](T31-filigranes-invisibles.md) | Filigranes invisibles : inventaire, point d'extension du catalogue, marquages recherchés | `tache/T31-filigranes-invisibles` | à venir |

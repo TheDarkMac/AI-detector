@@ -188,3 +188,9 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0171](ADR-0171-liste-de-confiance-au-rapport.md) | Liste de confiance : chargement par P1, configuration de P2, rubrique Versions, liste fournie | Accepté | 2026-11-14 |
 | [ADR-0172](ADR-0172-versions-de-t30.md) | Versions de T30 : schéma 0.5.0, catalogue 0.5.0, module c2pa 0.1.0 | Accepté | 2026-11-14 |
 | [ADR-0173](ADR-0173-adresse-d-un-manifeste-distant.md) | Adresse d'un manifeste C2PA distant dans le XMP : masquée comme un numéro de série | Accepté | 2026-11-14 |
+| [ADR-0174](ADR-0174-inventaire-et-lecteur-dwtdct.md) | Inventaire des filigranes ; lecteur dwtDct dans une tâche à part (T32) | Accepté | 2026-11-14 |
+| [ADR-0175](ADR-0175-marquages-au-catalogue.md) | Marquages au catalogue : fichier `marquages.toml`, format 3 | Accepté | 2026-11-14 |
+| [ADR-0176](ADR-0176-marquages-de-provenance.md) | Marquages recherchés : les marquages de provenance, pas les signatures de générateurs | Accepté | 2026-11-14 |
+| [ADR-0177](ADR-0177-marquages-non-recherches-au-rapport.md) | Marquages connus non recherchés : au rapport, avec leur raison | Accepté | 2026-11-14 |
+| [ADR-0178](ADR-0178-couverture-des-marquages.md) | Couverture des marquages : marquages qui pourraient se trouver dans le fichier, calculée par P1 | Accepté | 2026-11-14 |
+| [ADR-0179](ADR-0179-versions-de-t31.md) | Versions de T31 : schéma 0.6.0, catalogue 0.6.0 au format 3, modules inchangés | Accepté | 2026-11-14 |

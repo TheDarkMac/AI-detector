@@ -10,6 +10,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from voight_kampff._marquages import Marquage
 from voight_kampff._orchestration.catalogue import Catalogue
 from voight_kampff._orchestration.catalogue import charger as _charger
 from voight_kampff._orchestration.manifestes import decouvrir
@@ -78,6 +79,41 @@ REGLES = (
 )
 
 REGLES_C2PA = livre().du_module("c2pa")
+MARQUAGES_LIVRES = {marquage.identifiant: marquage for marquage in livre().marquages}
+"""Marquages du catalogue livré, par identifiant (T31)."""
+
+
+def marquage_dict(identifiant: str = "M-TEST", **champs: Any) -> dict[str, Any]:
+    """Marquage non recherché, sous la forme du catalogue ; ``champs`` le modifie.
+
+    Un champ qui vaut ``None`` est retiré.
+    """
+    document: dict[str, Any] = {
+        "identifiant": identifiant,
+        "nom": "Marquage de test",
+        "nature": "filigrane",
+        "description": "Marquage employé par les tests.",
+        "formats": ["jpeg"],
+        "raison": "lecteur_neuronal",
+        "references": ["https://exemple.org/marquage"],
+        "verifie": "2026-11-14",
+    } | champs
+    return {cle: valeur for cle, valeur in document.items() if valeur is not None}
+
+
+def marquage(identifiant: str = "M-TEST", **champs: Any) -> Marquage:
+    return Marquage.depuis_dict(marquage_dict(identifiant, **champs))
+
+
+def toml_marquages(*marquages: dict[str, Any]) -> str:
+    """Fichier ``marquages.toml`` : une table ``[[marquage]]`` par marquage."""
+    blocs = [
+        "\n".join(["[[marquage]]", *(f"{cle} = {chaine(v)}" for cle, v in m.items())])
+        for m in marquages
+    ]
+    return "\n\n".join(blocs) + "\n"
+
+
 """Règles « module » du module c2pa livré : il les cite, et lève sans elles (ADR-0084, T30)."""
 
 CATALOGUE = Catalogue(VERSION, "Catalogue de test.", REGLES + REGLES_C2PA)

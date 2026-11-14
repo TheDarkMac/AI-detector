@@ -1,0 +1,141 @@
+# Marquages de provenance connus du catalogue (F-24, F-25, ADR-0175 à ADR-0178).
+#
+# Un marquage est un signal lisible par machine, posé exprès pour dire l'origine d'un contenu
+# (ADR-0176). Chacun est recherché par un module livré (`module`), ou ne l'est pas pour une
+# raison (`raison`) ; le rapport d'un fichier cite ceux qui pourraient s'y trouver, d'après
+# leurs `formats`. Inventaire et sources : docs/techniques/filigranes-invisibles.md. Les
+# signatures de générateurs dans les métadonnées (F-12) sont des règles, pas des marquages.
+# Validé par schemas/marquages.schema.json.
+
+# Recherchés
+
+[[marquage]]
+identifiant = "M-C2PA"
+nom = "Manifeste C2PA intégré"
+nature = "manifeste"
+description = "Manifeste signé de la C2PA, intégré au fichier : déclarations (création, retouche, capture), signature et empreinte du contenu. Recherché et vérifié par le module c2pa, dans les formats où c2pa-rs le lit."
+formats = ["jpeg", "png", "webp", "heic", "pdf", "wav", "mp3", "m4a", "flac", "mp4", "mov", "docx", "odt"]
+module = "c2pa"
+references = ["https://spec.c2pa.org/specifications/specifications/2.2/specs/C2PA_Specification.html"]
+verifie = "2026-11-14"
+
+[[marquage]]
+identifiant = "M-IPTC-DST"
+nom = "Type de source numérique IPTC (DigitalSourceType)"
+nature = "declaration"
+description = "Champ Iptc4xmpExt:DigitalSourceType des métadonnées XMP, dont le vocabulaire IPTC nomme la création ou la retouche par IA générative. Lu par le module xmp ; une déclaration se réécrit librement (ES-20)."
+formats = ["jpeg", "png", "webp", "heic", "pdf", "wav", "m4a", "mp4", "mov"]
+module = "xmp"
+references = [
+    "https://cv.iptc.org/newscodes/digitalsourcetype/",
+    "https://www.iptc.org/std/photometadata/specification/IPTC-PhotoMetadata",
+]
+verifie = "2026-11-14"
+
+# Non recherchés : lecteur public et déterministe, à livrer
+
+[[marquage]]
+identifiant = "M-DWTDCT"
+nom = "Filigrane dwtDct d'invisible-watermark (Stable Diffusion 1, SDXL, FLUX.1)"
+nature = "filigrane"
+description = "Message fixe caché dans les coefficients DCT d'une transformée en ondelettes de la chrominance, par la bibliothèque invisible-watermark : « StableDiffusionV1 » dans les scripts de CompVis, 48 bits dans ceux de SDXL (generative-models, diffusers), 46 bits dans le code de référence de FLUX.1. Lecteur public, sans réseau de neurones ni clé, mais qui demande de décoder les pixels : tâche T32. Fragile au recadrage et au redimensionnement."
+formats = ["jpeg", "png", "webp", "heic"]
+raison = "lecteur_a_venir"
+references = [
+    "https://github.com/ShieldMnt/invisible-watermark",
+    "https://github.com/CompVis/stable-diffusion/blob/main/scripts/txt2img.py",
+    "https://github.com/Stability-AI/generative-models/blob/main/sgm/inference/helpers.py",
+    "https://github.com/black-forest-labs/flux/blob/main/src/flux/util.py",
+]
+verifie = "2026-11-14"
+
+[[marquage]]
+identifiant = "M-C2PA-TEXTE"
+nom = "Manifeste C2PA dans un texte brut"
+nature = "manifeste"
+description = "Manifeste C2PA écrit en sélecteurs de variante Unicode, invisibles, au sein d'un texte (annexe A.7 de la spécification C2PA 2.3, en-tête « C2PATXT »). Décodage déterministe ; la lecture des fichiers texte relève du module texte (T80)."
+formats = ["texte"]
+raison = "lecteur_a_venir"
+references = ["https://spec.c2pa.org/specifications/specifications/2.3/specs/C2PA_Specification.html"]
+verifie = "2026-11-14"
+
+# Non recherchés : lecteur réservé au fournisseur ou à sa clé
+
+[[marquage]]
+identifiant = "M-SYNTHID"
+nom = "SynthID (Google) : images, audio, vidéo"
+nature = "filigrane"
+description = "Filigrane posé par les services de Google sur les images, le son et la vidéo qu'ils génèrent. Aucun lecteur public : la vérification passe par le portail SynthID Detector de Google."
+formats = ["jpeg", "png", "webp", "heic", "wav", "mp3", "aac", "m4a", "flac", "ogg", "mp4", "mov", "webm"]
+raison = "lecteur_proprietaire"
+references = [
+    "https://deepmind.google/models/synthid/",
+    "https://blog.google/innovation-and-ai/products/google-synthid-ai-content-detector/",
+]
+verifie = "2026-11-14"
+
+[[marquage]]
+identifiant = "M-SYNTHID-TEXTE"
+nom = "SynthID Text"
+nature = "filigrane"
+description = "Filigrane statistique du texte généré par un modèle de langage. Le code est public, mais la détection demande les clés du fournisseur et un détecteur entraîné pour elles ; les clés de Google ne sont pas publiques."
+formats = ["texte", "docx", "odt", "pdf"]
+raison = "cle_du_fournisseur"
+references = [
+    "https://github.com/google-deepmind/synthid-text",
+    "https://ai.google.dev/responsible/docs/safeguards/synthid",
+]
+verifie = "2026-11-14"
+
+[[marquage]]
+identifiant = "M-LISTE-VERTE"
+nom = "Filigranes de texte à liste verte (Kirchenbauer et al.)"
+nature = "filigrane"
+description = "Filigrane statistique du texte : à chaque mot, un ensemble « vert » tiré d'une clé et du mot précédent est favorisé ; un test statistique en compte la part. Lecteur public, mais qui exige la clé, la fonction de hachage et le découpage en jetons du fournisseur."
+formats = ["texte", "docx", "odt", "pdf"]
+raison = "cle_du_fournisseur"
+references = ["https://arxiv.org/abs/2301.10226"]
+verifie = "2026-11-14"
+
+# Non recherchés : lecteur public, mais réseau de neurones (ADR-0016)
+
+[[marquage]]
+identifiant = "M-TRUSTMARK"
+nom = "TrustMark (Adobe), variantes Q, C et P"
+nature = "filigrane"
+description = "Filigrane d'image inscrit à la liste C2PA des liaisons souples, qui permet de retrouver un manifeste retiré du fichier. Code et modèles publics sous licence MIT, mais le décodeur est un réseau de neurones."
+formats = ["jpeg", "png", "webp", "heic"]
+raison = "lecteur_neuronal"
+references = [
+    "https://github.com/adobe/trustmark",
+    "https://github.com/c2pa-org/softbinding-algorithm-list",
+]
+verifie = "2026-11-14"
+
+[[marquage]]
+identifiant = "M-META-SEAL"
+nom = "Video Seal, AudioSeal et Watermark Anything (Meta)"
+nature = "filigrane"
+description = "Filigranes de vidéo, d'image et de son publiés par Meta sous licence MIT ; chacun est lu par un extracteur ou un détecteur entraîné conjointement avec l'incrusteur, c'est-à-dire un réseau de neurones."
+formats = ["jpeg", "png", "webp", "heic", "wav", "mp3", "aac", "m4a", "flac", "ogg", "mp4", "mov", "webm"]
+raison = "lecteur_neuronal"
+references = [
+    "https://github.com/facebookresearch/videoseal",
+    "https://github.com/facebookresearch/audioseal",
+    "https://github.com/facebookresearch/watermark-anything",
+]
+verifie = "2026-11-14"
+
+[[marquage]]
+identifiant = "M-MICROSOFT"
+nom = "InvisMark et WavMark (Microsoft)"
+nature = "filigrane"
+description = "Filigranes d'image et de vidéo (InvisMark) et de son (WavMark), inscrits par Microsoft à la liste C2PA des liaisons souples ; tous deux reposent sur des réseaux de neurones."
+formats = ["jpeg", "png", "webp", "heic", "wav", "mp3", "aac", "m4a", "flac", "ogg", "mp4", "mov", "webm"]
+raison = "lecteur_neuronal"
+references = [
+    "https://arxiv.org/abs/2411.07795",
+    "https://github.com/wavmark/wavmark",
+    "https://github.com/c2pa-org/softbinding-algorithm-list",
+]
+verifie = "2026-11-14"

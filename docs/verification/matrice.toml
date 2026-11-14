@@ -176,17 +176,17 @@ note = "Outil d'origine, titre, signataire, actions et source numérique IPTC, i
 
 [[exigence]]
 id = "F-24"
-etat = "a_venir"
-taches = ["T31"]
+etat = "partielle"
+taches = ["T31", "T32"]
 methodes = ["test"]
-note = "Reformulée : point d'extension, catalogue V1 éventuellement vide (ADR-0012)."
+note = "Point d'extension : marquages au catalogue, format 3 (ADR-0175) ; inventaire de T31 : un seul filigrane lisible sans réseau de neurones ni clé, le dwtDct, inscrit non recherché, lecteur en T32 (ADR-0174)."
 
 [[exigence]]
 id = "F-25"
-etat = "partielle"
-taches = ["T11", "T16", "T30", "T31"]
+etat = "realisee"
+taches = ["T11", "T16", "T31"]
 methodes = ["test"]
-note = "Couverture au rapport ; la liste des marquages recherchés reste vide avant T30 et T31."
+note = "Couverture au rapport : marquages recherchés (C2PA, type de source IPTC) et marquages connus non recherchés, avec leur raison, d'après les formats du fichier (ADR-0176 à ADR-0178)."
 
 [[exigence]]
 id = "F-26"

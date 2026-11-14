@@ -10,7 +10,7 @@ Le résultat des tests est celui de chaque passage de la CI, qui joint cette mat
 
 | Famille | réalisée | partielle | à venir | hors V1 | Total |
 | --- | --- | --- | --- | --- | --- |
-| Exigences fonctionnelles (cahier, §5) | 19 | 4 | 9 | 16 | 48 |
+| Exigences fonctionnelles (cahier, §5) | 20 | 4 | 8 | 16 | 48 |
 | Exigences non fonctionnelles (cahier, §7) | 10 | 6 | 3 | 0 | 19 |
 | Exigences de sécurité (modèle de menace, §8) | 16 | 4 | 1 | 1 | 22 |
 | Principes directeurs (cahier, §2 ; A-11) | 6 | 0 | 0 | 0 | 6 |
@@ -34,8 +34,8 @@ Le résultat des tests est celui de chaque passage de la CI, qui joint cette mat
 | F-21 | L’outil doit vérifier la signature du manifeste, l’intégrité du contenu signé et la chaîne de certificats. | réalisée | T30 | test | tests : `test_c2pa.py` | tests : CI | Signature, empreintes et chaîne vérifiées par c2pa-rs contre la liste de confiance livrée ou fournie (ADR-0165, ADR-0171) ; contrôle déterministe, vérifié par des tests de conformité sur des fichiers signés par une autorité d'essai, sans taux sur corpus (A-55). Révocation en ligne hors de T30 (ADR-0166). |
 | F-22 | L’outil doit afficher l’état de vérification : absent, valide, valide mais signé hors liste de confiance, invalide ou non vérifiable, avec la raison. | réalisée | T30 | test | tests : `test_c2pa.py` | tests : CI | Cinq états observés sous `c2pa.etat`, une phrase d'état par manifeste, raison par les codes de la C2PA ou le genre d'erreur de c2pa-rs (ADR-0169, ADR-0170). |
 | F-23 | L’outil doit restituer les déclarations du manifeste : outil d’origine, actions (dont la génération par IA), historique des éditions. | réalisée | T30 | test | tests : `test_c2pa.py` | tests : CI | Outil d'origine, titre, signataire, actions et source numérique IPTC, ingrédients du manifeste actif ; source déclarée en preuve sous un signataire reconnu, en indice faible sinon (ADR-0167, ADR-0168, ADR-0170). |
-| F-24 | L’outil doit rechercher les filigranes invisibles dont l’algorithme de lecture est public, à partir d’un catalogue. | à venir | T31 | test | — | — | Reformulée : point d'extension, catalogue V1 éventuellement vide (ADR-0012). |
-| F-25 | L’outil doit lister les marquages recherchés, pour borner la portée d’un résultat négatif. | partielle | T11, T16, T30, T31 | test | tests : `test_modele.py`, `test_rapport.py` | tests : CI | Couverture au rapport ; la liste des marquages recherchés reste vide avant T30 et T31. |
+| F-24 | L’outil doit rechercher les filigranes invisibles dont l’algorithme de lecture est public, à partir d’un catalogue. | partielle | T31, T32 | test | tests : `test_marquages.py` | tests : CI | Point d'extension : marquages au catalogue, format 3 (ADR-0175) ; inventaire de T31 : un seul filigrane lisible sans réseau de neurones ni clé, le dwtDct, inscrit non recherché, lecteur en T32 (ADR-0174). |
+| F-25 | L’outil doit lister les marquages recherchés, pour borner la portée d’un résultat négatif. | réalisée | T11, T16, T31 | test | tests : `test_marquages.py`, `test_modele.py`, `test_rapport.py` | tests : CI | Couverture au rapport : marquages recherchés (C2PA, type de source IPTC) et marquages connus non recherchés, avec leur raison, d'après les formats du fichier (ADR-0176 à ADR-0178). |
 | F-26 | Le catalogue de signatures et de marquages (F-12, F-24) doit pouvoir être mis à jour sans modifier le moteur d’analyse. | réalisée | T15 | test | tests : `test_catalogue.py`, `test_regles.py` | tests : CI | — |
 | F-30 | Tables de quantification JPEG, comparées à des tables connues (appareils, logiciels). | partielle | T24, T40 | test | tests : `test_transfert.py` | tests : CI | Tables de libjpeg reconnues, qualité de 1 à 100 (T24, ADR-0153, ADR-0154) ; comparaison à d'autres tables connues à T40. |
 | F-31 | Détection d’une double compression JPEG. | à venir | T41 | test | — | — | — |

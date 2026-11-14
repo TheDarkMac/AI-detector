@@ -266,7 +266,12 @@ def _couverture(vue: Presentation) -> str:
             for t in couverture.techniques
         ),
     )
-    marquages = couverture.marquages_recherches
+    analyse = vue.analyse
+    recherches = [
+        texte("formes.marquage", nom=analyse.marquage(i).nom, identifiant=i)
+        for i in couverture.marquages_recherches
+    ]
+    non_recherches = couverture.marquages_non_recherches
     return (
         f"<p>{_t(texte('intros.couverture'))}</p>"
         + techniques
@@ -274,9 +279,29 @@ def _couverture(vue: Presentation) -> str:
             [
                 (
                     _champ("marquages"),
-                    _liste(marquages) if marquages else _t(texte("aucun")),
+                    _liste(recherches) if recherches else _t(texte("aucun")),
                 )
             ]
+        )
+        + (
+            _tableau(
+                texte("intros.legende_marquages"),
+                [texte("champs.marquage"), texte("champs.nature"), texte("champs.raison")],
+                (
+                    [
+                        texte(
+                            "formes.marquage",
+                            nom=analyse.marquage(m.identifiant).nom,
+                            identifiant=m.identifiant,
+                        ),
+                        libelle("natures_marquage", analyse.marquage(m.identifiant).nature),
+                        libelle("raisons_marquage", m.raison),
+                    ]
+                    for m in non_recherches
+                ),
+            )
+            if non_recherches
+            else _definitions([(_champ("non_recherches"), _t(texte("aucun")))])
         )
     )
 

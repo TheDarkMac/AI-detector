@@ -50,6 +50,7 @@ __all__ = [
     "Intervalle",
     "Localisation",
     "ManqueIsolation",
+    "MarquageNonRecherche",
     "Niveau",
     "NiveauIsolation",
     "NonMenee",
@@ -58,6 +59,7 @@ __all__ = [
     "Phrase",
     "Plage",
     "RaisonNonMenee",
+    "RaisonNonRecherche",
     "Rapport",
     "ReferenceRegle",
     "Scalaire",
@@ -73,7 +75,7 @@ __all__ = [
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.5.0"
+VERSION_SCHEMA = "0.6.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -190,6 +192,20 @@ RAISONS_D_INTERRUPTION = frozenset(
     }
 )
 """Raisons qui rendent l'analyse interrompue, donc hors garantie de reproductibilité (ADR-0023)."""
+
+
+class RaisonNonRecherche(StrEnum):
+    """Raisons, en liste fermée, pour lesquelles un marquage connu n'est pas recherché (ADR-0177).
+
+    Les quatre premières sont inscrites au catalogue ; la dernière est constatée à l'analyse :
+    le marquage a un module, qui n'a été appliqué à aucune partie où il pourrait se trouver.
+    """
+
+    LECTEUR_NEURONAL = "lecteur_neuronal"
+    LECTEUR_PROPRIETAIRE = "lecteur_proprietaire"
+    CLE_DU_FOURNISSEUR = "cle_du_fournisseur"
+    LECTEUR_A_VENIR = "lecteur_a_venir"
+    TECHNIQUE_NON_MENEE = "technique_non_menee"
 
 
 class EtatTechnique(StrEnum):
@@ -751,12 +767,34 @@ class TechniqueCouverte:
 
 
 @dataclass(frozen=True, slots=True)
+class MarquageNonRecherche:
+    """Marquage connu du catalogue, qui pourrait se trouver dans le fichier et n'y est pas
+    recherché, avec la raison (ADR-0177)."""
+
+    identifiant: str
+    raison: RaisonNonRecherche
+
+    def __post_init__(self) -> None:
+        _identifiant(self.identifiant, "marquage.identifiant")
+
+    def vers_dict(self) -> Document:
+        return {"identifiant": self.identifiant, "raison": self.raison}
+
+    @classmethod
+    def depuis_dict(cls, document: Mapping[str, Any]) -> "MarquageNonRecherche":
+        return cls(document["identifiant"], RaisonNonRecherche(document["raison"]))
+
+
+@dataclass(frozen=True, slots=True)
 class Couverture:
-    """Techniques et marquages recherchés : bornent la portée d'un résultat négatif (F-25)."""
+    """Techniques et marquages, recherchés ou non : bornent la portée d'un résultat négatif
+    (F-25)."""
 
     techniques: tuple[TechniqueCouverte, ...]
     marquages_recherches: tuple[str, ...]
-    """Identifiants, dans le catalogue, des marquages recherchés (F-25)."""
+    """Identifiants, dans le catalogue, des marquages recherchés (F-25, ADR-0176)."""
+    marquages_non_recherches: tuple[MarquageNonRecherche, ...] = ()
+    """Marquages connus qui pourraient se trouver dans le fichier, non recherchés (ADR-0177)."""
 
     def __post_init__(self) -> None:
         _uniques(
@@ -765,12 +803,20 @@ class Couverture:
         )
         for marquage in self.marquages_recherches:
             _identifiant(marquage, "couverture.marquages_recherches")
-        _uniques(self.marquages_recherches, "couverture.marquages_recherches")
+        # Un marquage est recherché ou non, jamais les deux.
+        _uniques(
+            (
+                *self.marquages_recherches,
+                *(marquage.identifiant for marquage in self.marquages_non_recherches),
+            ),
+            "couverture.marquages",
+        )
 
     def vers_dict(self) -> Document:
         return {
             "techniques": [technique.vers_dict() for technique in self.techniques],
             "marquages_recherches": list(self.marquages_recherches),
+            "marquages_non_recherches": [m.vers_dict() for m in self.marquages_non_recherches],
         }
 
     @classmethod
@@ -778,6 +824,9 @@ class Couverture:
         return cls(
             techniques=tuple(TechniqueCouverte.depuis_dict(t) for t in document["techniques"]),
             marquages_recherches=tuple(document["marquages_recherches"]),
+            marquages_non_recherches=tuple(
+                MarquageNonRecherche.depuis_dict(m) for m in document["marquages_non_recherches"]
+            ),
         )
 
 

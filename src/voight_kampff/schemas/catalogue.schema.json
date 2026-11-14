@@ -2,14 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:voight-kampff:schema:catalogue",
   "title": "En-tête du catalogue de règles Voight-Kampff",
-  "description": "Fichier catalogue.toml à la racine du dossier du catalogue (ADR-0029, ADR-0038, ADR-0085, ADR-0088). Les règles sont dans regles/<module>.toml, validées par le schéma regles. Le code vérifie en plus que la date existe.",
+  "description": "Fichier catalogue.toml à la racine du dossier du catalogue (ADR-0029, ADR-0038, ADR-0085, ADR-0088). Les règles sont dans regles/<module>.toml, validées par le schéma regles ; les marquages dans marquages.toml, validé par le schéma marquages (ADR-0175). Le code vérifie en plus que la date existe.",
   "type": "object",
   "additionalProperties": false,
   "required": ["format", "version", "date", "description"],
   "properties": {
     "format": {
-      "description": "Format du catalogue : 1, ou 2 s'il lit des dates ou compare deux observations (ADR-0147) ; cette version de l'outil sait lire les deux, et refuse un autre format, ou une règle du format 2 dans un catalogue du format 1.",
-      "enum": [1, 2]
+      "description": "Format du catalogue : 1 ; 2 s'il lit des dates ou compare deux observations (ADR-0147) ; 3 s'il inscrit des marquages (ADR-0175). Cette version de l'outil sait lire les trois, et refuse un autre format, une règle du format 2 dans un catalogue du format 1, ou des marquages dans un catalogue d'un format inférieur à 3.",
+      "enum": [1, 2, 3]
     },
     "version": {
       "description": "Version du catalogue, X.Y.Z, propre au catalogue (ADR-0085).",

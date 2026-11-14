@@ -1,6 +1,7 @@
 """JSON Schema du rapport, des messages du processus de travail (T11, ADR-0054), des
 manifestes des modules (T12, ADR-0064), du catalogue de règles et des techniques hors V1 (T15,
-ADR-0087, ADR-0088), de l'en-tête de la liste de confiance C2PA (T30, ADR-0171).
+ADR-0087, ADR-0088), de l'en-tête de la liste de confiance C2PA (T30, ADR-0171), des marquages
+du catalogue (T31, ADR-0175).
 
 Les schémas sont livrés dans le paquet et résolus entre eux sans accès réseau : le registre
 ne connaît que ces fichiers et n'a aucune fonction de récupération.
@@ -18,7 +19,7 @@ from referencing import Registry, Resource
 __all__ = ["NOMS", "DocumentInvalide", "charger", "valider", "valideur"]
 
 type NomSchema = Literal[
-    "rapport", "messages", "manifeste", "catalogue", "regles", "hors_v1", "confiance"
+    "rapport", "messages", "manifeste", "catalogue", "regles", "marquages", "hors_v1", "confiance"
 ]
 
 NOMS: tuple[NomSchema, ...] = (
@@ -27,6 +28,7 @@ NOMS: tuple[NomSchema, ...] = (
     "manifeste",
     "catalogue",
     "regles",
+    "marquages",
     "hors_v1",
     "confiance",
 )
