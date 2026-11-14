@@ -54,3 +54,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création |
+| 2026-11-14 | Renvoi : `--reveler` admet aussi `lieu` et `texte_libre` (ADR-0159, T25) |

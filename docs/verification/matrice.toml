@@ -391,7 +391,7 @@ id = "F-90"
 etat = "partielle"
 taches = ["T20", "T25", "T94"]
 methodes = ["test"]
-note = "Champs identifiants des métadonnées d'image marqués par leurs modules (T20, ADR-0119) ; contrôle avant publication en V1 (T25, ADR-0014) ; points de traçage candidats V2 (T94, ADR-0032)."
+note = "Partie métadonnées réalisée en T25 : champs identifiants marqués par chaque module de métadonnées (T20, T21, ADR-0119, ADR-0160), lieux nommés et textes libres en deux catégories masquées (ADR-0159), rubrique « Contrôle avant publication » et ligne du résumé (ADR-0158). Points de traçage d'imprimante candidats V2 (T94, ADR-0032)."
 
 [[exigence]]
 id = "F-91"
@@ -633,7 +633,7 @@ methodes = ["test"]
 [[exigence]]
 id = "ES-13"
 etat = "realisee"
-taches = ["T16", "T20"]
+taches = ["T16", "T20", "T25"]
 methodes = ["test"]
 
 [[exigence]]

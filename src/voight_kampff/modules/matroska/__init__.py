@@ -34,6 +34,14 @@ _INFO = {
 """Éléments de texte d'``Info`` lus (RFC 9559)."""
 _DATE_UTC = 0x4461
 _FICHIERS = frozenset({"SegmentFilename", "PrevFilename", "NextFilename"})
+_LIEUX = frozenset(valeurs.composant(nom) for nom in ("RECORDING_LOCATION", "COMPOSITION_LOCATION"))
+"""Balises officielles d'un lieu (Matroska, « Tagging »), passées par la règle des composants
+comme ``_NOMINATIVES`` : ADR-0160."""
+_TEXTES_LIBRES = frozenset(
+    {"TITLE", "SUBTITLE", "DESCRIPTION", "SYNOPSIS", "SUMMARY", "COMMENT", "KEYWORDS", "LYRICS"}
+)
+"""Balises officielles de titre, description, résumé, commentaire, mots-clés, paroles ; avec
+l'élément ``Title`` d'``Info`` : ADR-0160."""
 _TAG = 0x7373
 _TARGETS = 0x63C0
 _SIMPLE_TAG = 0x67C8
@@ -85,6 +93,22 @@ _NOMINATIVES = frozenset(
 comparées à leur nom passé par la règle des composants (ADR-0119, ADR-0133)."""
 
 
+_IDENTIFIANTES_INFO = {
+    **dict.fromkeys(_FICHIERS, CategorieIdentifiante.NOM_DE_FICHIER),
+    "Title": CategorieIdentifiante.TEXTE_LIBRE,
+}
+
+
+def _identifiante(nom: str) -> CategorieIdentifiante | None:
+    if nom in _NOMINATIVES:
+        return CategorieIdentifiante.METADONNEE_NOMINATIVE
+    if nom in _LIEUX:
+        return CategorieIdentifiante.LIEU
+    if nom in _TEXTES_LIBRES:
+        return CategorieIdentifiante.TEXTE_LIBRE
+    return None
+
+
 def analyser(contexte: Contexte) -> None:
     releve = relever(contexte)
     blocs = [bloc for bloc in releve.blocs if bloc.nature is Nature.MATROSKA]
@@ -118,7 +142,7 @@ def _info(contexte: Contexte, bloc: Bloc, donnees: bytes) -> None:
                 f"matroska.{nom}",
                 _texte(donnees[debut:fin]),
                 localisation=localisation,
-                identifiante=CategorieIdentifiante.NOM_DE_FICHIER if nom in _FICHIERS else None,
+                identifiante=_IDENTIFIANTES_INFO.get(nom),
             )
 
 
@@ -175,11 +199,7 @@ def _simple(
         contexte.non_mener(RaisonNonMenee.FORMAT_PARTIEL, localisation=localisation)
         return
     complet = valeurs.borner(f"{prefixe}.{valeurs.composant(nom)}")
-    identifiante = (
-        CategorieIdentifiante.METADONNEE_NOMINATIVE
-        if valeurs.composant(nom).upper() in _NOMINATIVES
-        else None
-    )
+    identifiante = _identifiante(valeurs.composant(nom).upper())
     if texte:
         valeurs.observer(
             contexte, complet, texte, localisation=localisation, identifiante=identifiante

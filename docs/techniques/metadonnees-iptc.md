@@ -1,8 +1,8 @@
 # Fiche technique — Métadonnées IPTC-IIM
 
-- **Module** : `iptc` (version 0.3.0)
-- **Tâche** : T20, T22, T23, T24
-- **Exigences** : F-10, F-12, ES-13
+- **Module** : `iptc` (version 0.4.0)
+- **Tâche** : T20, T22, T23, T24, T25
+- **Exigences** : F-10, F-12, F-90, ES-13
 - **Formats** : `jpeg`
 - **Directions permises** : `origine_ia`, `transformation`, `rien_de_particulier`
 - **Règles** : aucune
@@ -45,7 +45,14 @@ Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observ
 
 ## Données identifiantes
 
-Marquées `metadonnee_nominative` ([ADR-0119](../decisions/ADR-0119-donnees-identifiantes-des-metadonnees.md)) : `By-line`, `By-lineTitle`, `Credit`, `CopyrightNotice`, `Contact`, `Writer-Editor`.
+| Catégorie | Jeux de données |
+| --- | --- |
+| `metadonnee_nominative` | `By-line`, `By-lineTitle`, `Credit`, `CopyrightNotice`, `Contact`, `Writer-Editor` ([ADR-0119](../decisions/ADR-0119-donnees-identifiantes-des-metadonnees.md)) |
+| `numero_de_serie` | `SpecialInstructions` dont une valeur commence par `FBMD`, identifiant d'une image diffusée par Facebook ([ADR-0161](../decisions/ADR-0161-valeur-fbmd.md)) |
+| `lieu` | `ContentLocationCode`, `ContentLocationName`, `City`, `Sub-location`, `Province-State`, `Country-PrimaryLocationCode`, `Country-PrimaryLocationName` |
+| `texte_libre` | `ObjectName`, `Keywords`, `SpecialInstructions` (hors FBMD), `Headline`, `Caption-Abstract`, `LocalCaption` |
+
+Ces données sont comptées et nommées, sans leur valeur, par la rubrique « Contrôle avant publication » du rapport et par le résumé ([ADR-0158](../decisions/ADR-0158-forme-du-controle-avant-publication.md)).
 
 ## Hypothèses distinguées
 
@@ -88,7 +95,7 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 
 - Seule la ressource `0x0404` est décodée ; les autres ressources Photoshop sont seulement listées (dont `0x0425`, empreinte MD5 de l'IIM, et `0x0422`, `0x0424`, EXIF et XMP logés dans Photoshop).
 - L'IIM logé ailleurs n'est pas lu : étiquette `IPTC-NAA` d'un bloc EXIF (sa taille est observée par `exif`), texte « Raw profile type iptc » d'un PNG (relevé par `textepng`).
-- Les lieux (`City`, `Sub-location`, `Province-State`, `Country-PrimaryLocationName`) ne sont pas marqués identifiants : aucune catégorie d'ES-13 ne les couvre (ADR-0119).
+- `Source` et `OriginalTransmissionReference` ne sont pas marqués : le premier nomme un organisme, que la liste nominative d'ADR-0119 ne couvre pas ; le second est une référence de travail (ADR-0160).
 - Un segment APP13 coupé en plusieurs morceaux n'est pas recollé : chaque segment est lu seul.
 
 ## Sécurité
@@ -104,3 +111,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
 | 2026-11-14 | 0.3.0 | Direction transformation permise : indice de transfert du catalogue sur ses observations, `R-IPTC-003` (T24, ADR-0153 à ADR-0157) ; code du module inchangé |
+| 2026-11-14 | 0.4.0 | Lieux et textes libres marqués ; valeur FBMD marquée `numero_de_serie` ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |

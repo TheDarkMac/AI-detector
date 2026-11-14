@@ -1,8 +1,8 @@
 # Fiche technique — Métadonnées XMP
 
-- **Module** : `xmp` (version 0.5.0)
-- **Tâche** : T20, T21, T22, T23, T24
-- **Exigences** : F-10, F-11, F-12, ES-05, ES-13
+- **Module** : `xmp` (version 0.6.0)
+- **Tâche** : T20, T21, T22, T23, T24, T25
+- **Exigences** : F-10, F-11, F-12, F-90, ES-05, ES-13
 - **Formats** : `jpeg`, `png`, `webp`, `heic`, `pdf`, `wav`, `m4a`, `mp4`, `mov`
 - **Directions permises** : `origine_ia`, `retouche`, `transformation`, `rien_de_particulier`
 - **Règles** : aucune
@@ -59,6 +59,10 @@ Marquées par le module, d'après le premier composant identifiant du nom ([ADR-
 | `numero_de_serie` | `aux:SerialNumber`, `aux:LensSerialNumber`, `exifEX:BodySerialNumber`, `exifEX:LensSerialNumber`, `exif:ImageUniqueID`, `exifEX:ImageUniqueID` |
 | `gps` | Propriétés `GPS…` des espaces `exif`, `exifEX` et `Iptc4xmpExt` |
 | `nom_de_fichier` | `stRef:filePath` (dans toute structure), `xmpMM:PreservedFileName`, `crs:RawFileName`, `exif:RelatedSoundFile` |
+| `lieu` | `photoshop:City`, `photoshop:State`, `photoshop:Country`, `Iptc4xmpCore:Location`, `Iptc4xmpCore:CountryCode` ; `Iptc4xmpExt:City`, `ProvinceState`, `CountryName`, `CountryCode`, `Sublocation`, `WorldRegion`, `LocationName` (dans toute structure, dont `LocationCreated` et `LocationShown`) ; `xmpDM:shotLocation` |
+| `texte_libre` | `dc:title`, `dc:description`, `dc:subject`, `photoshop:Headline`, `photoshop:Instructions`, `Iptc4xmpCore:AltTextAccessibility`, `Iptc4xmpCore:ExtDescrAccessibility`, `Iptc4xmpExt:Event`, `Iptc4xmpExt:AOTitle`, `exif:UserComment`, `tiff:ImageDescription`, `pdf:Keywords`, `lr:hierarchicalSubject`, `mwg-rs:Description`, `xmpDM:album`, `xmpDM:logComment` |
+
+Dans une structure de lieu, la latitude et la longitude restent `gps` ([ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md), [ADR-0160](../decisions/ADR-0160-champs-lieux-et-textes-libres.md)). Ces données sont comptées et nommées, sans leur valeur, par la rubrique « Contrôle avant publication » du rapport et par le résumé ([ADR-0158](../decisions/ADR-0158-forme-du-controle-avant-publication.md)).
 
 ## Hypothèses distinguées
 
@@ -135,3 +139,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.4.0 | Directions origine IA, retouche permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.4.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
 | 2026-11-14 | 0.5.0 | Direction transformation permise : indice de transfert du catalogue sur ses observations, `R-XMP-013` (T24, ADR-0153 à ADR-0157) ; code du module inchangé |
+| 2026-11-14 | 0.6.0 | Lieux nommés et textes libres marqués `lieu` et `texte_libre` ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |

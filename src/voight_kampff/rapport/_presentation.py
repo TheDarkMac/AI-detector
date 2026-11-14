@@ -32,6 +32,7 @@ from voight_kampff.rapport.modele import (
     Observation,
     Partie,
     Plage,
+    RaisonNonMenee,
     Scalaire,
 )
 
@@ -343,6 +344,39 @@ class Presentation:
             lignes.append(texte("resume.non_menees", nombre=len(self.analyse.non_menees)))
         else:
             lignes.append(texte("resume.non_menees_aucune"))
+        lignes.extend(self.publication())
+        return lignes
+
+    def marques(self) -> list[tuple[CategorieIdentifiante, list[Observation]]]:
+        """Observations identifiantes, par catégorie, dans l'ordre d'ES-13 (F-90, ADR-0158)."""
+        par_categorie: dict[CategorieIdentifiante, list[Observation]] = {}
+        for observation in self.analyse.observations:
+            if observation.identifiante is not None:
+                par_categorie.setdefault(observation.identifiante, []).append(observation)
+        return [(c, par_categorie[c]) for c in CategorieIdentifiante if c in par_categorie]
+
+    def controle_incomplet(self) -> bool:
+        """Une partie du fichier n'a pas été lue : des marques peuvent y rester (ADR-0158).
+
+        Les techniques hors V1 n'en font pas partie : aucune ne lit de métadonnées.
+        """
+        return any(n.raison is not RaisonNonMenee.HORS_V1 for n in self.analyse.non_menees)
+
+    def publication(self) -> list[str]:
+        """Lignes du contrôle avant publication, au résumé : nombre et catégories (ADR-0158)."""
+        marques = self.marques()
+        if marques:
+            lignes = [
+                texte(
+                    "resume.publication",
+                    nombre=sum(len(observations) for _, observations in marques),
+                    categories=", ".join(libelle("identifiantes", c) for c, _ in marques),
+                )
+            ]
+        else:
+            lignes = [texte("resume.publication_aucune")]
+        if self.controle_incomplet():
+            lignes.append(texte("resume.publication_incomplete"))
         return lignes
 
     def indices(self) -> list[str]:

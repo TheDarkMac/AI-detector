@@ -296,6 +296,31 @@ def _donnees_identifiantes(vue: Presentation) -> str:
     return f"<p>{intro}</p>{etats}<p>{_t(texte('formes.lever'))}</p>"
 
 
+def _controle_publication(vue: Presentation) -> str:
+    """Marques par catégorie, nommées sans leur valeur (F-90, ADR-0158)."""
+    marques = vue.marques()
+    contenu = f"<p>{_t(texte('intros.controle_publication'))}</p>"
+    if marques:
+        contenu += _tableau(
+            texte("intros.legende_marques"),
+            [
+                texte("champs.categorie_identifiante"),
+                texte("champs.nombre"),
+                texte("champs.donnees_identifiantes"),
+            ],
+            (
+                [
+                    libelle("identifiantes", categorie),
+                    str(len(observations)),
+                    ", ".join(f"{o.identifiant} ({o.nom})" for o in observations),
+                ]
+                for categorie, observations in marques
+            ),
+        )
+    contenu += _liste(vue.publication())
+    return contenu + f"<p>{_t(texte('intros.controle_limites'))}</p>"
+
+
 def _observations(vue: Presentation) -> str:
     observations = vue.analyse.observations
     if not observations:
@@ -368,6 +393,7 @@ def html(analyse: Analyse, masquees: Collection[CategorieIdentifiante]) -> str:
             ),
             _rubrique("non_menees", _non_menees(vue)),
             _rubrique("couverture", _couverture(vue)),
+            _rubrique("controle_publication", _controle_publication(vue)),
             _rubrique("donnees_identifiantes", _donnees_identifiantes(vue)),
             _rubrique("observations", _observations(vue)),
             _rubrique("glossaire", _glossaire()),

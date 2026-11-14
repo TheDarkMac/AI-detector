@@ -17,7 +17,7 @@
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.3.0" },
+    "version_schema": { "const": "0.4.0" },
     "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
@@ -44,20 +44,20 @@
   ],
   "$defs": {
     "masquage": {
-      "description": "État du masquage d'un export (ES-13, ADR-0093, ADR-0095) : catégories masquées et catégories levées par l'utilisateur ; ensemble, les cinq catégories, chacune une fois (vérifié par le code).",
+      "description": "État du masquage d'un export (ES-13, ADR-0093, ADR-0095) : catégories masquées et catégories levées par l'utilisateur ; ensemble, les sept catégories, chacune une fois (vérifié par le code).",
       "type": "object",
       "additionalProperties": false,
       "required": ["masquees", "levees"],
       "properties": {
         "masquees": {
           "type": "array",
-          "maxItems": 5,
+          "maxItems": 7,
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/categorie_identifiante" }
         },
         "levees": {
           "type": "array",
-          "maxItems": 5,
+          "maxItems": 7,
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/categorie_identifiante" }
         }
@@ -174,7 +174,15 @@
       "enum": ["verification_cryptographique", "verification_deterministe", "declaration", "mesure"]
     },
     "categorie_identifiante": {
-      "enum": ["metadonnee_nominative", "numero_de_serie", "gps", "nom_de_fichier", "empreinte"]
+      "enum": [
+        "metadonnee_nominative",
+        "numero_de_serie",
+        "gps",
+        "lieu",
+        "texte_libre",
+        "nom_de_fichier",
+        "empreinte"
+      ]
     },
     "raison_non_menee": {
       "enum": [

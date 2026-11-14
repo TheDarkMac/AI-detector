@@ -75,6 +75,17 @@ _CLES_NOMINATIVES = frozenset(
     for cle in ("artist", "author", "copyright", "director", "producer", "publisher")
 )
 _CLES_GPS = frozenset({"com.apple.quicktime.location.ISO6709"})
+_CLES_LIEUX = frozenset(f"com.apple.quicktime.location.{cle}" for cle in ("name", "body"))
+"""Nom du lieu et lieu de référence (Apple, QuickTime File Format) : ADR-0160."""
+_TEXTES_LIBRES = frozenset(
+    {"©nam", "©alb", "©cmt", "©des", "©inf", "©lyr", "desc", "ldes", "titl", "dscp", "kywd"}
+)
+"""Titre, album, commentaire, description, information, paroles, description longue ;
+titre, description, mots-clés 3GPP : ADR-0160."""
+_CLES_TEXTES_LIBRES = frozenset(
+    f"com.apple.quicktime.{cle}"
+    for cle in ("title", "album", "comment", "description", "information", "keywords")
+) | {"com.apple.quicktime.location.note"}
 _TEXTES_ISO = frozenset({b"cprt", b"titl", b"dscp", b"perf", b"auth", b"gnre"})
 """Boîtes de ``udta`` : version, langue, texte terminé par un nul (ISO/CEI 14496-12, §8.10.2 ;
 3GPP TS 26.244)."""
@@ -356,6 +367,10 @@ def _identifiante(code: str) -> CategorieIdentifiante | None:
         return CategorieIdentifiante.METADONNEE_NOMINATIVE
     if code in _GPS or code in _CLES_GPS:
         return CategorieIdentifiante.GPS
+    if code in _CLES_LIEUX:
+        return CategorieIdentifiante.LIEU
+    if code in _TEXTES_LIBRES or code in _CLES_TEXTES_LIBRES:
+        return CategorieIdentifiante.TEXTE_LIBRE
     return None
 
 

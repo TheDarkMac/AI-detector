@@ -1,8 +1,8 @@
 # Fiche technique — Métadonnées EXIF
 
-- **Module** : `exif` (version 0.3.0)
-- **Tâche** : T20, T22, T23, T24
-- **Exigences** : F-10, F-12, ES-13
+- **Module** : `exif` (version 0.4.0)
+- **Tâche** : T20, T22, T23, T24, T25
+- **Exigences** : F-10, F-12, F-90, ES-13
 - **Formats** : `jpeg`, `png`, `webp`, `heic`
 - **Directions permises** : `origine_ia`, `transformation`, `rien_de_particulier`
 - **Règles** : aucune
@@ -58,6 +58,9 @@ Marquées par le module ([ADR-0119](../decisions/ADR-0119-donnees-identifiantes-
 | `numero_de_serie` | `BodySerialNumber`, `LensSerialNumber`, `ImageUniqueID` |
 | `gps` | Toutes les étiquettes du répertoire GPS |
 | `nom_de_fichier` | `DocumentName`, `RelatedSoundFile` |
+| `texte_libre` | `ImageDescription`, `PageName`, `XPTitle`, `XPComment`, `XPKeywords`, `XPSubject` ; `UserComment`, `ImageTitle` |
+
+Aucune étiquette n'est marquée `lieu` : la zone nommée du répertoire GPS (`GPSAreaInformation`) reste `gps`, comme tout le répertoire ([ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md), [ADR-0160](../decisions/ADR-0160-champs-lieux-et-textes-libres.md)). Ces données sont comptées et nommées, sans leur valeur, par la rubrique « Contrôle avant publication » du rapport et par le résumé ([ADR-0158](../decisions/ADR-0158-forme-du-controle-avant-publication.md)).
 
 ## Hypothèses distinguées
 
@@ -132,3 +135,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
 | 2026-11-14 | 0.3.0 | Direction transformation permise : indice de transfert du catalogue sur ses observations, `R-EXIF-014` (T24, ADR-0153 à ADR-0157) ; code du module inchangé |
+| 2026-11-14 | 0.4.0 | Textes libres marqués `texte_libre` ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |

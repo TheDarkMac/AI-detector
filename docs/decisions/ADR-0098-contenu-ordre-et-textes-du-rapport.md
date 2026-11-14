@@ -53,3 +53,4 @@ Option A.
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac, textes du rapport compris, pendant la revue de la PR de T16 : statut « Accepté » |
+| 2026-11-14 | Renvoi : rubrique « Contrôle avant publication » entre « Couverture » et « Données identifiantes », lignes du contrôle à la fin du résumé et au terminal (ADR-0158, T25) |

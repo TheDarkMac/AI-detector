@@ -64,6 +64,36 @@ _NOMINATIVES = frozenset(
 droit, propriétaire, éditeur (ADR-0119, ADR-0133)."""
 _FICHIERS = frozenset({"TOFN", "TOF"})
 """Nom du fichier d'origine."""
+_TEXTES_LIBRES = frozenset(
+    {
+        # ID3v2.3 et v2.4
+        "TIT1",
+        "TIT2",
+        "TIT3",
+        "TALB",
+        "TOAL",
+        "TSST",
+        "TXXX",
+        "COMM",
+        "USLT",
+        # ID3v2.2
+        "TT1",
+        "TT2",
+        "TT3",
+        "TAL",
+        "TOT",
+        "TXX",
+        "COM",
+        "ULT",
+    }
+)
+"""Titres, album, sous-titre, textes libres, commentaires, paroles (ADR-0160)."""
+_V1_IDENTIFIANTES = {
+    "id3.v1.Artist": CategorieIdentifiante.METADONNEE_NOMINATIVE,
+    "id3.v1.Title": CategorieIdentifiante.TEXTE_LIBRE,
+    "id3.v1.Album": CategorieIdentifiante.TEXTE_LIBRE,
+    "id3.v1.Comment": CategorieIdentifiante.TEXTE_LIBRE,
+}
 _TEXTES = frozenset({"IPLS", "IPL"})
 """Trames de texte dont l'identifiant ne commence pas par ``T``."""
 _DECRITS = frozenset({"TXXX", "TXX", "WXXX", "WXX"})
@@ -112,9 +142,7 @@ def _v1(contexte: Contexte, bloc: Bloc) -> None:
 def _v1_texte(contexte: Contexte, nom: str, octets: bytes, localisation: Localisation) -> None:
     texte = octets.split(b"\x00", 1)[0].decode("latin-1").rstrip(" ")
     if texte:
-        identifiante = (
-            CategorieIdentifiante.METADONNEE_NOMINATIVE if nom == "id3.v1.Artist" else None
-        )
+        identifiante = _V1_IDENTIFIANTES.get(nom)
         contexte.observer(nom, texte, localisation=localisation, identifiante=identifiante)
 
 
@@ -271,6 +299,8 @@ def _identifiante(identifiant: str) -> CategorieIdentifiante | None:
         return CategorieIdentifiante.METADONNEE_NOMINATIVE
     if identifiant in _FICHIERS:
         return CategorieIdentifiante.NOM_DE_FICHIER
+    if identifiant in _TEXTES_LIBRES:
+        return CategorieIdentifiante.TEXTE_LIBRE
     return None
 
 

@@ -1,6 +1,6 @@
 # Modèle de menace
 
-> Statut : **v1.2** ; v1.0 mergée avec T03, v1.1 avec T04, v1.2 proposée dans la PR de T17. Document vivant : toute modification est inscrite à l'historique (§12).
+> Statut : **v1.3** ; v1.0 mergée avec T03, v1.1 avec T04, v1.2 avec T17, v1.3 proposée dans la PR de T25. Document vivant : toute modification est inscrite à l'historique (§12).
 > Exigences : NF-15 (livrable 7 du §9), NF-01, NF-16, NF-18 ; constats A-14, A-16, A-31, A-37, A-42, A-48, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T03. Date de rédaction : 2026-10-26.
 
@@ -207,7 +207,7 @@ La mise à jour de l'outil, de son catalogue et de sa liste de confiance n'est p
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | M-20 | P3 | E, I | Injection dans le rapport HTML (script, ressource externe) par une chaîne tirée du fichier : exécution à l'ouverture, balise de pistage, exfiltration | A2, A3 | B3, B4, B8 | Élevée | Élevée | Haut | ES-12 |
 | M-21 | P3 | S, T | Caractères de contrôle ou bidirectionnels dans une valeur affichée : séquences d'échappement du terminal, texte inversé qui fait lire autre chose que la donnée réelle | A1, A2 | B3, B7 | Moyenne | Moyenne | Moyen | ES-12 |
-| M-22 | D3 | I | Fuite des données identifiantes par un rapport transmis : GPS, numéro de série, auteur, nom du fichier, **empreinte** (A-48) | A3 | B2 | Élevée | Élevée | Haut | ES-13 |
+| M-22 | D3 | I | Fuite des données identifiantes par un rapport transmis : GPS, numéro de série, auteur, lieu nommé, texte libre, nom du fichier, **empreinte** (A-48) | A3 | B2 | Élevée | Élevée | Haut | ES-13 |
 | M-23 | D3 | I | Le rapport renseigne sur l'utilisateur ou la source sans rien en dire : chemin absolu (nom de dossier, nom d'utilisateur), nom de machine, fuseau horaire | A3 | B2, B8 | Élevée | Moyenne | Haut | ES-14 |
 | M-24 | D3 | S, T | Rapport contrefait ou modifié, attribué à l'outil | A6 | B4, B7 | Moyenne | Moyenne | Moyen | ES-16 ; reste RR-06 |
 | M-25 | D3 | R | Contestation de la date d'une analyse (NF-17) | A6 | B4 | Moyenne | Faible | Bas | ES-16 |
@@ -265,7 +265,7 @@ Chaque exigence dérive des menaces citées ; T04 choisit les moyens, les tâche
 | ES-10 | Requêtes sortantes : inventaire du §6.3 tenu à jour ; toutes désactivées par défaut ; état de chacune au rapport ; aucune n'emporte le fichier, son contenu ni ses données identifiantes, sauf service tiers consenti pour ce fichier ; manifeste distant sur confirmation par fichier, hôte affiché ; CRL préférées à OCSP ; TLS vérifié ; réponses vérifiées puis inscrites au rapport. Sans vérification de révocation, le rapport le dit. | M-13 à M-16, M-18 | ADR-0010, ADR-0017, ADR-0033 | T04, T30 |
 | ES-11 | Le banc d'évaluation exécute l'analyse **sans réseau** et échoue à toute tentative de connexion (A-52). | M-19 | ADR-0100 | T17 |
 | ES-12 | Rapport HTML : tout texte issu du fichier est échappé ; politique de sécurité du contenu interdisant toute ressource externe et tout script non prévu par l'outil ; aucune ressource externe (ADR-0025). Toute sortie (HTML, JSON, terminal) neutralise les caractères de contrôle et bidirectionnels, en les montrant sous forme visible. | M-20, M-21 | — | T16, T90 |
-| ES-13 | Données identifiantes masquées par défaut dans **tous** les exports et la sortie du terminal : métadonnées nominatives, numéros de série, GPS, nom du fichier (ADR-0014) et **empreinte** (ADR-0031). Levée explicite, par catégorie ; un rapport démasqué l'annonce en tête. | M-22, C-05 | ADR-0031 | T16 |
+| ES-13 | Données identifiantes masquées par défaut dans **tous** les exports et la sortie du terminal : métadonnées nominatives, numéros de série, GPS, lieux nommés et textes libres (ADR-0159), nom du fichier (ADR-0014) et **empreinte** (ADR-0031). Levée explicite, par catégorie ; un rapport démasqué l'annonce en tête. | M-22, C-05 | ADR-0031, ADR-0159 | T16, T25 |
 | ES-14 | Le rapport n'inscrit ni chemin, ni nom de machine, ni utilisateur du système ; les heures sont en UTC. | M-23 | — | T16 |
 | ES-15 | **Aucune trace par défaut** : ni cache, ni journal, ni télémétrie ; fichiers temporaires dans un répertoire privé effacé en fin d'analyse, ou en mémoire ; messages d'erreur sans contenu du fichier ni chemin ; vidages mémoire désactivés pour le processus de travail. | M-26 | ADR-0030 | T14, T91 |
 | ES-16 | NF-17 en local : journal optionnel, chaîné, sans noms de fichier, avec avertissement à l'activation ; « qui » déclaratif ; horodatage RFC 3161 optionnel de l'empreinte du rapport ; heure du poste toujours inscrite, marquée « non certifiée ». | M-17, M-24, M-25, M-27, M-28 | ADR-0030 | T91 |
@@ -325,3 +325,4 @@ Chaque tâche qui touche une surface du §5 vérifie, dans sa PR, que ses menace
 | 2026-10-26 | 1.0 | Création | T03 |
 | 2026-10-26 | 1.1 | Choix de T04 : canal officiel (H2), point d'extension (RS-04), ADR de T04 dans la colonne « Décision » du §8 ; aucune menace ni surface nouvelle | T04 |
 | 2026-10-28 | 1.2 | ES-11 réalisée par ADR-0100 (colonne « Décision » du §8) ; exigences ES vérifiées dans la [matrice](../verification/matrice.md) ; aucune menace ni surface nouvelle | T17 |
+| 2026-11-14 | 1.3 | M-22 et ES-13 étendues aux lieux nommés et aux textes libres, deux catégories masquées par défaut (ADR-0159) ; aucune menace ni surface nouvelle | T25 |

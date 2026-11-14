@@ -44,6 +44,8 @@ _TYPES = {"float": reel, "percentage": reel, "boolean": booleen}
 """Type d'une propriété utilisateur (``meta:value-type``) ; les autres sont des textes."""
 
 _NOMINATIVES = frozenset({"meta:initial-creator", "dc:creator", "meta:printed-by"})
+_TEXTES_LIBRES = frozenset({"dc:title", "dc:subject", "dc:description", "meta:keyword"})
+"""Titre, sujet, description, mots-clés ; les propriétés utilisateur le sont toutes (ADR-0160)."""
 
 
 def analyser(contexte: Contexte) -> None:
@@ -83,6 +85,14 @@ def analyser(contexte: Contexte) -> None:
         contexte.non_mener(RaisonNonMenee.FORMAT_PARTIEL, localisation=localisation)
 
 
+def _identifiante(nom: str) -> CategorieIdentifiante | None:
+    if nom in _NOMINATIVES:
+        return CategorieIdentifiante.METADONNEE_NOMINATIVE
+    if nom in _TEXTES_LIBRES:
+        return CategorieIdentifiante.TEXTE_LIBRE
+    return None
+
+
 def _element(proprietes: Proprietes, element: Noeud, localisation: Localisation) -> bool:
     """Propriétés d'un enfant de ``office:meta`` ; faux s'il n'a pas pu être lu."""
     nom = proprietes.composant(element.espace, element.nom, localisation)
@@ -93,9 +103,14 @@ def _element(proprietes: Proprietes, element: Noeud, localisation: Localisation)
             return False
         lire = _TYPES.get(element.attributs.get((_META, "value-type"), ""))
         valeur = texte if lire is None else lire(texte)
-        proprietes.ajouter(f"{nom}.{valeurs.composant(designation)}", valeur, localisation)
+        proprietes.ajouter(
+            f"{nom}.{valeurs.composant(designation)}",
+            valeur,
+            localisation,
+            CategorieIdentifiante.TEXTE_LIBRE,
+        )
         return True
-    identifiante = CategorieIdentifiante.METADONNEE_NOMINATIVE if nom in _NOMINATIVES else None
+    identifiante = _identifiante(nom)
     statistiques = element.espace == _META and element.nom == _STATISTIQUES
     for (espace, attribut), valeur in element.attributs.items():
         if espace in _IGNORES:

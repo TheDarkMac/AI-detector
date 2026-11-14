@@ -104,6 +104,14 @@ _BINAIRES = frozenset({(2, 125), (2, 202)})
 """Image de la légende et vignette : observées par leur taille."""
 _NOMINATIVES = frozenset({(2, 80), (2, 85), (2, 110), (2, 116), (2, 118), (2, 122)})
 """Auteur, titre de l'auteur, crédit, droits, contact, rédacteur (ADR-0119)."""
+_LIEUX = frozenset({(2, 26), (2, 27), (2, 90), (2, 92), (2, 95), (2, 100), (2, 101)})
+"""Code et nom du lieu du contenu, ville, sous-lieu, province, code et nom du pays (ADR-0160)."""
+_TEXTES_LIBRES = frozenset({(2, 5), (2, 25), (2, 40), (2, 105), (2, 120), (2, 121)})
+"""Titre, mots-clés, instructions, titre court, légende, légende locale (ADR-0160)."""
+_INSTRUCTIONS = (2, 40)
+_FACEBOOK = "FBMD"
+"""Début de la valeur que Facebook écrit dans SpecialInstructions : un identifiant de l'image
+diffusée, marqué numéro de série (ADR-0161)."""
 
 _UTF8 = b"\x1b%G"
 """Valeur de CodedCharacterSet qui déclare UTF-8 (ISO 2022)."""
@@ -149,7 +157,7 @@ def _jeux(contexte: Contexte, bloc: Bloc, jeux: list[JeuDeDonnees]) -> None:
     for cle, liste in lus.items():
         enregistrement, numero = cle
         nom = f"iptc.{NOMS.get(cle, f'{enregistrement}:{numero}')}"
-        identifiante = CategorieIdentifiante.METADONNEE_NOMINATIVE if cle in _NOMINATIVES else None
+        identifiante = _identifiante(cle, liste)
         if cle in _BINAIRES:
             for taille in liste:
                 contexte.observer(
@@ -160,6 +168,18 @@ def _jeux(contexte: Contexte, bloc: Bloc, jeux: list[JeuDeDonnees]) -> None:
         valeurs.observer(
             contexte, nom, valeur, localisation=localisation, identifiante=identifiante
         )
+
+
+def _identifiante(cle: tuple[int, int], liste: list[Scalaire]) -> CategorieIdentifiante | None:
+    if cle in _NOMINATIVES:
+        return CategorieIdentifiante.METADONNEE_NOMINATIVE
+    if cle == _INSTRUCTIONS and any(isinstance(v, str) and v.startswith(_FACEBOOK) for v in liste):
+        return CategorieIdentifiante.NUMERO_DE_SERIE
+    if cle in _LIEUX:
+        return CategorieIdentifiante.LIEU
+    if cle in _TEXTES_LIBRES:
+        return CategorieIdentifiante.TEXTE_LIBRE
+    return None
 
 
 def _valeur(jeu: JeuDeDonnees, utf8: bool) -> Scalaire:

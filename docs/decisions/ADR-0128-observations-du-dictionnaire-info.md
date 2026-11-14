@@ -55,3 +55,4 @@ Option A.
 | 2026-11-12 | Création, statut « Proposé » |
 | 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR de T21 : statut « Accepté » |
 | 2026-11-13 | Suite en T23 : les règles qui comparent les dates PDF les lisent par la lecture `date-pdf` (ADR-0148) |
+| 2026-11-14 | Suite en T25 : `Title`, `Subject` et `Keywords` marqués texte libre (ADR-0159, ADR-0160) |

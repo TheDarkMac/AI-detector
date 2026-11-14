@@ -41,6 +41,9 @@ informations = "{nombre} information(s) neutre(s)."
 techniques = "Techniques : {appliquees} appliquée(s), {partielles} partielle(s), {non_menees} non menée(s), {non_applicables} non applicable(s)."
 non_menees = "{nombre} analyse(s) non menée(s)."
 non_menees_aucune = "Toutes les analyses prévues ont été menées."
+publication = "Contrôle avant publication : {nombre} donnée(s) des métadonnées peuvent identifier la source ({categories}). L'outil ne les retire pas : retirez-les avant de publier le fichier."
+publication_aucune = "Contrôle avant publication : aucune donnée identifiante relevée dans les métadonnées lues."
+publication_incomplete = "Contrôle avant publication incomplet : des parties du fichier n'ont pas été lues (analyses non menées) et peuvent porter d'autres marques."
 
 [rubriques]
 alertes = "Attention"
@@ -54,6 +57,7 @@ indices = "Indices"
 informations = "Informations neutres"
 non_menees = "Analyses non menées"
 couverture = "Couverture"
+controle_publication = "Contrôle avant publication"
 donnees_identifiantes = "Données identifiantes"
 observations = "Observations"
 glossaire = "Glossaire"
@@ -66,6 +70,9 @@ observations = "Toutes les données relevées dans le fichier, sans interprétat
 legende_couverture = "Techniques, par partie du fichier"
 legende_non_menees = "Analyses non menées, avec leur raison"
 legende_identifiantes = "Masquage, par catégorie de données identifiantes"
+controle_publication = "Données des métadonnées qui peuvent identifier la source si le fichier est publié tel quel (F-90). Elles sont nommées ici sans leur valeur ; la rubrique Observations montre la valeur de celles dont la catégorie est levée."
+controle_limites = "Le contrôle porte sur les métadonnées que l'outil lit et sur les champs que ses modules marquent. Il ne porte ni sur le contenu (texte visible, visages, lieux reconnaissables, points de traçage d'imprimante), ni sur le nom du fichier, ni sur les noms des données, qui peuvent venir du fichier. L'outil ne modifie pas le fichier : il indique les marques à retirer, il ne les retire pas."
+legende_marques = "Marques identifiantes, par catégorie"
 legende_observations = "Observations"
 
 [champs]
@@ -104,6 +111,8 @@ nom_observation = "Donnée"
 valeur = "Valeur"
 categorie_identifiante = "Catégorie identifiante"
 masquage = "Masquage"
+nombre = "Nombre"
+donnees_identifiantes = "Données"
 octets = "Octets"
 
 [formes]
@@ -141,6 +150,7 @@ non_menee = "non menée : {raison}"
 non_menee_precisee = "non menée : {raison} ({precision})"
 catalogue = "catalogue : {catalogue}"
 rapport = "rapport : {html} et {json}"
+marque = "marques identifiantes, {categorie} : {donnees}"
 
 # Comparaison de deux rapports du même fichier (vk --comparer, ADR-0112).
 [comparaison]
@@ -225,6 +235,8 @@ vidage_memoire = "vidage de la mémoire sur le disque possible en cas de plantag
 metadonnee_nominative = "métadonnées nominatives"
 numero_de_serie = "numéros de série"
 gps = "coordonnées GPS"
+lieu = "lieux nommés"
+texte_libre = "textes libres"
 nom_de_fichier = "nom du fichier"
 empreinte = "empreinte du fichier"
 

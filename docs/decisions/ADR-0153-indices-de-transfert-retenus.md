@@ -75,3 +75,4 @@ La forme exacte de chaque règle, le module qui lit les dimensions et les tables
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création |
+| 2026-11-14 | Suite en T25 : la valeur FBMD de `SpecialInstructions` est marquée numéro de série (ADR-0161) |

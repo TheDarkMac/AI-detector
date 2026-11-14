@@ -123,7 +123,12 @@ def test_infopdf_entrees_et_formes_de_valeur() -> None:
         "infopdf.Vignette.taille": 6,
         "infopdf.Hexa": "a`",
     }
-    assert identifiantes(lignes) == {"infopdf.Author": "metadonnee_nominative"}
+    assert identifiantes(lignes) == {
+        "infopdf.Title": "texte_libre",
+        "infopdf.Author": "metadonnee_nominative",
+        "infopdf.Subject": "texte_libre",
+        "infopdf.Keywords": "texte_libre",
+    }
     assert raisons(lignes) == []
     [titre] = [o for o in observations(lignes) if o["nom"] == "infopdf.Title"]
     debut = contenu.index(b"3 0 obj")

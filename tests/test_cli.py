@@ -52,9 +52,9 @@ def test_sans_argument_affiche_l_aide(capsys: pytest.CaptureFixture[str]) -> Non
 def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--modules"]) == 0
     assert capsys.readouterr().out == (
-        "exif 0.3.0\nid3 0.2.0\nimage 0.1.0\ninfopdf 0.2.0\ninfowav 0.2.0\niptc 0.3.0\n"
-        "matroska 0.2.0\nodf 0.2.0\nooxml 0.2.0\nquicktime 0.2.0\ntextepng 0.3.0\nvorbis 0.2.0\n"
-        "xmp 0.5.0\n"
+        "exif 0.4.0\nid3 0.3.0\nimage 0.1.0\ninfopdf 0.3.0\ninfowav 0.3.0\niptc 0.4.0\n"
+        "matroska 0.3.0\nodf 0.3.0\nooxml 0.3.0\nquicktime 0.3.0\ntextepng 0.4.0\nvorbis 0.3.0\n"
+        "xmp 0.6.0\n"
     )
 
 
@@ -266,6 +266,10 @@ def test_resume_de_chaque_element() -> None:
         "0 information(s) neutre(s).",
         "Techniques : 1 appliquée(s), 1 partielle(s), 1 non menée(s), 1 non applicable(s).",
         "5 analyse(s) non menée(s).",
+        "Contrôle avant publication : aucune donnée identifiante relevée dans les métadonnées "
+        "lues.",
+        "Contrôle avant publication incomplet : des parties du fichier n'ont pas été lues "
+        "(analyses non menées) et peuvent porter d'autres marques.",
         f"non menée : {tronque} (b, partie 1)",
         f"non menée : {tronque} (partie 1, octets 0 à 9)",
         "non menée : Délai dépassé : l'analyse a été interrompue.",

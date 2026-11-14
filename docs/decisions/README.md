@@ -172,3 +172,9 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0155](ADR-0155-nature-d-un-indice-de-transfert.md) | Nature d'un indice de transfert : indice faible vers la transformation | Accepté | 2026-11-14 |
 | [ADR-0156](ADR-0156-recommandation-d-obtenir-l-original.md) | Recommandation d'obtenir l'original : une phrase du résumé | Accepté | 2026-11-14 |
 | [ADR-0157](ADR-0157-versions-de-t24.md) | Versions de T24 : catalogue 0.4.0, module `image` 0.1.0, quatre modules à une nouvelle version | Accepté | 2026-11-14 |
+| [ADR-0158](ADR-0158-forme-du-controle-avant-publication.md) | Contrôle avant publication : rubrique du rapport dérivée des catégories identifiantes | Accepté | 2026-11-14 |
+| [ADR-0159](ADR-0159-lieux-nommes-et-textes-libres.md) | Lieux nommés et textes libres : deux catégories identifiantes, masquées par défaut | Accepté | 2026-11-14 |
+| [ADR-0160](ADR-0160-champs-lieux-et-textes-libres.md) | Champs marqués « lieu » et « texte libre », par module | Accepté | 2026-11-14 |
+| [ADR-0161](ADR-0161-valeur-fbmd.md) | Valeur FBMD de SpecialInstructions : numéro de série | Accepté | 2026-11-14 |
+| [ADR-0162](ADR-0162-liste-de-garde-non-ajoutee.md) | Liste de garde par nom d'observation dans P1 : non ajoutée | Accepté | 2026-11-14 |
+| [ADR-0163](ADR-0163-versions-de-t25.md) | Versions de T25 : schéma 0.4.0, douze modules à une nouvelle version, catalogue inchangé | Accepté | 2026-11-14 |

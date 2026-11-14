@@ -51,3 +51,4 @@ Le §5.6 sert la protection des sources, un autre besoin que la détection (ADR-
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : double usage de F-35, F-90, F-91 traité par ADR-0032 (T03) |
+| 2026-11-14 | Réalisé en T25 pour les métadonnées : rubrique « Contrôle avant publication » et ligne du résumé (ADR-0158) ; lieux nommés et textes libres en deux catégories masquées (ADR-0159) ; aucun champ normalisé ne porte de logiciel nominatif |

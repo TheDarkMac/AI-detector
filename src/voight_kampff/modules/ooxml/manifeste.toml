@@ -1,9 +1,9 @@
 # Module ooxml : propriétés d'un document DOCX (ADR-0136 à ADR-0140). Validé par schemas/manifeste.schema.json (ADR-0064).
 
 identifiant = "ooxml"
-version = "0.2.0"
+version = "0.3.0"
 formats = ["docx"]
-exigences = ["F-10", "F-12", "ES-05", "ES-06", "ES-13"]
+exigences = ["F-10", "F-12", "F-90", "ES-05", "ES-06", "ES-13"]
 regles = []
 fiche = "metadonnees-ooxml"
 # Directions des règles du catalogue sur ses observations (T22, ADR-0142) ; le module lui-même n'émet aucun constat.

@@ -35,4 +35,5 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T21 (complément 2)](T21-extraction-bureautique.md) | Extraction bureautique : propriétés de DOCX et d'ODT | `tache/T21-extraction-bureautique` | [#22](https://github.com/TheDarkMac/AI-detector/pull/22) |
 | [T22](T22-origine-ia-et-signatures.md) | Origine IA déclarée et signatures de générateurs | `tache/T22-origine-ia-et-signatures` | [#23](https://github.com/TheDarkMac/AI-detector/pull/23) |
 | [T23](T23-incoherences-internes.md) | Incohérences internes | `tache/T23-incoherences-internes` | [#24](https://github.com/TheDarkMac/AI-detector/pull/24) |
-| [T24](T24-indices-de-transfert.md) | Indices de transfert par messagerie ou capture d'écran | `tache/T24-indices-de-transfert` | à venir |
+| [T24](T24-indices-de-transfert.md) | Indices de transfert par messagerie ou capture d'écran | `tache/T24-indices-de-transfert` | [#25](https://github.com/TheDarkMac/AI-detector/pull/25) |
+| [T25](T25-controle-avant-publication.md) | Contrôle avant publication : marques identifiantes des métadonnées | `tache/T25-controle-avant-publication` | à venir |

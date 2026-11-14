@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.7** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 proposée dans la PR de T20. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.7** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 proposée dans la PR de T25. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -44,6 +44,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0095](../decisions/ADR-0095-export-json-masque.md) | Export JSON : `VERSION_SCHEMA` 0.2.0, données masquées absentes, objet `masquage` |
 | [ADR-0097](../decisions/ADR-0097-regles-citees-et-interface-d-export.md) | `Analyse` porte les règles que citent ses constats et construit son `Rapport` |
 | [ADR-0111](../decisions/ADR-0111-interpreteur-dans-les-versions.md) | `Versions.interpreteur` ; `VERSION_SCHEMA` 0.3.0 |
+| [ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md) | Catégories identifiantes `lieu` et `texte_libre` ; `VERSION_SCHEMA` 0.4.0 |
 | [ADR-0112](../decisions/ADR-0112-comparaison-de-deux-rapports.md) | Comparaison de deux exports : écarts de condition, d'environnement, de résultat |
 
 ### Où se trouve le code
@@ -62,7 +63,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Exports JSON et HTML, masquage (T16) | `src/voight_kampff/rapport/export.py`, `rapport/_html.py`, `rapport/_presentation.py`, `rapport/textes.toml` |
 | Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py` |
 
-Version commune : `0.3.0` (`VERSION_SCHEMA`, ADR-0111 ; 0.2.0 depuis ADR-0095).
+Version commune : `0.4.0` (`VERSION_SCHEMA`, ADR-0159 ; 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
 
 ## 2. Vue d'ensemble
 
@@ -195,7 +196,7 @@ Donnée relevée par un module : valeur d'un champ ou mesure, sans interprétati
 | `valeur` | Texte, nombre, booléen, ou liste d'au plus 4 096 de ceux-ci | Oui | Texte d'au plus 4 096 caractères, encodable en UTF-8 ; nombre fini, entre −2⁶³ et 2⁶³ − 1 |
 | `unite` | Texte de 1 à 32 caractères | Non | `px`, `s`, `ratio`… |
 | `localisation` | Localisation | Non | §6 |
-| `identifiante` | Catégorie | Non | `metadonnee_nominative`, `numero_de_serie`, `gps`, `nom_de_fichier`, `empreinte` (ADR-0057) |
+| `identifiante` | Catégorie | Non | `metadonnee_nominative`, `numero_de_serie`, `gps`, `lieu`, `texte_libre`, `nom_de_fichier`, `empreinte` (ADR-0057, ADR-0159) |
 | `partie` | Entier ≥ 1 | Oui | Rang de la partie analysée (ADR-0071) ; numérotation `<module>/<n>` continue d'une partie à l'autre |
 
 Une absence se dit aussi par une observation : « pas de bloc XMP » est l'observation `xmp.present` de valeur `false`.
@@ -301,7 +302,7 @@ Les expressions des schémas sont des classes de caractères ancrées, linéaire
 
 ### Export JSON (T16)
 
-Un export est le document du rapport dont les données des catégories masquées sont retirées : `nom` et `empreinte` de l'identification, `valeur` des observations identifiantes. L'objet `masquage`, juste après `version_schema`, liste les catégories `masquees` et `levees`, les cinq une fois chacune (ADR-0095). Le schéma vérifie que le nom et l'empreinte manquent si et seulement si `masquage` les masque, et qu'une observation non identifiante a sa valeur ; le code (`rapport.export.valider`) vérifie la partition des catégories et l'absence de la valeur de chaque observation masquée. `Rapport.depuis_dict` refuse un export masqué ; un export où tout est levé se relit à l'identique.
+Un export est le document du rapport dont les données des catégories masquées sont retirées : `nom` et `empreinte` de l'identification, `valeur` des observations identifiantes. L'objet `masquage`, juste après `version_schema`, liste les catégories `masquees` et `levees`, les sept une fois chacune (ADR-0095, ADR-0159). Le schéma vérifie que le nom et l'empreinte manquent si et seulement si `masquage` les masque, et qu'une observation non identifiante a sa valeur ; le code (`rapport.export.valider`) vérifie la partition des catégories et l'absence de la valeur de chaque observation masquée. `Rapport.depuis_dict` refuse un export masqué ; un export où tout est levé se relit à l'identique.
 
 ## 8. Messages du processus de travail
 
@@ -347,3 +348,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-10-28 | 1.5 | Décisions de T16 et emplacement des exports (§1) ; `VERSION_SCHEMA` 0.2.0 ; export JSON masqué (§7, ADR-0095) ; exigences (§9) | T16 |
 | 2026-10-28 | 1.6 | Interpréteur dans la rubrique Versions, `VERSION_SCHEMA` 0.3.0 (§1, §2, §6, ADR-0111) ; comparaison de deux rapports (§1, ADR-0112) | T18 |
 | 2026-10-28 | 1.7 | Message `versions` contrôlé par les manifestes (§6, ADR-0120) ; vocabulaire des premières observations (§4, ADR-0117) ; exigences (§9) | T20 |
+| 2026-11-14 | 1.8 | Catégories identifiantes `lieu` et `texte_libre`, `VERSION_SCHEMA` 0.4.0 (§1, §2, §4, §7, ADR-0159) ; contrôle avant publication produit à l'export, comme le résumé (ADR-0158) | T25 |

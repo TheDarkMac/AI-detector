@@ -1,8 +1,8 @@
 # Fiche technique — Métadonnées QuickTime et ISOBMFF
 
-- **Module** : `quicktime` (version 0.2.0)
-- **Tâche** : T21, T22, T23
-- **Exigences** : F-10, F-12, ES-13
+- **Module** : `quicktime` (version 0.3.0)
+- **Tâche** : T21, T22, T23, T25
+- **Exigences** : F-10, F-12, F-90, ES-13
 - **Formats** : `m4a`, `mp4`, `mov`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
@@ -55,8 +55,10 @@ Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observ
 | --- | --- |
 | `metadonnee_nominative` | `©ART`, `aART`, `©aut`, `©wrt`, `©com`, `©cpy`, `©dir`, `©prd`, `©PRD`, `©prf`, `©ope`, `©own`, `©enc`, `©pub`, `cprt`, `ownr`, `apID` (compte iTunes), `auth`, `perf` ; clés `com.apple.quicktime.artist`, `author`, `copyright`, `director`, `producer`, `publisher` |
 | `gps` | `©xyz`, `loci` ; clé `com.apple.quicktime.location.ISO6709` |
+| `lieu` | clés `com.apple.quicktime.location.name`, `com.apple.quicktime.location.body` |
+| `texte_libre` | `©nam`, `©alb`, `©cmt`, `©des`, `©inf`, `©lyr`, `desc`, `ldes`, `titl`, `dscp`, `kywd` ; clés `com.apple.quicktime.title`, `album`, `comment`, `description`, `information`, `keywords`, `location.note` |
 
-Marque, modèle et logiciel de l'appareil ne sont pas marqués ; le nom d'un lieu (`com.apple.quicktime.location.name`) relève de T25 ([ADR-0119](../decisions/ADR-0119-donnees-identifiantes-des-metadonnees.md)).
+Marque, modèle et logiciel de l'appareil ne sont pas marqués ([ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md), [ADR-0160](../decisions/ADR-0160-champs-lieux-et-textes-libres.md)). Ces données sont comptées et nommées, sans leur valeur, par la rubrique « Contrôle avant publication » du rapport et par le résumé ([ADR-0158](../decisions/ADR-0158-forme-du-controle-avant-publication.md)).
 
 ## Hypothèses distinguées
 
@@ -112,3 +114,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
+| 2026-11-14 | 0.3.0 | Lieux nommés et textes libres marqués ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |

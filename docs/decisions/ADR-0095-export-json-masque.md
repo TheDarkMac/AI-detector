@@ -57,3 +57,4 @@ Option A.
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T16 : statut « Accepté » |
+| 2026-11-14 | Renvoi : `masquage` nomme sept catégories, schéma du rapport 0.4.0 (ADR-0159, T25) |

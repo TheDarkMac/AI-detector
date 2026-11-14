@@ -19,6 +19,17 @@ __all__ = ["analyser"]
 
 _NOMINATIFS = frozenset({"author", "copyright"})
 """Mots-clés prédéfinis par la norme PNG qui nomment une personne (ADR-0119)."""
+_TEXTES_LIBRES = frozenset({"title", "description", "comment", "parameters"})
+"""Titre, description, commentaire de la norme PNG ; ``parameters``, où les interfaces de
+Stable Diffusion écrivent l'invite (ADR-0160)."""
+
+
+def _identifiante(mot_cle: str) -> CategorieIdentifiante | None:
+    if mot_cle in _NOMINATIFS:
+        return CategorieIdentifiante.METADONNEE_NOMINATIVE
+    if mot_cle in _TEXTES_LIBRES:
+        return CategorieIdentifiante.TEXTE_LIBRE
+    return None
 
 
 def analyser(contexte: Contexte) -> None:
@@ -34,11 +45,7 @@ def analyser(contexte: Contexte) -> None:
             contexte.non_mener(RaisonNonMenee.FORMAT_PARTIEL, localisation=localisation)
             continue
         nom = valeurs.borner(f"textepng.{valeurs.composant(texte.mot_cle)}")
-        identifiante = (
-            CategorieIdentifiante.METADONNEE_NOMINATIVE
-            if texte.mot_cle.lower() in _NOMINATIFS
-            else None
-        )
+        identifiante = _identifiante(texte.mot_cle.lower())
         valeurs.observer(
             contexte, nom, texte.texte, localisation=localisation, identifiante=identifiante
         )

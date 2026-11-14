@@ -1,8 +1,8 @@
 # Fiche technique — Liste INFO et bloc bext d'un WAV
 
-- **Module** : `infowav` (version 0.2.0)
-- **Tâche** : T21, T22, T23
-- **Exigences** : F-10, F-12, ES-13
+- **Module** : `infowav` (version 0.3.0)
+- **Tâche** : T21, T22, T23, T25
+- **Exigences** : F-10, F-12, F-90, ES-13
 - **Formats** : `wav`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
@@ -49,8 +49,10 @@ Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observ
 | --- | --- |
 | `metadonnee_nominative` | `IART`, `ICMS`, `ICOP`, `IENG`, `ITCH`, `IMUS`, `IPRO`, `ISTR`, `IWRI`, `IEDT` ; `bext` `Originator` |
 | `numero_de_serie` | `bext` `OriginatorReference` et `UMID`, dont la forme normalisée porte le numéro de série de l'enregistreur (EBU R 99, SMPTE 330M) |
+| `lieu` | `IARL` (lieu d'archivage) |
+| `texte_libre` | `INAM`, `ICMT`, `ISBJ`, `IKEY`, `IPRD` ; `bext` `Description` |
 
-`ICMT`, `INAM` et `Description` ne sont pas marqués : textes libres, relevant de T25 ([ADR-0119](../decisions/ADR-0119-donnees-identifiantes-des-metadonnees.md)).
+Voir [ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md) et [ADR-0160](../decisions/ADR-0160-champs-lieux-et-textes-libres.md). Ces données sont comptées et nommées, sans leur valeur, par la rubrique « Contrôle avant publication » du rapport et par le résumé ([ADR-0158](../decisions/ADR-0158-forme-du-controle-avant-publication.md)).
 
 ## Hypothèses distinguées
 
@@ -102,3 +104,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
+| 2026-11-14 | 0.3.0 | Lieu d'archivage et textes libres marqués ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |
