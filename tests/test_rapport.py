@@ -12,12 +12,13 @@ from html.parser import HTMLParser
 from typing import Any
 
 import pytest
-from catalogues import CONFIANCE, VERSION, regle
+from catalogues import CONFIANCE, MARQUAGES_LIVRES, VERSION, regle
 from conftest import EMPREINTE, construire_rapport
 from hypothesis import given
 from hypothesis import strategies as st
 
 from voight_kampff import exporter_html, exporter_json
+from voight_kampff._marquages import Marquage
 from voight_kampff._regles import Regle
 from voight_kampff.analyse import Analyse
 from voight_kampff.rapport import _html, export
@@ -91,8 +92,16 @@ def analyse_de(rapport: Rapport, **champs: Any) -> Analyse:
         catalogue=VERSION,
         confiance=CONFIANCE,
         regles=tuple(regle_de(constat) for constat in rapport.constats),
+        marquages=marquages_de(rapport.couverture),
     )
     return dataclasses.replace(analyse, **champs) if champs else analyse
+
+
+def marquages_de(couverture: Couverture) -> tuple[Marquage, ...]:
+    """Marquages du catalogue livré que cite la couverture (T31)."""
+    cites = [*couverture.marquages_recherches]
+    cites += [marquage.identifiant for marquage in couverture.marquages_non_recherches]
+    return tuple(MARQUAGES_LIVRES[identifiant] for identifiant in cites)
 
 
 @pytest.fixture
@@ -439,8 +448,11 @@ def test_html_sans_constat_ni_observation(analyse: Analyse) -> None:
         observations=(),
         constats=(),
         regles=(),
-        couverture=dataclasses.replace(analyse.couverture, marquages_recherches=()),
+        couverture=dataclasses.replace(
+            analyse.couverture, marquages_recherches=(), marquages_non_recherches=()
+        ),
         dependances=(),
+        marquages=(),
     )
     document = exporter_html(vide)
     assert "Aucune preuve." in document
@@ -508,6 +520,7 @@ def test_toutes_les_analyses_menees(analyse: Analyse) -> None:
         regles=(),
         non_menees=(),
         couverture=Couverture((TechniqueCouverte("jpeg", EtatTechnique.APPLIQUEE, "1"),), ()),
+        marquages=(),
     )
     attendu = "Toutes les analyses prévues ont été menées."
     assert attendu in Presentation(complete, set(CategorieIdentifiante)).resume()

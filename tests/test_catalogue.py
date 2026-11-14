@@ -176,7 +176,7 @@ DIRECTION = toml_regles(
         pytest.param("catalogue.toml", "format = 2\n", "catalogue.toml : document", id="format"),
         pytest.param(
             "catalogue.toml",
-            ENTETE.replace("format = 1", "format = 3"),
+            ENTETE.replace("format = 1", "format = 4"),
             "properties/format",
             id="format-inconnu",
         ),
