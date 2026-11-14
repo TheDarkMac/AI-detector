@@ -36,10 +36,11 @@ Option A. `Trusted` → `valide` ; `Valid` → `valide_hors_liste` ; `Invalid` �
 ## Conséquences
 
 - Un PDF que c2pa-rs ne lit pas donne une technique non menée, pas un état.
-- Le module `xmp` observe toujours l'adresse entière d'un manifeste distant (`xmp.dcterms:provenance`), non masquée : point ouvert, à trancher dans la revue de la PR.
+- Le module `xmp` observe l'adresse entière d'un manifeste distant (`xmp.dcterms:provenance`) : masquée comme un numéro de série depuis ADR-0173.
 
 ## Historique
 
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Renvoi : adresse d'un manifeste distant masquée dans le XMP (ADR-0173) |

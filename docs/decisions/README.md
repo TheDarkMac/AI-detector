@@ -187,3 +187,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0170](ADR-0170-regles-du-module-c2pa.md) | Règles du module c2pa : une phrase d'état par manifeste, preuve ou indice pour une source déclarée | Proposé | 2026-11-14 |
 | [ADR-0171](ADR-0171-liste-de-confiance-au-rapport.md) | Liste de confiance : chargement par P1, configuration de P2, rubrique Versions, liste fournie | Proposé | 2026-11-14 |
 | [ADR-0172](ADR-0172-versions-de-t30.md) | Versions de T30 : schéma 0.5.0, catalogue 0.5.0, module c2pa 0.1.0 | Proposé | 2026-11-14 |
+| [ADR-0173](ADR-0173-adresse-d-un-manifeste-distant.md) | Adresse d'un manifeste C2PA distant dans le XMP : masquée comme un numéro de série | Accepté | 2026-11-14 |

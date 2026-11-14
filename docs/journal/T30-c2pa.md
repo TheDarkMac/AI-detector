@@ -3,7 +3,7 @@
 - **Branche** : `tache/T30-c2pa`
 - **Dates** : 2026-11-14
 - **Exigences couvertes** : F-20, F-21, F-22, F-23 ; ES-09, ES-20 ; ES-06 et ES-10 en partie
-- **Décisions** : ADR-0164 à ADR-0172 ; ADR-0165 à ADR-0168 acceptés, les autres proposés
+- **Décisions** : ADR-0164 à ADR-0173 ; ADR-0165 à ADR-0168 et ADR-0173 acceptés, les autres proposés
 - **Errata** : aucun
 
 ## Objectif
@@ -29,6 +29,7 @@ Détecter un manifeste C2PA, vérifier sa signature, l'intégrité du contenu si
 7. Tests : `tests/c2pa_essai.py` (autorité d'essai, signature pendant les tests), `tests/test_c2pa.py`, `tests/test_confiance.py` ; attentes mises à jour dans les tests du terminal, de la soumission, de l'orchestration, du modèle, du travail, des manifestes, de la reproductibilité et des règles de T22 à T24.
 8. Fiche `provenance-c2pa` ; matrice (F-20 à F-23, ES-06, ES-09, ES-10, ES-20) régénérée.
 9. PR [#27](https://github.com/TheDarkMac/AI-detector/pull/27) ouverte à la demande de TheDarkMac avant la fin de la vérification ; corrections et documentation poussées ensuite sur la même branche.
+10. Adresse d'un manifeste distant trouvée en clair dans l'export masqué, observée par `xmp` ; TheDarkMac choisit de la masquer (« Yes, mask it », 2026-11-14) : `dcterms:provenance` marquée numéro de série, `xmp` 0.7.0, limite de R-C2PA-011 corrigée, empreinte de 0.5.0 recalculée ([ADR-0173](../decisions/ADR-0173-adresse-d-un-manifeste-distant.md)).
 
 ## Vérification
 
@@ -48,6 +49,7 @@ Détecter un manifeste C2PA, vérifier sa signature, l'intégrité du contenu si
 | `erreur_module` dans les tests de l'orchestration | Le catalogue des tests n'avait pas les règles du module c2pa, que ce module cite | Règles du module c2pa livré ajoutées au catalogue des tests |
 | Un catalogue fourni sans règle refusé | Le manifeste du module c2pa cite ses règles « module » (ADR-0084) | Comportement voulu, consigné (ADR-0170) ; tests adaptés |
 | Couverture du module c2pa à 84 % | Les processus de travail des tests ne sont pas mesurés (environnement vidé) | Mêmes cas exécutés dans le processus des tests |
+| Adresse d'un manifeste distant en clair dans l'export masqué | Observée par `xmp`, sans marquage | Marquée numéro de série (ADR-0173) |
 | Règles de T22 à T24 comptées avec celles de T30 | Tests qui définissaient leurs règles par catégorie sur tout le catalogue | Règles du module c2pa écartées de ces ensembles |
 
 ## Écarts par rapport au découpage
@@ -64,5 +66,4 @@ Détecter un manifeste C2PA, vérifier sa signature, l'intégrité du contenu si
 ## Reste à faire
 
 - Complément de T30 : requêtes de P1 sur confirmation (RS-01, RS-02).
-- Point ouvert de la revue : adresse complète d'un manifeste distant observée par `xmp` sans masquage.
 - T31 : marquages recherchés (F-25). T105 : recueil d'avis sur prototype, désormais possible (ADR-0026).

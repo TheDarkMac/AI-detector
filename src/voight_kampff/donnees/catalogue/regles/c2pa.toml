@@ -208,7 +208,7 @@ fondement = "verification_deterministe"
 parametres = ["hote"]
 limites = [
   "Récupérer le manifeste révélerait à cet hôte, choisi par l'auteur du fichier, l'adresse et l'heure de l'analyse, et l'exemplaire si l'adresse lui est propre (M-14).",
-  "Seul l'hôte est inscrit au rapport, jamais l'adresse entière ; celle-ci figure dans le XMP du fichier.",
+  "Le module c2pa n'inscrit que l'hôte ; l'adresse entière, observée par le module xmp (dcterms:provenance), est masquée par défaut comme un numéro de série (ADR-0173).",
 ]
 application = "module"
 

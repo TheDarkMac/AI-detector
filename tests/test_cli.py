@@ -54,7 +54,7 @@ def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
     assert capsys.readouterr().out == (
         "c2pa 0.1.0\nexif 0.4.0\nid3 0.3.0\nimage 0.1.0\ninfopdf 0.3.0\ninfowav 0.3.0\n"
         "iptc 0.4.0\nmatroska 0.3.0\nodf 0.3.0\nooxml 0.3.0\nquicktime 0.3.0\ntextepng 0.4.0\n"
-        "vorbis 0.3.0\nxmp 0.6.0\n"
+        "vorbis 0.3.0\nxmp 0.7.0\n"
     )
 
 

@@ -196,9 +196,16 @@ def test_manifeste_distant_non_recupere(tmp_path: Path) -> None:
     raisons = [(n.raison, n.module) for n in analyse.non_menees if n.module == "c2pa"]
     assert raisons == [(RaisonNonMenee.RESEAU_DESACTIVE, "c2pa")]
     assert couverture(analyse) is EtatTechnique.PARTIELLE
-    # Seul l'hôte est au rapport : le chemin, qui peut désigner l'exemplaire, n'y est pas.
+    # Le module c2pa n'inscrit que l'hôte ; l'adresse entière, qui peut désigner l'exemplaire,
+    # est observée par xmp et masquée par défaut comme un numéro de série (ADR-0173).
     c2pa_seul = [o.valeur for o in analyse.observations if o.module == "c2pa"]
     assert not any("exemplaire-7f3a" in str(valeur) for valeur in c2pa_seul)
+    [provenance] = [o for o in analyse.observations if o.nom == "xmp.dcterms:provenance"]
+    assert provenance.valeur == adresse
+    assert provenance.identifiante is CategorieIdentifiante.NUMERO_DE_SERIE
+    assert "exemplaire-7f3a" not in export.exporter_json(analyse)
+    assert "exemplaire-7f3a" not in export.exporter_html(analyse)
+    assert "exemplaire-7f3a" in export.exporter_json(analyse, reveler=("numero_de_serie",))
 
 
 def test_manifeste_illisible(tmp_path: Path) -> None:

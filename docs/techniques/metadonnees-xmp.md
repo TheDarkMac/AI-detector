@@ -1,7 +1,7 @@
 # Fiche technique — Métadonnées XMP
 
-- **Module** : `xmp` (version 0.6.0)
-- **Tâche** : T20, T21, T22, T23, T24, T25
+- **Module** : `xmp` (version 0.7.0)
+- **Tâche** : T20, T21, T22, T23, T24, T25, T30
 - **Exigences** : F-10, F-11, F-12, F-90, ES-05, ES-13
 - **Formats** : `jpeg`, `png`, `webp`, `heic`, `pdf`, `wav`, `m4a`, `mp4`, `mov`
 - **Directions permises** : `origine_ia`, `retouche`, `transformation`, `rien_de_particulier`
@@ -56,7 +56,7 @@ Marquées par le module, d'après le premier composant identifiant du nom ([ADR-
 | Catégorie | Propriétés |
 | --- | --- |
 | `metadonnee_nominative` | `dc:creator`, `dc:rights`, `dc:contributor`, `dc:publisher`, `xmpRights:Owner`, `photoshop:AuthorsPosition`, `photoshop:CaptionWriter`, `photoshop:Credit`, `Iptc4xmpCore:CreatorContactInfo` (tous ses champs), `Iptc4xmpExt:PersonInImage`, `Iptc4xmpExt:AOCreator`, `plus:Licensor`, `plus:CopyrightOwner`, `plus:ImageCreator`, `plus:ImageSupplier`, `aux:OwnerName`, `exifEX:CameraOwnerName`, `exifEX:Photographer`, `exifEX:ImageEditor`, `tiff:Artist`, `tiff:Copyright`, `mwg-rs:Name` |
-| `numero_de_serie` | `aux:SerialNumber`, `aux:LensSerialNumber`, `exifEX:BodySerialNumber`, `exifEX:LensSerialNumber`, `exif:ImageUniqueID`, `exifEX:ImageUniqueID` |
+| `numero_de_serie` | `aux:SerialNumber`, `aux:LensSerialNumber`, `exifEX:BodySerialNumber`, `exifEX:LensSerialNumber`, `exif:ImageUniqueID`, `exifEX:ImageUniqueID`, `dcterms:provenance` (adresse d'un manifeste C2PA distant, qui peut être propre à l'exemplaire, ADR-0173) |
 | `gps` | Propriétés `GPS…` des espaces `exif`, `exifEX` et `Iptc4xmpExt` |
 | `nom_de_fichier` | `stRef:filePath` (dans toute structure), `xmpMM:PreservedFileName`, `crs:RawFileName`, `exif:RelatedSoundFile` |
 | `lieu` | `photoshop:City`, `photoshop:State`, `photoshop:Country`, `Iptc4xmpCore:Location`, `Iptc4xmpCore:CountryCode` ; `Iptc4xmpExt:City`, `ProvinceState`, `CountryName`, `CountryCode`, `Sublocation`, `WorldRegion`, `LocationName` (dans toute structure, dont `LocationCreated` et `LocationShown`) ; `xmpDM:shotLocation` |
@@ -140,3 +140,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.4.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
 | 2026-11-14 | 0.5.0 | Direction transformation permise : indice de transfert du catalogue sur ses observations, `R-XMP-013` (T24, ADR-0153 à ADR-0157) ; code du module inchangé |
 | 2026-11-14 | 0.6.0 | Lieux nommés et textes libres marqués `lieu` et `texte_libre` ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |
+| 2026-11-14 | 0.7.0 | `dcterms:provenance`, adresse d'un manifeste C2PA distant, marquée `numero_de_serie` (T30, ADR-0173) |

@@ -114,7 +114,7 @@ Sans objet : la vérification est déterministe, juste ou fausse (A-55). Elle es
 - Seul le manifeste actif fonde les règles ; les manifestes des ingrédients ne sont restitués que par leurs titres, relations et codes d'échec.
 - Les assertions d'identité du CAWG ne sont pas décodées ; les vignettes ne sont pas extraites.
 - Les observations d'actions sont des listes : elles ne disent pas quelle source numérique va avec quelle action.
-- Le module ne lit pas le XMP : l'adresse d'un manifeste distant est restituée par le module `xmp` (`xmp.dcterms:provenance`), non masquée.
+- Le module ne lit pas le XMP : l'adresse d'un manifeste distant est restituée par le module `xmp` (`xmp.dcterms:provenance`), masquée par défaut comme un numéro de série (ADR-0173).
 
 ## Sécurité
 

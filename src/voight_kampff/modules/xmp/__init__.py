@@ -64,6 +64,9 @@ _SERIES = frozenset(
         "exifEX:LensSerialNumber",
         "exif:ImageUniqueID",
         "exifEX:ImageUniqueID",
+        # Adresse d'un manifeste C2PA distant : elle peut être propre à l'exemplaire, comme une
+        # valeur FBMD (ADR-0161), et désigner qui l'a reçu (M-14, ADR-0173).
+        "dcterms:provenance",
     }
 )
 _FICHIERS = frozenset(

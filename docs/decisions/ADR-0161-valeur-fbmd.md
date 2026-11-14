@@ -48,3 +48,4 @@ Option A : le module `iptc` marque `iptc.SpecialInstructions` « numéro de sér
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création |
+| 2026-11-14 | Renvoi : l'adresse d'un manifeste C2PA distant, `dcterms:provenance`, marquée numéro de série pour la même raison (ADR-0173) (T30) |
