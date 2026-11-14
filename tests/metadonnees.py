@@ -151,6 +151,83 @@ def texte_international(
     return bloc_png(b"iTXt", entete + corps)
 
 
+# Structure d'une image (T24) : en-têtes et tables de quantification
+
+LUMINANCE = (
+    16, 11, 10, 16, 24, 40, 51, 61, 12, 12, 14, 19, 26, 58, 60, 55,
+    14, 13, 16, 24, 40, 57, 69, 56, 14, 17, 22, 29, 51, 87, 80, 62,
+    18, 22, 37, 56, 68, 109, 103, 77, 24, 35, 55, 64, 81, 104, 113, 92,
+    49, 64, 78, 87, 103, 121, 120, 101, 72, 92, 95, 98, 112, 100, 103, 99,
+)  # fmt: skip
+"""Tableau K.1 de T.81, dans l'ordre du bloc."""
+CHROMINANCE = (
+    17, 18, 24, 47, 99, 99, 99, 99, 18, 21, 26, 66, 99, 99, 99, 99,
+    24, 26, 56, 99, 99, 99, 99, 99, 47, 66, 99, 99, 99, 99, 99, 99,
+    *(99,) * 32,
+)  # fmt: skip
+"""Tableau K.2 de T.81."""
+ZIGZAG = (
+    0, 1, 8, 16, 9, 2, 3, 10, 17, 24, 32, 25, 18, 11, 4, 5, 12, 19, 26, 33, 40, 48,
+    41, 34, 27, 20, 13, 6, 7, 14, 21, 28, 35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23,
+    30, 37, 44, 51, 58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63,
+)  # fmt: skip
+
+
+def table_ijg(base: tuple[int, ...], qualite: int, plafond: int = 255) -> tuple[int, ...]:
+    """Table de libjpeg à cette qualité (jcparam.c), dans l'ordre du segment DQT."""
+    facteur = 5000 // qualite if qualite < 50 else 200 - 2 * qualite
+    return tuple(min(max((base[i] * facteur + 50) // 100, 1), plafond) for i in ZIGZAG)
+
+
+def dqt(*tables: tuple[int, tuple[int, ...]], seize_bits: bool = False) -> bytes:
+    """Segment DQT : identifiant et 64 valeurs de chaque table."""
+    corps = b""
+    for identifiant, valeurs in tables:
+        if seize_bits:
+            corps += bytes([0x10 | identifiant]) + struct.pack(">64H", *valeurs)
+        else:
+            corps += bytes([identifiant]) + bytes(valeurs)
+    return segment(0xDB, corps)
+
+
+def sof(largeur: int, hauteur: int, marqueur: int = 0xC0, composantes: int = 3) -> bytes:
+    composante = b"".join(bytes([n + 1, 0x11, min(n, 1)]) for n in range(composantes))
+    return segment(marqueur, struct.pack(">BHHB", 8, hauteur, largeur, composantes) + composante)
+
+
+def jpeg_ijg(qualite: int) -> bytes:
+    """Tables de luminance et de chrominance de libjpeg à cette qualité, en un segment."""
+    return dqt((0, table_ijg(LUMINANCE, qualite)), (1, table_ijg(CHROMINANCE, qualite)))
+
+
+AUTRES_TABLES = dqt((0, (2,) * 64), (1, (3,) * 64))
+"""Tables qui ne sont pas celles de libjpeg."""
+
+
+def jpeg_image(
+    largeur: int, hauteur: int, *segments: bytes, tables: bytes = AUTRES_TABLES
+) -> bytes:
+    """JPEG à tables de quantification et en-tête d'image, suivis de ``segments``."""
+    return jpeg_meta(tables, sof(largeur, hauteur), *segments)
+
+
+def vp8(largeur: int, hauteur: int) -> bytes:
+    """Bloc ``VP8 `` d'une trame clé (RFC 6386, 9.1)."""
+    return bloc_riff(b"VP8 ", b"\x10\x02\x00\x9d\x01\x2a" + struct.pack("<HH", largeur, hauteur))
+
+
+def vp8l(largeur: int, hauteur: int) -> bytes:
+    """Bloc ``VP8L`` (RFC 9649) : signature, largeur - 1 et hauteur - 1 sur 14 bits."""
+    bits = (largeur - 1) | ((hauteur - 1) << 14)
+    return bloc_riff(b"VP8L", b"\x2f" + struct.pack("<I", bits))
+
+
+def webp_image(*blocs: bytes) -> bytes:
+    """WebP sans ``VP8X`` : ses blocs tels quels."""
+    contenu = b"WEBP" + b"".join(blocs)
+    return b"RIFF" + struct.pack("<I", len(contenu)) + contenu
+
+
 def bloc_riff(nature: bytes, donnees: bytes) -> bytes:
     return nature + struct.pack("<I", len(donnees)) + donnees + b"\x00" * (len(donnees) & 1)
 

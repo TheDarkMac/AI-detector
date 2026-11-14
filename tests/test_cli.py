@@ -52,8 +52,9 @@ def test_sans_argument_affiche_l_aide(capsys: pytest.CaptureFixture[str]) -> Non
 def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--modules"]) == 0
     assert capsys.readouterr().out == (
-        "exif 0.2.0\nid3 0.2.0\ninfopdf 0.2.0\ninfowav 0.2.0\niptc 0.2.0\nmatroska 0.2.0\n"
-        "odf 0.2.0\nooxml 0.2.0\nquicktime 0.2.0\ntextepng 0.2.0\nvorbis 0.2.0\nxmp 0.4.0\n"
+        "exif 0.3.0\nid3 0.2.0\nimage 0.1.0\ninfopdf 0.2.0\ninfowav 0.2.0\niptc 0.3.0\n"
+        "matroska 0.2.0\nodf 0.2.0\nooxml 0.2.0\nquicktime 0.2.0\ntextepng 0.3.0\nvorbis 0.2.0\n"
+        "xmp 0.5.0\n"
     )
 
 
@@ -176,7 +177,8 @@ def test_desactiver_un_module_inconnu(capsys: pytest.CaptureFixture[str]) -> Non
     assert sortie.value.code == 2
     erreur = capsys.readouterr().err
     livres = (
-        "exif, id3, infopdf, infowav, iptc, matroska, odf, ooxml, quicktime, textepng, vorbis, xmp"
+        "exif, id3, image, infopdf, infowav, iptc, matroska, odf, ooxml, quicktime, textepng, "
+        "vorbis, xmp"
     )
     assert f"module inconnu : omega ; modules livrés : {livres}" in erreur
 

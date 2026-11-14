@@ -46,3 +46,31 @@ application = "moteur"
 [[regle.condition]]
 observation = "iptc.present"
 egal = false
+
+# Règle de T24 : indice de transfert, marque de Facebook (F-06, ADR-0153, ADR-0155). Source : IPTC,
+# « IPTC investigates: what does Facebook do with your photo metadata? », 22 juillet 2019,
+# https://iptc.org/news/what-does-facebook-do-with-your-photo-metadata/ (lu le 2026-11-14).
+
+[[regle]]
+identifiant = "R-IPTC-003"
+version = "1"
+module = "iptc"
+titre = "Marque de Facebook dans les instructions IPTC (SpecialInstructions)"
+description = "Le jeu IPTC-IIM SpecialInstructions (2:40) commence par FBMD : d'après les essais du groupe de travail de l'IPTC (printemps 2019, publiés le 22 juillet 2019), Facebook remplace la valeur de ce champ par une valeur qui commence par FBMD dans les images qu'il diffuse (F-06, ADR-0153)."
+gabarit = "iptc.marque-facebook"
+phrase = { fr = "Le jeu IPTC SpecialInstructions commence par « FBMD », la marque que Facebook écrit dans les images qu'il diffuse : le fichier est passé par Facebook, ou en recopie la marque." }
+categorie = "indice"
+direction = "transformation"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire, recopier ou effacer ce jeu ; son absence ne dit rien (F-14).",
+  "Pratique observée par l'IPTC en 2019 : Facebook peut l'avoir changée depuis ; les autres plateformes, du même groupe ou non, ne sont pas couvertes par la source.",
+  "La valeur qui suit FBMD n'est pas interprétée : le constat ne dit rien du compte ni de la page qui a publié l'image.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "iptc.SpecialInstructions"
+motif = '^FBMD'

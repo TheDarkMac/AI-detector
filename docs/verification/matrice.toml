@@ -102,9 +102,10 @@ note = "Reformulée : empreinte masquée par défaut (ADR-0031)."
 
 [[exigence]]
 id = "F-06"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T24"]
 methodes = ["test"]
+note = "Indices faibles vers la transformation : captures d'écran déclarées, marque de Facebook, JPEG sans métadonnées aux côtés d'une messagerie ou aux tables de libjpeg ; recommandation au résumé (ADR-0153 à ADR-0156). La double compression reste à T41 (F-31)."
 
 # 5.2 Métadonnées
 
@@ -194,9 +195,10 @@ methodes = ["test"]
 
 [[exigence]]
 id = "F-30"
-etat = "a_venir"
-taches = ["T40"]
+etat = "partielle"
+taches = ["T24", "T40"]
 methodes = ["test"]
+note = "Tables de libjpeg reconnues, qualité de 1 à 100 (T24, ADR-0153, ADR-0154) ; comparaison à d'autres tables connues à T40."
 
 [[exigence]]
 id = "F-31"

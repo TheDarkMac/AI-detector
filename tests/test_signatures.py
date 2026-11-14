@@ -70,8 +70,13 @@ pytestmark = pytest.mark.exigence("F-12")
 
 MANIFESTES = {manifeste.identifiant: manifeste for manifeste in manifestes.decouvrir()}
 CATALOGUE = catalogues.charger(tuple(MANIFESTES.values()))
-REGLES_T22 = tuple(regle for regle in CATALOGUE.regles if regle.categorie is Categorie.INDICE)
-"""Règles de T22 : les seuls indices du catalogue ; celles de T23 sont des informations neutres
+REGLES_T22 = tuple(
+    regle
+    for regle in CATALOGUE.regles
+    if regle.categorie is Categorie.INDICE and regle.direction is not Direction.TRANSFORMATION
+)
+"""Règles de T22 : les indices du catalogue, hors indices de transfert de T24 (vers la
+transformation, ``test_transfert.py``) ; celles de T23 sont des informations neutres
 (``test_incoherences.py``)."""
 
 IPTC = "http://cv.iptc.org/newscodes/digitalsourcetype/"

@@ -1,0 +1,150 @@
+# Règles du module image (T24) : indices de transfert par messagerie ou réseau social (F-06,
+# ADR-0153 à ADR-0156). Les dimensions sont celles de l'en-tête de l'image (SOF d'un JPEG), pas
+# celles que déclare l'EXIF ; image.metadonnees compte les blocs EXIF, XMP, IPTC et texte PNG
+# (fiche structure-image). Tailles : Giudice, Paratore, Moltisanti, Battiato, « A Classification
+# Engine for Image Ballistics of Social Data », arXiv:1610.06347, 2016, tableau III ; Bertini,
+# Sharma, Montesi, « Are Social Networks Watermarking Us or Are We (Unawarely) Watermarking
+# Ourself? », arXiv:2006.03903, 2020, tableau 1 (lus le 2026-11-13).
+
+[[regle]]
+identifiant = "R-IMAGE-001"
+version = "1"
+module = "image"
+titre = "JPEG sans métadonnées au côté long d'une messagerie, en paysage"
+description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont l'en-tête de l'image donne une largeur parmi 960, 1 080, 1 280, 1 600, 2 048 et 2 560 pixels, plus grande que la hauteur : côtés longs auxquels des plateformes ramènent les images qu'elles reçoivent, d'après Giudice et al. 2016 (arXiv:1610.06347, tableau III : Facebook 960 et 2 048, Instagram 1 080, Tumblr 1 280, WhatsApp et Tinypic 1 600, Twitter et Google+ 2 048, Telegram 2 560) et Bertini et al. 2020 (arXiv:2006.03903, tableau 1 : Instagram 1 080, Telegram, Tumblr, Viber et WeChat 1 280, WhatsApp 1 600, Facebook, Flickr, Google+, LinkedIn, Pinterest et Twitter 2 048, VK 2 560) (F-06, A-32, ADR-0153)."
+gabarit = "image.dimensions-de-messagerie-paysage"
+phrase = { fr = "L'image JPEG mesure {largeur} × {hauteur} pixels et ne porte aucune métadonnée : un côté long de {largeur} pixels, sans métadonnées, est ce que produisent des messageries et des réseaux sociaux qui redimensionnent les images et retirent leurs métadonnées." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Tailles relevées par des études de 2016 et 2020 : les plateformes les changent sans prévenir (Giudice et al. ont vu celle de Twitter passer de 1 024 à 2 048 pendant leurs essais) ; une plateforme absente de la liste, ou une image déjà plus petite que le seuil, n'est pas vue.",
+  "Ces côtés sont aussi des tailles d'écran, d'export et de génération courantes : un JPEG enregistré à cette taille par un logiciel qui n'écrit aucune métadonnée donne le même constat.",
+  "Seuls les blocs de métadonnées que lisent les modules du projet sont comptés (EXIF, XMP, IPTC, blocs texte PNG) ; un commentaire JPEG ou un profil de couleur ne comptent pas.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.metadonnees"
+egal = 0
+
+[[regle.condition]]
+observation = "image.jpeg.tables"
+presente = true
+
+[[regle.condition]]
+observation = "image.largeur"
+parmi = [960, 1080, 1280, 1600, 2048, 2560]
+parametre = "largeur"
+
+[[regle.condition]]
+observation = "image.largeur"
+comparer = { observation = "image.hauteur", operateur = ">", parametre = "hauteur" }
+
+[[regle]]
+identifiant = "R-IMAGE-002"
+version = "1"
+module = "image"
+titre = "JPEG sans métadonnées au côté long d'une messagerie, en portrait"
+description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont l'en-tête de l'image donne une hauteur parmi 960, 1 080, 1 280, 1 600, 2 048 et 2 560 pixels, plus grande que la largeur : côtés longs auxquels des plateformes ramènent les images qu'elles reçoivent, d'après Giudice et al. 2016 (arXiv:1610.06347, tableau III : Facebook 960 et 2 048, Instagram 1 080, Tumblr 1 280, WhatsApp et Tinypic 1 600, Twitter et Google+ 2 048, Telegram 2 560) et Bertini et al. 2020 (arXiv:2006.03903, tableau 1 : Instagram 1 080, Telegram, Tumblr, Viber et WeChat 1 280, WhatsApp 1 600, Facebook, Flickr, Google+, LinkedIn, Pinterest et Twitter 2 048, VK 2 560) (F-06, A-32, ADR-0153)."
+gabarit = "image.dimensions-de-messagerie-portrait"
+phrase = { fr = "L'image JPEG mesure {largeur} × {hauteur} pixels et ne porte aucune métadonnée : un côté long de {hauteur} pixels, sans métadonnées, est ce que produisent des messageries et des réseaux sociaux qui redimensionnent les images et retirent leurs métadonnées." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Tailles relevées par des études de 2016 et 2020 : les plateformes les changent sans prévenir (Giudice et al. ont vu celle de Twitter passer de 1 024 à 2 048 pendant leurs essais) ; une plateforme absente de la liste, ou une image déjà plus petite que le seuil, n'est pas vue.",
+  "Ces côtés sont aussi des tailles d'écran, d'export et de génération courantes : un JPEG enregistré à cette taille par un logiciel qui n'écrit aucune métadonnée donne le même constat.",
+  "Seuls les blocs de métadonnées que lisent les modules du projet sont comptés (EXIF, XMP, IPTC, blocs texte PNG) ; un commentaire JPEG ou un profil de couleur ne comptent pas.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.metadonnees"
+egal = 0
+
+[[regle.condition]]
+observation = "image.jpeg.tables"
+presente = true
+
+[[regle.condition]]
+observation = "image.hauteur"
+parmi = [960, 1080, 1280, 1600, 2048, 2560]
+parametre = "hauteur"
+
+[[regle.condition]]
+observation = "image.hauteur"
+comparer = { observation = "image.largeur", operateur = ">", parametre = "largeur" }
+
+[[regle]]
+identifiant = "R-IMAGE-003"
+version = "1"
+module = "image"
+titre = "JPEG sans métadonnées au côté d'une messagerie, carré"
+description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont l'en-tête de l'image donne une largeur parmi 960, 1 080, 1 280, 1 600, 2 048 et 2 560 pixels, égale à la hauteur : côtés longs auxquels des plateformes ramènent les images qu'elles reçoivent, d'après Giudice et al. 2016 (arXiv:1610.06347, tableau III : Facebook 960 et 2 048, Instagram 1 080, Tumblr 1 280, WhatsApp et Tinypic 1 600, Twitter et Google+ 2 048, Telegram 2 560) et Bertini et al. 2020 (arXiv:2006.03903, tableau 1 : Instagram 1 080, Telegram, Tumblr, Viber et WeChat 1 280, WhatsApp 1 600, Facebook, Flickr, Google+, LinkedIn, Pinterest et Twitter 2 048, VK 2 560) (F-06, A-32, ADR-0153)."
+gabarit = "image.dimensions-de-messagerie-carre"
+phrase = { fr = "L'image JPEG mesure {largeur} × {hauteur} pixels et ne porte aucune métadonnée : un côté long de {largeur} pixels, sans métadonnées, est ce que produisent des messageries et des réseaux sociaux qui redimensionnent les images et retirent leurs métadonnées." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Tailles relevées par des études de 2016 et 2020 : les plateformes les changent sans prévenir (Giudice et al. ont vu celle de Twitter passer de 1 024 à 2 048 pendant leurs essais) ; une plateforme absente de la liste, ou une image déjà plus petite que le seuil, n'est pas vue.",
+  "Ces côtés sont aussi des tailles d'écran, d'export et de génération courantes : un JPEG enregistré à cette taille par un logiciel qui n'écrit aucune métadonnée donne le même constat.",
+  "Seuls les blocs de métadonnées que lisent les modules du projet sont comptés (EXIF, XMP, IPTC, blocs texte PNG) ; un commentaire JPEG ou un profil de couleur ne comptent pas.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.metadonnees"
+egal = 0
+
+[[regle.condition]]
+observation = "image.jpeg.tables"
+presente = true
+
+[[regle.condition]]
+observation = "image.largeur"
+parmi = [960, 1080, 1280, 1600, 2048, 2560]
+parametre = "largeur"
+
+[[regle.condition]]
+observation = "image.largeur"
+comparer = { observation = "image.hauteur", operateur = "=", parametre = "hauteur" }
+
+# Recompression (F-06), partie de T40 avancée (F-30, ADR-0153) : tables de quantification de
+# libjpeg (jcparam.c, annexe K de T.81), reconnues à une qualité de 1 à 100.
+
+[[regle]]
+identifiant = "R-IMAGE-004"
+version = "1"
+module = "image"
+titre = "JPEG sans métadonnées encodé aux tables de libjpeg"
+description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont les tables de quantification sont exactement celles qu'écrit la bibliothèque libjpeg de l'IJG à une qualité de 1 à 100 (annexe K de T.81, mise à l'échelle de jcparam.c) : profil d'une image réencodée par un logiciel courant, ce que font les messageries et les réseaux sociaux qui recompressent toujours les images reçues (Giudice et al. 2016, tableau III) (F-06, F-30, ADR-0153)."
+gabarit = "image.tables-libjpeg-sans-metadonnees"
+phrase = { fr = "L'image JPEG est encodée avec les tables de quantification de la bibliothèque libjpeg à la qualité {qualite} et ne porte aucune métadonnée : c'est le profil d'une image réenregistrée par un logiciel courant, comme le font des messageries et des réseaux sociaux." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "La règle ne mesure pas une double compression (T41) : un fichier encodé une seule fois par un logiciel ou un générateur qui emploie libjpeg sans écrire de métadonnées, ou un appareil qui emploie ces tables, donne le même constat.",
+  "Seules les tables de libjpeg sont reconnues, à l'identique ; une plateforme qui emploie d'autres tables (mozjpeg, tables propres) n'est pas vue, et la qualité lue n'est pas celle qu'un autre logiciel affiche pour d'autres tables.",
+  "Seuls les blocs de métadonnées que lisent les modules du projet sont comptés (EXIF, XMP, IPTC) ; un commentaire JPEG ou un profil de couleur ne comptent pas.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.metadonnees"
+egal = 0
+
+[[regle.condition]]
+observation = "image.jpeg.qualite_ijg"
+presente = true
+parametre = "qualite"

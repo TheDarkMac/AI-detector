@@ -324,6 +324,9 @@ class Presentation:
         if not preuves:
             lignes.append(texte("resume.preuves_aucune"))
         lignes.extend(self.indices())
+        if any(c.direction is Direction.TRANSFORMATION for c in self.analyse.constats):
+            # F-06, ADR-0156 : une fois, quel que soit le nombre d'indices de transformation.
+            lignes.append(texte("resume.transformation"))
         informations = self.constats(Categorie.INFORMATION_NEUTRE)
         lignes.append(texte("resume.informations", nombre=len(informations)))
         etats = Counter(technique.etat for technique in self.analyse.couverture.techniques)
