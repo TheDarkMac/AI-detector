@@ -201,7 +201,7 @@ id = "F-30"
 etat = "partielle"
 taches = ["T24", "T40"]
 methodes = ["test"]
-note = "Tables de libjpeg reconnues, qualité de 1 à 100 (T24, ADR-0153, ADR-0154) ; comparaison à d'autres tables connues à T40."
+note = "Tables de libjpeg reconnues, qualité de 1 à 100 (T24, ADR-0153, ADR-0154) ; libjpeg à deux qualités, mozjpeg (jeux 2 à 8) et encodeur MJPEG de ffmpeg, empreinte des tables pour nommer des tables fixes au catalogue (T40, ADR-0180 à ADR-0183). Tables de Photoshop et d'appareils au complément de T40."
 
 [[exigence]]
 id = "F-31"

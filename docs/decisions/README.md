@@ -194,3 +194,8 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0177](ADR-0177-marquages-non-recherches-au-rapport.md) | Marquages connus non recherchés : au rapport, avec leur raison | Accepté | 2026-11-14 |
 | [ADR-0178](ADR-0178-couverture-des-marquages.md) | Couverture des marquages : marquages qui pourraient se trouver dans le fichier, calculée par P1 | Accepté | 2026-11-14 |
 | [ADR-0179](ADR-0179-versions-de-t31.md) | Versions de T31 : schéma 0.6.0, catalogue 0.6.0 au format 3, modules inchangés | Accepté | 2026-11-14 |
+| [ADR-0180](ADR-0180-tables-connues-de-t40.md) | Tables connues de T40 : mozjpeg, ffmpeg, libjpeg à deux qualités ; Photoshop et appareils dans un complément | Accepté | 2026-11-14 |
+| [ADR-0181](ADR-0181-empreinte-des-tables.md) | Empreinte des tables de quantification : point d'extension du catalogue | Accepté | 2026-11-14 |
+| [ADR-0182](ADR-0182-regles-des-tables-connues.md) | Règles des tables connues : sur le modèle de R-IMAGE-004 | Accepté | 2026-11-14 |
+| [ADR-0183](ADR-0183-observations-des-tables-connues.md) | Observations des tables connues : une paire par famille, premier encodeur reconnu | Proposé | 2026-11-14 |
+| [ADR-0184](ADR-0184-versions-de-t40.md) | Versions de T40 : module `image` 0.2.0, catalogue 0.7.0, R-IMAGE-004 en version 2 | Proposé | 2026-11-14 |

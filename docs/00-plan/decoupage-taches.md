@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.26** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 proposée dans la PR de T31. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.26** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 proposée dans la PR de T40. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -79,13 +79,13 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 | --- | --- | --- |
 | T30 | C2PA : détection du manifeste, vérification signature / intégrité / chaîne, états (absent, valide, hors liste de confiance, invalide, non vérifiable), restitution des déclarations (ADR-0164 à ADR-0172) ; manifestes distants et révocation selon ADR-0033 dans un complément de T30 (ADR-0166) | F-20 à F-23 |
 | T31 | Filigranes invisibles : inventaire des schémas lisibles sans réseau de neurones, point d'extension du catalogue, liste des marquages recherchés (ADR-0012) ; marquages au catalogue, recherchés ou non, avec leur raison (ADR-0174 à ADR-0179) | F-24, F-25 |
-| T32 | Lecteur du filigrane dwtDct d'invisible-watermark (Stable Diffusion 1, SDXL, FLUX.1) : décodage des pixels choisi avec T40 et T41, seuil de bits concordants et faux positifs mesurés sur le corpus (ADR-0174) | F-24 |
+| T32 | Lecteur du filigrane dwtDct d'invisible-watermark (Stable Diffusion 1, SDXL, FLUX.1) : décodage des pixels choisi avec T41 (T40 n'en a pas eu besoin, ADR-0180), seuil de bits concordants et faux positifs mesurés sur le corpus (ADR-0174) | F-24 |
 
 ### P4 — Image (signal)
 
 | ID | Tâche | Exigences |
 | --- | --- | --- |
-| T40 | Tables de quantification JPEG comparées à des tables connues (tables de libjpeg reconnues dès T24, ADR-0153) | F-30 |
+| T40 | Tables de quantification JPEG comparées à des tables connues (tables de libjpeg reconnues dès T24, ADR-0153) : libjpeg à deux qualités, mozjpeg, encodeur MJPEG de ffmpeg, empreinte des tables comme point d'extension du catalogue (ADR-0180 à ADR-0184). Complément, sur sa propre branche et sa propre PR (ADR-0180) : tables de Photoshop et d'appareils relevées sur des fichiers publics de provenance établie, livrées au catalogue par leur empreinte | F-30 |
 | T41 | Double compression JPEG | F-31 |
 | T42 | ELA + avertissement d'interprétation + carte | F-32, F-84 |
 | T43 | Analyse spectrale du résidu de bruit | F-33, F-84 |
@@ -159,7 +159,7 @@ Fixé par [ADR-0012](../decisions/ADR-0012-perimetre-v1.md), provisoire jusqu'au
 
 | Statut | Tâches |
 | --- | --- |
-| **V1**, dans l'ordre | T00 → T04 ; T10 → T18 ; T20 → T25 (T25 limitée aux métadonnées, ADR-0014) ; T30 ; T105 ; T31 ; T40, T41 ; T32 ; T50 → T53 ; T80, T81 ; T90 → T92, T95 ; T100 → T103 |
+| **V1**, dans l'ordre | T00 → T04 ; T10 → T18 ; T20 → T25 (T25 limitée aux métadonnées, ADR-0014) ; T30 ; T105 ; T31 ; T40 et son complément, T41 ; T32 ; T50 → T53 ; T80, T81 ; T90 → T92, T95 ; T100 → T103 |
 | **Candidates V2** (ordre non fixé) | T42, T43, T44, T45, T54, T60, T61, T63, T70 → T73, T93, T94 (garde-fous d'ADR-0032), analyse groupée (ADR-0015) |
 | **Hors V1, sans engagement** | T62 (ENF), T82 (stylométrie), T83 (références), T104 (étude d'usage) |
 
@@ -208,3 +208,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-11-14 | 0.25 | T25 renvoie à ses décisions (ADR-0158 à ADR-0163) ; ES-13 ajoutée à ses exigences | T25 |
 | 2026-11-14 | 0.26 | T30 renvoie à ses décisions (ADR-0164 à ADR-0172) ; requêtes en ligne dans un complément (ADR-0166) | T30 |
 | 2026-11-14 | 0.27 | T31 renvoie à ses décisions (ADR-0174 à ADR-0179) ; T32 ajoutée, en V1 après T40 et T41 (§3, §4) ; remarque 3 complétée (§5) | T31 |
+| 2026-11-14 | 0.28 | T40 renvoie à ses décisions (ADR-0180 à ADR-0184) ; complément de T40 ajouté, en V1 (§3, §4) ; T32 sans T40 pour le décodage des pixels | T40 |

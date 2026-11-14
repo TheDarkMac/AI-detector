@@ -1,6 +1,6 @@
 # Architecture
 
-> Statut : **v1.19** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 avec T15, v1.9 avec T16, v1.10 avec T17, v1.11 avec T18, v1.12 avec T20, v1.13 avec T21, v1.14 avec le complément audio et vidéo de T21, v1.15 avec le complément bureautique de T21, v1.16 avec T23, v1.17 avec T24, v1.18 avec T25, v1.19 avec T30, v1.20 proposée dans la PR de T31. Document vivant : toute modification est inscrite à l'historique (§13).
+> Statut : **v1.19** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 avec T15, v1.9 avec T16, v1.10 avec T17, v1.11 avec T18, v1.12 avec T20, v1.13 avec T21, v1.14 avec le complément audio et vidéo de T21, v1.15 avec le complément bureautique de T21, v1.16 avec T23, v1.17 avec T24, v1.18 avec T25, v1.19 avec T30, v1.20 avec T31, v1.21 proposée dans la PR de T40. Document vivant : toute modification est inscrite à l'historique (§13).
 > Exigences : NF-01, NF-06, NF-10 ; exigences de sécurité ES-01, ES-02, ES-05, ES-10, ES-17, ES-18 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-05, A-16, A-30, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T04. Date de rédaction : 2026-10-26.
 
@@ -299,9 +299,9 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | ~~Versions des bibliothèques employées par un module, lues avant le verrouillage (ADR-0064)~~ | Fixé en T20 : champ `bibliotheques` du manifeste (ADR-0120) |
 | ~~Liste des techniques hors V1 par format (`hors_v1`)~~ | Fixée en T15 : ADR-0087 |
 | ~~Règle qui compare deux observations (F-13, incohérences de dates)~~ | Fixée en T23 : test `comparer` du catalogue, format 2, au sein d'un module (ADR-0147) ; lecture des dates (ADR-0148) |
-| Règle qui compare les observations de deux modules (date EXIF contre date XMP) | Nouvel ADR, avec l'acheminement des résultats d'un module vers un autre (ADR-0147, T53) |
+| Règle qui compare les observations de deux modules (date EXIF contre date XMP ; tables d'un logiciel sous un appareil déclaré dans l'EXIF, ADR-0182) | Nouvel ADR, avec l'acheminement des résultats d'un module vers un autre (ADR-0147, T53) |
 | ~~Marquages recherchés (F-25) inscrits au catalogue~~ | Fixé en T31 : `marquages.toml`, format 3 du catalogue, couverture calculée par P1 (ADR-0175, ADR-0178) |
-| Décodage des pixels d'une image (lecteur dwtDct, coefficients DCT) | T32, avec T40 et T41 (ADR-0174) |
+| Décodage des pixels d'une image (lecteur dwtDct, coefficients DCT) | T32, avec T41 (ADR-0174) ; T40 n'en a pas eu besoin : les tables se lisent dans les segments DQT (ADR-0180) |
 | Acheminement des résultats d'un module vers un autre ; constat qui cite les observations d'un autre module (ADR-0061) | T53 |
 
 ## 13. Historique
@@ -329,3 +329,4 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | 2026-11-14 | 1.18 | Contrôle avant publication dans le composant Rapport (§4, ADR-0158) | T25 |
 | 2026-11-14 | 1.19 | Module `c2pa`, liste de confiance chargée par P1 et remise à P2 (§4, ADR-0164, ADR-0171) ; `c2pa-python` ajoutée, points de T10 tranchés (§9, §12) | T30 |
 | 2026-11-14 | 1.20 | Marquages au catalogue et `_marquages.py` (§4, §8, ADR-0175, ADR-0178) ; point de T15 fixé, décodage des pixels transmis à T32 (§12) | T31 |
+| 2026-11-14 | 1.21 | Décodage des pixels sans T40 ; comparaison entre modules : tables et appareil déclaré (§12, ADR-0180, ADR-0182) | T40 |
