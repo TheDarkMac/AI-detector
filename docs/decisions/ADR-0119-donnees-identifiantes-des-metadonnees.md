@@ -66,3 +66,4 @@ Option A. Champs marqués :
 | 2026-11-12 | Validé par TheDarkMac au début de T21, la PR de T20 ayant été mergée sans changement de statut (ERR-0008) : statut « Accepté » |
 | 2026-11-13 | Renvoi : champs marqués des balises audio et vidéo, même liste fermée par famille (ADR-0133) (T21, complément audio et vidéo) |
 | 2026-11-13 | Renvoi : champs marqués des propriétés de DOCX et d'ODT, même liste fermée par famille (ADR-0140) (T21, complément bureautique) |
+| 2026-11-14 | Suite en T25 : lieux nommés et textes libres marqués dans deux nouvelles catégories (ADR-0159, ADR-0160) ; liste de garde non ajoutée (ADR-0162) |

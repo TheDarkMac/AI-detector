@@ -1,6 +1,6 @@
 # Architecture
 
-> Statut : **v1.17** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 avec T15, v1.9 avec T16, v1.10 avec T17, v1.11 avec T18, v1.12 avec T20, v1.13 avec T21, v1.14 avec le complément audio et vidéo de T21, v1.15 avec le complément bureautique de T21, v1.16 avec T23, v1.17 proposée dans la PR de T24. Document vivant : toute modification est inscrite à l'historique (§13).
+> Statut : **v1.17** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 avec T15, v1.9 avec T16, v1.10 avec T17, v1.11 avec T18, v1.12 avec T20, v1.13 avec T21, v1.14 avec le complément audio et vidéo de T21, v1.15 avec le complément bureautique de T21, v1.16 avec T23, v1.17 avec T24, v1.18 proposée dans la PR de T25. Document vivant : toute modification est inscrite à l'historique (§13).
 > Exigences : NF-01, NF-06, NF-10 ; exigences de sécurité ES-01, ES-02, ES-05, ES-10, ES-17, ES-18 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-05, A-16, A-30, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T04. Date de rédaction : 2026-10-26.
 
@@ -143,7 +143,7 @@ src/voight_kampff/
 | Catalogue | P1 | Lecture, validation, empreinte, cohérence avec les manifestes | T15 |
 | Règles | P1 (forme, compilation), P2 (évaluation) | Application du catalogue aux observations | T15 |
 | Modules | P2 | Une technique chacun | T13, T20 et suivantes |
-| Rapport | P1 | Résumé sans verdict, rubriques, masquage, neutralisation, exports (ADR-0093 à ADR-0098) | T11, T16 |
+| Rapport | P1 | Résumé sans verdict, rubriques, masquage, neutralisation, exports (ADR-0093 à ADR-0098) ; contrôle avant publication, dérivé des catégories identifiantes (ADR-0158) | T11, T16, T25 |
 | Schémas, données | P1 et P2 | Contrats et catalogue livrés avec l'outil | T11, T15, T30 |
 
 Les dossiers préfixés `_` sont internes ; les analyseurs vérifient qu'ils s'exécutent dans un P2 verrouillé et refusent sinon (ES-17).
@@ -324,3 +324,4 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | 2026-11-13 | 1.15 | Modules `ooxml` et `odf`, lecteurs ZIP, XML et propriétés (§4) ; `zipfile` réservé aux tests, LibreOffice pour les échantillons bureautiques de l'oracle (§9) | T21 (complément bureautique) |
 | 2026-11-13 | 1.16 | Comparaison de deux observations et lecture des dates : `_dates.py` (§4) ; point fixé, comparaison entre modules transmise (§12) | T23 |
 | 2026-11-14 | 1.17 | Module `image` et blocs de structure du lecteur de conteneurs (§4, ADR-0154) | T24 |
+| 2026-11-14 | 1.18 | Contrôle avant publication dans le composant Rapport (§4, ADR-0158) | T25 |

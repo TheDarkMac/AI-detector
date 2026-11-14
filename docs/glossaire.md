@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.8** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 proposée dans la PR de T20. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.8** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 proposée dans la PR de T25. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -33,7 +33,9 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Couverture | Techniques appliquées ou non au fichier, avec leur état, et marquages recherchés : borne la portée d'un résultat négatif. | F-25, ADR-0059 |
 | Technique, module | Une technique d'analyse est livrée sous la forme d'un module, sous-paquet de `modules/` avec son manifeste. Les deux mots désignent la même unité dans le modèle. | ADR-0042 |
 | Localisation | Endroit du fichier où se trouve ce qui a été observé : chemin dans la structure, plage d'octets, page, zone d'image, intervalle de temps. | A-46 |
-| Donnée identifiante | Donnée qui peut désigner une source : métadonnée nominative, numéro de série, coordonnées GPS, nom du fichier, empreinte. Masquée par défaut. | ES-13, ADR-0057 |
+| Donnée identifiante | Donnée qui peut désigner une source : métadonnée nominative, numéro de série, coordonnées GPS, lieu nommé, texte libre, nom du fichier, empreinte. Masquée par défaut. | ES-13, ADR-0057, ADR-0159 |
+| Texte libre | Texte écrit par une personne sans forme fixée : titre, légende, description, commentaire, mots-clés, propriété personnalisée. Donnée identifiante. | ADR-0159, ADR-0160 |
+| Contrôle avant publication | Rubrique du rapport qui nomme, sans leur valeur, les données des métadonnées qui peuvent identifier la source si le fichier est publié tel quel ; l'outil ne les retire pas. | F-90, ADR-0014, ADR-0158 |
 | Masquage, levée du masquage | Une donnée identifiante masquée est absente de la sortie (terminal, HTML, JSON), remplacée par une mention ; la levée nomme une catégorie à la fois (`--reveler`) et s'annonce en tête du rapport. | ES-13, ADR-0093, ADR-0095 |
 | Export | Rapport écrit pour être lu ou transmis : HTML autonome ou JSON conforme au schéma du rapport ; masqué par défaut. Le rapport du modèle, complet, n'est pas un export. | F-83, ADR-0025, ADR-0095 |
 | Alerte (du rapport) | Ce qui change la portée de tout le rapport, annoncé avant l'avertissement : masquage levé, catalogue fourni par l'utilisateur, isolation réduite, analyse interrompue. | ADR-0098 |
@@ -107,3 +109,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-10-28 | 1.6 | Termes de l'évaluation ajoutés | T17 |
 | 2026-10-28 | 1.7 | Garantie de reproductibilité, écart de comparaison, défaut de reproductibilité ajoutés ; écart d'évaluation précisé | T18 |
 | 2026-10-28 | 1.8 | Fiche technique, famille de métadonnées, lecteur de structure ; limite comptée et manifeste complétés | T20 |
+| 2026-11-14 | 1.9 | Texte libre, contrôle avant publication ajoutés ; donnée identifiante complétée | T25 |

@@ -80,3 +80,4 @@ Licences compatibles avec Apache-2.0, aucun accès réseau, exécuté dans P1 su
 | 2026-10-28 | Renvoi : `VERSION_SCHEMA` passe à 0.2.0 avec l'export masqué (ADR-0095, T16) |
 | 2026-10-28 | Renvoi : `VERSION_SCHEMA` passe à 0.3.0 avec l'interpréteur dans la rubrique Versions (ADR-0111, T18) |
 | 2026-10-28 | Renvoi : validation par schéma accélérée, références résolues au chargement (ADR-0121, T20) |
+| 2026-11-14 | Renvoi : `VERSION_SCHEMA` passe à 0.4.0 avec les catégories `lieu` et `texte_libre` (ADR-0159, T25) |

@@ -72,3 +72,4 @@ Option A.
 | 2026-11-13 | Création, statut « Proposé » |
 | 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR du complément (« Yes, all three ») : statut « Accepté » |
 | 2026-11-13 | Suite en T23 : `dcterms:created`, `dcterms:modified`, `meta:creation-date` et `dc:date` sont lues par la lecture `date-iso8601` (ADR-0148, ADR-0150) |
+| 2026-11-14 | Suite en T25 : titres, sujets, mots-clés, propriétés personnalisées et utilisateur marqués texte libre (ADR-0159, ADR-0160) |
