@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.24** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 proposée dans la PR de T25. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.25** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 proposée dans la PR de T30. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -77,7 +77,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 
 | ID | Tâche | Exigences |
 | --- | --- | --- |
-| T30 | C2PA : détection du manifeste, vérification signature / intégrité / chaîne, états (absent, valide, hors liste de confiance, invalide, non vérifiable), restitution des déclarations ; manifestes distants et révocation selon ADR-0033 | F-20 à F-23 |
+| T30 | C2PA : détection du manifeste, vérification signature / intégrité / chaîne, états (absent, valide, hors liste de confiance, invalide, non vérifiable), restitution des déclarations (ADR-0164 à ADR-0172) ; manifestes distants et révocation selon ADR-0033 dans un complément de T30 (ADR-0166) | F-20 à F-23 |
 | T31 | Filigranes invisibles : inventaire des schémas lisibles sans réseau de neurones, point d'extension du catalogue, liste des marquages recherchés (ADR-0012) | F-24, F-25 |
 
 ### P4 — Image (signal)
@@ -205,3 +205,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-11-13 | 0.23 | T23 renvoie à ses décisions (ADR-0147 à ADR-0152) ; comparaison par un test du catalogue (ADR-0147) | T23 |
 | 2026-11-14 | 0.24 | T24 renvoie à ses décisions (ADR-0153 à ADR-0157) ; tables de libjpeg avancées de T40 | T24 |
 | 2026-11-14 | 0.25 | T25 renvoie à ses décisions (ADR-0158 à ADR-0163) ; ES-13 ajoutée à ses exigences | T25 |
+| 2026-11-14 | 0.26 | T30 renvoie à ses décisions (ADR-0164 à ADR-0172) ; requêtes en ligne dans un complément (ADR-0166) | T30 |

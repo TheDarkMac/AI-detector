@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.7** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 proposée dans la PR de T25. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.8** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 proposée dans la PR de T30. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -46,6 +46,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0111](../decisions/ADR-0111-interpreteur-dans-les-versions.md) | `Versions.interpreteur` ; `VERSION_SCHEMA` 0.3.0 |
 | [ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md) | Catégories identifiantes `lieu` et `texte_libre` ; `VERSION_SCHEMA` 0.4.0 |
 | [ADR-0112](../decisions/ADR-0112-comparaison-de-deux-rapports.md) | Comparaison de deux exports : écarts de condition, d'environnement, de résultat |
+| [ADR-0171](../decisions/ADR-0171-liste-de-confiance-au-rapport.md) | `Versions.confiance` : liste de confiance C2PA employée ; `VERSION_SCHEMA` 0.5.0 (T30) |
 
 ### Où se trouve le code
 
@@ -63,7 +64,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Exports JSON et HTML, masquage (T16) | `src/voight_kampff/rapport/export.py`, `rapport/_html.py`, `rapport/_presentation.py`, `rapport/textes.toml` |
 | Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py` |
 
-Version commune : `0.4.0` (`VERSION_SCHEMA`, ADR-0159 ; 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
+Version commune : `0.5.0` (`VERSION_SCHEMA`, ADR-0171 ; 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
 
 ## 2. Vue d'ensemble
 
@@ -230,13 +231,13 @@ Les limites connues et le taux de la règle sont lus dans le catalogue (T15) ; l
 
 ### Exemple : le constat du §6 du cahier
 
-Le cahier donne : « Le fichier contient un manifeste C2PA valide qui déclare une génération par IA. Catégorie : preuve · Direction : origine IA · Règle : vérification C2PA (F-21) ». Selon ADR-0021, la preuve ne porte que sur ce que la vérification établit : le signataire reconnu a signé un manifeste qui déclare une génération par IA, et le contenu n'a pas changé depuis. La règle est une règle du catalogue, pas l'exigence F-21 (A-47). Identifiants de règle et de gabarit indicatifs, fixés en T15 et T30 :
+Le cahier donne : « Le fichier contient un manifeste C2PA valide qui déclare une génération par IA. Catégorie : preuve · Direction : origine IA · Règle : vérification C2PA (F-21) ». Selon ADR-0021, la preuve ne porte que sur ce que la vérification établit : le signataire reconnu a signé un manifeste qui déclare une génération par IA, et le contenu n'a pas changé depuis. La règle est une règle du catalogue, pas l'exigence F-21 (A-47). Identifiants de règle et de gabarit fixés en T30 (règle R-C2PA-001, ADR-0170) ; le manifeste n'a pas de localisation, les observations et les phrases réelles sont décrites par la fiche `provenance-c2pa` :
 
 ```json
 {
   "phrase": {
-    "gabarit": "c2pa.manifeste-valide-generation-declaree",
-    "parametres": { "signataire": "c2pa/2", "action": "c2pa/3" }
+    "gabarit": "c2pa.generation-ia-signataire-reconnu",
+    "parametres": { "source": "c2pa/3" }
   },
   "donnees": ["c2pa/1", "c2pa/2", "c2pa/3"],
   "regle": { "identifiant": "R-C2PA-001", "version": "1" },
@@ -244,7 +245,7 @@ Le cahier donne : « Le fichier contient un manifeste C2PA valide qui déclare u
   "fondement": "verification_cryptographique",
   "categorie": "preuve",
   "direction": "origine_ia",
-  "localisation": { "chemin": "APP11/JUMBF/c2pa" }
+  "partie": 1
 }
 ```
 
@@ -282,7 +283,7 @@ Le processus principal tire de l'identification trois sortes d'analyses non men�
 
 **Partie** (ADR-0070, ADR-0071) : `rang` de 1 à 16, dans l'ordre des débuts ; `format`, pris dans le vocabulaire de `formats.py` ; `octets`, du début à la fin logique, ou à la fin du fichier si elle n'est pas connue ; `fin_connue` ; `tronquee` (structure interrompue avant sa fin, jamais avec une fin connue). Les plages peuvent se chevaucher. Au moins une partie est dans le périmètre : sinon le fichier est refusé, sans rapport (ADR-0075).
 
-**Versions** : `outil` ; `interpreteur` (`nom`, `version` : implémentation et version de Python, lues dans P1, qui lance P2 par le même interpréteur, ADR-0111) ; `catalogue` (`version`, `date`, `empreinte`, `fourni_par_utilisateur`, ADR-0029) ; `dependances` (`nom`, `version`, sans doublon, ADR-0023 ; bibliothèques des modules actifs, ADR-0120).
+**Versions** : `outil` ; `interpreteur` (`nom`, `version` : implémentation et version de Python, lues dans P1, qui lance P2 par le même interpréteur, ADR-0111) ; `catalogue` (`version`, `date`, `empreinte`, `fourni_par_utilisateur`, ADR-0029) ; `confiance` (`nom`, `version`, `date`, `empreinte`, `fourni_par_utilisateur` : liste de confiance C2PA employée, ADR-0171) ; `dependances` (`nom`, `version`, sans doublon, ADR-0023 ; bibliothèques des modules actifs, ADR-0120).
 
 **Isolation** : `niveau` `complete` ou `reduite` ; `manques`, vide si et seulement si l'isolation est complète, pris dans `reseau`, `ecriture`, `lecture`, `nouveaux_programmes`, `memoire`, `temps`, `vidage_memoire` (architecture §5).
 
@@ -349,3 +350,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-10-28 | 1.6 | Interpréteur dans la rubrique Versions, `VERSION_SCHEMA` 0.3.0 (§1, §2, §6, ADR-0111) ; comparaison de deux rapports (§1, ADR-0112) | T18 |
 | 2026-10-28 | 1.7 | Message `versions` contrôlé par les manifestes (§6, ADR-0120) ; vocabulaire des premières observations (§4, ADR-0117) ; exigences (§9) | T20 |
 | 2026-11-14 | 1.8 | Catégories identifiantes `lieu` et `texte_libre`, `VERSION_SCHEMA` 0.4.0 (§1, §2, §4, §7, ADR-0159) ; contrôle avant publication produit à l'export, comme le résumé (ADR-0158) | T25 |
+| 2026-11-14 | 1.9 | `Versions.confiance`, `VERSION_SCHEMA` 0.5.0 (§1, §6, ADR-0171) ; exemple du constat du cahier avec la règle R-C2PA-001 (§4, ADR-0170) | T30 |

@@ -1,6 +1,6 @@
 # Modèle de menace
 
-> Statut : **v1.3** ; v1.0 mergée avec T03, v1.1 avec T04, v1.2 avec T17, v1.3 proposée dans la PR de T25. Document vivant : toute modification est inscrite à l'historique (§12).
+> Statut : **v1.4** ; v1.0 mergée avec T03, v1.1 avec T04, v1.2 avec T17, v1.3 avec T25, v1.4 proposée dans la PR de T30. Document vivant : toute modification est inscrite à l'historique (§12).
 > Exigences : NF-15 (livrable 7 du §9), NF-01, NF-16, NF-18 ; constats A-14, A-16, A-31, A-37, A-42, A-48, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T03. Date de rédaction : 2026-10-26.
 
@@ -193,8 +193,8 @@ C'est l'inventaire initial exigé par NF-16 ; il est tenu à jour à chaque tâc
 
 | ID | Requête | Données envoyées | Destinataire | Ce qu'elle révèle | Par défaut | Tâche |
 | --- | --- | --- | --- | --- | --- | --- |
-| RS-01 | Révocation des certificats C2PA (CRL de préférence, OCSP sinon) | CRL : rien de propre au fichier. OCSP : émetteur et numéro de série du certificat | Autorité de certification du signataire | OCSP : qu'un certificat donné est vérifié, et quand | Désactivée | T30 |
-| RS-02 | Manifeste C2PA distant | L'URL écrite dans le fichier | Hôte choisi par l'auteur du fichier | Adresse, heure, et l'exemplaire si l'URL lui est propre | Désactivée ; confirmation par fichier | T30 |
+| RS-01 | Révocation des certificats C2PA (CRL de préférence, OCSP sinon) | CRL : rien de propre au fichier. OCSP : émetteur et numéro de série du certificat | Autorité de certification du signataire | OCSP : qu'un certificat donné est vérifié, et quand | Désactivée | Complément de T30 (ADR-0166) |
+| RS-02 | Manifeste C2PA distant | L'URL écrite dans le fichier | Hôte choisi par l'auteur du fichier | Adresse, heure, et l'exemplaire si l'URL lui est propre | Désactivée ; confirmation par fichier | Complément de T30 (ADR-0166) ; en T30, jamais récupéré, hôte seul au rapport |
 | RS-03 | Horodatage RFC 3161 du rapport | Empreinte du rapport | Autorité d'horodatage choisie par l'utilisateur | Adresse et heure | Désactivée | T91 |
 | RS-04 | Service tiers à base d'IA | En général le fichier | Fournisseur du service | Contenu du fichier | Aucun en V1 ; consentement par fichier | Point d'extension ([ADR-0042](../decisions/ADR-0042-modules-et-extension.md)) |
 | RS-05 | Références bibliographiques (F-72) | Références citées | Bases publiques | Contenu du travail (A-42) | Hors V1 (ADR-0013) | T83 |
@@ -326,3 +326,4 @@ Chaque tâche qui touche une surface du §5 vérifie, dans sa PR, que ses menace
 | 2026-10-26 | 1.1 | Choix de T04 : canal officiel (H2), point d'extension (RS-04), ADR de T04 dans la colonne « Décision » du §8 ; aucune menace ni surface nouvelle | T04 |
 | 2026-10-28 | 1.2 | ES-11 réalisée par ADR-0100 (colonne « Décision » du §8) ; exigences ES vérifiées dans la [matrice](../verification/matrice.md) ; aucune menace ni surface nouvelle | T17 |
 | 2026-11-14 | 1.3 | M-22 et ES-13 étendues aux lieux nommés et aux textes libres, deux catégories masquées par défaut (ADR-0159) ; aucune menace ni surface nouvelle | T25 |
+| 2026-11-14 | 1.4 | RS-01 et RS-02 confiées au complément de T30 ; en T30, aucune requête, réseau coupé dans c2pa-rs en plus du système, liste de confiance validée au chargement (ADR-0164, ADR-0166, ADR-0171) ; aucune menace ni surface nouvelle | T30 |
