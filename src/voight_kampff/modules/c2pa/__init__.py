@@ -119,6 +119,12 @@ def reglages(ancres: Ancres) -> dict[str, Any]:
     }
 
 
+_PREPARATION = c2pa.Context.from_dict(reglages(Ancres()))
+"""Contexte créé à l'import, avant les restrictions (ADR-0079, ADR-0164) : c2pa-rs prépare alors
+ses ressources de processus, dont la configuration du système que lit son client HTTP sous
+macOS, que Seatbelt refuserait ensuite. Il ne sert à aucune lecture."""
+
+
 class _Flux(io.RawIOBase):
     """La partie analysée, en lecture seule, pour c2pa-rs : lectures bornées (ES-03)."""
 
