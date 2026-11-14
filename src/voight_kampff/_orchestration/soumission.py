@@ -13,7 +13,9 @@ Le catalogue, livré ou fourni par l'utilisateur, est validé avant l'ouverture 
 (ADR-0029, ADR-0086) ; sa version et les règles que citent les constats sont jointes à
 l'analyse (ADR-0097). La liste de confiance C2PA l'est de même, et sa version jointe à
 l'analyse (ADR-0171). Les techniques hors de cette version sont inscrites non menées pour
-chaque partie d'un de leurs formats (ADR-0087).
+chaque partie d'un de leurs formats (ADR-0087). Les marquages du catalogue qui pourraient se
+trouver dans le fichier sont inscrits à la couverture, recherchés ou non, et joints à l'analyse
+(ADR-0178).
 """
 
 import hashlib
@@ -24,6 +26,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from voight_kampff._limites import TAILLE_MAX_FICHIER
+from voight_kampff._marquages import couvrir
 from voight_kampff._orchestration import catalogue as catalogues
 from voight_kampff._orchestration import confiance as listes
 from voight_kampff._orchestration import manifestes as livres
@@ -156,13 +159,13 @@ def soumettre(
         resultat, nom_affichable(chemin), taille, initiale, date_analyse
     )
     techniques, non_menees = _hors_v1(identification.parties, techniques_hors_v1)
+    techniques = resultat.couverture.techniques + techniques
+    recherches, non_recherches = couvrir(catalogue.marquages, identification.parties, techniques)
+    cites = set(recherches) | {marquage.identifiant for marquage in non_recherches}
     return Analyse(
         identification=identification,
         isolation=resultat.isolation,
-        couverture=Couverture(
-            resultat.couverture.techniques + techniques,
-            resultat.couverture.marquages_recherches,
-        ),
+        couverture=Couverture(techniques, recherches, non_recherches),
         observations=resultat.observations,
         constats=resultat.constats,
         non_menees=resultat.non_menees + non_menees,
@@ -174,6 +177,7 @@ def soumettre(
             for regle in catalogue.regles
             if any(constat.regle == regle.reference for constat in resultat.constats)
         ),
+        marquages=tuple(m for m in catalogue.marquages if m.identifiant in cites),
     )
 
 

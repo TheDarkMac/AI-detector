@@ -8,7 +8,8 @@ identifiantes, nom et empreinte compris, y sont masquées (ADR-0031, ADR-0098).
 ``<rang>.json``, sans jamais écraser un fichier (ADR-0092) ; ``--reveler CATEGORIE`` lève le
 masquage d'une catégorie, au terminal comme dans les rapports, et le signale (ADR-0093).
 ``--catalogue DOSSIER`` remplace le catalogue livré par celui de l'utilisateur (ADR-0086) ;
-``--regles`` affiche la version, la date, l'empreinte et les règles du catalogue (NF-07).
+``--regles`` affiche la version, la date, l'empreinte, les règles et les marquages du catalogue
+(NF-07, ADR-0175).
 ``--confiance DOSSIER`` remplace de même la liste de confiance C2PA livrée (ADR-0171).
 
 Codes de sortie : 0 si chaque fichier a été analysé, même partiellement, et son rapport écrit ;
@@ -155,6 +156,9 @@ def _lister_regles(catalogue: catalogues.Catalogue) -> None:
         print("Aucune règle dans cette version du catalogue.")
     for regle in catalogue.regles:
         print(f"{regle.identifiant} version {regle.version} ({regle.module}) : {regle.titre}")
+    for marquage in catalogue.marquages:
+        recherche = marquage.module or f"non recherché : {marquage.raison}"
+        print(f"{marquage.identifiant} ({recherche}) : {marquage.nom}")
 
 
 def resume(analyse: Analyse, reveler: Sequence[str] = ()) -> list[str]:
@@ -195,6 +199,18 @@ def resume(analyse: Analyse, reveler: Sequence[str] = ()) -> list[str]:
             else libelle("etats", technique.etat),
         )
         for technique in analyse.couverture.techniques
+    ]
+    couverture = analyse.couverture
+    if couverture.marquages_recherches:
+        noms = (analyse.marquage(i).nom for i in couverture.marquages_recherches)
+        lignes.append(texte("terminal.marquages", marquages=", ".join(noms)))
+    lignes += [
+        texte(
+            "terminal.non_recherche",
+            nom=analyse.marquage(marquage.identifiant).nom,
+            raison=libelle("raisons_marquage", marquage.raison),
+        )
+        for marquage in couverture.marquages_non_recherches
     ]
     lignes += vue.resume()
     lignes += [

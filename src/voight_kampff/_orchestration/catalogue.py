@@ -2,8 +2,10 @@
 
 Le catalogue est un dossier de fichiers TOML, séparé du moteur (F-26) :
 
-    catalogue.toml          en-tête : format (1 ou 2, ADR-0147), version, date, description
+    catalogue.toml          en-tête : format (1 à 3, ADR-0147, ADR-0175), version, date,
+                            description
     regles/<module>.toml    règles d'un module, une table ``[[regle]]`` chacune
+    marquages.toml          à partir du format 3 : marquages connus, recherchés ou non (ADR-0175)
 
 Le catalogue livré est dans le paquet (``donnees/catalogue``). L'utilisateur peut en fournir un
 autre, qui le remplace en entier et que le rapport signale (ADR-0086). Dans les deux cas, le
@@ -29,13 +31,21 @@ from pathlib import Path
 from typing import Any
 
 from voight_kampff import schemas
-from voight_kampff._limites import FICHIERS_MAX_CATALOGUE, REGLES_MAX, TAILLE_MAX_CATALOGUE
+from voight_kampff._limites import (
+    FICHIERS_MAX_CATALOGUE,
+    MARQUAGES_MAX,
+    REGLES_MAX,
+    TAILLE_MAX_CATALOGUE,
+)
+from voight_kampff._marquages import Marquage
 from voight_kampff._orchestration.manifestes import Manifeste
 from voight_kampff._regles import Application, Regle
 from voight_kampff.rapport.modele import VersionCatalogue
 
 __all__ = [
     "ENTETE",
+    "FORMAT_MARQUAGES",
+    "MARQUAGES",
     "REGLES",
     "Catalogue",
     "CatalogueInvalide",
@@ -46,6 +56,9 @@ __all__ = [
 
 ENTETE = "catalogue.toml"
 REGLES = "regles"
+MARQUAGES = "marquages.toml"
+FORMAT_MARQUAGES = 3
+"""Premier format du catalogue qui inscrit des marquages (ADR-0175)."""
 _SUFFIXE = ".toml"
 _MODULE = re.compile(r"[a-z][a-z0-9]{0,31}")
 
@@ -62,6 +75,8 @@ class Catalogue:
     description: str
     regles: tuple[Regle, ...]
     """Triées par identifiant : l'ordre d'évaluation ne dépend pas du découpage en fichiers."""
+    marquages: tuple[Marquage, ...] = ()
+    """Marquages connus, triés par identifiant (ADR-0175)."""
 
     def du_module(self, module: str) -> tuple[Regle, ...]:
         return tuple(regle for regle in self.regles if regle.module == module)
@@ -104,7 +119,7 @@ def charger(
         (
             regle
             for chemin, contenu in contenus.items()
-            if chemin != ENTETE
+            if chemin.startswith(f"{REGLES}/")
             for regle in _regles(chemin, contenu)
         ),
         key=lambda regle: regle.identifiant,
@@ -122,13 +137,20 @@ def charger(
                 f"dans un catalogue du format {entete['format']}"
             )
     _verifier_modules(regles, manifestes)
+    marquages: tuple[Marquage, ...] = ()
+    if MARQUAGES in contenus:
+        if entete["format"] < FORMAT_MARQUAGES:
+            raise CatalogueInvalide(
+                f"{MARQUAGES} : marquages dans un catalogue du format {entete['format']}"
+            )
+        marquages = _marquages(contenus[MARQUAGES], manifestes)
     version = VersionCatalogue(
         version=entete["version"],
         date=entete["date"],
         empreinte=empreinte(contenus.items()),
         fourni_par_utilisateur=dossier is not None,
     )
-    return Catalogue(version, entete["description"], tuple(regles))
+    return Catalogue(version, entete["description"], tuple(regles), marquages)
 
 
 # Lecture
@@ -140,8 +162,8 @@ def _lire(racine: Traversable) -> dict[str, bytes]:
         raise CatalogueInvalide("catalogue : dossier introuvable")
     trouves: list[tuple[str, Traversable]] = []
     for element in racine.iterdir():
-        if element.name == ENTETE and element.is_file():
-            trouves.append((ENTETE, element))
+        if element.name in (ENTETE, MARQUAGES) and element.is_file():
+            trouves.append((element.name, element))
         elif element.name == REGLES and element.is_dir():
             for fichier in element.iterdir():
                 module = fichier.name.removesuffix(_SUFFIXE)
@@ -207,6 +229,37 @@ def _regles(chemin: str, contenu: bytes) -> list[Regle]:
         except ValueError as erreur:
             raise CatalogueInvalide(f"{chemin} : règle {identifiant} : {erreur}") from None
     return regles
+
+
+def _marquages(contenu: bytes, manifestes: Sequence[Manifeste]) -> tuple[Marquage, ...]:
+    """Marquages, triés par identifiant ; chaque module cité existe et traite leurs formats."""
+    entrees = _document(MARQUAGES, contenu, "marquages")["marquage"]
+    if len(entrees) > MARQUAGES_MAX:
+        raise CatalogueInvalide(f"{MARQUAGES} : plus de {MARQUAGES_MAX} marquages")
+    par_module = {manifeste.identifiant: manifeste for manifeste in manifestes}
+    marquages: dict[str, Marquage] = {}
+    for document in entrees:
+        identifiant = document["identifiant"]
+        if identifiant in marquages:
+            raise CatalogueInvalide(f"{MARQUAGES} : marquage défini deux fois : {identifiant}")
+        try:
+            marquage = Marquage.depuis_dict(document)
+        except ValueError:
+            raise CatalogueInvalide(
+                f"{MARQUAGES} : marquage {identifiant} : date inexistante"
+            ) from None
+        if marquage.module is not None:
+            manifeste = par_module.get(marquage.module)
+            if manifeste is None:
+                raise CatalogueInvalide(
+                    f"marquage {identifiant} : module {marquage.module} absent de cette version"
+                )
+            if not set(marquage.formats) <= set(manifeste.formats):
+                raise CatalogueInvalide(
+                    f"marquage {identifiant} : format que le module {marquage.module} ne traite pas"
+                )
+        marquages[identifiant] = marquage
+    return tuple(marquages[identifiant] for identifiant in sorted(marquages))
 
 
 # Cohérence avec les modules livrés (ADR-0064, ADR-0084)

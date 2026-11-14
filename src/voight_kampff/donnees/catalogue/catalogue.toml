@@ -1,10 +1,10 @@
 # Catalogue de règles de Voight-Kampff : en-tête (ADR-0029, ADR-0038, ADR-0085, ADR-0088).
 #
-# Les règles sont dans regles/<module>.toml ; tout est public (ADR-0019). Toute modification
+# Les règles sont dans regles/<module>.toml, les marquages dans marquages.toml ; tout est public (ADR-0019). Toute modification
 # d'un fichier de ce dossier change l'empreinte du catalogue : elle exige une nouvelle version,
 # inscrite au registre docs/catalogue/versions.toml (procédure : docs/catalogue/README.md).
 
-format = 2
-version = "0.5.0"
+format = 3
+version = "0.6.0"
 date = "2026-11-14"
-description = "Origine IA déclarée et signatures de générateurs (T22), indices faibles fondés sur une déclaration du fichier ; incohérences internes (T23) : dates impossibles, dates dans un ordre renversé, appareil déclaré avec un générateur nommé ou des dimensions de générateur, et absence de métadonnées, toutes des informations neutres. Indices de transfert (T24), faibles, vers la transformation : capture d'écran déclarée (macOS et iOS, gnome-screenshot), marque de Facebook, JPEG sans métadonnées aux dimensions d'une messagerie ou encodé aux tables de libjpeg. Manifeste C2PA (T30), règles appliquées par le module c2pa : état de la vérification, en information neutre ; source numérique déclarée, en preuve sous un signataire reconnu par la liste de confiance, en indice faible sinon ; contenu changé depuis la signature, indice faible vers la transformation. Format 2 : lecture des dates et comparaison de deux observations."
+description = "Origine IA déclarée et signatures de générateurs (T22), indices faibles fondés sur une déclaration du fichier ; incohérences internes (T23) : dates impossibles, dates dans un ordre renversé, appareil déclaré avec un générateur nommé ou des dimensions de générateur, et absence de métadonnées, toutes des informations neutres. Indices de transfert (T24), faibles, vers la transformation : capture d'écran déclarée (macOS et iOS, gnome-screenshot), marque de Facebook, JPEG sans métadonnées aux dimensions d'une messagerie ou encodé aux tables de libjpeg. Manifeste C2PA (T30), règles appliquées par le module c2pa : état de la vérification, en information neutre ; source numérique déclarée, en preuve sous un signataire reconnu par la liste de confiance, en indice faible sinon ; contenu changé depuis la signature, indice faible vers la transformation. Marquages (T31) : C2PA et type de source IPTC recherchés, filigranes inventoriés non recherchés. Format 3 : dates, comparaisons, marquages."

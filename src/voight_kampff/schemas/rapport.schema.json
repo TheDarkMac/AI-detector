@@ -17,7 +17,7 @@
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.5.0" },
+    "version_schema": { "const": "0.6.0" },
     "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
@@ -202,6 +202,16 @@
       ]
     },
     "etat_technique": { "enum": ["appliquee", "partielle", "non_menee", "non_applicable"] },
+    "raison_non_recherche": {
+      "description": "Raison pour laquelle un marquage connu n'est pas recherché (ADR-0177) : les quatre premières viennent du catalogue, la dernière de l'analyse.",
+      "enum": [
+        "lecteur_neuronal",
+        "lecteur_proprietaire",
+        "cle_du_fournisseur",
+        "lecteur_a_venir",
+        "technique_non_menee"
+      ]
+    },
     "niveau_isolation": { "enum": ["complete", "reduite"] },
     "manque_isolation": {
       "enum": [
@@ -429,14 +439,28 @@
     "couverture": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["techniques", "marquages_recherches"],
+      "description": "Un marquage figure au plus une fois, recherché ou non : seul le code le vérifie.",
+      "required": ["techniques", "marquages_recherches", "marquages_non_recherches"],
       "properties": {
         "techniques": { "type": "array", "items": { "$ref": "#/$defs/technique_couverte" } },
         "marquages_recherches": {
           "type": "array",
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/identifiant" }
+        },
+        "marquages_non_recherches": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/marquage_non_recherche" }
         }
+      }
+    },
+    "marquage_non_recherche": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identifiant", "raison"],
+      "properties": {
+        "identifiant": { "$ref": "#/$defs/identifiant" },
+        "raison": { "$ref": "#/$defs/raison_non_recherche" }
       }
     },
 

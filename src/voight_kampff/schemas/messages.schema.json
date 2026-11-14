@@ -20,7 +20,7 @@
       "required": ["type", "version_schema", "isolation"],
       "properties": {
         "type": { "const": "isolation" },
-        "version_schema": { "const": "0.5.0" },
+        "version_schema": { "const": "0.6.0" },
         "isolation": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/isolation" }
       }
     },

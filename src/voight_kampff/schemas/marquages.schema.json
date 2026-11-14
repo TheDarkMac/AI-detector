@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:voight-kampff:schema:marquages",
+  "title": "Marquages du catalogue Voight-Kampff",
+  "description": "Fichier marquages.toml à la racine du dossier du catalogue, à partir du format 3 (ADR-0175) : les marquages de provenance connus, recherchés par un module ou non recherchés pour une raison (ADR-0176, ADR-0177). Le code vérifie en plus que les identifiants sont uniques, que la date existe, que le module existe et traite chacun des formats.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["marquage"],
+  "properties": {
+    "marquage": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/marquage" }
+    }
+  },
+  "$defs": {
+    "marquage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identifiant", "nom", "nature", "description", "formats", "references", "verifie"],
+      "properties": {
+        "identifiant": {
+          "description": "M-<NOM>, propre au catalogue ; jamais réutilisé pour un autre marquage.",
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^M-[A-Z0-9]+(-[A-Z0-9]+)*$(?!\\n)"
+        },
+        "nom": {
+          "description": "Nom affiché au rapport.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "nature": {
+          "description": "manifeste : structure signée qui porte des déclarations ; declaration : champ de métadonnées normalisé ; filigrane : signal caché dans le contenu même (pixels, échantillons, texte).",
+          "enum": ["manifeste", "declaration", "filigrane"]
+        },
+        "description": {
+          "description": "Ce qu'est le marquage, qui le pose, et pourquoi il est ou n'est pas recherché.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "formats": {
+          "description": "Formats du périmètre où le marquage peut se trouver : il ne figure qu'à la couverture d'un fichier qui a une partie analysée dans l'un d'eux.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/format_du_perimetre" }
+        },
+        "module": {
+          "description": "Module livré qui recherche ce marquage ; il doit traiter chacun des formats.",
+          "$ref": "urn:voight-kampff:schema:manifeste#/properties/identifiant"
+        },
+        "raison": {
+          "description": "Raison pour laquelle le marquage n'est pas recherché, à défaut de module.",
+          "enum": ["lecteur_neuronal", "lecteur_proprietaire", "cle_du_fournisseur", "lecteur_a_venir"]
+        },
+        "references": {
+          "description": "Sources publiques qui décrivent le marquage ou son lecteur.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": { "type": "string", "maxLength": 512, "pattern": "^https://[^\\s]+$(?!\\n)" }
+        },
+        "verifie": {
+          "description": "Date, AAAA-MM-JJ, à laquelle l'inventaire a vérifié ce qu'en dit l'entrée.",
+          "$ref": "urn:voight-kampff:schema:rapport#/$defs/version_catalogue/properties/date"
+        }
+      },
+      "oneOf": [
+        { "required": ["module"], "not": { "required": ["raison"] } },
+        { "required": ["raison"], "not": { "required": ["module"] } }
+      ]
+    }
+  }
+}
