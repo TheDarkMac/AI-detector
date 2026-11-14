@@ -1,8 +1,8 @@
 # ADR-0164 — Bibliothèque C2PA : c2pa-python 0.39.0 dans le processus de travail, sans réseau
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : l'assistant, choix non posé en question pendant T30, à valider pendant la revue de la PR de T30
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T30, validée pendant la revue de la PR de T30
 - **Tâche** : T30
 - **Exigences liées** : F-20, F-21, NF-04, NF-16 ; ES-02, ES-06, ES-10 ; ADR-0033, ADR-0043, ADR-0120
 
@@ -53,9 +53,11 @@ Option A. Réglages remis à c2pa-rs à chaque lecture : `verify_after_reading`,
 - Les limites comptées du moteur ne voient pas le travail de c2pa-rs, borné par sa limite de manifeste décompressé (32 Mio) et par la mémoire et le temps de P2 (ADR-0077).
 - `pip-audit` audite désormais `cryptography`, `cffi`, `pycparser` et `toml`. `toml` n'a plus de version depuis 2020 ; sans exécution, le risque est nul, à revoir si c2pa-python l'importe un jour.
 - Le schéma des manifestes admet la bibliothèque `c2pa-python`.
+- Un contexte c2pa-rs est créé à l'import du module, avant les restrictions (ADR-0079) : sous macOS, c2pa-rs lit alors la configuration du système, que Seatbelt refuse ensuite ; sans cela, le processus de travail s'arrêtait au premier fichier (CI de la PR de T30, Python 3.12 et 3.13).
 
 ## Historique
 
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T30 (« Oui, les cinq ») : statut « Accepté » |

@@ -1,8 +1,8 @@
 # ADR-0169 — États de la vérification et vocabulaire des observations du module c2pa
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : l'assistant, choix non posé en question pendant T30, à valider pendant la revue de la PR de T30
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T30, validée pendant la revue de la PR de T30
 - **Tâche** : T30
 - **Exigences liées** : F-20, F-22, F-23 ; ES-13 ; A-36 ; ADR-0057, ADR-0117, ADR-0118
 
@@ -44,3 +44,4 @@ Option A. `Trusted` → `valide` ; `Valid` → `valide_hors_liste` ; `Invalid` �
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
 | 2026-11-14 | Renvoi : adresse d'un manifeste distant masquée dans le XMP (ADR-0173) |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T30 (« Oui, les cinq ») : statut « Accepté » |

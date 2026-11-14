@@ -1,8 +1,8 @@
 # ADR-0171 — Liste de confiance : chargement par P1, configuration de P2, rubrique Versions, liste fournie
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : l'assistant, choix non posé en question pendant T30, à valider pendant la revue de la PR de T30
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T30, validée pendant la revue de la PR de T30
 - **Tâche** : T30
 - **Exigences liées** : F-21, NF-06 ; ES-09 ; ADR-0023, ADR-0029, ADR-0059, ADR-0086, ADR-0088, ADR-0112
 
@@ -46,3 +46,4 @@ Option A ; `VERSION_SCHEMA` 0.5.0. P1 valide l'en-tête par son schéma et chaqu
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T30 (« Oui, les cinq ») : statut « Accepté » |

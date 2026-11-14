@@ -1,8 +1,8 @@
 # ADR-0172 — Versions de T30 : schéma 0.5.0, catalogue 0.5.0, module c2pa 0.1.0
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : l'assistant, choix non posé en question pendant T30, à valider pendant la revue de la PR de T30
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T30, validée pendant la revue de la PR de T30
 - **Tâche** : T30
 - **Exigences liées** : NF-06, NF-07 ; ADR-0054, ADR-0085, ADR-0152, ADR-0163
 
@@ -39,3 +39,4 @@ Option A. Les modules existants gardent leur version : leurs observations ne cha
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T30 (« Oui, les cinq ») : statut « Accepté » |

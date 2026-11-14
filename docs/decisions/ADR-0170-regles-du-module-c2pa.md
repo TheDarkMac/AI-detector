@@ -1,8 +1,8 @@
 # ADR-0170 — Règles du module c2pa : une phrase d'état par manifeste, preuve ou indice pour une source déclarée
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : l'assistant, choix non posé en question pendant T30, à valider pendant la revue de la PR de T30
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T30, validée pendant la revue de la PR de T30
 - **Tâche** : T30
 - **Exigences liées** : F-21 à F-23, F-80, F-81 ; ES-20 ; ADR-0021, ADR-0084, ADR-0090, ADR-0143
 
@@ -48,3 +48,4 @@ Option A : R-C2PA-007 à R-C2PA-012 pour les états (valide, hors liste, invalid
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T30 (« Oui, les cinq ») : statut « Accepté » |
