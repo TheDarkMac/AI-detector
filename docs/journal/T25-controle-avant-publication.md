@@ -3,7 +3,7 @@
 - **Branche** : `tache/T25-controle-avant-publication`
 - **Dates** : 2026-11-14
 - **Exigences couvertes** : F-90 (partie métadonnées réalisée ; points de traçage à T94), ES-13, CU-5
-- **Décisions** : ADR-0158 à ADR-0163 ; ADR-0160 et ADR-0163 proposés, à valider pendant la revue
+- **Décisions** : ADR-0158 à ADR-0163, tous acceptés
 - **Errata** : aucun
 
 ## Objectif
@@ -29,7 +29,7 @@ Signaler, avant la publication d'un fichier reçu, les marques des métadonnées
    - valeur FBMD : numéro de série quand la valeur commence par FBMD, plutôt que texte libre toujours ou non marquée ([ADR-0161](../decisions/ADR-0161-valeur-fbmd.md)) ;
    - liste de garde dans P1 : non ajoutée ([ADR-0162](../decisions/ADR-0162-liste-de-garde-non-ajoutee.md)).
 
-   Les autres choix, faits par l'assistant, sont soumis dans la PR : [ADR-0160](../decisions/ADR-0160-champs-lieux-et-textes-libres.md) (champs marqués par module), [ADR-0163](../decisions/ADR-0163-versions-de-t25.md) (versions).
+   Les autres choix, faits par l'assistant, ont été soumis dans la PR et validés par TheDarkMac pendant sa revue (« Oui, les deux », 2026-11-14) : [ADR-0160](../decisions/ADR-0160-champs-lieux-et-textes-libres.md) (champs marqués par module), [ADR-0163](../decisions/ADR-0163-versions-de-t25.md) (versions).
 3. Branche `tache/T25-controle-avant-publication` créée depuis `detector` à jour (`4033c56`).
 4. Modèle : catégories `lieu` et `texte_libre` entre `gps` et `nom_de_fichier` ; `VERSION_SCHEMA` 0.4.0 dans le modèle, le schéma du rapport (énumération, sept catégories dans `masquage`) et celui des messages ; libellés dans `textes.toml`. `--reveler` suit l'énumération sans autre changement.
 5. Modules : listes `_LIEUX` et `_TEXTES_LIBRES` dans les douze modules de métadonnées, selon ADR-0160 ; propriétés personnalisées d'un DOCX et utilisateur d'un ODT toutes marquées texte libre ; `iptc.SpecialInstructions` marqué numéro de série si une valeur commence par FBMD (ADR-0161) ; versions augmentées et F-90 ajoutée aux exigences des manifestes (ADR-0163).
@@ -40,6 +40,7 @@ Signaler, avant la publication d'un fichier reçu, les marques des métadonnées
 8. Fiches : en-têtes des douze fiches de métadonnées (version, tâche, F-90) ; champs marqués `lieu` et `texte_libre`, limites et historique.
 9. Vérification locale : voir « Vérification ».
 10. Documentation : ADR-0158 à ADR-0163 ; renvois dans ADR-0014, ADR-0054, ADR-0057, ADR-0093, ADR-0095, ADR-0098, ADR-0119, ADR-0128, ADR-0133, ADR-0140, ADR-0153 ; modèle de menace v1.3 (M-22, ES-13) ; modèle de données v1.8 ; glossaire v1.9 ; architecture v1.18 ; découpage v0.25 ; matrice (F-90, ES-13) ; index des ADR et du journal.
+11. PR [#26](https://github.com/TheDarkMac/AI-detector/pull/26) ouverte ; ADR-0160 et ADR-0163 validés par TheDarkMac pendant la revue, le 2026-11-14 (« Oui, les deux ») : statut « Accepté ».
 
 ## Vérification
 

@@ -1,8 +1,8 @@
 # ADR-0160 — Champs marqués « lieu » et « texte libre », par module
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : assistant, proposition non posée en question pendant T25, à valider pendant la revue de la PR de T25
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T25, validée pendant la revue de la PR de T25
 - **Tâche** : T25
 - **Exigences liées** : F-90, ES-13 ; ADR-0057, ADR-0117, ADR-0119, ADR-0133, ADR-0140, ADR-0159
 
@@ -67,3 +67,4 @@ Option A. Champs marqués :
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T25 (« Oui, les deux ») : statut « Accepté » |

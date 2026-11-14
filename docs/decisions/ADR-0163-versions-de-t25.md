@@ -1,8 +1,8 @@
 # ADR-0163 — Versions de T25 : schéma 0.4.0, douze modules à une nouvelle version, catalogue inchangé
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : assistant, proposition non posée en question pendant T25, à valider pendant la revue de la PR de T25
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T25, validée pendant la revue de la PR de T25
 - **Tâche** : T25
 - **Exigences liées** : NF-06, NF-07 ; ADR-0050, ADR-0054, ADR-0085, ADR-0112, ADR-0146, ADR-0157, ADR-0159, ADR-0160
 
@@ -46,3 +46,4 @@ Option A dans les trois cas. Les manifestes des douze modules citent aussi F-90 
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T25 (« Oui, les deux ») : statut « Accepté » |
