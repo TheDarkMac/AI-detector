@@ -1,8 +1,8 @@
 # ADR-0157 — Versions de T24 : catalogue 0.4.0, module `image` 0.1.0, quatre modules à une nouvelle version
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : proposition de l'assistant, non posée en question, soumise à TheDarkMac dans la PR de T24
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T24, validée pendant la revue de la PR de T24
 - **Tâche** : T24
 - **Exigences liées** : NF-06, NF-07, F-26 ; ADR-0064, ADR-0085, ADR-0146, ADR-0152, ADR-0155
 
@@ -46,3 +46,4 @@ Option A dans les trois cas : catalogue 0.4.0 du 2026-11-14, format 2, nouvelle 
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T24 (« Oui, les deux ») : statut « Accepté » |

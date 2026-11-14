@@ -1,8 +1,8 @@
 # ADR-0154 — Module `image` et forme des règles de transfert
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : proposition de l'assistant, non posée en question, soumise à TheDarkMac dans la PR de T24
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T24, validée pendant la revue de la PR de T24
 - **Tâche** : T24
 - **Exigences liées** : F-06, F-14, F-30, NF-10, ES-19 ; A-32, A-34 ; ADR-0042, ADR-0114, ADR-0115, ADR-0147, ADR-0150, ADR-0153
 
@@ -64,3 +64,4 @@ Option A dans les deux cas, et les conditions ci-dessus.
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-14 | Validé par TheDarkMac pendant la revue de la PR de T24 (« Oui, les deux ») : statut « Accepté » |

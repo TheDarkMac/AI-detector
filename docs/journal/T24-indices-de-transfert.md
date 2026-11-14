@@ -3,7 +3,7 @@
 - **Branche** : `tache/T24-indices-de-transfert`
 - **Dates** : 2026-11-13 au 2026-11-14
 - **Exigences couvertes** : F-06 (réalisée), F-30 (partielle : tables de libjpeg), F-26, NF-06, ES-19
-- **Décisions** : ADR-0153 à ADR-0157 ; ADR-0153, ADR-0155 et ADR-0156 acceptés (choix de TheDarkMac), ADR-0154 et ADR-0157 proposés
+- **Décisions** : ADR-0153 à ADR-0157, tous acceptés
 - **Errata** : aucun
 
 ## Objectif
@@ -29,7 +29,7 @@ Signaler les indices de transfert par messagerie ou de capture d'écran (recompr
    - recommandation d'obtenir l'original : une phrase du résumé ([ADR-0156](../decisions/ADR-0156-recommandation-d-obtenir-l-original.md)) ;
    - tailles : liste sourcée et datée (ADR-0153).
 
-   Les autres choix, faits par l'assistant, sont soumis dans la PR : [ADR-0154](../decisions/ADR-0154-module-image.md) (module `image`, forme des règles, écartés), [ADR-0157](../decisions/ADR-0157-versions-de-t24.md) (versions).
+   Les autres choix, faits par l'assistant, ont été soumis dans la PR et validés par TheDarkMac pendant sa revue (« Oui, les deux », 2026-11-14) : [ADR-0154](../decisions/ADR-0154-module-image.md) (module `image`, forme des règles, écartés), [ADR-0157](../decisions/ADR-0157-versions-de-t24.md) (versions).
 4. Essai préalable de la reconnaissance des tables de libjpeg, par un script temporaire hors du dépôt : chaque qualité de 1 à 100 donne une table de luminance différente ; les JPEG d'ImageMagick 7.1.1-43 aux qualités 5, 50, 75, 92, 100 et en niveaux de gris à 80 sont reconnus à leur qualité ; celui de ffmpeg 7.1.5 (tables propres de l'encodeur MJPEG) ne l'est pas.
 5. Branche `tache/T24-indices-de-transfert` créée depuis `detector` à jour (`baba539`).
 6. Lecteur de conteneurs : natures `TRAME` (SOF, `IHDR`, `VP8X`, `"VP8 "`, `VP8L`) et `QUANTIFICATION` (DQT), ensemble `STRUCTURE`.
@@ -44,6 +44,7 @@ Signaler les indices de transfert par messagerie ou de capture d'écran (recompr
 11. Fiches : `structure-image` créée ; `exif`, `xmp`, `iptc`, `texte-png` (version, direction, règle de T24, hypothèse « transformation banale », taux d'erreur, historique) ; index des fiches.
 12. Vérification locale : Ruff (format et analyse) et mypy sans remarque ; lint Markdown (`npx --yes markdownlint-cli2@0.23.2`) sans erreur ; matrice régénérée (F-06 réalisée, F-30 partielle). Suite complète : première passe, trois échecs (listes des modules, voir plus bas) ; seconde passe, mesurée par coverage comme en CI, 1 809 tests verts et un ignoré (lanceur de l'environnement virtuel), couverture de 99 % ; deux échantillons ajoutés ensuite, couverture de 100 % du lecteur de conteneurs et du module `image` sur `test_transfert.py`, `test_manifestes.py` et `test_metadonnees.py` (195 tests verts), les autres fichiers déjà à 100 %. Banc sur le corpus d'essai, sans réseau (`unshare -rn`) : code 1 et le seul écart attendu, la cible par fichier non établie sur quatre authentiques (ADR-0105) ; aucune des huit règles de T24 ne se déclenche sur les fichiers authentiques. Essai sur le poste : un JPEG d'ImageMagick de 1 600 × 1 200, sans métadonnées, à la qualité 80, donne `R-IMAGE-001` et `R-IMAGE-004`, trois informations neutres d'absence, la recommandation une fois au résumé du terminal et du HTML, et la qualité 80 lue. Fuzzing (ES-19), code du lecteur de conteneurs changé : une première campagne (`VK_FUZZING=campagne`, échantillons mutés puis octets quelconques, 25 min au plus) a signalé un échec du test des échantillons mutés, sans exemple conservé, puis a été coupée par le délai ; une seconde campagne du même test est passée ; deux recherches ciblées hors du dépôt, sur le même générateur d'échantillons mutés avec affichage de l'exemple fautif, sont passées : 60 000 exemples sur les formats d'image (modules `exif`, `xmp`, `iptc`, `textepng`, `image`), 40 000 sur tous les formats. L'échec n'est pas reproduit et sa cause reste inconnue (voir « Reste à faire »).
 13. Documentation : ADR-0153 à ADR-0157 ; renvois dans ADR-0055, ADR-0150, ADR-0151 ; guide du catalogue v1.5 ; architecture v1.17 ; analyse critique v1.4 (A-32, A-34) ; découpage v0.24 (T24, T40) ; matrice (F-06 réalisée, F-30 partielle) ; index des ADR, du journal et des fiches.
+14. PR [#25](https://github.com/TheDarkMac/AI-detector/pull/25) ouverte ; ADR-0154 et ADR-0157 validés par TheDarkMac pendant la revue, le 2026-11-14 (« Oui, les deux ») : statut « Accepté ».
 
 ## Problèmes rencontrés
 
