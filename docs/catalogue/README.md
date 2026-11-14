@@ -1,8 +1,8 @@
 # Catalogue de règles
 
-> Statut : **v1.6** ; v1.0 mergée avec T15, v1.1 avec T16, v1.2 avec T17, v1.3 avec T22, v1.4 avec T23, v1.5 avec T24, v1.6 proposée dans la PR de T30. Document vivant : toute modification est inscrite à l'historique (§6).
-> Exigences : F-12, F-24, F-26, NF-06, NF-07 ; ES-09 du [modèle de menace](../modele-de-menace/modele-de-menace.md).
-> Décisions : [ADR-0029](../decisions/ADR-0029-integrite-du-catalogue.md), [ADR-0038](../decisions/ADR-0038-format-du-catalogue.md), [ADR-0039](../decisions/ADR-0039-expressions-regulieres-re2.md), [ADR-0084](../decisions/ADR-0084-langage-des-regles.md) à [ADR-0091](../decisions/ADR-0091-texte-des-phrases-dans-la-regle.md).
+> Statut : **v1.7** ; v1.0 mergée avec T15, v1.1 avec T16, v1.2 avec T17, v1.3 avec T22, v1.4 avec T23, v1.5 avec T24, v1.6 avec T30, v1.7 proposée dans la PR de T31. Document vivant : toute modification est inscrite à l'historique (§6).
+> Exigences : F-12, F-24, F-25, F-26, NF-06, NF-07 ; ES-09 du [modèle de menace](../modele-de-menace/modele-de-menace.md).
+> Décisions : [ADR-0029](../decisions/ADR-0029-integrite-du-catalogue.md), [ADR-0038](../decisions/ADR-0038-format-du-catalogue.md), [ADR-0039](../decisions/ADR-0039-expressions-regulieres-re2.md), [ADR-0084](../decisions/ADR-0084-langage-des-regles.md) à [ADR-0091](../decisions/ADR-0091-texte-des-phrases-dans-la-regle.md) ; marquages : [ADR-0175](../decisions/ADR-0175-marquages-au-catalogue.md) à [ADR-0178](../decisions/ADR-0178-couverture-des-marquages.md).
 
 Le catalogue décide de ce que l'outil tire de ses observations : chaque constat du rapport cite la règle qui l'a produit, avec sa version. Il est séparé du moteur (F-26), livré dans le paquet de l'outil (ADR-0029) et entièrement public, limites connues comprises (ADR-0019).
 
@@ -11,7 +11,8 @@ Le catalogue décide de ce que l'outil tire de ses observations : chaque constat
 | Élément | Emplacement |
 | --- | --- |
 | Catalogue livré | [`src/voight_kampff/donnees/catalogue/`](../../src/voight_kampff/donnees/catalogue/) ; premières règles en version 0.2.0 (T22) : origine IA déclarée et signatures de générateurs ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md) à [ADR-0146](../decisions/ADR-0146-versions-des-modules-et-du-catalogue-de-t22.md)) ; incohérences internes et absence en 0.3.0 (T23, ADR-0147 à ADR-0152) ; indices de transfert en 0.4.0 (T24, [ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md) à [ADR-0157](../decisions/ADR-0157-versions-de-t24.md)) ; premières règles « module », celles du module c2pa, en 0.5.0 (T30, [ADR-0170](../decisions/ADR-0170-regles-du-module-c2pa.md)) ; chaque fiche technique liste les règles qui lisent ses observations |
-| Schémas | `src/voight_kampff/schemas/catalogue.schema.json` (en-tête), `regles.schema.json` (règles) |
+| Marquages | `marquages.toml` du catalogue livré, à partir de la version 0.6.0 (T31) : marquages de provenance recherchés et non recherchés ; inventaire et sources : [`inventaire-des-marquages.md`](inventaire-des-marquages.md) |
+| Schémas | `src/voight_kampff/schemas/catalogue.schema.json` (en-tête), `regles.schema.json` (règles), `marquages.schema.json` (marquages) |
 | Chargement et validation | `src/voight_kampff/_orchestration/catalogue.py` |
 | Règles et évaluation | `src/voight_kampff/_regles.py` |
 | Registre des versions | [`versions.toml`](versions.toml) |
@@ -26,12 +27,13 @@ Un dossier, et rien d'autre que ces fichiers ([ADR-0088](../decisions/ADR-0088-f
 ```text
 catalogue.toml          en-tête : format, version, date, description
 regles/<module>.toml    règles d'un module ; <module> est l'identifiant d'un module livré
+marquages.toml          marquages connus, facultatif, à partir du format 3 (ADR-0175)
 ```
 
 En-tête :
 
 ```toml
-format = 2                      # 1, ou 2 pour lire des dates et comparer (ADR-0147)
+format = 3                      # 1 ; 2 pour lire des dates et comparer (ADR-0147) ; 3 pour des marquages
 version = "0.1.0"               # X.Y.Z, propre au catalogue (ADR-0085)
 date = "2026-10-27"             # date d'édition de cette version
 description = "Ce que contient cette version."
@@ -81,13 +83,34 @@ parametre = "prise"
 comparer = { observation = "exif.ifd0.DateTime", operateur = ">", parametre = "modification" }
 ```
 
+Un marquage (`marquages.toml`, une table `[[marquage]]` chacun) : un signal lisible par machine, posé exprès pour dire l'origine d'un contenu ; les signatures de générateurs dans les métadonnées sont des règles, pas des marquages ([ADR-0176](../decisions/ADR-0176-marquages-de-provenance.md)). Exemple, pas un marquage livré :
+
+```toml
+[[marquage]]
+identifiant = "M-EXEMPLE"       # M-<NOM> : jamais réutilisé pour un autre marquage
+nom = "Filigrane d'exemple"     # affiché au rapport
+nature = "filigrane"            # manifeste, declaration, filigrane
+description = "Ce qu'il est, qui le pose, pourquoi il est ou n'est pas recherché."
+formats = ["jpeg", "png"]       # formats où il peut se trouver
+raison = "lecteur_neuronal"     # ou module = "<module livré qui le recherche>"
+references = ["https://exemple.org/specification"]
+verifie = "2026-11-14"          # date à laquelle l'entrée a été vérifiée
+```
+
+| Champ | Contenu |
+| --- | --- |
+| `module` | Module livré qui recherche le marquage ; il doit traiter chacun de ses `formats` |
+| `raison` | À défaut de module : `lecteur_neuronal` (lecteur public, mais réseau de neurones), `lecteur_proprietaire` (aucun lecteur public), `cle_du_fournisseur` (lecture impossible sans sa clé secrète), `lecteur_a_venir` (lecteur public et déterministe, pas encore livré) ([ADR-0177](../decisions/ADR-0177-marquages-non-recherches-au-rapport.md)) |
+| `formats` | Le marquage ne figure à la couverture que d'un fichier qui a une partie analysée dans l'un d'eux. Recherché si son module a été appliqué à l'une de ces parties ; sinon non recherché, pour sa raison ou pour `technique_non_menee` ([ADR-0178](../decisions/ADR-0178-couverture-des-marquages.md)) |
+
 ## 3. Ce qui est vérifié au chargement
 
 Un catalogue invalide arrête l'analyse avant toute lecture de fichier, avec un message qui nomme le fichier et la règle en cause :
 
-- forme du dossier : en-tête présent, aucun autre fichier que les règles des modules ;
-- 8 Mio, 256 fichiers et 4 096 règles au plus ;
-- chaque fichier : TOML en UTF-8, conforme à son schéma ; date existante ; format 1 ou 2, et aucune règle du format 2 dans un catalogue du format 1 ;
+- forme du dossier : en-tête présent, aucun autre fichier que les règles des modules et `marquages.toml` ;
+- 8 Mio, 256 fichiers, 4 096 règles et 256 marquages au plus ;
+- chaque fichier : TOML en UTF-8, conforme à son schéma ; date existante ; format 1, 2 ou 3, aucune règle du format 2 dans un catalogue du format 1, aucun marquage dans un catalogue d'un format inférieur à 3 ;
+- chaque marquage : identifiant unique, date de vérification existante, un module ou une raison, module existant qui traite chacun de ses formats ;
 - chaque règle : du module de son fichier, identifiant unique, motifs acceptés par RE2 (1 024 caractères et 5 000 instructions au plus), catégorie, fondement, direction et niveau formant un constat possible, niveau permis par son évaluation, phrase dont les emplacements sont ses paramètres ;
 - cohérence avec les modules livrés : module existant, direction permise par son manifeste, règles « module » citées par le manifeste et elles seules ; un catalogue fourni porte donc les règles du module c2pa, que son manifeste cite (ADR-0170).
 
@@ -124,3 +147,4 @@ La CI refuse une PR qui modifie une entrée du registre déjà sur `detector`, o
 | 2026-11-13 | 1.4 | Format 2 : tests `impossible` et `comparer`, lecture des dates (§2, §3) ; nouveau format avant 1.0.0 (§5) ; ADR-0147 à ADR-0152 | T23 |
 | 2026-11-14 | 1.5 | Règles livrées : incohérences de T23, indices de transfert de T24 (§1) ; ADR-0153 à ADR-0157 | T24 |
 | 2026-11-14 | 1.6 | Règles « module » du module c2pa, catalogue 0.5.0 (§1) ; un catalogue fourni porte les règles citées par les manifestes (§3) ; ADR-0170 | T30 |
+| 2026-11-14 | 1.7 | Format 3 et `marquages.toml`, catalogue 0.6.0 (§1 à §3) ; inventaire des marquages ; ADR-0174 à ADR-0179 | T31 |
