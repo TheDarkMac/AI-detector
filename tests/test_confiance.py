@@ -81,6 +81,11 @@ def test_entete_complet_et_fins_de_ligne_crlf(tmp_path: Path) -> None:
     assert liste.horodatage == autorite().racine.decode()
 
 
+def test_pem_sans_saut_de_ligne_final(tmp_path: Path) -> None:
+    ecrire_liste(tmp_path, autorite().racine.rstrip(b"\n"))
+    assert confiance.charger(tmp_path).signataires.endswith("-----END CERTIFICATE-----")
+
+
 def _bloc(der: bytes) -> bytes:
     return (
         b"-----BEGIN CERTIFICATE-----\n" + base64.b64encode(der) + b"\n-----END CERTIFICATE-----\n"
@@ -259,3 +264,42 @@ def test_version_de_liste_invalide(champ: dict[str, str]) -> None:
             valeurs["empreinte"],
             False,
         )
+
+
+# Ligne de commande et soumission (ADR-0171)
+
+
+def test_commande_avec_une_liste_fournie(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from voight_kampff.cli import main
+
+    chemin = tmp_path / "photo.jpg"
+    chemin.write_bytes((Path(__file__).parent / "donnees/metadonnees/photo.jpg").read_bytes())
+    assert main(["--confiance", str(ecrire_liste(tmp_path / "liste")), str(chemin)]) == 0
+    sortie = capsys.readouterr().out
+    assert "attention : Liste de confiance C2PA fournie par l'utilisateur" in sortie
+    assert "liste de confiance C2PA : Liste d'essai 1 du 2026-11-14, empreinte " in sortie
+    assert "fournie par l'utilisateur\n" in sortie
+
+
+def test_commande_refuse_une_liste_invalide(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from voight_kampff.cli import main
+
+    with pytest.raises(SystemExit) as sortie:
+        main(["--confiance", str(tmp_path / "absente"), str(tmp_path / "f.jpg")])
+    assert sortie.value.code == 2
+    assert "liste de confiance invalide : liste de confiance : dossier introuvable" in (
+        capsys.readouterr().err
+    )
+
+
+def test_soumission_avec_une_liste_deja_validee(tmp_path: Path) -> None:
+    from voight_kampff._orchestration import soumission
+
+    chemin = tmp_path / "photo.jpg"
+    chemin.write_bytes((Path(__file__).parent / "donnees/metadonnees/photo.jpg").read_bytes())
+    liste = confiance.charger(ecrire_liste(tmp_path / "liste"))
+    assert soumission.soumettre(chemin, confiance=liste).confiance == liste.version

@@ -500,7 +500,8 @@ def test_commande_hors_garantie(
     sortie = capsys.readouterr().out.splitlines()
     assert sortie[1] == (
         "Hors garantie de reproductibilité : extensions différentes, versions différentes "
-        "(outil, interpréteur, catalogue ou dépendances), analyse interrompue. Des résultats "
+        "(outil, interpréteur, catalogue, liste de confiance ou dépendances), analyse interrompue. "
+        "Des résultats "
         "différents s'expliquent alors."
     )
     assert sortie[-1].startswith("… et ")

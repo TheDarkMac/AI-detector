@@ -300,7 +300,13 @@ def test_analyse_verifiee_comme_un_rapport(tmp_path: Path) -> None:
 
 
 def test_catalogue_fourni_par_l_utilisateur(tmp_path: Path) -> None:
-    dossier = ecrire_catalogue(tmp_path / "catalogue")
+    # Un catalogue fourni porte les règles « module » que citent les modules livrés (ADR-0084) :
+    # celles du module c2pa depuis T30 ; le moteur n'a besoin d'aucune autre.
+    sans_c2pa = ecrire_catalogue(tmp_path / "sans")
+    with pytest.raises(CatalogueInvalide, match="R-C2PA-001 absente"):
+        analyser(ecrire(tmp_path, "f.pdf", PDF), catalogue=sans_c2pa)
+    livrees = (Path(catalogue.livre()) / "regles" / "c2pa.toml").read_text(encoding="utf-8")  # type: ignore[arg-type]
+    dossier = ecrire_catalogue(tmp_path / "catalogue", {"c2pa": livrees})
     analyse = analyser(ecrire(tmp_path, "f.pdf", PDF), catalogue=dossier)
     assert analyse.catalogue.fourni_par_utilisateur
     assert (analyse.catalogue.version, analyse.catalogue.date.isoformat()) == (

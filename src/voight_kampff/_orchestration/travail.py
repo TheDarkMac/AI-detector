@@ -169,9 +169,8 @@ def executer(
     ``manifestes`` est dans l'ordre d'exécution (``decouvrir``) ; ``desactives`` nomme les
     modules désactivés par l'utilisateur. ``catalogue`` vaut par défaut le catalogue livré,
     validé avec ces manifestes, et ``confiance`` la liste de confiance livrée (ADR-0171).
-    ``taille``, celle que le principal a hachée, borne les parties
-    reçues ; à défaut, celle du descripteur. ``commande`` remplace, pour les tests, le
-    processus de travail livré.
+    ``taille``, celle que le principal a hachée, borne les parties reçues ; à défaut, celle du
+    descripteur. ``commande`` remplace, pour les tests, le processus de travail livré.
     """
     actifs, eteints = selectionner(manifestes, desactives)
     if catalogue is None:

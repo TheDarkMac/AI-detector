@@ -7,7 +7,7 @@ Contrôles déterministes : vérifiés par ces tests de conformité, sans taux s
 
 import io
 import json
-from collections.abc import Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from importlib import metadata
 from pathlib import Path
 from typing import Any
@@ -20,6 +20,7 @@ from c2pa_essai import (
     NUMERO,
     SIGNATAIRE,
     TITRE,
+    autorite,
     ecrire_liste,
     manifeste,
     signer,
@@ -501,6 +502,26 @@ def test_manifeste_de_la_premiere_version_et_ingredients_invalides(
     assert identifiants == ["R-C2PA-008"]
 
 
+def test_invalide_sans_ecart_d_empreinte(
+    contexte: Contexte, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Un certificat expiré rend le manifeste invalide sans dire le contenu changé (ADR-0167).
+    document = {
+        "validation_state": "Invalid",
+        "active_manifest": "m",
+        "manifests": {
+            "m": {"assertions": [{"label": "c2pa.actions", "data": {"actions": [{"action": "x"}]}}]}
+        },
+        "validation_results": {
+            "activeManifest": {"failure": [{"code": "signingCredential.expired"}]}
+        },
+    }
+    observations, identifiants = resultats(contexte, monkeypatch, document)
+    assert identifiants == ["R-C2PA-009"]
+    assert observations["c2pa.actions.action"] == ["x"]
+    assert "c2pa.actions.softwareAgent" not in observations
+
+
 def test_etat_inconnu_non_verifiable(contexte: Contexte, monkeypatch: pytest.MonkeyPatch) -> None:
     observations, identifiants = resultats(contexte, monkeypatch, {"validation_state": "Autre"})
     assert observations["c2pa.etat"] == "non_verifiable"
@@ -520,6 +541,78 @@ def test_reglages_refuses_hors_du_constat(
     with pytest.raises(bibliotheque.C2paError):
         c2pa.analyser(contexte)
     assert contexte.lignes == ()
+
+
+def _altere(contenu: bytes) -> bytes:
+    signe = bytearray(contenu)
+    signe[-10] ^= 0xFF
+    return bytes(signe)
+
+
+def _jumbf_casse(contenu: bytes) -> bytes:
+    signe = bytearray(contenu)
+    debut = signe.find(b"jumb")
+    signe[debut + 4 : debut + 8] = b"zzzz"
+    return bytes(signe)
+
+
+@pytest.mark.exigence("F-23", "ES-20")
+@pytest.mark.parametrize(
+    ("cas", "reconnu", "format_", "attendues", "raisons"),
+    [
+        ("ia", True, "jpeg", ["R-C2PA-007", "R-C2PA-001"], []),
+        ("retouche", True, "jpeg", ["R-C2PA-007", "R-C2PA-002"], []),
+        ("capture", True, "jpeg", ["R-C2PA-007", "R-C2PA-003"], []),
+        ("capture", False, "jpeg", ["R-C2PA-008"], []),
+        ("ia", False, "jpeg", ["R-C2PA-008", "R-C2PA-004"], []),
+        ("altere", True, "jpeg", ["R-C2PA-009", "R-C2PA-006", "R-C2PA-004"], []),
+        ("casse", False, "jpeg", ["R-C2PA-010"], []),
+        ("distant", False, "jpeg", ["R-C2PA-011"], ["reseau_desactive"]),
+        ("absent", False, "jpeg", ["R-C2PA-012"], []),
+        ("illisible", False, "pdf", [], ["format_partiel"]),
+    ],
+)
+def test_module_dans_le_processus_des_tests(
+    tmp_path: Path,
+    cas: str,
+    reconnu: bool,
+    format_: str,
+    attendues: list[str],
+    raisons: list[str],
+) -> None:
+    # Mêmes cas que les analyses de bout en bout, sans processus de travail : la couverture du
+    # code mesure aussi ce que c2pa-rs renvoie réellement (ADR-0170).
+    sources = {"ia": "trainedAlgorithmicMedia", "retouche": "compositeSynthetic"}
+    contenus: dict[str, Callable[[], bytes]] = {
+        "ia": lambda: signer(),
+        "retouche": lambda: signer(definition=manifeste(sources["retouche"])),
+        "capture": lambda: signer(definition=manifeste("digitalCapture")),
+        "altere": lambda: _altere(signer()),
+        "casse": lambda: _jumbf_casse(signer()),
+        "distant": lambda: signer_distant("https://exemple.invalid/m.c2pa"),
+        "absent": lambda: (FICHIERS_DU_DEPOT / "photo.jpg").read_bytes(),
+        "illisible": lambda: b"%PDF-1.7\n1 0 obj<<>>endobj\n%%EOF\n",
+    }
+    contenu = contenus[cas]()
+    chemin = tmp_path / "f"
+    chemin.write_bytes(contenu)
+    ancres = Ancres(autorite().racine.decode()) if reconnu else Ancres()
+    with chemin.open("rb") as fichier:
+        module = Contexte(
+            "c2pa",
+            set(Direction),
+            Fichier(fichier.fileno()),
+            Partie(1, format_, Plage(0, len(contenu)), fin_connue=True),
+            64 << 20,
+            regles=catalogues.charger(decouvrir()).du_module("c2pa"),
+            ancres=ancres,
+        )
+        c2pa.analyser(module)
+    messages = [json.loads(ligne) for ligne in module.lignes]
+    assert [m["constat"]["regle"]["identifiant"] for m in messages if m["type"] == "constat"] == (
+        attendues
+    )
+    assert [m["non_menee"]["raison"] for m in messages if m["type"] == "non_menee"] == raisons
 
 
 def test_flux_de_la_partie(contexte: Contexte) -> None:

@@ -59,8 +59,11 @@ pytestmark = pytest.mark.exigence("F-06")
 
 RECOMMANDATION = texte_du_rapport("resume.transformation")
 
+# La règle R-C2PA-006 (T30) a ses propres tests : tests/test_c2pa.py.
 REGLES_T24 = tuple(
-    regle for regle in CATALOGUE.regles if regle.direction is Direction.TRANSFORMATION
+    regle
+    for regle in CATALOGUE.regles
+    if regle.direction is Direction.TRANSFORMATION and regle.module != "c2pa"
 )
 SIGNATURES = {"R-EXIF-014", "R-XMP-013", "R-IPTC-003", "R-TEXTEPNG-007"}
 

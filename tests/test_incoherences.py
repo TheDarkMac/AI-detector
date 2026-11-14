@@ -33,8 +33,11 @@ from voight_kampff.rapport.modele import Categorie, Direction, Fondement
 
 pytestmark = pytest.mark.exigence("F-13")
 
+# Les règles du module c2pa (T30) ont leurs propres tests : tests/test_c2pa.py.
 REGLES_T23 = tuple(
-    regle for regle in CATALOGUE.regles if regle.categorie is Categorie.INFORMATION_NEUTRE
+    regle
+    for regle in CATALOGUE.regles
+    if regle.categorie is Categorie.INFORMATION_NEUTRE and regle.module != "c2pa"
 )
 ABSENCES = tuple(regle for regle in REGLES_T23 if regle.gabarit.endswith(".absence"))
 
@@ -323,8 +326,9 @@ def test_regle_appliquee(
 def test_chaque_regle_de_t23_est_eprouvee() -> None:
     assert {cas[3] for cas in CAS} == {regle.identifiant for regle in REGLES_T23}
     assert (len(REGLES_T23), len(ABSENCES)) == (38, 12)
-    # Les 24 de T22 (test_signatures.py), les 8 de T24 (test_transfert.py).
-    assert len(REGLES_T23) + 24 + 8 == len(CATALOGUE.regles)
+    # Les 24 de T22 (test_signatures.py), les 8 de T24 (test_transfert.py), les 12 du module
+    # c2pa de T30 (test_c2pa.py).
+    assert len(REGLES_T23) + 24 + 8 + 12 == len(CATALOGUE.regles)
 
 
 @pytest.mark.exigence("F-14", "ES-20")
@@ -462,6 +466,7 @@ def test_analyse_complete_d_un_jpeg_sans_metadonnees(tmp_path: Path) -> None:
     chemin.write_bytes(jpeg_meta())
     neutre = Categorie.INFORMATION_NEUTRE
     assert _informations(chemin) == {
+        "R-C2PA-012": (neutre, "c2pa"),  # T30 : aucun manifeste C2PA, information neutre
         "R-EXIF-013": (neutre, "exif"),
         "R-IPTC-002": (neutre, "iptc"),
         "R-XMP-012": (neutre, "xmp"),
@@ -486,6 +491,7 @@ def test_analyse_complete_d_un_jpeg_incoherent(tmp_path: Path) -> None:
     )
     neutre = Categorie.INFORMATION_NEUTRE
     assert _informations(chemin) == {
+        "R-C2PA-012": (neutre, "c2pa"),
         "R-EXIF-001": (Categorie.INDICE, "exif"),  # T22 : le générateur nommé
         "R-EXIF-006": (neutre, "exif"),
         "R-EXIF-009": (neutre, "exif"),
