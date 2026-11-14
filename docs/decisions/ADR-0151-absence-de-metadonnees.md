@@ -51,3 +51,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création |
+| 2026-11-14 | Renvoi : les règles de transfert de T24 citent ces règles et comptent elles-mêmes les blocs de métadonnées (ADR-0153, ADR-0154) |

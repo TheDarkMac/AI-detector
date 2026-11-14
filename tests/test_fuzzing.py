@@ -4,7 +4,8 @@ Quatre familles d'analyseurs lisent aujourd'hui des données hostiles :
 
 - l'identification, dans le processus de travail, lit le fichier (ADR-0070) ;
 - les modules de métadonnées (image, PDF, audio, vidéo, DOCX, ODT) et leurs lecteurs de
-  structure (T20, T21, ADR-0114, ADR-0124, ADR-0131, ADR-0137) ;
+  structure (T20, T21, ADR-0114, ADR-0124, ADR-0131, ADR-0137), et le module ``image``, qui lit
+  dimensions et tables de quantification (T24, ADR-0154) ;
 - le décodage strict des lignes, dans le processus principal, lit ce qu'envoie un processus de
   travail peut-être compromis (ES-04) ;
 - la réception, qui valide chaque message par le schéma puis par le modèle (ADR-0065).
@@ -100,9 +101,12 @@ from metadonnees import (
     ascii_,
     bloc_riff,
     contexte,
+    dqt,
     fractions,
     heic_meta,
     jeu,
+    jpeg_ijg,
+    jpeg_image,
     jpeg_meta,
     pdf,
     pdf_info,
@@ -112,6 +116,9 @@ from metadonnees import (
     texte_compresse,
     texte_international,
     tiff,
+    vp8,
+    vp8l,
+    webp_image,
     webp_meta,
     xmp,
 )
@@ -341,6 +348,10 @@ ECHANTILLONS_METADONNEES = (
         ),
     ),
     ("webp", webp_meta(bloc_riff(b"EXIF", _TIFF), bloc_riff(b"XMP ", _XMP))),
+    # Structure d'une image (T24) : tables de quantification, en-têtes d'image.
+    ("jpeg", jpeg_image(1600, 1200, tables=jpeg_ijg(80) + dqt((0, (2,) * 64), seize_bits=True))),
+    ("webp", webp_image(vp8(1280, 720))),
+    ("webp", webp_image(vp8l(1600, 900))),
     (
         "heic",
         heic_meta(
@@ -476,9 +487,9 @@ ECHANTILLONS_METADONNEES = (
 )
 """Échantillons par format : toutes les familles, toutes les formes de conteneur lues."""
 _MODULES: dict[str, tuple[str, ...]] = {
-    "jpeg": ("exif", "xmp", "iptc"),
-    "png": ("exif", "xmp", "textepng"),
-    "webp": ("exif", "xmp"),
+    "jpeg": ("exif", "xmp", "iptc", "image"),
+    "png": ("exif", "xmp", "textepng", "image"),
+    "webp": ("exif", "xmp", "image"),
     "heic": ("exif", "xmp"),
     "pdf": ("infopdf", "xmp"),
     "mp3": ("id3",),

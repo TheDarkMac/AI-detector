@@ -1,10 +1,10 @@
 # Fiche technique — Métadonnées IPTC-IIM
 
-- **Module** : `iptc` (version 0.2.0)
-- **Tâche** : T20, T22, T23
+- **Module** : `iptc` (version 0.3.0)
+- **Tâche** : T20, T22, T23, T24
 - **Exigences** : F-10, F-12, ES-13
 - **Formats** : `jpeg`
-- **Directions permises** : `origine_ia`, `rien_de_particulier`
+- **Directions permises** : `origine_ia`, `transformation`, `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : aucune
 
@@ -52,7 +52,7 @@ Marquées `metadonnee_nominative` ([ADR-0119](../decisions/ADR-0119-donnees-iden
 | Hypothèse | Ce que la technique en dit |
 | --- | --- |
 | Capture brute | Rien |
-| Transformation banale | Rien |
+| Transformation banale | Ce que le fichier en déclare : `SpecialInstructions` commençant par `FBMD`, marque que Facebook écrit (IPTC, 2019) (T24) |
 | Retouche | Rien |
 | Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `OriginatingProgram` |
 
@@ -74,9 +74,15 @@ Règles de T23, des informations neutres fondées sur une déclaration du fichie
 
 Une absence d'IPTC est l'observation `iptc.present` à faux ; la règle `R-IPTC-002` en fait une information neutre, jamais un indice (F-14).
 
+Règle de T24, un indice faible vers la transformation fondé sur une déclaration du fichier ([ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md), [ADR-0155](../decisions/ADR-0155-nature-d-un-indice-de-transfert.md)) :
+
+| Règle | Observation | Test | Direction |
+| --- | --- | --- | --- |
+| `R-IPTC-003` Marque de Facebook dans les instructions IPTC (SpecialInstructions) | `iptc.SpecialInstructions` | motif `^FBMD` | transformation |
+
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par le nom de chaque jeu ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par le nom de chaque jeu ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`). La règle de T24 est un indice faible, non évalué ; son déclenchement est vérifié sur des échantillons construits (`tests/test_transfert.py`).
 
 ## Limites connues
 
@@ -97,3 +103,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-10-28 | 0.1.0 | Création (T20) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
+| 2026-11-14 | 0.3.0 | Direction transformation permise : indice de transfert du catalogue sur ses observations, `R-IPTC-003` (T24, ADR-0153 à ADR-0157) ; code du module inchangé |

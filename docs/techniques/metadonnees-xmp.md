@@ -1,10 +1,10 @@
 # Fiche technique — Métadonnées XMP
 
-- **Module** : `xmp` (version 0.4.0)
-- **Tâche** : T20, T21, T22, T23
+- **Module** : `xmp` (version 0.5.0)
+- **Tâche** : T20, T21, T22, T23, T24
 - **Exigences** : F-10, F-11, F-12, ES-05, ES-13
 - **Formats** : `jpeg`, `png`, `webp`, `heic`, `pdf`, `wav`, `m4a`, `mp4`, `mov`
-- **Directions permises** : `origine_ia`, `retouche`, `rien_de_particulier`
+- **Directions permises** : `origine_ia`, `retouche`, `transformation`, `rien_de_particulier`
 - **Règles** : aucune
 - **Bibliothèques** : `expat`
 
@@ -65,7 +65,7 @@ Marquées par le module, d'après le premier composant identifiant du nom ([ADR-
 | Hypothèse | Ce que la technique en dit |
 | --- | --- |
 | Capture brute | Rien |
-| Transformation banale | Rien |
+| Transformation banale | Ce que le fichier en déclare : `exif:UserComment` à `Screenshot`, valeur des captures d'écran de macOS et d'iOS (T24) |
 | Retouche | Ce que le fichier en déclare, sans vérification : `DigitalSourceType` à `compositeWithTrainedAlgorithmicMedia` ou `compositeSynthetic` |
 | Génération | Ce que le fichier en déclare, sans vérification : `DigitalSourceType` à `trainedAlgorithmicMedia`, nom d'un générateur dans `xmp:CreatorTool` ou l'historique |
 
@@ -97,9 +97,15 @@ Règles de T23, des informations neutres fondées sur une déclaration du fichie
 
 Une absence de XMP est l'observation `xmp.present` à faux ; la règle `R-XMP-012` en fait une information neutre, jamais un indice (F-14).
 
+Règle de T24, un indice faible vers la transformation fondé sur une déclaration du fichier ([ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md), [ADR-0155](../decisions/ADR-0155-nature-d-un-indice-de-transfert.md)) :
+
+| Règle | Observation | Test | Direction |
+| --- | --- | --- | --- |
+| `R-XMP-013` Capture d'écran déclarée par le commentaire XMP (exif:UserComment) | `xmp.exif:UserComment` | un élément égal à `Screenshot` | transformation |
+
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par le nom local de chaque propriété ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)) ; pour la vidéo, sur un MP4 et un MOV dont exiftool a écrit le paquet ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
+Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par le nom local de chaque propriété ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)) ; pour la vidéo, sur un MP4 et un MOV dont exiftool a écrit le paquet ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`). La règle de T24 est un indice faible, non évalué ; son déclenchement est vérifié sur des échantillons construits (`tests/test_transfert.py`).
 
 ## Limites connues
 
@@ -128,3 +134,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.3.0 | WAV, M4A, MP4, MOV : blocs `_PMX`, boîtes `uuid` et `XMP_` (T21, complément audio et vidéo, ADR-0134) |
 | 2026-11-13 | 0.4.0 | Directions origine IA, retouche permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.4.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
+| 2026-11-14 | 0.5.0 | Direction transformation permise : indice de transfert du catalogue sur ses observations, `R-XMP-013` (T24, ADR-0153 à ADR-0157) ; code du module inchangé |

@@ -45,3 +45,4 @@ Correspondance avec les hypothèses d'ADR-0022 : génération → origine IA ; r
 | Date | Modification |
 | --- | --- |
 | 2026-10-26 | Création |
+| 2026-11-14 | Renvoi : premières règles vers « transformation », indices de transfert de T24 (ADR-0155) |

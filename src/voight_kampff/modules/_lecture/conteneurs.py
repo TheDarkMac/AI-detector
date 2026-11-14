@@ -1,5 +1,6 @@
 """Blocs de métadonnées d'une image, d'un fichier audio ou vidéo : où ils sont, sans les
-interpréter (ADR-0115, ADR-0131).
+interpréter (ADR-0115, ADR-0131) ; et, pour une image, les blocs de structure qui portent ses
+dimensions et ses tables de quantification (ADR-0154).
 
 Le conteneur est parcouru par sa structure seule : segments JPEG jusqu'au premier SOS, blocs PNG
 jusqu'à IEND, blocs RIFF de WebP et de WAV, boîtes ISOBMFF de HEIC (``meta``, ``iinf``,
@@ -23,11 +24,20 @@ from voight_kampff._travail.contexte import Contexte
 from voight_kampff.modules._lecture import ebml
 from voight_kampff.rapport.modele import Localisation, Plage, RaisonNonMenee
 
-__all__ = ["Bloc", "Nature", "Releve", "TextePng", "lire_bloc", "relever", "texte_png"]
+__all__ = [
+    "STRUCTURE",
+    "Bloc",
+    "Nature",
+    "Releve",
+    "TextePng",
+    "lire_bloc",
+    "relever",
+    "texte_png",
+]
 
 
 class Nature(StrEnum):
-    """Nature d'un bloc de métadonnées."""
+    """Nature d'un bloc de métadonnées, ou de structure (``TRAME``, ``QUANTIFICATION``)."""
 
     EXIF = "exif"
     """Structure TIFF : en-tête, IFD0 et suivants."""
@@ -53,6 +63,15 @@ class Nature(StrEnum):
     """Contenu d'une boîte ``mvhd``, ``udta`` ou ``meta`` de ``moov`` (M4A, MP4, MOV)."""
     MATROSKA = "matroska"
     """Contenu d'un élément ``Info`` ou ``Tags`` du segment (WebM)."""
+    TRAME = "trame"
+    """En-tête qui porte les dimensions d'une image : segment SOF d'un JPEG, bloc ``IHDR`` d'un
+    PNG, bloc ``VP8X``, ``VP8 `` ou ``VP8L`` d'un WebP ; pas une métadonnée."""
+    QUANTIFICATION = "quantification"
+    """Segment DQT d'un JPEG : tables de quantification ; pas une métadonnée."""
+
+
+STRUCTURE = frozenset({Nature.TRAME, Nature.QUANTIFICATION})
+"""Natures des blocs de structure ; toutes les autres sont des métadonnées."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -139,6 +158,8 @@ _EXIF = b"Exif\x00"
 _XMP = b"http://ns.adobe.com/xap/1.0/\x00"
 _XMP_ETENDU = b"http://ns.adobe.com/xmp/extension/\x00"
 _PHOTOSHOP = b"Photoshop 3.0\x00"
+_SOF = frozenset(range(0xC0, 0xD0)) - {0xC4, 0xC8, 0xCC}
+"""Marqueurs SOF0 à SOF15, hors DHT, JPG et DAC (T.81, tableau B.1)."""
 
 
 def _jpeg(contexte: Contexte) -> Iterator[Bloc]:
@@ -184,6 +205,10 @@ def _segment(contexte: Contexte, marqueur: int, debut: int, longueur: int) -> Bl
             return _decoupe(Nature.XMP_ETENDU, "APP1 XMP étendu", debut, longueur, len(_XMP_ETENDU))
     if marqueur == 0xED and entete.startswith(_PHOTOSHOP):
         return _decoupe(Nature.PHOTOSHOP, "APP13 Photoshop", debut, longueur, len(_PHOTOSHOP))
+    if marqueur == 0xDB:
+        return _decoupe(Nature.QUANTIFICATION, "DQT", debut, longueur, 0)
+    if marqueur in _SOF:
+        return _decoupe(Nature.TRAME, f"SOF{marqueur - 0xC0}", debut, longueur, 0)
     return None
 
 
@@ -215,7 +240,9 @@ def _png(contexte: Contexte) -> Iterator[Bloc]:
         if nature == b"IEND":
             return
         chemin = nature.decode("latin-1")
-        if nature == b"eXIf" and longueur:
+        if nature == b"IHDR" and longueur:
+            yield Bloc(Nature.TRAME, chemin, (_plage(contexte, debut, longueur, position),))
+        elif nature == b"eXIf" and longueur:
             yield Bloc(Nature.EXIF, chemin, (_plage(contexte, debut, longueur, position),))
         elif nature in _TEXTES and longueur:
             plage = _plage(contexte, debut, longueur, position)
@@ -290,9 +317,15 @@ def _blocs_riff(contexte: Contexte) -> Iterator[tuple[bytes, int, int, int]]:
         raise _Arret(RaisonNonMenee.FICHIER_TRONQUE, position)
 
 
+_TRAMES_WEBP = frozenset({b"VP8X", b"VP8 ", b"VP8L"})
+
+
 def _webp(contexte: Contexte) -> Iterator[Bloc]:
     for nature, debut, longueur, position in _blocs_riff(contexte):
-        if nature in (b"EXIF", b"XMP ") and longueur:
+        if nature in _TRAMES_WEBP and longueur:
+            plage = _plage(contexte, debut, longueur, position)
+            yield Bloc(Nature.TRAME, nature.decode("latin-1").rstrip(), (plage,))
+        elif nature in (b"EXIF", b"XMP ") and longueur:
             plage = _plage(contexte, debut, longueur, position)
             if nature == b"XMP ":
                 yield Bloc(Nature.XMP, "XMP", (plage,))

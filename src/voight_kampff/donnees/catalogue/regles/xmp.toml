@@ -295,3 +295,29 @@ application = "moteur"
 [[regle.condition]]
 observation = "xmp.present"
 egal = false
+
+# Règle de T24 : indice de transfert, capture d'écran déclarée (F-06, ADR-0153, ADR-0155).
+
+[[regle]]
+identifiant = "R-XMP-013"
+version = "1"
+module = "xmp"
+titre = "Capture d'écran déclarée par le commentaire XMP (exif:UserComment)"
+description = "La propriété XMP exif:UserComment vaut Screenshot, la valeur que macOS et iOS écrivent dans leurs captures d'écran d'après témoignages d'utilisateurs sur la communauté d'Apple (discussions.apple.com, fil 255854599, lu le 2026-11-13), pas une documentation d'Apple (F-06, ADR-0153)."
+gabarit = "xmp.capture-d-ecran"
+phrase = { fr = "La propriété XMP exif:UserComment vaut « Screenshot », la valeur que macOS et iOS écrivent dans leurs captures d'écran : le fichier se déclare capture d'écran." }
+categorie = "indice"
+direction = "transformation"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire, recopier ou effacer cette propriété ; son absence ne dit rien (F-14).",
+  "Source : témoignages d'utilisateurs sur la communauté d'Apple (discussions.apple.com, fil 255854599, lu le 2026-11-13), pas une documentation d'Apple ; d'autres versions de macOS et d'iOS peuvent écrire autre chose, ou rien, et une capture convertie ou transmise perd souvent cette valeur.",
+  "Seule la valeur exacte « Screenshot » est reconnue ; les captures d'autres systèmes et d'autres outils ne sont pas vues.",
+  "Une capture d'écran reproduit ce qu'affichait l'écran : elle ne dit rien du fichier affiché, qui peut être généré, retouché ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "xmp.exif:UserComment"
+egal = "Screenshot"

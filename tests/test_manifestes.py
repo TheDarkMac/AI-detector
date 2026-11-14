@@ -175,11 +175,13 @@ def test_fiche_et_manifeste_concordent() -> None:
 
 
 def test_modules_de_metadonnees_livres() -> None:
-    # T20 et T21 : un module par famille de métadonnées (ADR-0114, ADR-0127, ADR-0131, ADR-0136).
+    # T20 et T21 : un module par famille de métadonnées (ADR-0114, ADR-0127, ADR-0131, ADR-0136) ;
+    # T24 : le module image, qui lit la structure d'une image (ADR-0154).
     livres = {manifeste.identifiant: manifeste for manifeste in decouvrir()}
     assert sorted(livres) == [
         "exif",
         "id3",
+        "image",
         "infopdf",
         "infowav",
         "iptc",
@@ -200,19 +202,27 @@ def test_modules_de_metadonnees_livres() -> None:
     assert livres["matroska"].formats == ("webm",)
     assert livres["iptc"].formats == ("jpeg",)
     assert livres["textepng"].formats == ("png",)
+    assert livres["image"].formats == ("jpeg", "png", "webp")
     assert livres["ooxml"].formats == ("docx",)
     assert livres["odf"].formats == ("odt",)
     for module in ("xmp", "ooxml", "odf"):
         assert livres[module].bibliotheques == ("expat",)
-    # T22 : les règles du catalogue sur leurs observations sont dirigées (ADR-0142).
+    # T22 : les règles du catalogue sur leurs observations sont dirigées (ADR-0142) ; T24 :
+    # indices de transfert, vers la transformation (ADR-0155).
+    transfert = {"exif", "xmp", "iptc", "textepng"}
     for identifiant, manifeste in livres.items():
-        assert {"F-10", "F-12"} <= set(manifeste.exigences)
-        assert manifeste.directions == (
-            (Direction.ORIGINE_IA, Direction.RETOUCHE, Direction.RIEN_DE_PARTICULIER)
-            if identifiant == "xmp"
-            else (Direction.ORIGINE_IA, Direction.RIEN_DE_PARTICULIER)
-        )
         assert manifeste.regles == ()
+        if identifiant == "image":
+            assert manifeste.exigences == ("F-06", "F-30")
+            assert manifeste.directions == (Direction.TRANSFORMATION,)
+            continue
+        assert {"F-10", "F-12"} <= set(manifeste.exigences)
+        attendues = [Direction.ORIGINE_IA, Direction.RIEN_DE_PARTICULIER]
+        if identifiant in transfert:
+            attendues.insert(1, Direction.TRANSFORMATION)
+        if identifiant == "xmp":
+            attendues.insert(1, Direction.RETOUCHE)
+        assert manifeste.directions == tuple(attendues)
     assert "F-11" in livres["xmp"].exigences
 
 

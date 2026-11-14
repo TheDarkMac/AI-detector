@@ -142,3 +142,30 @@ application = "moteur"
 [[regle.condition]]
 observation = "textepng.present"
 egal = false
+
+# Règle de T24 : indice de transfert, capture d'écran de gnome-screenshot (F-06, ADR-0153, ADR-0155).
+# Source : gnome-screenshot, src/screenshot-application.c, commit 4e03093f46009888e77055d842b75757c3d12f66
+# (2012), https://mail.gnome.org/archives/commits-list/2013-April/msg09755.html (lu le 2026-11-14).
+
+[[regle]]
+identifiant = "R-TEXTEPNG-007"
+version = "1"
+module = "textepng"
+titre = "Capture d'écran de gnome-screenshot (bloc texte Software)"
+description = "Le bloc texte de mot-clé Software vaut gnome-screenshot, la valeur que l'outil de capture d'écran de GNOME écrit dans les PNG qu'il enregistre (src/screenshot-application.c, option tEXt::Software) (F-06, ADR-0153)."
+gabarit = "textepng.capture-gnome-screenshot"
+phrase = { fr = "Le bloc texte « Software » du PNG vaut « gnome-screenshot », l'outil de capture d'écran de GNOME : le fichier se déclare capture d'écran." }
+categorie = "indice"
+direction = "transformation"
+fondement = "declaration"
+niveau = "faible"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire, recopier ou effacer ce bloc ; son absence ne dit rien (F-14).",
+  "Seul gnome-screenshot est reconnu ; les autres outils de capture, dont celui intégré à GNOME Shell, ne sont pas vus.",
+  "Une capture d'écran reproduit ce qu'affichait l'écran : elle ne dit rien du fichier affiché, qui peut être généré, retouché ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "textepng.Software"
+egal = "gnome-screenshot"

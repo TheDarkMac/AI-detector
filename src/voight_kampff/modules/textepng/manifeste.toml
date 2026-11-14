@@ -1,12 +1,12 @@
 # Module textepng : blocs texte d'un PNG (ADR-0114). Validé par schemas/manifeste.schema.json (ADR-0064).
 
 identifiant = "textepng"
-version = "0.2.0"
+version = "0.3.0"
 formats = ["png"]
 exigences = ["F-10", "F-12", "ES-13"]
 regles = []
 fiche = "metadonnees-texte-png"
-# Directions des règles du catalogue sur ses observations (T22, ADR-0142) ; le module lui-même n'émet aucun constat.
-directions = ["origine_ia", "rien_de_particulier"]
+# Directions des règles du catalogue sur ses observations (T22, ADR-0142 ; T24, ADR-0155) ; le module lui-même n'émet aucun constat.
+directions = ["origine_ia", "transformation", "rien_de_particulier"]
 requiert = []
 bibliotheques = []

@@ -71,3 +71,4 @@ Dimensions A, dates A, logiciel et appareil A : trente-huit règles, dont douze 
 | --- | --- |
 | 2026-11-13 | Création, statut « Proposé » |
 | 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR de T23 (« Yes, all three ») : statut « Accepté » |
+| 2026-11-14 | Renvoi : dimensions des messageries et dimensions réelles d'une image traitées en T24 (ADR-0153, ADR-0154) |

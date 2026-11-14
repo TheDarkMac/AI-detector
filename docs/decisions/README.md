@@ -167,3 +167,8 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0150](ADR-0150-incoherences-retenues.md) | Incohérences retenues : dates, appareil et générateur, dimensions d'un générateur | Accepté | 2026-11-13 |
 | [ADR-0151](ADR-0151-absence-de-metadonnees.md) | Absence de métadonnées : une règle par module, information neutre | Accepté | 2026-11-13 |
 | [ADR-0152](ADR-0152-versions-de-t23.md) | Versions de T23 : catalogue 0.3.0 au format 2, modules inchangés | Accepté | 2026-11-13 |
+| [ADR-0153](ADR-0153-indices-de-transfert-retenus.md) | Indices de transfert retenus : signatures, captures d'écran, dimensions, tables de libjpeg | Accepté | 2026-11-14 |
+| [ADR-0154](ADR-0154-module-image.md) | Module `image` et forme des règles de transfert | Accepté | 2026-11-14 |
+| [ADR-0155](ADR-0155-nature-d-un-indice-de-transfert.md) | Nature d'un indice de transfert : indice faible vers la transformation | Accepté | 2026-11-14 |
+| [ADR-0156](ADR-0156-recommandation-d-obtenir-l-original.md) | Recommandation d'obtenir l'original : une phrase du résumé | Accepté | 2026-11-14 |
+| [ADR-0157](ADR-0157-versions-de-t24.md) | Versions de T24 : catalogue 0.4.0, module `image` 0.1.0, quatre modules à une nouvelle version | Accepté | 2026-11-14 |

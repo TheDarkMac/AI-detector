@@ -323,7 +323,8 @@ def test_regle_appliquee(
 def test_chaque_regle_de_t23_est_eprouvee() -> None:
     assert {cas[3] for cas in CAS} == {regle.identifiant for regle in REGLES_T23}
     assert (len(REGLES_T23), len(ABSENCES)) == (38, 12)
-    assert len(REGLES_T23) + 24 == len(CATALOGUE.regles)  # les 24 de T22 (test_signatures.py)
+    # Les 24 de T22 (test_signatures.py), les 8 de T24 (test_transfert.py).
+    assert len(REGLES_T23) + 24 + 8 == len(CATALOGUE.regles)
 
 
 @pytest.mark.exigence("F-14", "ES-20")

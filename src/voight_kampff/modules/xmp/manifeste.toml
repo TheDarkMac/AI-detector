@@ -1,12 +1,12 @@
 # Module xmp : métadonnées XMP d'une image, d'un PDF, d'un WAV, d'un M4A, d'un MP4 ou d'un MOV (ADR-0114, ADR-0127, ADR-0134). Validé par schemas/manifeste.schema.json (ADR-0064).
 
 identifiant = "xmp"
-version = "0.4.0"
+version = "0.5.0"
 formats = ["jpeg", "png", "webp", "heic", "pdf", "wav", "m4a", "mp4", "mov"]
 exigences = ["F-10", "F-11", "F-12", "ES-05", "ES-13"]
 regles = []
 fiche = "metadonnees-xmp"
-# Directions des règles du catalogue sur ses observations (T22, ADR-0142) ; le module lui-même n'émet aucun constat.
-directions = ["origine_ia", "retouche", "rien_de_particulier"]
+# Directions des règles du catalogue sur ses observations (T22, ADR-0142 ; T24, ADR-0155) ; le module lui-même n'émet aucun constat.
+directions = ["origine_ia", "retouche", "transformation", "rien_de_particulier"]
 requiert = []
 bibliotheques = ["expat"]

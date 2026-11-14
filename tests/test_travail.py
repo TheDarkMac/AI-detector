@@ -512,6 +512,7 @@ def test_import_des_modules_livres() -> None:
     assert sorted(analyseurs) == [
         "exif",
         "id3",
+        "image",
         "infopdf",
         "infowav",
         "iptc",
