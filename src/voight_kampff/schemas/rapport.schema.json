@@ -17,7 +17,7 @@
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.4.0" },
+    "version_schema": { "const": "0.5.0" },
     "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
@@ -520,10 +520,23 @@
         "fourni_par_utilisateur": { "type": "boolean" }
       }
     },
+    "version_confiance": {
+      "description": "Liste de confiance C2PA employée : nom et version donnés par sa source, date d'émission, empreinte du dossier, livrée ou fournie par l'utilisateur (ADR-0171).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nom", "version", "date", "empreinte", "fourni_par_utilisateur"],
+      "properties": {
+        "nom": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "version": { "$ref": "#/$defs/version" },
+        "date": { "$ref": "#/$defs/version_catalogue/properties/date" },
+        "empreinte": { "$ref": "#/$defs/empreinte" },
+        "fourni_par_utilisateur": { "type": "boolean" }
+      }
+    },
     "versions": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["outil", "interpreteur", "catalogue", "dependances"],
+      "required": ["outil", "interpreteur", "catalogue", "confiance", "dependances"],
       "properties": {
         "outil": { "$ref": "#/$defs/version" },
         "interpreteur": {
@@ -531,6 +544,7 @@
           "$ref": "#/$defs/dependance"
         },
         "catalogue": { "$ref": "#/$defs/version_catalogue" },
+        "confiance": { "$ref": "#/$defs/version_confiance" },
         "dependances": { "type": "array", "items": { "$ref": "#/$defs/dependance" } }
       }
     },

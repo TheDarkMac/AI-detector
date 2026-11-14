@@ -14,6 +14,7 @@ import json
 import os
 import sys
 from collections.abc import Iterator, Mapping, Sequence
+from importlib import metadata
 from pathlib import Path
 from typing import Any
 from xml.parsers import expat
@@ -98,7 +99,12 @@ def configuration(
         }
         for i in identifiants
     ]
-    document = {"version_schema": VERSION_SCHEMA, "modules": modules_actifs, "regles": list(regles)}
+    document = {
+        "version_schema": VERSION_SCHEMA,
+        "modules": modules_actifs,
+        "regles": list(regles),
+        "confiance": {"signataires": "", "horodatage": ""},
+    }
     return io.BytesIO(json.dumps(document).encode() + b"\n")
 
 
@@ -171,7 +177,10 @@ def test_versions_des_bibliotheques_des_modules_actifs(descripteur: int) -> None
     [versions] = [m for m in messages if m["type"] == "versions"]
     version = ".".join(str(n) for n in expat.version_info)
     assert versions["dependances"] == [{"nom": "expat", "version": version}]
-    assert principal.versions_des_bibliotheques() == {"expat": version}
+    assert principal.versions_des_bibliotheques() == {
+        "c2pa-python": metadata.version("c2pa-python"),
+        "expat": version,
+    }
 
 
 def test_garde_posee_avant_l_isolation(descripteur: int) -> None:
@@ -485,7 +494,7 @@ def test_empreinte(descripteur: int) -> None:
     "ligne",
     [
         pytest.param(b"", id="absente"),
-        pytest.param(b'{"version_schema":"0.4.0","modules":[]}', id="sans-fin-de-ligne"),
+        pytest.param(b'{"version_schema":"0.5.0","modules":[]}', id="sans-fin-de-ligne"),
         pytest.param(b'{"version_schema":"9.9.9","modules":[]}\n', id="autre-version"),
     ],
 )
@@ -502,7 +511,7 @@ def test_configuration_trop_longue(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_configuration_avec_ses_regles() -> None:
     regles = [regle_dict("R-TEST-002"), regle_dict("R-TEST-001", module="beta")]
-    alpha, beta = lire_configuration(configuration("alpha", "beta", regles=regles))
+    alpha, beta = lire_configuration(configuration("alpha", "beta", regles=regles)).modules
     assert alpha.regles == (regle("R-TEST-002"),)
     assert beta.regles == (regle("R-TEST-001", module="beta"),)
 
@@ -510,6 +519,7 @@ def test_configuration_avec_ses_regles() -> None:
 def test_import_des_modules_livres() -> None:
     analyseurs, echecs = principal.importer()
     assert sorted(analyseurs) == [
+        "c2pa",
         "exif",
         "id3",
         "image",

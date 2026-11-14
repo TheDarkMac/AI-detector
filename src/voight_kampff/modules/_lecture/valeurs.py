@@ -73,30 +73,29 @@ def observer(
     identifiante: CategorieIdentifiante | None = None,
     unite: str | None = None,
     total: int | None = None,
-) -> None:
+) -> str:
     """Observe une valeur, coupée au besoin, et sa longueur entière si elle l'a été.
 
-    ``total`` donne le nombre d'éléments d'une liste dont seul le début a été lu.
+    ``total`` donne le nombre d'éléments d'une liste dont seul le début a été lu. Renvoie
+    l'identifiant de l'observation de la valeur, à citer dans un constat.
     """
     if isinstance(valeur, str):
         if len(valeur) > LONGUEUR_MAX_TEXTE:
-            contexte.observer(
+            identifiant = contexte.observer(
                 nom,
                 valeur[:LONGUEUR_MAX_TEXTE],
                 localisation=localisation,
                 identifiante=identifiante,
             )
             _longueur(contexte, nom, len(valeur), "caractères", localisation)
-            return
-        contexte.observer(
+            return identifiant
+        return contexte.observer(
             nom, valeur, unite=unite, localisation=localisation, identifiante=identifiante
         )
-        return
     if isinstance(valeur, int | float | bool):
-        contexte.observer(
+        return contexte.observer(
             nom, valeur, unite=unite, localisation=localisation, identifiante=identifiante
         )
-        return
     gardes: list[Scalaire] = []
     caracteres = 0
     coupee = False
@@ -109,12 +108,13 @@ def observer(
             coupee = True
             break
         gardes.append(element)
-    contexte.observer(
+    identifiant = contexte.observer(
         nom, gardes, unite=unite, localisation=localisation, identifiante=identifiante
     )
     total = len(valeur) if total is None else total
     if coupee or total > len(gardes):
         _longueur(contexte, nom, total, "éléments", localisation)
+    return identifiant
 
 
 def _longueur(

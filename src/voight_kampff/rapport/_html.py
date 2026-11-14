@@ -201,6 +201,7 @@ def _versions(vue: Presentation) -> str:
             _t(f"{versions.interpreteur.nom} {versions.interpreteur.version}"),
         ),
         (_champ("catalogue"), _t(vue.catalogue())),
+        (_champ("confiance"), _t(vue.confiance())),
         (
             _champ("dependances"),
             _liste(f"{d.nom} {d.version}" for d in dependances)

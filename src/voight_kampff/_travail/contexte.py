@@ -15,13 +15,15 @@ sur toutes les machines.
 
 Il porte enfin les règles du catalogue qui relèvent du module (ADR-0084, ADR-0090) : le module
 cite une règle « module » par son identifiant, et le catalogue fixe ce que dit le constat ; après
-lui, le moteur applique les règles « moteur » aux observations qu'il a produites.
+lui, le moteur applique les règles « moteur » aux observations qu'il a produites. Il porte aussi
+les ancres de la liste de confiance C2PA validée par le processus principal (ADR-0171).
 """
 
 import contextlib
 import dataclasses
 import zlib
 from collections.abc import Collection, Iterator, Mapping, Sequence
+from dataclasses import dataclass
 from typing import Literal
 
 from voight_kampff._limites import (
@@ -50,7 +52,7 @@ from voight_kampff.rapport.modele import (
     Scalaire,
 )
 
-__all__ = ["RAISONS_D_UN_MODULE", "Compression", "Contexte", "LimiteDepassee"]
+__all__ = ["RAISONS_D_UN_MODULE", "Ancres", "Compression", "Contexte", "LimiteDepassee"]
 
 type Compression = Literal["zlib", "deflate", "gzip"]
 """Flux que :meth:`Contexte.decompresser` sait lire : zlib, deflate brut (ZIP), gzip."""
@@ -67,6 +69,19 @@ RAISONS_D_UN_MODULE = frozenset(
     }
 )
 """Raisons qu'un module peut donner lui-même ; les autres sont produites par le moteur."""
+
+
+@dataclass(frozen=True, slots=True)
+class Ancres:
+    """Ancres de la liste de confiance C2PA, textes PEM validés par le processus principal."""
+
+    signataires: str = ""
+    """Ancres des signataires de manifestes ; vide si aucune liste n'est remise."""
+    horodatage: str = ""
+    """Ancres des autorités d'horodatage ; vide si la liste n'en a pas."""
+
+
+_SANS_ANCRES = Ancres()
 
 
 class LimiteDepassee(Exception):
@@ -92,6 +107,7 @@ class Contexte:
         "_regles",
         "_releves",
         "_taille_lignes",
+        "ancres",
         "format_reel",
         "module",
         "partie",
@@ -107,6 +123,7 @@ class Contexte:
         budget: int,
         numero: int = 0,
         regles: Sequence[Regle] = (),
+        ancres: Ancres = _SANS_ANCRES,
     ) -> None:
         garde.exiger()
         self.module = module
@@ -128,6 +145,8 @@ class Contexte:
         """Observations du module, dans l'ordre : le moteur leur applique ses règles."""
         self._regles = {regle.identifiant: regle for regle in regles}
         """Règles du catalogue qui relèvent de ce module, par identifiant."""
+        self.ancres = ancres
+        """Ancres de la liste de confiance C2PA (ADR-0171)."""
         self._depasse = False
         self._compresses = 0
         self._decompresses = 0

@@ -1,7 +1,9 @@
 """Règles et catalogues de test, partagés entre fichiers de tests (T15).
 
 ``CATALOGUE`` porte les règles des modules factices de ``travail_factice.py`` : ``alpha``
-constate par la règle « module » R-TEST-001, et le moteur lui applique la règle R-TEST-003.
+constate par la règle « module » R-TEST-001, et le moteur lui applique la règle R-TEST-003. Il
+porte aussi les règles « module » du module c2pa livré, sans lesquelles ce module lève quand un
+test lance le vrai processus de travail (T30).
 """
 
 from datetime import date
@@ -9,10 +11,14 @@ from pathlib import Path
 from typing import Any
 
 from voight_kampff._orchestration.catalogue import Catalogue
+from voight_kampff._orchestration.catalogue import charger as _charger
+from voight_kampff._orchestration.manifestes import decouvrir
 from voight_kampff._regles import Regle
-from voight_kampff.rapport.modele import VersionCatalogue
+from voight_kampff.rapport.modele import VersionCatalogue, VersionConfiance
 
 VERSION = VersionCatalogue("0.0.1", date(2026, 10, 27), "c" * 64, fourni_par_utilisateur=False)
+CONFIANCE = VersionConfiance("Liste de test", "1", date(2026, 11, 14), "d" * 64, False)
+"""Version d'une liste de confiance C2PA, pour les analyses construites par les tests (T30)."""
 
 
 def regle_dict(
@@ -51,6 +57,11 @@ def regle(identifiant: str = "R-TEST-001", module: str = "alpha", **champs: Any)
     return Regle.depuis_dict(regle_dict(identifiant, module, **champs))
 
 
+def livre() -> Catalogue:
+    """Catalogue livré, validé avec les modules livrés."""
+    return _charger(decouvrir())
+
+
 def moteur(*conditions: dict[str, Any], **champs: Any) -> dict[str, Any]:
     """Champs d'une règle du moteur, à passer à :func:`regle` ou :func:`regle_dict`."""
     return {"application": "moteur", "condition": list(conditions)} | champs
@@ -66,7 +77,10 @@ REGLES = (
     ),
 )
 
-CATALOGUE = Catalogue(VERSION, "Catalogue de test.", REGLES)
+REGLES_C2PA = livre().du_module("c2pa")
+"""Règles « module » du module c2pa livré : il les cite, et lève sans elles (ADR-0084, T30)."""
+
+CATALOGUE = Catalogue(VERSION, "Catalogue de test.", REGLES + REGLES_C2PA)
 
 
 def chaine(valeur: Any) -> str:

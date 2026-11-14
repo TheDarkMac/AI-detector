@@ -1,0 +1,21 @@
+# Liste de confiance C2PA livrée avec Voight-Kampff : en-tête (ADR-0165, ADR-0171).
+#
+# signataires.pem et horodatage.pem sont les fichiers C2PA-TRUST-LIST.pem et
+# C2PA-TSA-TRUST-LIST.pem de la C2PA, recopiés sans modification depuis le commit ci-dessous :
+# leur SHA-256 est celui du dépôt d'origine. Toute modification d'un fichier de ce dossier change
+# l'empreinte de la liste inscrite au rapport ; la procédure de mise à jour est décrite dans
+# docs/techniques/provenance-c2pa.md.
+
+format = 1
+nom = "C2PA Trust List"
+# LoTESequenceNumber des deux listes publiées (C2PA-TRUST-LIST.json, C2PA-TSA-TRUST-LIST.json).
+version = "4"
+# ListIssueDateTime des deux listes, 2026-11-04T17:24:49Z.
+date = "2026-11-04"
+# NextUpdate des deux listes, 2027-02-02T17:24:49Z : une liste plus ancienne que cette date reste
+# employée, et le rapport dit laquelle.
+prochaine_mise_a_jour = "2027-02-02"
+source = "https://github.com/c2pa-org/conformance-public/tree/a95f2c4e4be7cd015c394fc5deb188683cbbc944/trust-list"
+licence = "CC-BY-4.0"
+attribution = "C2PA Trust List et C2PA TSA Trust List, Coalition for Content Provenance and Authenticity (C2PA), sous licence Creative Commons Attribution 4.0 International."
+description = "Ancres de confiance des signataires de manifestes (programme de conformité de la C2PA) et des autorités d'horodatage ; la liste intérimaire du CAI, figée au 2026-01-01, n'est pas reprise."

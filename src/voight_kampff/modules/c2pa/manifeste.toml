@@ -1,0 +1,25 @@
+# Module c2pa : manifeste C2PA, vérification de la signature, de l'intégrité et de la chaîne, déclarations (ADR-0164 à ADR-0170). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "c2pa"
+version = "0.1.0"
+# Formats où c2pa-rs 0.92.0 lit et vérifie un manifeste ; AAC, OGG, WebM et le texte n'en portent pas selon la spécification qu'il suit.
+formats = ["jpeg", "png", "webp", "heic", "pdf", "wav", "mp3", "m4a", "flac", "mp4", "mov", "docx", "odt"]
+exigences = ["F-20", "F-21", "F-22", "F-23", "F-90", "ES-06", "ES-09", "ES-10", "ES-13", "ES-20"]
+regles = [
+    "R-C2PA-001",
+    "R-C2PA-002",
+    "R-C2PA-003",
+    "R-C2PA-004",
+    "R-C2PA-005",
+    "R-C2PA-006",
+    "R-C2PA-007",
+    "R-C2PA-008",
+    "R-C2PA-009",
+    "R-C2PA-010",
+    "R-C2PA-011",
+    "R-C2PA-012",
+]
+fiche = "provenance-c2pa"
+directions = ["origine_ia", "retouche", "transformation", "authenticite", "rien_de_particulier"]
+requiert = []
+bibliotheques = ["c2pa-python"]

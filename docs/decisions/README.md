@@ -178,3 +178,13 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0161](ADR-0161-valeur-fbmd.md) | Valeur FBMD de SpecialInstructions : numéro de série | Accepté | 2026-11-14 |
 | [ADR-0162](ADR-0162-liste-de-garde-non-ajoutee.md) | Liste de garde par nom d'observation dans P1 : non ajoutée | Accepté | 2026-11-14 |
 | [ADR-0163](ADR-0163-versions-de-t25.md) | Versions de T25 : schéma 0.4.0, douze modules à une nouvelle version, catalogue inchangé | Accepté | 2026-11-14 |
+| [ADR-0164](ADR-0164-bibliotheque-c2pa.md) | Bibliothèque C2PA : c2pa-python 0.39.0 dans le processus de travail, sans réseau | Accepté | 2026-11-14 |
+| [ADR-0165](ADR-0165-liste-de-confiance-livree.md) | Liste de confiance livrée : C2PA Trust List et C2PA TSA Trust List | Accepté | 2026-11-14 |
+| [ADR-0166](ADR-0166-requetes-en-ligne-hors-de-t30.md) | Requêtes en ligne d'ADR-0033 : hors de T30, dans un complément | Accepté | 2026-11-14 |
+| [ADR-0167](ADR-0167-manifeste-invalide.md) | Manifeste invalide par un écart d'empreinte : indice faible vers la transformation | Accepté | 2026-11-14 |
+| [ADR-0168](ADR-0168-capture-declaree-signataire-reconnu.md) | Capture déclarée sous un signataire reconnu : preuve, direction authenticité | Accepté | 2026-11-14 |
+| [ADR-0169](ADR-0169-etats-et-observations-c2pa.md) | États de la vérification et vocabulaire des observations du module c2pa | Accepté | 2026-11-14 |
+| [ADR-0170](ADR-0170-regles-du-module-c2pa.md) | Règles du module c2pa : une phrase d'état par manifeste, preuve ou indice pour une source déclarée | Accepté | 2026-11-14 |
+| [ADR-0171](ADR-0171-liste-de-confiance-au-rapport.md) | Liste de confiance : chargement par P1, configuration de P2, rubrique Versions, liste fournie | Accepté | 2026-11-14 |
+| [ADR-0172](ADR-0172-versions-de-t30.md) | Versions de T30 : schéma 0.5.0, catalogue 0.5.0, module c2pa 0.1.0 | Accepté | 2026-11-14 |
+| [ADR-0173](ADR-0173-adresse-d-un-manifeste-distant.md) | Adresse d'un manifeste C2PA distant dans le XMP : masquée comme un numéro de série | Accepté | 2026-11-14 |

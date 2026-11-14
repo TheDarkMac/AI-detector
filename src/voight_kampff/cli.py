@@ -9,10 +9,12 @@ identifiantes, nom et empreinte compris, y sont masquées (ADR-0031, ADR-0098).
 masquage d'une catégorie, au terminal comme dans les rapports, et le signale (ADR-0093).
 ``--catalogue DOSSIER`` remplace le catalogue livré par celui de l'utilisateur (ADR-0086) ;
 ``--regles`` affiche la version, la date, l'empreinte et les règles du catalogue (NF-07).
+``--confiance DOSSIER`` remplace de même la liste de confiance C2PA livrée (ADR-0171).
 
 Codes de sortie : 0 si chaque fichier a été analysé, même partiellement, et son rapport écrit ;
 1 si au moins un a été refusé ou n'a pas pu être écrit ; 2 pour une commande invalide, un
-catalogue invalide ou un rapport qui existe déjà (ADR-0075, ADR-0086, ADR-0092).
+catalogue ou une liste de confiance invalides, ou un rapport qui existe déjà (ADR-0075, ADR-0086,
+ADR-0092).
 
 ``--comparer A B`` compare deux rapports JSON du même fichier (NF-06, ADR-0112) : 0 si leurs
 résultats sont identiques, 1 s'ils diffèrent, 2 si l'un n'est pas un rapport valide.
@@ -26,6 +28,7 @@ from pathlib import Path
 
 from voight_kampff import __version__
 from voight_kampff._orchestration import catalogue as catalogues
+from voight_kampff._orchestration import confiance as listes
 from voight_kampff._orchestration import manifestes
 from voight_kampff.analyse import Analyse, AnalyseRefusee, analyser
 from voight_kampff.rapport import comparaison, export
@@ -84,6 +87,12 @@ def construire_analyseur() -> argparse.ArgumentParser:
         "--catalogue",
         metavar="DOSSIER",
         help="remplace le catalogue livré par celui de ce dossier ; le rapport le signale",
+    )
+    analyseur.add_argument(
+        "--confiance",
+        metavar="DOSSIER",
+        help="remplace la liste de confiance C2PA livrée par celle de ce dossier ; le rapport "
+        "le signale",
     )
     analyseur.add_argument(
         "--rapport",
@@ -208,6 +217,7 @@ def resume(analyse: Analyse, reveler: Sequence[str] = ()) -> list[str]:
         cle = "terminal.non_menee_precisee" if precision else "terminal.non_menee"
         lignes.append(texte(cle, raison=vue.non_menee(non_menee), precision=precision))
     lignes.append(texte("terminal.catalogue", catalogue=vue.catalogue()))
+    lignes.append(texte("terminal.confiance", confiance=vue.confiance()))
     return lignes
 
 
@@ -241,6 +251,7 @@ def _analyser(
     fichiers: Sequence[str],
     desactiver: Sequence[str],
     catalogue: str | None,
+    confiance: str | None,
     dossier: Path | None,
     reveler: Sequence[str],
 ) -> int:
@@ -249,7 +260,9 @@ def _analyser(
     for rang, chemin in enumerate(fichiers, start=1):
         repere = f"[{rang}/{len(fichiers)}]"
         try:
-            analyse = analyser(chemin, desactiver=desactiver, catalogue=catalogue)
+            analyse = analyser(
+                chemin, desactiver=desactiver, catalogue=catalogue, confiance=confiance
+            )
         except AnalyseRefusee as refus:
             sys.stdout.flush()  # les deux flux restent dans l'ordre des fichiers
             print(f"{repere} refusé : {refus}", file=sys.stderr)
@@ -366,6 +379,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         _lister_regles(catalogue)
         return 0
     try:
+        listes.charger(arguments.confiance)
+    except listes.ConfianceInvalide as erreur:
+        analyseur.error(f"liste de confiance invalide : {erreur}")
+    try:
         manifestes.selectionner(livres, arguments.desactiver)
     except manifestes.ModuleInconnu as erreur:
         connus = ", ".join(manifeste.identifiant for manifeste in livres) or "aucun"
@@ -377,5 +394,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         except ValueError as erreur:
             analyseur.error(f"--rapport : {erreur}")
     return _analyser(
-        arguments.fichiers, arguments.desactiver, arguments.catalogue, dossier, arguments.reveler
+        arguments.fichiers,
+        arguments.desactiver,
+        arguments.catalogue,
+        arguments.confiance,
+        dossier,
+        arguments.reveler,
     )

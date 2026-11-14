@@ -1,7 +1,8 @@
 """Comparaison de deux rapports d'un même fichier : reproductibilité (NF-06, T18).
 
 Deux analyses du même fichier, dans les conditions de la garantie (ADR-0023) : mêmes versions
-de l'outil, de l'interpréteur, du catalogue et des dépendances, même extension, aucune analyse
+de l'outil, de l'interpréteur, du catalogue, de la liste de confiance et des dépendances, même
+extension, aucune analyse
 interrompue, doivent donner le même rapport, à la date et au nom du fichier près (ADR-0108).
 :func:`comparer` relève chaque écart entre deux exports JSON et le classe (ADR-0112) :
 

@@ -222,6 +222,17 @@ class Presentation:
             cle, version=version.version, date=version.date.isoformat(), empreinte=version.empreinte
         )
 
+    def confiance(self) -> str:
+        version = self.analyse.confiance
+        cle = "formes.confiance_fournie" if version.fourni_par_utilisateur else "formes.confiance"
+        return texte(
+            cle,
+            nom=version.nom,
+            version=version.version,
+            date=version.date.isoformat(),
+            empreinte=version.empreinte,
+        )
+
     def evaluation(self, regle: Regle) -> str:
         if regle.evaluation is None:
             return texte("formes.non_evaluee")
@@ -251,7 +262,8 @@ class Presentation:
         return choisis
 
     def alertes(self) -> list[str]:
-        """Ce qui change la portée du rapport, annoncé en tête (ES-13, ADR-0086, ADR-0028)."""
+        """Ce qui change la portée du rapport, annoncé en tête (ES-13, ADR-0086, ADR-0028,
+        ADR-0171)."""
         alertes = []
         levees = [c for c in CategorieIdentifiante if not self.masquee(c)]
         if levees:
@@ -259,6 +271,8 @@ class Presentation:
             alertes.append(texte("alertes.masquage_leve", categories=categories))
         if self.analyse.catalogue.fourni_par_utilisateur:
             alertes.append(texte("alertes.catalogue_fourni"))
+        if self.analyse.confiance.fourni_par_utilisateur:
+            alertes.append(texte("alertes.confiance_fournie"))
         isolation = self.analyse.isolation
         if isolation.niveau is NiveauIsolation.REDUITE:
             manques = ", ".join(libelle("manques", manque) for manque in isolation.manques)

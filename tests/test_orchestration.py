@@ -13,13 +13,14 @@ import sys
 import time
 from collections.abc import Callable, Collection, Iterator, Sequence
 from datetime import UTC, datetime
+from importlib import metadata
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, cast
 from xml.parsers import expat
 
 import pytest
-from catalogues import CATALOGUE
+from catalogues import CATALOGUE, CONFIANCE
 from echantillons import boite
 from medias import (
     donnee,
@@ -151,6 +152,7 @@ def analyse_de(resultat: ResultatTravail, taille: int = len(CONTENU)) -> Analyse
         non_menees=resultat.non_menees,
         dependances=resultat.dependances,
         catalogue=CATALOGUE.version,
+        confiance=CONFIANCE,
         regles=CATALOGUE.regles,
     )
 
@@ -173,9 +175,11 @@ def test_vrai_processus_identifie_le_format(pdf: int) -> None:
     assert resultat.empreinte == hashlib.sha256(PDF).hexdigest()
     assert set(resultat.isolation.manques) == MANQUES_ATTENDUS
     assert (resultat.isolation.niveau is NiveauIsolation.COMPLETE) == (not MANQUES_ATTENDUS)
-    # Modules d'image non applicables ; ceux du PDF partiels : l'échantillon n'a pas de startxref.
+    # Modules d'image non applicables ; ceux du PDF partiels : l'échantillon n'a pas de startxref,
+    # et c2pa-rs ne le lit pas : recherche d'un manifeste non menée (ADR-0169).
     etats = {t.module: t.etat for t in resultat.couverture.techniques}
     assert etats.pop("infopdf") is etats.pop("xmp") is EtatTechnique.PARTIELLE
+    assert etats.pop("c2pa") is EtatTechnique.NON_MENEE
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(PDF))
@@ -194,7 +198,10 @@ def test_vrai_processus_extrait_les_metadonnees(tmp_path: Path) -> None:
     assert {"exif.ifd0.Make", "xmp.dc:creator", "iptc.Keywords"} <= noms
     assert "textepng.present" not in noms  # module non applicable au JPEG
     version = ".".join(str(n) for n in expat.version_info)
-    assert resultat.dependances == (Dependance("expat", version),)
+    assert resultat.dependances == (
+        Dependance("c2pa-python", metadata.version("c2pa-python")),
+        Dependance("expat", version),
+    )
     assert {t.etat for t in resultat.couverture.techniques if t.module == "iptc"} == {
         EtatTechnique.APPLIQUEE
     }
@@ -217,7 +224,7 @@ def test_vrai_processus_extrait_les_metadonnees_d_un_pdf(tmp_path: Path) -> None
     assert valeurs["infopdf.chiffre"] is False
     assert str(valeurs["xmp.Iptc4xmpExt:DigitalSourceType"]).endswith("trainedAlgorithmicMedia")
     etats = {t.module: t.etat for t in resultat.couverture.techniques if t.version is not None}
-    assert etats.pop("infopdf") is etats.pop("xmp") is EtatTechnique.APPLIQUEE
+    assert etats.pop("infopdf") is etats.pop("xmp") is etats.pop("c2pa") is EtatTechnique.APPLIQUEE
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(contenu))
@@ -237,6 +244,7 @@ def test_vrai_processus_extrait_les_balises_d_une_video(tmp_path: Path) -> None:
     assert str(valeurs["xmp.Iptc4xmpExt:DigitalSourceType"]).endswith("trainedAlgorithmicMedia")
     etats = {t.module: t.etat for t in resultat.couverture.techniques if t.version is not None}
     assert etats.pop("quicktime") is etats.pop("xmp") is EtatTechnique.APPLIQUEE
+    assert etats.pop("c2pa") is EtatTechnique.APPLIQUEE
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(contenu))
@@ -272,7 +280,7 @@ def test_vrai_processus_extrait_les_proprietes_d_un_document(
     valeurs = {o.nom: o.valeur for o in resultat.observations}
     assert {cle: valeurs.get(cle) for cle in attendus} == attendus
     etats = {t.module: t.etat for t in resultat.couverture.techniques if t.version is not None}
-    assert etats.pop(module) is EtatTechnique.APPLIQUEE
+    assert etats.pop(module) is etats.pop("c2pa") is EtatTechnique.APPLIQUEE
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(contenu))
@@ -337,8 +345,10 @@ def test_vrai_processus_bibliotheques_des_seuls_modules_actifs(tmp_path: Path) -
     contenu = (Path(__file__).parent / "donnees" / "metadonnees" / "photo.jpg").read_bytes()
     ouvert = ouvrir(tmp_path / "photo.jpg", contenu)
     try:
-        # expat sert à xmp, ooxml et odf : désactivés, il n'est plus cité (ADR-0120).
-        resultat = executer(ouvert, manifestes.decouvrir(), desactives={"xmp", "ooxml", "odf"})
+        # expat sert à xmp, ooxml et odf, c2pa-python à c2pa : désactivés, ils ne sont plus cités
+        # (ADR-0120).
+        desactives = {"xmp", "ooxml", "odf", "c2pa"}
+        resultat = executer(ouvert, manifestes.decouvrir(), desactives=desactives)
     finally:
         os.close(ouvert)
     assert resultat.dependances == ()

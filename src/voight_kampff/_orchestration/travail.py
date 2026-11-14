@@ -30,8 +30,10 @@ from typing import IO, Any
 from voight_kampff import schemas
 from voight_kampff._limites import DELAI, DELAI_ARRET
 from voight_kampff._orchestration import catalogue as catalogues
+from voight_kampff._orchestration import confiance as listes
 from voight_kampff._orchestration import surveillance
 from voight_kampff._orchestration.catalogue import Catalogue
+from voight_kampff._orchestration.confiance import ListeDeConfiance
 from voight_kampff._orchestration.manifestes import Manifeste, selectionner
 from voight_kampff._protocole import (
     TAILLE_MAX_CONFIGURATION,
@@ -157,6 +159,7 @@ def executer(
     desactives: Collection[str] = (),
     *,
     catalogue: Catalogue | None = None,
+    confiance: ListeDeConfiance | None = None,
     taille: int | None = None,
     delai: float = DELAI,
     commande: Callable[[int], Sequence[str]] = commande_travail,
@@ -165,13 +168,15 @@ def executer(
 
     ``manifestes`` est dans l'ordre d'exécution (``decouvrir``) ; ``desactives`` nomme les
     modules désactivés par l'utilisateur. ``catalogue`` vaut par défaut le catalogue livré,
-    validé avec ces manifestes. ``taille``, celle que le principal a hachée, borne les parties
-    reçues ; à défaut, celle du descripteur. ``commande`` remplace, pour les tests, le
-    processus de travail livré.
+    validé avec ces manifestes, et ``confiance`` la liste de confiance livrée (ADR-0171).
+    ``taille``, celle que le principal a hachée, borne les parties reçues ; à défaut, celle du
+    descripteur. ``commande`` remplace, pour les tests, le processus de travail livré.
     """
     actifs, eteints = selectionner(manifestes, desactives)
     if catalogue is None:
         catalogue = catalogues.charger(manifestes)
+    if confiance is None:
+        confiance = listes.charger()
     identifiants = {manifeste.identifiant for manifeste in actifs}
     regles = {
         regle.identifiant: regle for regle in catalogue.regles if regle.module in identifiants
@@ -191,6 +196,7 @@ def executer(
                 for manifeste in actifs
             ],
             "regles": catalogue.configuration(identifiants),
+            "confiance": confiance.configuration(),
         }
     )
     if len(configuration) > TAILLE_MAX_CONFIGURATION:

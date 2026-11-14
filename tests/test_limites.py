@@ -198,6 +198,7 @@ def deroule(descripteur: int, analyseur: Callable[[Contexte], None]) -> list[str
             }
         ],
         "regles": [],
+        "confiance": {"signataires": "", "horodatage": ""},
     }
     sortie = io.BytesIO()
     principal.principal(

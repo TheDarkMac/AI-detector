@@ -28,8 +28,9 @@ classifiers = [
     "Typing :: Typed",
 ]
 # Chaque bibliothèque est ajoutée par la tâche qui l'utilise (ADR-0043) : jsonschema en T11 (ADR-0054),
-# google-re2 en T15 (ADR-0039).
+# google-re2 en T15 (ADR-0039), c2pa-python en T30 (ADR-0164).
 dependencies = [
+    "c2pa-python>=0.39.0",
     "google-re2>=1.1.20251105",
     "jsonschema>=4.26",
 ]
@@ -95,6 +96,13 @@ files = ["src", "tests", "banc"]
 # google-re2 ne publie pas ses types : ses objets sont Any, employés dans _regles.py seulement.
 module = ["re2"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# c2pa-python ne publie pas ses types (pas de py.typed) : ses objets sont Any, employés dans le module
+# c2pa et les tests seulement (ADR-0164).
+module = ["c2pa", "c2pa.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

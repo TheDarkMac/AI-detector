@@ -10,11 +10,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from catalogues import VERSION, ecrire_catalogue, moteur, regle_dict, toml_regles
+from catalogues import CONFIANCE, VERSION, ecrire_catalogue, moteur, regle_dict, toml_regles
 from echantillons import PDF, archive, jpeg
 
 from voight_kampff import Analyse, __version__
-from voight_kampff._orchestration import catalogue, manifestes
+from voight_kampff._orchestration import catalogue, confiance, manifestes
 from voight_kampff._orchestration.manifestes import Manifeste
 from voight_kampff.cli import main, resume
 from voight_kampff.rapport.modele import (
@@ -52,9 +52,9 @@ def test_sans_argument_affiche_l_aide(capsys: pytest.CaptureFixture[str]) -> Non
 def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["--modules"]) == 0
     assert capsys.readouterr().out == (
-        "exif 0.4.0\nid3 0.3.0\nimage 0.1.0\ninfopdf 0.3.0\ninfowav 0.3.0\niptc 0.4.0\n"
-        "matroska 0.3.0\nodf 0.3.0\nooxml 0.3.0\nquicktime 0.3.0\ntextepng 0.4.0\nvorbis 0.3.0\n"
-        "xmp 0.6.0\n"
+        "c2pa 0.1.0\nexif 0.4.0\nid3 0.3.0\nimage 0.1.0\ninfopdf 0.3.0\ninfowav 0.3.0\n"
+        "iptc 0.4.0\nmatroska 0.3.0\nodf 0.3.0\nooxml 0.3.0\nquicktime 0.3.0\ntextepng 0.4.0\n"
+        "vorbis 0.3.0\nxmp 0.7.0\n"
     )
 
 
@@ -141,9 +141,12 @@ def test_resume_d_un_polyglotte(tmp_path: Path, capsys: pytest.CaptureFixture[st
     assert "  technique ela, partie 1 : hors de cette version" in sortie
     assert "non livrée" not in sortie  # dit une fois, avec la technique
     livre = catalogue.charger(manifestes.decouvrir()).version
+    liste = confiance.charger().version
     assert (
         f"  catalogue : {livre.version} du {livre.date.isoformat()}, "
-        f"empreinte {livre.empreinte}\n\n"
+        f"empreinte {livre.empreinte}\n"
+        f"  liste de confiance C2PA : C2PA Trust List 4 du 2026-11-04, "
+        f"empreinte {liste.empreinte}\n\n"
         "Ce rapport ne délivre aucun verdict"
     ) in sortie
     # Ni le nom ni l'empreinte n'apparaissent (ADR-0031).
@@ -177,8 +180,8 @@ def test_desactiver_un_module_inconnu(capsys: pytest.CaptureFixture[str]) -> Non
     assert sortie.value.code == 2
     erreur = capsys.readouterr().err
     livres = (
-        "exif, id3, image, infopdf, infowav, iptc, matroska, odf, ooxml, quicktime, textepng, "
-        "vorbis, xmp"
+        "c2pa, exif, id3, image, infopdf, infowav, iptc, matroska, odf, ooxml, quicktime, "
+        "textepng, vorbis, xmp"
     )
     assert f"module inconnu : omega ; modules livrés : {livres}" in erreur
 
@@ -239,6 +242,7 @@ def test_resume_de_chaque_element() -> None:
         ),
         dependances=(),
         catalogue=VERSION,
+        confiance=CONFIANCE,
     )
     tronque = "Structure interrompue avant sa fin : fichier tronqué ou corrompu."
     assert resume(analyse) == [
@@ -274,6 +278,7 @@ def test_resume_de_chaque_element() -> None:
         f"non menée : {tronque} (partie 1, octets 0 à 9)",
         "non menée : Délai dépassé : l'analyse a été interrompue.",
         f"catalogue : 0.0.1 du 2026-10-27, empreinte {'c' * 64}",
+        f"liste de confiance C2PA : Liste de test 1 du 2026-11-14, empreinte {'d' * 64}",
     ]
     # Isolation réduite (Windows, ou système sans Landlock) : ce qui manque est nommé en tête.
     manques = (ManqueIsolation.RESEAU, ManqueIsolation.LECTURE)
@@ -317,9 +322,16 @@ def test_regles_du_catalogue_livre(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_regles_d_un_catalogue_sans_regle(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     vide = ecrire_catalogue(tmp_path / "catalogue")
+    # Le module c2pa cite ses règles « module » : un catalogue fourni doit les porter (ADR-0084).
+    with pytest.raises(SystemExit) as sortie:
+        main(["--catalogue", str(vide), "--regles"])
+    assert sortie.value.code == 2
+    assert "module c2pa : règle R-C2PA-001 absente du catalogue" in capsys.readouterr().err
+    sans_regle_module = [m for m in manifestes.decouvrir() if not m.regles]
+    monkeypatch.setattr(manifestes, "decouvrir", lambda: sans_regle_module)
     assert main(["--catalogue", str(vide), "--regles"]) == 0
     lignes = capsys.readouterr().out.splitlines()
     assert lignes[0].startswith("catalogue : 1.2.3 du 2026-10-20, fourni par l'utilisateur")

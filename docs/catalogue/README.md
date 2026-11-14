@@ -1,6 +1,6 @@
 # Catalogue de règles
 
-> Statut : **v1.5** ; v1.0 mergée avec T15, v1.1 avec T16, v1.2 avec T17, v1.3 avec T22, v1.4 avec T23, v1.5 proposée dans la PR de T24. Document vivant : toute modification est inscrite à l'historique (§6).
+> Statut : **v1.6** ; v1.0 mergée avec T15, v1.1 avec T16, v1.2 avec T17, v1.3 avec T22, v1.4 avec T23, v1.5 avec T24, v1.6 proposée dans la PR de T30. Document vivant : toute modification est inscrite à l'historique (§6).
 > Exigences : F-12, F-24, F-26, NF-06, NF-07 ; ES-09 du [modèle de menace](../modele-de-menace/modele-de-menace.md).
 > Décisions : [ADR-0029](../decisions/ADR-0029-integrite-du-catalogue.md), [ADR-0038](../decisions/ADR-0038-format-du-catalogue.md), [ADR-0039](../decisions/ADR-0039-expressions-regulieres-re2.md), [ADR-0084](../decisions/ADR-0084-langage-des-regles.md) à [ADR-0091](../decisions/ADR-0091-texte-des-phrases-dans-la-regle.md).
 
@@ -10,7 +10,7 @@ Le catalogue décide de ce que l'outil tire de ses observations : chaque constat
 
 | Élément | Emplacement |
 | --- | --- |
-| Catalogue livré | [`src/voight_kampff/donnees/catalogue/`](../../src/voight_kampff/donnees/catalogue/) ; premières règles en version 0.2.0 (T22) : origine IA déclarée et signatures de générateurs ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md) à [ADR-0146](../decisions/ADR-0146-versions-des-modules-et-du-catalogue-de-t22.md)) ; incohérences internes et absence en 0.3.0 (T23, ADR-0147 à ADR-0152) ; indices de transfert en 0.4.0 (T24, [ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md) à [ADR-0157](../decisions/ADR-0157-versions-de-t24.md)) ; chaque fiche technique liste les règles qui lisent ses observations |
+| Catalogue livré | [`src/voight_kampff/donnees/catalogue/`](../../src/voight_kampff/donnees/catalogue/) ; premières règles en version 0.2.0 (T22) : origine IA déclarée et signatures de générateurs ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md) à [ADR-0146](../decisions/ADR-0146-versions-des-modules-et-du-catalogue-de-t22.md)) ; incohérences internes et absence en 0.3.0 (T23, ADR-0147 à ADR-0152) ; indices de transfert en 0.4.0 (T24, [ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md) à [ADR-0157](../decisions/ADR-0157-versions-de-t24.md)) ; premières règles « module », celles du module c2pa, en 0.5.0 (T30, [ADR-0170](../decisions/ADR-0170-regles-du-module-c2pa.md)) ; chaque fiche technique liste les règles qui lisent ses observations |
 | Schémas | `src/voight_kampff/schemas/catalogue.schema.json` (en-tête), `regles.schema.json` (règles) |
 | Chargement et validation | `src/voight_kampff/_orchestration/catalogue.py` |
 | Règles et évaluation | `src/voight_kampff/_regles.py` |
@@ -89,7 +89,7 @@ Un catalogue invalide arrête l'analyse avant toute lecture de fichier, avec un 
 - 8 Mio, 256 fichiers et 4 096 règles au plus ;
 - chaque fichier : TOML en UTF-8, conforme à son schéma ; date existante ; format 1 ou 2, et aucune règle du format 2 dans un catalogue du format 1 ;
 - chaque règle : du module de son fichier, identifiant unique, motifs acceptés par RE2 (1 024 caractères et 5 000 instructions au plus), catégorie, fondement, direction et niveau formant un constat possible, niveau permis par son évaluation, phrase dont les emplacements sont ses paramètres ;
-- cohérence avec les modules livrés : module existant, direction permise par son manifeste, règles « module » citées par le manifeste et elles seules.
+- cohérence avec les modules livrés : module existant, direction permise par son manifeste, règles « module » citées par le manifeste et elles seules ; un catalogue fourni porte donc les règles du module c2pa, que son manifeste cite (ADR-0170).
 
 ## 4. Vérifier une empreinte
 
@@ -123,3 +123,4 @@ La CI refuse une PR qui modifie une entrée du registre déjà sur `detector`, o
 | 2026-11-13 | 1.3 | Premières règles livrées (§1) ; ADR-0142 à ADR-0146 | T22 |
 | 2026-11-13 | 1.4 | Format 2 : tests `impossible` et `comparer`, lecture des dates (§2, §3) ; nouveau format avant 1.0.0 (§5) ; ADR-0147 à ADR-0152 | T23 |
 | 2026-11-14 | 1.5 | Règles livrées : incohérences de T23, indices de transfert de T24 (§1) ; ADR-0153 à ADR-0157 | T24 |
+| 2026-11-14 | 1.6 | Règles « module » du module c2pa, catalogue 0.5.0 (§1) ; un catalogue fourni porte les règles citées par les manifestes (§3) ; ADR-0170 | T30 |

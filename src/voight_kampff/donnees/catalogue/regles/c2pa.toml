@@ -1,0 +1,231 @@
+# Règles du module c2pa (T30) : état de la vérification d'un manifeste C2PA (F-21, F-22) et
+# déclarations qu'il porte (F-23), appliquées par le code du module (ADR-0084, ADR-0090).
+#
+# La vérification est celle de c2pa-rs, par c2pa-python (ADR-0164), contre la liste de confiance
+# employée, inscrite à la rubrique Versions (ADR-0165, ADR-0171). Une preuve ne dit que ce que la
+# vérification établit (ADR-0021) : un certificat reconnu a signé le manifeste, et le contenu n'a
+# pas changé depuis. Les codes IPTC sont ceux du XMP, avec les mêmes directions (ADR-0143) ; la
+# capture n'a de constat que sous un signataire reconnu (ADR-0168). États et règles : ADR-0169 et
+# ADR-0170 ; manifeste invalide : ADR-0167 ; requêtes en ligne : ADR-0166.
+
+[[regle]]
+identifiant = "R-C2PA-001"
+version = "1"
+module = "c2pa"
+titre = "Création par IA générative déclarée, signataire reconnu (C2PA)"
+description = "Le manifeste C2PA actif est valide, signé par un certificat dont la chaîne mène à une ancre de la liste de confiance employée, et l'une de ses actions déclare la source numérique trainedAlgorithmicMedia de l'IPTC : un contenu créé par un modèle d'IA générative."
+gabarit = "c2pa.generation-ia-signataire-reconnu"
+phrase = { fr = "Le manifeste C2PA déclare « {source} » : selon le vocabulaire de l'IPTC, un contenu créé par une IA générative. Il est signé par un certificat reconnu par la liste de confiance employée (rubrique Versions), et le contenu n'a pas changé depuis la signature." }
+categorie = "preuve"
+direction = "origine_ia"
+fondement = "verification_cryptographique"
+parametres = ["source"]
+limites = [
+  "La vérification établit qui a signé et que le contenu n'a pas changé depuis ; elle n'établit pas que la déclaration est vraie (ADR-0021).",
+  "Reconnu par la liste employée, à sa version : une autre liste, plus ancienne ou plus récente, peut donner un autre résultat.",
+  "La révocation du certificat n'est pas vérifiée en ligne (ADR-0166) : seule une réponse OCSP jointe au manifeste est lue.",
+  "Seules les actions du manifeste actif fondent la règle ; celles des ingrédients sont restituées sans constat.",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-002"
+version = "1"
+module = "c2pa"
+titre = "Retouche par IA générative déclarée, signataire reconnu (C2PA)"
+description = "Le manifeste C2PA actif est valide, signé par un certificat reconnu par la liste de confiance employée, et l'une de ses actions déclare la source numérique compositeWithTrainedAlgorithmicMedia ou compositeSynthetic de l'IPTC : un contenu retouché, complété ou monté avec des éléments générés par IA."
+gabarit = "c2pa.retouche-ia-signataire-reconnu"
+phrase = { fr = "Le manifeste C2PA déclare « {source} » : selon le vocabulaire de l'IPTC, un contenu retouché ou monté avec une IA générative. Il est signé par un certificat reconnu par la liste de confiance employée (rubrique Versions), et le contenu n'a pas changé depuis la signature." }
+categorie = "preuve"
+direction = "retouche"
+fondement = "verification_cryptographique"
+parametres = ["source"]
+limites = [
+  "La vérification établit qui a signé et que le contenu n'a pas changé depuis ; elle n'établit pas que la déclaration est vraie (ADR-0021).",
+  "La déclaration ne dit ni quelle part du contenu est générée, ni où elle se trouve.",
+  "Reconnu par la liste employée, à sa version : une autre liste, plus ancienne ou plus récente, peut donner un autre résultat.",
+  "La révocation du certificat n'est pas vérifiée en ligne (ADR-0166) : seule une réponse OCSP jointe au manifeste est lue.",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-003"
+version = "1"
+module = "c2pa"
+titre = "Capture déclarée, signataire reconnu (C2PA)"
+description = "Le manifeste C2PA actif est valide, signé par un certificat reconnu par la liste de confiance employée, et l'une de ses actions déclare la source numérique digitalCapture ou computationalCapture de l'IPTC : une capture par un appareil (ADR-0168)."
+gabarit = "c2pa.capture-signataire-reconnu"
+phrase = { fr = "Le manifeste C2PA déclare « {source} » : selon le vocabulaire de l'IPTC, une capture par un appareil. Il est signé par un certificat reconnu par la liste de confiance employée (rubrique Versions), et le contenu n'a pas changé depuis la signature." }
+categorie = "preuve"
+direction = "authenticite"
+fondement = "verification_cryptographique"
+parametres = ["source"]
+limites = [
+  "La vérification établit qui a signé et que le contenu n'a pas changé depuis ; elle n'établit pas que la déclaration est vraie (ADR-0021) : un appareil compromis, ou la photographie d'un écran, donnent aussi une capture signée.",
+  "Reconnu par la liste employée, à sa version : une autre liste, plus ancienne ou plus récente, peut donner un autre résultat.",
+  "La révocation du certificat n'est pas vérifiée en ligne (ADR-0166) : seule une réponse OCSP jointe au manifeste est lue.",
+  "Une capture déclarée sous un certificat non reconnu n'a pas de constat : elle se forge comme toute déclaration (ADR-0143).",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-004"
+version = "1"
+module = "c2pa"
+titre = "Création par IA générative déclarée, signature non reconnue (C2PA)"
+description = "Le manifeste C2PA actif déclare la source numérique trainedAlgorithmicMedia de l'IPTC, mais sa signature est hors de la liste de confiance ou la vérification échoue : la déclaration vaut celle d'une métadonnée non signée (ADR-0021, ES-20)."
+gabarit = "c2pa.generation-ia-declaree"
+phrase = { fr = "Le manifeste C2PA déclare « {source} » : selon le vocabulaire de l'IPTC, un contenu créé par une IA générative. Sa signature n'est pas reconnue par la liste de confiance, ou n'est pas valide : elle n'établit pas qui a fait cette déclaration." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "declaration"
+niveau = "faible"
+parametres = ["source"]
+limites = [
+  "N'importe qui peut obtenir un certificat hors de la liste et signer un manifeste : la déclaration se forge comme une métadonnée (cas d'abus C-02).",
+  "Son absence ne dit rien (F-14).",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-005"
+version = "1"
+module = "c2pa"
+titre = "Retouche par IA générative déclarée, signature non reconnue (C2PA)"
+description = "Le manifeste C2PA actif déclare la source numérique compositeWithTrainedAlgorithmicMedia ou compositeSynthetic de l'IPTC, mais sa signature est hors de la liste de confiance ou la vérification échoue (ADR-0021, ES-20)."
+gabarit = "c2pa.retouche-ia-declaree"
+phrase = { fr = "Le manifeste C2PA déclare « {source} » : selon le vocabulaire de l'IPTC, un contenu retouché ou monté avec une IA générative. Sa signature n'est pas reconnue par la liste de confiance, ou n'est pas valide : elle n'établit pas qui a fait cette déclaration." }
+categorie = "indice"
+direction = "retouche"
+fondement = "declaration"
+niveau = "faible"
+parametres = ["source"]
+limites = [
+  "N'importe qui peut obtenir un certificat hors de la liste et signer un manifeste : la déclaration se forge comme une métadonnée (cas d'abus C-02).",
+  "La déclaration ne dit ni quelle part du contenu est générée, ni où elle se trouve.",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-006"
+version = "1"
+module = "c2pa"
+titre = "Contenu ou manifeste changé depuis la signature (C2PA)"
+description = "La vérification du manifeste C2PA actif échoue sur une empreinte : celle du contenu signé (assertion.dataHash, bmffHash, boxesHash ou collectionHash), celle d'une assertion (assertion.hashedURI) ou la signature de la revendication (claimSignature.mismatch). Indice faible, non évalué, vers la transformation (ADR-0167)."
+gabarit = "c2pa.contenu-change"
+phrase = { fr = "Le contenu ou le manifeste C2PA ne correspond plus à ce qui a été signé (codes « {codes} ») : l'un d'eux a changé depuis la signature." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_cryptographique"
+niveau = "faible"
+parametres = ["codes"]
+limites = [
+  "L'écart d'empreinte est établi, sa cause ne l'est pas : retouche, conversion par un outil qui garde le manifeste sans le mettre à jour, défaut d'un logiciel, ou manifeste recopié sur un autre contenu.",
+  "Le changement n'est ni décrit ni localisé.",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-007"
+version = "1"
+module = "c2pa"
+titre = "Manifeste C2PA valide, signataire reconnu"
+description = "État « valide » de F-22 : c2pa-rs donne l'état Trusted, signature et empreintes vérifiées, chaîne de certificats menant à une ancre de la liste de confiance employée (ADR-0169)."
+gabarit = "c2pa.etat-valide"
+phrase = { fr = "Le fichier porte un manifeste C2PA valide : signature vérifiée, certificat reconnu par la liste de confiance employée (rubrique Versions), contenu inchangé depuis la signature." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_cryptographique"
+parametres = []
+limites = [
+  "Reconnu par la liste employée, à sa version ; la révocation du certificat n'est pas vérifiée en ligne (ADR-0166).",
+  "Ce qui a été signé est restitué par les observations du module ; seules les règles R-C2PA-001 à R-C2PA-003 en tirent une preuve.",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-008"
+version = "1"
+module = "c2pa"
+titre = "Manifeste C2PA valide, signataire hors liste de confiance"
+description = "État « valide mais signé hors liste de confiance » de F-22 : c2pa-rs donne l'état Valid, signature et empreintes vérifiées, mais le certificat ne mène à aucune ancre de la liste employée (code signingCredential.untrusted) (ADR-0169)."
+gabarit = "c2pa.etat-hors-liste"
+phrase = { fr = "Le fichier porte un manifeste C2PA dont la signature et les empreintes sont vérifiées, mais signé par un certificat hors de la liste de confiance employée : n'importe qui peut obtenir un tel certificat, la signature n'établit donc pas qui a signé." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_cryptographique"
+parametres = []
+limites = [
+  "Hors de la liste employée, à sa version : un signataire admis depuis, ou une autre liste (la liste intérimaire du CAI, par exemple, ADR-0165), peuvent le reconnaître.",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-009"
+version = "1"
+module = "c2pa"
+titre = "Manifeste C2PA invalide"
+description = "État « invalide » de F-22 : c2pa-rs donne l'état Invalid ; les codes d'échec de la C2PA disent pourquoi (empreinte, signature, certificat expiré ou révoqué, structure) (ADR-0169)."
+gabarit = "c2pa.etat-invalide"
+phrase = { fr = "Le fichier porte un manifeste C2PA invalide : la vérification échoue (codes « {codes} »)." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_cryptographique"
+parametres = ["codes"]
+limites = [
+  "Les codes sont ceux de la spécification C2PA que suit c2pa-rs ; un écart d'empreinte donne en plus la règle R-C2PA-006.",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-010"
+version = "1"
+module = "c2pa"
+titre = "Manifeste C2PA non vérifiable"
+description = "État « non vérifiable » de F-22 : le fichier porte des données C2PA, mais c2pa-rs ne peut pas les vérifier ; son genre d'erreur est la raison (ADR-0169)."
+gabarit = "c2pa.etat-non-verifiable"
+phrase = { fr = "Le fichier porte des données C2PA que la bibliothèque C2PA ne peut pas vérifier (erreur « {erreur} »)." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+parametres = ["erreur"]
+limites = [
+  "Le genre d'erreur est celui de c2pa-rs (Decoding, JumbfParse, NotSupported…) ; la suite de son message, qui peut citer le fichier, n'est pas reprise.",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-011"
+version = "1"
+module = "c2pa"
+titre = "Manifeste C2PA distant, non récupéré"
+description = "Le fichier renvoie à un manifeste C2PA distant (une adresse dans son XMP, dcterms:provenance) ; l'outil ne résout aucune adresse écrite dans un fichier (ADR-0033) et ne le récupère pas en V1 (ADR-0166) : état « non vérifiable », raison réseau désactivé."
+gabarit = "c2pa.manifeste-distant"
+phrase = { fr = "Le fichier renvoie à un manifeste C2PA distant, sur l'hôte « {hote} ». Il n'a pas été récupéré, et le fichier n'est donc pas vérifié : l'outil ne consulte aucune adresse écrite dans un fichier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+parametres = ["hote"]
+limites = [
+  "Récupérer le manifeste révélerait à cet hôte, choisi par l'auteur du fichier, l'adresse et l'heure de l'analyse, et l'exemplaire si l'adresse lui est propre (M-14).",
+  "Le module c2pa n'inscrit que l'hôte ; l'adresse entière, observée par le module xmp (dcterms:provenance), est masquée par défaut comme un numéro de série (ADR-0173).",
+]
+application = "module"
+
+[[regle]]
+identifiant = "R-C2PA-012"
+version = "1"
+module = "c2pa"
+titre = "Aucun manifeste C2PA"
+description = "État « absent » de F-22 : c2pa-rs ne trouve aucune donnée C2PA dans le fichier, intégrée ou renvoyant à un manifeste distant. Information neutre (F-14, ADR-0169)."
+gabarit = "c2pa.absence"
+phrase = { fr = "Le fichier ne porte aucun manifeste C2PA. Cette absence est la règle : la plupart des logiciels n'en écrivent pas, et beaucoup les effacent ; elle ne dit rien de son origine." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+parametres = []
+limites = [
+  "Absence neutre : elle n'est ni un indice d'IA ni une garantie d'authenticité (F-14, P-04).",
+  "Seuls les emplacements où c2pa-rs cherche un manifeste dans ce format sont lus.",
+]
+application = "module"

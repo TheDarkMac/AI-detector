@@ -14,6 +14,7 @@ Deux familles (ADR-0076) :
 """
 
 __all__ = [
+    "CERTIFICATS_MAX",
     "DELAI",
     "DELAI_ARRET",
     "FICHIERS_MAX_CATALOGUE",
@@ -28,6 +29,7 @@ __all__ = [
     "RESULTATS_MAX",
     "SEUIL_RAPPORT_COMPRESSION",
     "TAILLE_MAX_CATALOGUE",
+    "TAILLE_MAX_CONFIANCE",
     "TAILLE_MAX_CONFIGURATION",
     "TAILLE_MAX_DECOMPRESSEE",
     "TAILLE_MAX_FICHIER",
@@ -97,3 +99,11 @@ Unicode (``\\pL`` en compte environ 1 200) et une répétition bornée."""
 MEMOIRE_MAX_MOTIF = 8 << 20
 """Mémoire que RE2 peut employer pour un motif : sa valeur par défaut, écrite ici pour qu'une
 autre version de RE2 ne la change pas."""
+
+# Liste de confiance C2PA : comptées, contrôlées au chargement (ES-09, ADR-0171)
+
+TAILLE_MAX_CONFIANCE = 4 << 20
+"""Taille cumulée des fichiers de la liste : 4 Mio ; avec le catalogue, la configuration tient
+dans sa taille maximale. La liste livrée en fait moins de 80 Kio."""
+CERTIFICATS_MAX = 1024
+"""Certificats d'un fichier de la liste ; la liste livrée en compte 33 et 24."""

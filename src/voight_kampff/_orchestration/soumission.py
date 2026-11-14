@@ -11,7 +11,8 @@ Un fichier de plus de 1 Gio est refusé « hors limites » avant d'être lu (F-0
 
 Le catalogue, livré ou fourni par l'utilisateur, est validé avant l'ouverture du fichier
 (ADR-0029, ADR-0086) ; sa version et les règles que citent les constats sont jointes à
-l'analyse (ADR-0097). Les techniques hors de cette version sont inscrites non menées pour
+l'analyse (ADR-0097). La liste de confiance C2PA l'est de même, et sa version jointe à
+l'analyse (ADR-0171). Les techniques hors de cette version sont inscrites non menées pour
 chaque partie d'un de leurs formats (ADR-0087).
 """
 
@@ -24,8 +25,10 @@ from pathlib import Path
 
 from voight_kampff._limites import TAILLE_MAX_FICHIER
 from voight_kampff._orchestration import catalogue as catalogues
+from voight_kampff._orchestration import confiance as listes
 from voight_kampff._orchestration import manifestes as livres
 from voight_kampff._orchestration.catalogue import Catalogue
+from voight_kampff._orchestration.confiance import ListeDeConfiance
 from voight_kampff._orchestration.manifestes import Manifeste, TechniqueHorsV1, selectionner
 from voight_kampff._orchestration.travail import DELAI, ResultatTravail, commande_travail, executer
 from voight_kampff.analyse import Analyse, AnalyseRefusee, MotifRefus
@@ -100,6 +103,7 @@ def soumettre(
     desactives: Collection[str] = (),
     *,
     catalogue: Catalogue | str | os.PathLike[str] | None = None,
+    confiance: ListeDeConfiance | str | os.PathLike[str] | None = None,
     manifestes: Sequence[Manifeste] | None = None,
     hors_v1: Sequence[TechniqueHorsV1] | None = None,
     delai: float = DELAI,
@@ -108,7 +112,9 @@ def soumettre(
     """Analyse un fichier ; lève :class:`AnalyseRefusee` s'il n'y a rien à livrer.
 
     ``catalogue`` est un catalogue déjà validé, ou le dossier d'un catalogue fourni par
-    l'utilisateur ; par défaut, le catalogue livré. ``manifestes``, ``hors_v1`` et
+    l'utilisateur ; par défaut, le catalogue livré. ``confiance`` est de même une liste de
+    confiance déjà validée, ou le dossier d'une liste fournie ; par défaut, la liste livrée.
+    ``manifestes``, ``hors_v1`` et
     ``commande`` remplacent, pour les tests, les modules, les techniques hors de cette version
     et le processus de travail livrés.
     """
@@ -116,6 +122,8 @@ def soumettre(
     selectionner(modules, desactives)  # un module inconnu est refusé avant toute lecture
     if not isinstance(catalogue, Catalogue):
         catalogue = catalogues.charger(modules, catalogue)
+    if not isinstance(confiance, ListeDeConfiance):
+        confiance = listes.charger(confiance)
     techniques_hors_v1 = livres.hors_v1(modules) if hors_v1 is None else tuple(hors_v1)
     date_analyse = datetime.now(UTC).replace(microsecond=0)
     descripteur = ouvrir(chemin)
@@ -134,6 +142,7 @@ def soumettre(
             modules,
             desactives,
             catalogue=catalogue,
+            confiance=confiance,
             taille=taille,
             delai=delai,
             commande=commande,
@@ -159,6 +168,7 @@ def soumettre(
         non_menees=resultat.non_menees + non_menees,
         dependances=resultat.dependances,
         catalogue=catalogue.version,
+        confiance=confiance.version,
         regles=tuple(
             regle
             for regle in catalogue.regles

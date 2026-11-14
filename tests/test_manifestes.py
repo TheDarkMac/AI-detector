@@ -176,9 +176,11 @@ def test_fiche_et_manifeste_concordent() -> None:
 
 def test_modules_de_metadonnees_livres() -> None:
     # T20 et T21 : un module par famille de métadonnées (ADR-0114, ADR-0127, ADR-0131, ADR-0136) ;
-    # T24 : le module image, qui lit la structure d'une image (ADR-0154).
+    # T24 : le module image, qui lit la structure d'une image (ADR-0154) ; T30 : le module c2pa,
+    # qui lit les manifestes C2PA par c2pa-python (ADR-0164).
     livres = {manifeste.identifiant: manifeste for manifeste in decouvrir()}
     assert sorted(livres) == [
+        "c2pa",
         "exif",
         "id3",
         "image",
@@ -207,10 +209,13 @@ def test_modules_de_metadonnees_livres() -> None:
     assert livres["odf"].formats == ("odt",)
     for module in ("xmp", "ooxml", "odf"):
         assert livres[module].bibliotheques == ("expat",)
+    assert livres["c2pa"].bibliotheques == ("c2pa-python",)
     # T22 : les règles du catalogue sur leurs observations sont dirigées (ADR-0142) ; T24 :
     # indices de transfert, vers la transformation (ADR-0155).
     transfert = {"exif", "xmp", "iptc", "textepng"}
     for identifiant, manifeste in livres.items():
+        if identifiant == "c2pa":
+            continue  # règles « module » et cinq directions : tests/test_c2pa.py
         assert manifeste.regles == ()
         if identifiant == "image":
             assert manifeste.exigences == ("F-06", "F-30")
