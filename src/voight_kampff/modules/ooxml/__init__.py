@@ -114,11 +114,27 @@ _FICHIERS = frozenset({"app.Template", "app.HyperlinkBase"})
 chemin, ``HyperlinkBase`` un chemin ou une adresse."""
 
 
+_TEXTES_LIBRES = frozenset(
+    {
+        "core.dc:title",
+        "core.dc:subject",
+        "core.dc:description",
+        "core.cp:keywords",
+        "core.cp:category",
+        "app.TitlesOfParts",
+    }
+)
+"""Titre, sujet, description, mots-clés, catégorie ; titres des parties (feuilles, diapositives).
+Les propriétés personnalisées le sont toutes (ADR-0160)."""
+
+
 def _identifiante(nom: str) -> CategorieIdentifiante | None:
     if nom in _NOMINATIVES:
         return CategorieIdentifiante.METADONNEE_NOMINATIVE
     if nom in _FICHIERS:
         return CategorieIdentifiante.NOM_DE_FICHIER
+    if nom in _TEXTES_LIBRES:
+        return CategorieIdentifiante.TEXTE_LIBRE
     return None
 
 
@@ -269,7 +285,7 @@ def _custom(proprietes: Proprietes, racines: list[Noeud], localisation: Localisa
             continue
         nom = f"custom.{valeurs.composant(designation)}"
         for variante in propriete.enfants:
-            _variante(proprietes, nom, variante, localisation, None)
+            _variante(proprietes, nom, variante, localisation, CategorieIdentifiante.TEXTE_LIBRE)
     return complete
 
 

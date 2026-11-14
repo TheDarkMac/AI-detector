@@ -1,8 +1,8 @@
 # Fiche technique — Balises ID3
 
-- **Module** : `id3` (version 0.2.0)
-- **Tâche** : T21, T22, T23
-- **Exigences** : F-10, F-12, ES-13
+- **Module** : `id3` (version 0.3.0)
+- **Tâche** : T21, T22, T23, T25
+- **Exigences** : F-10, F-12, F-90, ES-13
 - **Formats** : `mp3`, `aac`, `flac`, `wav`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
@@ -56,8 +56,9 @@ Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observ
 | --- | --- |
 | `metadonnee_nominative` | `TPE1`, `TPE2`, `TPE3`, `TPE4`, `TCOM`, `TEXT`, `TOLY`, `TOPE`, `TENC`, `TCOP`, `TOWN`, `TPUB`, `TIPL`, `TMCL`, `IPLS` ; en v2.2, `TP1` à `TP4`, `TCM`, `TXT`, `TOL`, `TOA`, `TEN`, `TCR`, `TPB`, `IPL` ; ID3v1 `Artist` |
 | `nom_de_fichier` | `TOFN` (`TOF` en v2.2) |
+| `texte_libre` | `TIT1`, `TIT2`, `TIT3`, `TALB`, `TOAL`, `TSST`, `TXXX` (toute description), `COMM`, `USLT` ; en v2.2, `TT1`, `TT2`, `TT3`, `TAL`, `TOT`, `TXX`, `COM`, `ULT` ; ID3v1 `Title`, `Album`, `Comment` |
 
-Commentaires, textes libres (`TXXX`) et paroles ne sont pas marqués : la liste de garde des textes libres relève de T25 ([ADR-0119](../decisions/ADR-0119-donnees-identifiantes-des-metadonnees.md)).
+Aucune trame normalisée ne nomme un lieu ([ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md), [ADR-0160](../decisions/ADR-0160-champs-lieux-et-textes-libres.md)). Ces données sont comptées et nommées, sans leur valeur, par la rubrique « Contrôle avant publication » du rapport et par le résumé ([ADR-0158](../decisions/ADR-0158-forme-du-controle-avant-publication.md)).
 
 ## Hypothèses distinguées
 
@@ -113,3 +114,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
+| 2026-11-14 | 0.3.0 | Titres, commentaires, paroles et textes libres marqués ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |

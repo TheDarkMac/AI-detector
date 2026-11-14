@@ -60,6 +60,7 @@ PARTIEL = "format_partiel"
 TRONQUE = "fichier_tronque"
 UUID_XMP = bytes.fromhex("be7acfcb97a942e89c71999491e3afac")
 NOMINATIVE = "metadonnee_nominative"
+LIBRE = "texte_libre"
 
 
 @pytest.fixture(autouse=True)
@@ -147,8 +148,14 @@ def test_id3_v24_trames() -> None:
     }
     assert raisons(lignes) == []
     assert identifiantes(lignes) == {
+        "id3.TIT2": LIBRE,
         "id3.TPE1": NOMINATIVE,
         "id3.TCOM": NOMINATIVE,
+        "id3.TALB": LIBRE,
+        "id3.TXXX.Logiciel": LIBRE,
+        "id3.TXXX": LIBRE,
+        "id3.COMM": LIBRE,
+        "id3.COMM.iTunNORM": LIBRE,
         "id3.TOFN": "nom_de_fichier",
     }
     [titre] = [o for o in lignes if o.get("observation", {}).get("nom") == "id3.TIT2"]
@@ -237,7 +244,7 @@ def test_id3_v22() -> None:
         "id3.COM": "Note",
         "id3.PIC.taille": 10,
     }
-    assert identifiantes(lignes) == {"id3.TP1": NOMINATIVE}
+    assert identifiantes(lignes) == {"id3.TT2": LIBRE, "id3.TP1": NOMINATIVE, "id3.COM": LIBRE}
     compresse = b"ID3\x02\x00\x40" + syncsafe(0)
     assert raisons(resultats("id3", mp3(compresse), "mp3")) == [PARTIEL]
 
@@ -290,7 +297,12 @@ def test_id3v1() -> None:
         "id3.v1.Track": 7,
         "id3.v1.Genre": 12,
     }
-    assert identifiantes(lignes) == {"id3.v1.Artist": NOMINATIVE}
+    assert identifiantes(lignes) == {
+        "id3.v1.Title": LIBRE,
+        "id3.v1.Artist": NOMINATIVE,
+        "id3.v1.Album": LIBRE,
+        "id3.v1.Comment": LIBRE,
+    }
     v10 = id3v1(b"\xe9t\xe9", commentaire=b"x" * 30)
     assert lu("id3", mp3(v1=v10), "mp3") == {
         "id3.present": True,
@@ -369,7 +381,10 @@ def test_infowav() -> None:
         "infowav.bext.CodingHistory": "A=PCM,F=48000,W=24,M=mono\r\n",
     }
     assert identifiantes(lignes) == {
+        "infowav.INAM": LIBRE,
         "infowav.IART": NOMINATIVE,
+        "infowav.ICMT": LIBRE,
+        "infowav.bext.Description": LIBRE,
         "infowav.bext.Originator": NOMINATIVE,
         "infowav.bext.OriginatorReference": "numero_de_serie",
         "infowav.bext.UMID": "numero_de_serie",
@@ -438,7 +453,11 @@ def test_vorbis_flac() -> None:
         "vorbis.METADATA-BLOCK-PICTURE.taille": 40,
         "vorbis.COVERART.taille": 4,
     }
-    assert identifiantes(lignes) == {"vorbis.ARTIST": NOMINATIVE}
+    assert identifiantes(lignes) == {
+        "vorbis.TITLE": LIBRE,
+        "vorbis.ARTIST": NOMINATIVE,
+        "vorbis.DESCRIPTION": LIBRE,
+    }
     [titre] = [o["observation"] for o in lignes if o["observation"]["nom"] == "vorbis.TITLE"]
     assert titre["localisation"]["chemin"] == "VORBIS_COMMENT"
 
@@ -597,7 +616,12 @@ def test_quicktime_m4a_itunes() -> None:
         "quicktime.ilst.keyw": ["a", "b"],
         "quicktime.ilst.----.com-apple-iTunes.iTunSMPB": " 00000000",
     }
-    assert identifiantes(lignes) == {"quicktime.ilst.-ART": NOMINATIVE}
+    assert identifiantes(lignes) == {
+        "quicktime.ilst.-nam": LIBRE,
+        "quicktime.ilst.-ART": NOMINATIVE,
+        "quicktime.ilst.-cmt": LIBRE,
+        "quicktime.ilst.-lyr": LIBRE,
+    }
     [date] = [o["observation"] for o in lignes if o["observation"]["nom"].endswith("CreationTime")]
     assert date["unite"] == "s depuis 1904-01-01 UTC"
     assert raisons(lignes) == []
@@ -636,6 +660,9 @@ def test_quicktime_udta_mov() -> None:
         "quicktime.udta.Xtra.taille": 12,
     }
     assert identifiantes(lignes) == {
+        "quicktime.udta.-nam": LIBRE,
+        "quicktime.udta.-des": LIBRE,
+        "quicktime.udta.-inf": LIBRE,
         "quicktime.udta.-xyz": "gps",
         "quicktime.udta.cprt": NOMINATIVE,
         "quicktime.udta.auth": NOMINATIVE,
@@ -808,9 +835,13 @@ def test_matroska_info_et_tags() -> None:
         "matroska.tag.VIGNETTE.taille": 4,
     }
     assert identifiantes(lignes) == {
+        "matroska.Title": LIBRE,
         "matroska.SegmentFilename": "nom_de_fichier",
+        "matroska.tag.TITLE": LIBRE,
         "matroska.tag.ARTIST": NOMINATIVE,
+        "matroska.tag.ORIGINAL.TITLE": LIBRE,
         "matroska.tag.ORIGINAL.COMPOSER": NOMINATIVE,
+        "matroska.cible.TITLE": LIBRE,
     }
     [date] = [o["observation"] for o in lignes if o["observation"]["nom"] == "matroska.DateUTC"]
     assert date["unite"] == "ns depuis 2001-01-01 UTC"

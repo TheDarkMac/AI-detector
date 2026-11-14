@@ -239,13 +239,25 @@ _NOMINATIVES = {
 }
 _SERIES = {("exif", 0xA420), ("exif", 0xA431), ("exif", 0xA435)}
 _FICHIERS = {("tiff", 0x010D), ("exif", 0xA004)}
+_TEXTES_LIBRES = {
+    ("tiff", 0x010E),  # ImageDescription
+    ("tiff", 0x011D),  # PageName
+    ("tiff", 0x9C9B),  # XPTitle
+    ("tiff", 0x9C9C),  # XPComment
+    ("tiff", 0x9C9E),  # XPKeywords
+    ("tiff", 0x9C9F),  # XPSubject
+    ("exif", 0x9286),  # UserComment
+    ("exif", 0xA436),  # ImageTitle
+}
 
 IDENTIFIANTES: dict[tuple[str, int], CategorieIdentifiante] = {
     **dict.fromkeys(_NOMINATIVES, CategorieIdentifiante.METADONNEE_NOMINATIVE),
     **dict.fromkeys(_SERIES, CategorieIdentifiante.NUMERO_DE_SERIE),
     **dict.fromkeys(_FICHIERS, CategorieIdentifiante.NOM_DE_FICHIER),
+    **dict.fromkeys(_TEXTES_LIBRES, CategorieIdentifiante.TEXTE_LIBRE),
 }
-"""Étiquettes identifiantes hors GPS, par table ; tout le répertoire GPS l'est (ADR-0119)."""
+"""Étiquettes identifiantes hors GPS, par table ; tout le répertoire GPS l'est (ADR-0119,
+ADR-0160)."""
 
 
 def table(repertoire: str) -> str:

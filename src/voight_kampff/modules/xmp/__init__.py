@@ -70,6 +70,46 @@ _FICHIERS = frozenset(
     {"stRef:filePath", "xmpMM:PreservedFileName", "crs:RawFileName", "exif:RelatedSoundFile"}
 )
 _GPS = ("exif:GPS", "exifEX:GPS", "Iptc4xmpExt:GPS")
+_LIEUX = frozenset(
+    {
+        "photoshop:City",
+        "photoshop:State",
+        "photoshop:Country",
+        "Iptc4xmpCore:Location",
+        "Iptc4xmpCore:CountryCode",
+        "Iptc4xmpExt:City",
+        "Iptc4xmpExt:ProvinceState",
+        "Iptc4xmpExt:CountryName",
+        "Iptc4xmpExt:CountryCode",
+        "Iptc4xmpExt:Sublocation",
+        "Iptc4xmpExt:WorldRegion",
+        "Iptc4xmpExt:LocationName",
+        "xmpDM:shotLocation",
+    }
+)
+"""Lieux nommés (ADR-0160) ; dans ``Iptc4xmpExt:LocationCreated`` ou ``LocationShown``, chaque
+champ garde sa catégorie, nom de lieu ou GPS."""
+_TEXTES_LIBRES = frozenset(
+    {
+        "dc:title",
+        "dc:description",
+        "dc:subject",
+        "photoshop:Headline",
+        "photoshop:Instructions",
+        "Iptc4xmpCore:AltTextAccessibility",
+        "Iptc4xmpCore:ExtDescrAccessibility",
+        "Iptc4xmpExt:Event",
+        "Iptc4xmpExt:AOTitle",
+        "exif:UserComment",
+        "tiff:ImageDescription",
+        "pdf:Keywords",
+        "lr:hierarchicalSubject",
+        "mwg-rs:Description",
+        "xmpDM:album",
+        "xmpDM:logComment",
+    }
+)
+"""Titres, descriptions, mots-clés, instructions, commentaires (ADR-0160)."""
 
 
 def analyser(contexte: Contexte) -> None:
@@ -120,7 +160,7 @@ def _observer(contexte: Contexte, localisation: Localisation, xmp: Xmp) -> None:
 
 
 def _identifiante(propriete: Propriete) -> CategorieIdentifiante | None:
-    """Catégorie du premier composant identifiant du chemin (ADR-0119)."""
+    """Catégorie du premier composant identifiant du chemin (ADR-0119, ADR-0160)."""
     for composant in propriete.composants:
         if composant in _NOMINATIVES:
             return CategorieIdentifiante.METADONNEE_NOMINATIVE
@@ -130,6 +170,10 @@ def _identifiante(propriete: Propriete) -> CategorieIdentifiante | None:
             return CategorieIdentifiante.NOM_DE_FICHIER
         if composant.startswith(_GPS):
             return CategorieIdentifiante.GPS
+        if composant in _LIEUX:
+            return CategorieIdentifiante.LIEU
+        if composant in _TEXTES_LIBRES:
+            return CategorieIdentifiante.TEXTE_LIBRE
     return None
 
 

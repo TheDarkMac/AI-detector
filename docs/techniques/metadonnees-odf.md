@@ -1,8 +1,8 @@
 # Fiche technique — Métadonnées d'un document ODT
 
-- **Module** : `odf` (version 0.2.0)
-- **Tâche** : T21 (complément bureautique), T22, T23
-- **Exigences** : F-10, F-12, ES-05, ES-06, ES-13
+- **Module** : `odf` (version 0.3.0)
+- **Tâche** : T21 (complément bureautique), T22, T23, T25
+- **Exigences** : F-10, F-12, F-90, ES-05, ES-06, ES-13
 - **Formats** : `odt`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
@@ -54,8 +54,9 @@ Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observ
 | Catégorie | Propriétés |
 | --- | --- |
 | `metadonnee_nominative` | `meta:initial-creator`, `dc:creator`, `meta:printed-by` |
+| `texte_libre` | `dc:title`, `dc:subject`, `dc:description`, `meta:keyword` ; toutes les propriétés utilisateur (`meta:user-defined.*`), quel que soit leur type |
 
-Le titre, les mots-clés et les propriétés utilisateur ne sont pas marqués : textes libres, relevant du contrôle avant publication (T25, [ADR-0119](../decisions/ADR-0119-donnees-identifiantes-des-metadonnees.md)). Le chemin du modèle (`meta:template`, `xlink:href`), qui peut nommer un fichier local, n'est pas lu.
+Le nom d'une propriété utilisateur reste écrit en clair dans le nom de l'observation ([ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md), [ADR-0160](../decisions/ADR-0160-champs-lieux-et-textes-libres.md)). Ces données sont comptées et nommées, sans leur valeur, par la rubrique « Contrôle avant publication » du rapport et par le résumé ([ADR-0158](../decisions/ADR-0158-forme-du-controle-avant-publication.md)). Le chemin du modèle (`meta:template`, `xlink:href`), qui peut nommer un fichier local, n'est pas lu.
 
 ## Hypothèses distinguées
 
@@ -112,3 +113,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.1.0 | Création (T21, complément bureautique) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
+| 2026-11-14 | 0.3.0 | Titre, sujet, mots-clés et propriétés utilisateur marqués ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |

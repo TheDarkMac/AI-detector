@@ -71,7 +71,7 @@ __all__ = [
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.3.0"
+VERSION_SCHEMA = "0.4.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -133,11 +133,15 @@ class Fondement(StrEnum):
 
 
 class CategorieIdentifiante(StrEnum):
-    """Catégories de données identifiantes, masquées par défaut (ES-13, ADR-0057)."""
+    """Catégories de données identifiantes, masquées par défaut (ES-13, ADR-0057, ADR-0159)."""
 
     METADONNEE_NOMINATIVE = "metadonnee_nominative"
     NUMERO_DE_SERIE = "numero_de_serie"
     GPS = "gps"
+    LIEU = "lieu"
+    """Lieu nommé : ville, région, pays, nom d'un lieu (ADR-0159)."""
+    TEXTE_LIBRE = "texte_libre"
+    """Texte écrit par une personne, sans forme fixée : titre, légende, commentaire (ADR-0159)."""
     NOM_DE_FICHIER = "nom_de_fichier"
     EMPREINTE = "empreinte"
 

@@ -22,6 +22,10 @@ _NOMINATIVES = frozenset(
 )
 """Artiste, commanditaire, droits, ingénieur, technicien (RIFF, 1991) ; compositeur,
 producteur, interprètes, auteur, monteur (extensions usuelles) : ADR-0119, ADR-0133."""
+_LIEUX = frozenset({"IARL"})
+"""Lieu d'archivage (RIFF, 1991) : ADR-0160."""
+_TEXTES_LIBRES = frozenset({"INAM", "ICMT", "ISBJ", "IKEY", "IPRD"})
+"""Titre, commentaire, sujet, mots-clés, album (RIFF, 1991) : ADR-0160."""
 _BEXT = (
     ("Description", 0, 256),
     ("Originator", 256, 288),
@@ -34,6 +38,7 @@ _BEXT_IDENTIFIANTS = {
     "Originator": CategorieIdentifiante.METADONNEE_NOMINATIVE,
     "OriginatorReference": CategorieIdentifiante.NUMERO_DE_SERIE,
     "UMID": CategorieIdentifiante.NUMERO_DE_SERIE,
+    "Description": CategorieIdentifiante.TEXTE_LIBRE,
 }
 """``OriginatorReference`` (EBU R 99) et ``UMID`` (SMPTE 330M) portent le numéro de série de
 l'appareil."""
@@ -76,15 +81,21 @@ def _info(contexte: Contexte, bloc: Bloc) -> None:
                 f"infowav.{valeurs.composant(identifiant)}",
                 texte,
                 localisation=localisation,
-                identifiante=(
-                    CategorieIdentifiante.METADONNEE_NOMINATIVE
-                    if identifiant in _NOMINATIVES
-                    else None
-                ),
+                identifiante=_identifiante(identifiant),
             )
         position = debut + longueur + (longueur & 1)
     if position < len(donnees):
         contexte.non_mener(RaisonNonMenee.FORMAT_PARTIEL, localisation=bloc.localisation())
+
+
+def _identifiante(identifiant: str) -> CategorieIdentifiante | None:
+    if identifiant in _NOMINATIVES:
+        return CategorieIdentifiante.METADONNEE_NOMINATIVE
+    if identifiant in _LIEUX:
+        return CategorieIdentifiante.LIEU
+    if identifiant in _TEXTES_LIBRES:
+        return CategorieIdentifiante.TEXTE_LIBRE
+    return None
 
 
 def _bext(contexte: Contexte, bloc: Bloc) -> None:

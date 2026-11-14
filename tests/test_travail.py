@@ -485,7 +485,7 @@ def test_empreinte(descripteur: int) -> None:
     "ligne",
     [
         pytest.param(b"", id="absente"),
-        pytest.param(b'{"version_schema":"0.3.0","modules":[]}', id="sans-fin-de-ligne"),
+        pytest.param(b'{"version_schema":"0.4.0","modules":[]}', id="sans-fin-de-ligne"),
         pytest.param(b'{"version_schema":"9.9.9","modules":[]}\n', id="autre-version"),
     ],
 )

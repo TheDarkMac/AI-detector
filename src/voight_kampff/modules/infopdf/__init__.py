@@ -25,7 +25,9 @@ from voight_kampff.rapport.modele import (
 __all__ = ["analyser"]
 
 _NOMINATIVES = frozenset({"Author"})
-"""Clés nominatives (ADR-0119) ; ``Title`` porte souvent un nom de fichier, non marqué (T25)."""
+"""Clés nominatives (ADR-0119)."""
+_TEXTES_LIBRES = frozenset({"Title", "Subject", "Keywords"})
+"""Titre, sujet, mots-clés (ADR-0160) ; ``Title`` porte souvent le nom du fichier source."""
 
 
 def analyser(contexte: Contexte) -> None:
@@ -65,6 +67,14 @@ def analyser(contexte: Contexte) -> None:
     _entrees(contexte, document, info, "infopdf", localisation, (id(info),))
 
 
+def _identifiante(cle: str) -> CategorieIdentifiante | None:
+    if cle in _NOMINATIVES:
+        return CategorieIdentifiante.METADONNEE_NOMINATIVE
+    if cle in _TEXTES_LIBRES:
+        return CategorieIdentifiante.TEXTE_LIBRE
+    return None
+
+
 def _entrees(
     contexte: Contexte,
     document: Document,
@@ -80,7 +90,7 @@ def _entrees(
     """
     for cle, brute in dico.items():
         nom = valeurs.borner(f"{prefixe}.{valeurs.composant(cle)}")
-        identifiante = CategorieIdentifiante.METADONNEE_NOMINATIVE if cle in _NOMINATIVES else None
+        identifiante = _identifiante(cle)
         try:
             valeur = document.resoudre(brute)
             if isinstance(valeur, dict):

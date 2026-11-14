@@ -90,8 +90,10 @@ def test_ooxml_proprietes_principales() -> None:
         "ooxml.core.cp:keywords": ["a", "b"],
     }
     assert identifiantes(lignes) == {
+        "ooxml.core.dc:title": "texte_libre",
         "ooxml.core.dc:creator": "metadonnee_nominative",
         "ooxml.core.cp:lastModifiedBy": "metadonnee_nominative",
+        "ooxml.core.cp:keywords": "texte_libre",
     }
     assert raisons(lignes) == []
     [titre] = [o for o in observations(lignes) if o["nom"] == "ooxml.core.dc:title"]
@@ -140,6 +142,7 @@ def test_ooxml_proprietes_etendues_typees() -> None:
         "ooxml.app.HyperlinkBase": "nom_de_fichier",
         "ooxml.app.Company": "metadonnee_nominative",
         "ooxml.app.Manager": "metadonnee_nominative",
+        "ooxml.app.TitlesOfParts": "texte_libre",
     }
     assert "exemple.invalid" not in str(lignes)  # HLinks : jamais lus (ADR-0138)
 
@@ -614,9 +617,16 @@ def test_odf_meta() -> None:
         "odf.dc:language": "fr-FR",
     }
     assert identifiantes(lignes) == {
+        "odf.dc:title": "texte_libre",
+        "odf.meta:keyword": "texte_libre",
         "odf.meta:initial-creator": "metadonnee_nominative",
         "odf.dc:creator": "metadonnee_nominative",
         "odf.meta:printed-by": "metadonnee_nominative",
+        "odf.meta:user-defined.Jour": "texte_libre",
+        "odf.meta:user-defined.Note": "texte_libre",
+        "odf.meta:user-defined.Outil": "texte_libre",
+        "odf.meta:user-defined.Part": "texte_libre",
+        "odf.meta:user-defined.Relu": "texte_libre",
     }
     assert raisons(lignes) == []
 

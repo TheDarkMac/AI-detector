@@ -1,8 +1,8 @@
 # Fiche technique — Blocs texte PNG
 
-- **Module** : `textepng` (version 0.3.0)
-- **Tâche** : T20, T22, T23, T24
-- **Exigences** : F-10, F-12, ES-13
+- **Module** : `textepng` (version 0.4.0)
+- **Tâche** : T20, T22, T23, T24, T25
+- **Exigences** : F-10, F-12, F-90, ES-13
 - **Formats** : `png`
 - **Directions permises** : `origine_ia`, `transformation`, `rien_de_particulier`
 - **Règles** : aucune
@@ -45,6 +45,8 @@ Le module n'émet aucun constat. Les paramètres de génération que certains ou
 ## Données identifiantes
 
 Marqués `metadonnee_nominative` ([ADR-0119](../decisions/ADR-0119-donnees-identifiantes-des-metadonnees.md)) : les mots-clés prédéfinis `Author` et `Copyright` (sans égard à la casse).
+
+Marqués `texte_libre` ([ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md), [ADR-0160](../decisions/ADR-0160-champs-lieux-et-textes-libres.md)) : `Title`, `Description`, `Comment`, et `parameters`, où les interfaces de Stable Diffusion écrivent l'invite. Un mot-clé hors de la norme et de cette liste n'est pas marqué. Ces données sont comptées et nommées, sans leur valeur, par la rubrique « Contrôle avant publication » du rapport et par le résumé ([ADR-0158](../decisions/ADR-0158-forme-du-controle-avant-publication.md)).
 
 ## Hypothèses distinguées
 
@@ -107,3 +109,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
 | 2026-11-14 | 0.3.0 | Direction transformation permise : indice de transfert du catalogue sur ses observations, `R-TEXTEPNG-007` (T24, ADR-0153 à ADR-0157) ; code du module inchangé |
+| 2026-11-14 | 0.4.0 | Textes libres marqués `texte_libre` ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |

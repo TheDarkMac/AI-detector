@@ -1,8 +1,8 @@
 # Fiche technique — Commentaires Vorbis
 
-- **Module** : `vorbis` (version 0.2.0)
-- **Tâche** : T21, T22, T23
-- **Exigences** : F-10, F-12, ES-13
+- **Module** : `vorbis` (version 0.3.0)
+- **Tâche** : T21, T22, T23, T25
+- **Exigences** : F-10, F-12, F-90, ES-13
 - **Formats** : `flac`, `ogg`
 - **Directions permises** : `origine_ia`, `rien_de_particulier`
 - **Règles** : aucune
@@ -48,8 +48,10 @@ Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observ
 | Catégorie | Champs |
 | --- | --- |
 | `metadonnee_nominative` | `ARTIST`, `ALBUMARTIST`, `ALBUM ARTIST`, `PERFORMER`, `COMPOSER`, `LYRICIST`, `CONDUCTOR`, `ARRANGER`, `REMIXER`, `PRODUCER`, `AUTHOR`, `WRITER`, `PUBLISHER`, `COPYRIGHT`, `CONTACT`, `ENCODED-BY`, `ENCODEDBY` |
+| `lieu` | `LOCATION` |
+| `texte_libre` | `TITLE`, `SUBTITLE`, `ALBUM`, `DESCRIPTION`, `COMMENT`, `LYRICS`, `UNSYNCEDLYRICS` |
 
-Les autres champs, libres, relèvent de T25 ([ADR-0119](../decisions/ADR-0119-donnees-identifiantes-des-metadonnees.md)).
+Un champ hors de ces listes n'est pas marqué ; `ORGANIZATION`, qui nomme un organisme, ne l'est pas non plus ([ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md), [ADR-0160](../decisions/ADR-0160-champs-lieux-et-textes-libres.md)). Ces données sont comptées et nommées, sans leur valeur, par la rubrique « Contrôle avant publication » du rapport et par le résumé ([ADR-0158](../decisions/ADR-0158-forme-du-controle-avant-publication.md)).
 
 ## Hypothèses distinguées
 
@@ -101,3 +103,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.1.0 | Création (T21, complément audio et vidéo) |
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
+| 2026-11-14 | 0.3.0 | Lieu et textes libres marqués ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |

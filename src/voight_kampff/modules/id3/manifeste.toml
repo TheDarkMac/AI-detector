@@ -1,9 +1,9 @@
 # Module id3 : balises ID3 d'un MP3, d'un AAC, d'un FLAC ou d'un WAV (ADR-0114, ADR-0131). Validé par schemas/manifeste.schema.json (ADR-0064).
 
 identifiant = "id3"
-version = "0.2.0"
+version = "0.3.0"
 formats = ["mp3", "aac", "flac", "wav"]
-exigences = ["F-10", "F-12", "ES-13"]
+exigences = ["F-10", "F-12", "F-90", "ES-13"]
 regles = []
 fiche = "metadonnees-id3"
 # Directions des règles du catalogue sur ses observations (T22, ADR-0142) ; le module lui-même n'émet aucun constat.

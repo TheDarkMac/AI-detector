@@ -42,6 +42,12 @@ _NOMINATIVES = frozenset(
 )
 """Champs qui nomment une personne ou un organisme (ADR-0119, ADR-0133) : ceux de la liste de
 Xiph.org, et ceux qu'emploient les logiciels courants."""
+_LIEUX = frozenset({"LOCATION"})
+"""Lieu de l'enregistrement (liste de Xiph.org) : ADR-0160."""
+_TEXTES_LIBRES = frozenset(
+    {"TITLE", "SUBTITLE", "ALBUM", "DESCRIPTION", "COMMENT", "LYRICS", "UNSYNCEDLYRICS"}
+)
+"""Titres, album, description, commentaire, paroles : ADR-0160."""
 _IMAGES = frozenset({"METADATA-BLOCK-PICTURE", "COVERART"})
 """Images codées en base 64 : observées par leur taille, comme une donnée binaire (ADR-0118)."""
 
@@ -106,8 +112,18 @@ def _observer(contexte: Contexte, cle: str, textes: list[str], localisation: Loc
         valeurs.borner(f"vorbis.{cle}"),
         textes[0] if len(textes) == 1 else textes,
         localisation=localisation,
-        identifiante=(CategorieIdentifiante.METADONNEE_NOMINATIVE if cle in _NOMINATIVES else None),
+        identifiante=_identifiante(cle),
     )
+
+
+def _identifiante(cle: str) -> CategorieIdentifiante | None:
+    if cle in _NOMINATIVES:
+        return CategorieIdentifiante.METADONNEE_NOMINATIVE
+    if cle in _LIEUX:
+        return CategorieIdentifiante.LIEU
+    if cle in _TEXTES_LIBRES:
+        return CategorieIdentifiante.TEXTE_LIBRE
+    return None
 
 
 def _entier(donnees: bytes, position: int) -> tuple[int, int]:

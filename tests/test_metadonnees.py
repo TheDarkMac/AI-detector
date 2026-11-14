@@ -205,6 +205,8 @@ def test_exif_donnees_identifiantes() -> None:
         "exif.gps.GPSVersionID": "gps",
         "exif.gps.GPSLatitudeRef": "gps",
         "exif.gps.GPSLatitude": "gps",
+        "exif.exif.UserComment": "texte_libre",
+        "exif.exif.ImageTitle": "texte_libre",
     }
 
 
@@ -802,7 +804,12 @@ def test_iptc() -> None:
         "iptc.Caption-Abstract": "abc",
         "iptc.present": True,
     }
-    assert identifiantes(lignes) == {"iptc.By-line": "metadonnee_nominative"}
+    assert identifiantes(lignes) == {
+        "iptc.By-line": "metadonnee_nominative",
+        "iptc.ObjectName": "texte_libre",
+        "iptc.Keywords": "texte_libre",
+        "iptc.Caption-Abstract": "texte_libre",
+    }
     assert raisons(lignes) == []
 
 
@@ -876,7 +883,13 @@ def test_textepng() -> None:
         "textepng.Title": "titre",
         "textepng.Creation-Time": "2026",
     }
-    assert identifiantes(lignes) == {"textepng.Author": "metadonnee_nominative"}
+    assert identifiantes(lignes) == {
+        "textepng.Author": "metadonnee_nominative",
+        "textepng.Title": "texte_libre",
+        "textepng.Description": "texte_libre",
+        "textepng.Comment": "texte_libre",
+        "textepng.parameters": "texte_libre",
+    }
 
 
 @pytest.mark.exigence("NF-02", "ES-03")

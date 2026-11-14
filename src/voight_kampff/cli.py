@@ -188,6 +188,14 @@ def resume(analyse: Analyse, reveler: Sequence[str] = ()) -> list[str]:
         for technique in analyse.couverture.techniques
     ]
     lignes += vue.resume()
+    lignes += [
+        texte(
+            "terminal.marque",
+            categorie=libelle("identifiantes", categorie),
+            donnees=", ".join(dict.fromkeys(o.nom for o in observations)),
+        )
+        for categorie, observations in vue.marques()
+    ]
     for non_menee in analyse.non_menees:
         if non_menee.raison in {RaisonNonMenee.HORS_PERIMETRE, RaisonNonMenee.HORS_V1}:
             continue  # déjà dit avec sa partie ou sa technique
