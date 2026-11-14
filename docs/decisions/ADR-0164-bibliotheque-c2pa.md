@@ -53,7 +53,7 @@ Option A. Réglages remis à c2pa-rs à chaque lecture : `verify_after_reading`,
 - Les limites comptées du moteur ne voient pas le travail de c2pa-rs, borné par sa limite de manifeste décompressé (32 Mio) et par la mémoire et le temps de P2 (ADR-0077).
 - `pip-audit` audite désormais `cryptography`, `cffi`, `pycparser` et `toml`. `toml` n'a plus de version depuis 2020 ; sans exécution, le risque est nul, à revoir si c2pa-python l'importe un jour.
 - Le schéma des manifestes admet la bibliothèque `c2pa-python`.
-- Un contexte c2pa-rs est créé à l'import du module, avant les restrictions (ADR-0079) : sous macOS, c2pa-rs lit alors la configuration du système, que Seatbelt refuse ensuite ; sans cela, le processus de travail s'arrêtait au premier fichier (CI de la PR de T30, Python 3.12 et 3.13).
+- Un contexte et un flux c2pa sont créés à l'import du module, avant les restrictions, et gardés tout le processus (ADR-0079). Sous macOS avec Python 3.12 et 3.13, un flux crée des fonctions de rappel ctypes que libffi loge dans une table de trampolines allouée à la première ; Seatbelt refusant ensuite cette allocation, le processus de travail s'arrêtait au premier fichier, sur une assertion de libffi (`ffi_trampoline_table_alloc`, code −6 ; diagnostic de la CI de la PR de T30). Python 3.14 n'est pas touché.
 
 ## Historique
 

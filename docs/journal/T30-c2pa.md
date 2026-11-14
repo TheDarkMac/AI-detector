@@ -30,7 +30,7 @@ Détecter un manifeste C2PA, vérifier sa signature, l'intégrité du contenu si
 8. Fiche `provenance-c2pa` ; matrice (F-20 à F-23, ES-06, ES-09, ES-10, ES-20) régénérée.
 9. PR [#27](https://github.com/TheDarkMac/AI-detector/pull/27) ouverte à la demande de TheDarkMac avant la fin de la vérification ; corrections et documentation poussées ensuite sur la même branche.
 10. Adresse d'un manifeste distant trouvée en clair dans l'export masqué, observée par `xmp` ; TheDarkMac choisit de la masquer (« Yes, mask it », 2026-11-14) : `dcterms:provenance` marquée numéro de série, `xmp` 0.7.0, limite de R-C2PA-011 corrigée, empreinte de 0.5.0 recalculée ([ADR-0173](../decisions/ADR-0173-adresse-d-un-manifeste-distant.md)).
-11. CI de la PR : sous Windows, empreinte des PEM livrés changée par la conversion des fins de ligne de git ; sous macOS (Python 3.12 et 3.13), processus de travail arrêté au premier appel à c2pa-rs. Corrigés par `.gitattributes` et par un contexte c2pa-rs créé à l'import, avant les restrictions. ADR-0164, ADR-0169 à ADR-0172 validés par TheDarkMac (« Oui, les cinq ») : statut « Accepté ».
+11. CI de la PR : sous Windows, empreinte des PEM livrés changée par la conversion des fins de ligne de git ; sous macOS (Python 3.12 et 3.13), processus de travail arrêté au premier appel à c2pa-rs. Corrigés par `.gitattributes` et, après un test de diagnostic temporaire sous macOS (sortie d'erreur et code du processus de travail), par un flux c2pa créé à l'import et gardé vivant, avant les restrictions. ADR-0164, ADR-0169 à ADR-0172 validés par TheDarkMac (« Oui, les cinq ») : statut « Accepté ».
 
 ## Vérification
 
@@ -52,7 +52,7 @@ Détecter un manifeste C2PA, vérifier sa signature, l'intégrité du contenu si
 | Couverture du module c2pa à 84 % | Les processus de travail des tests ne sont pas mesurés (environnement vidé) | Mêmes cas exécutés dans le processus des tests |
 | Adresse d'un manifeste distant en clair dans l'export masqué | Observée par `xmp`, sans marquage | Marquée numéro de série (ADR-0173) |
 | Empreinte des PEM livrés différente sous Windows (CI) | git convertit les fins de ligne à l'extraction | `src/voight_kampff/donnees/confiance/** -text` dans `.gitattributes`, comme le catalogue |
-| Processus de travail arrêté sous macOS 3.12 et 3.13 (CI) | Le client HTTP de c2pa-rs lit la configuration du système à la création d'un contexte, ce que Seatbelt refuse après les restrictions (hypothèse, vérifiée par la CI qui suit) | Contexte créé à l'import du module (ADR-0079) |
+| Processus de travail arrêté sous macOS 3.12 et 3.13 (CI) | Les fonctions de rappel ctypes d'un flux c2pa demandent à libffi une table de trampolines, que Seatbelt refuse après les restrictions (assertion de libffi, code −6) ; la première hypothèse, la configuration du système lue par le client HTTP, était fausse | Flux et contexte créés à l'import et gardés vivants (ADR-0079, ADR-0164) |
 | Règles de T22 à T24 comptées avec celles de T30 | Tests qui définissaient leurs règles par catégorie sur tout le catalogue | Règles du module c2pa écartées de ces ensembles |
 
 ## Écarts par rapport au découpage

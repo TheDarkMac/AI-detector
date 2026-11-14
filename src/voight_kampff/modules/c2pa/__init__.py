@@ -119,10 +119,12 @@ def reglages(ancres: Ancres) -> dict[str, Any]:
     }
 
 
-_PREPARATION = c2pa.Context.from_dict(reglages(Ancres()))
-"""Contexte créé à l'import, avant les restrictions (ADR-0079, ADR-0164) : c2pa-rs prépare alors
-ses ressources de processus, dont la configuration du système que lit son client HTTP sous
-macOS, que Seatbelt refuserait ensuite. Il ne sert à aucune lecture."""
+_PREPARATION = (c2pa.Context.from_dict(reglages(Ancres())), c2pa.Stream(io.BytesIO()))
+"""Contexte et flux créés à l'import, avant les restrictions, et gardés tout le processus
+(ADR-0079, ADR-0164). Un flux crée ses fonctions de rappel ctypes ; sous macOS, avec Python 3.12
+et 3.13, libffi les loge dans une table de trampolines qu'il alloue à la première, ce que Seatbelt
+refuse ensuite (arrêt par une assertion de libffi). Gardé vivant, ce flux garde la table, où les
+flux des analyses prennent place. Ni l'un ni l'autre ne sert à une lecture."""
 
 
 class _Flux(io.RawIOBase):
