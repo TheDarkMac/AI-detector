@@ -148,28 +148,31 @@ note = "Absence de métadonnées observée par chaque module (`<famille>.present
 
 [[exigence]]
 id = "F-20"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T30"]
 methodes = ["test"]
+note = "Module `c2pa` (c2pa-python 0.39.0, c2pa-rs 0.92.0) sur treize formats ; AAC, Ogg, WebM et texte non pris en charge par c2pa-rs (ADR-0164)."
 
 [[exigence]]
 id = "F-21"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T30"]
 methodes = ["test"]
-note = "Contrôle déterministe : vérifié par des tests de conformité, sans taux sur corpus (A-55)."
+note = "Signature, empreintes et chaîne vérifiées par c2pa-rs contre la liste de confiance livrée ou fournie (ADR-0165, ADR-0171) ; contrôle déterministe, vérifié par des tests de conformité sur des fichiers signés par une autorité d'essai, sans taux sur corpus (A-55). Révocation en ligne hors de T30 (ADR-0166)."
 
 [[exigence]]
 id = "F-22"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T30"]
 methodes = ["test"]
+note = "Cinq états observés sous `c2pa.etat`, une phrase d'état par manifeste, raison par les codes de la C2PA ou le genre d'erreur de c2pa-rs (ADR-0169, ADR-0170)."
 
 [[exigence]]
 id = "F-23"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T30"]
 methodes = ["test"]
+note = "Outil d'origine, titre, signataire, actions et source numérique IPTC, ingrédients du manifeste actif ; source déclarée en preuve sous un signataire reconnu, en indice faible sinon (ADR-0167, ADR-0168, ADR-0170)."
 
 [[exigence]]
 id = "F-24"
@@ -590,7 +593,7 @@ id = "ES-06"
 etat = "partielle"
 taches = ["T21", "T30", "T52"]
 methodes = ["test"]
-note = "DOCX et ODT : aucune relation ni référence lue ou suivie, modèle distant compris (complément bureautique de T21, ADR-0138) ; manifestes C2PA distants à T30, liens et actions des PDF à T52."
+note = "DOCX et ODT : aucune relation ni référence lue ou suivie, modèle distant compris (complément bureautique de T21, ADR-0138) ; manifestes C2PA distants jamais récupérés, hôte seul au rapport du module c2pa (T30, ADR-0166) ; liens et actions des PDF à T52."
 
 [[exigence]]
 id = "ES-07"
@@ -606,16 +609,17 @@ methodes = ["test"]
 
 [[exigence]]
 id = "ES-09"
-etat = "partielle"
+etat = "realisee"
 taches = ["T15", "T30"]
 methodes = ["test"]
-note = "Catalogue réalisé ; liste de confiance C2PA à T30."
+note = "Catalogue (T15) ; liste de confiance C2PA livrée, validée au chargement, nom, version, date et empreinte au rapport, liste fournie signalée (T30, ADR-0165, ADR-0171)."
 
 [[exigence]]
 id = "ES-10"
-etat = "a_venir"
+etat = "partielle"
 taches = ["T30"]
 methodes = ["test"]
+note = "T30 : aucune requête, récupération distante et OCSP coupées dans c2pa-rs, liste des hôtes permis vide ; manifeste distant non vérifiable, raison réseau désactivé. Requêtes de P1 sur confirmation (RS-01, RS-02) dans un complément (ADR-0166)."
 
 [[exigence]]
 id = "ES-11"
@@ -679,10 +683,10 @@ note = "Fuzzing des analyseurs livrés, dont les modules de métadonnées et leu
 
 [[exigence]]
 id = "ES-20"
-etat = "partielle"
+etat = "realisee"
 taches = ["T11", "T22", "T30"]
 methodes = ["test"]
-note = "Le modèle refuse une preuve sans vérification ; les règles de T22 restituent une déclaration du fichier en indice, jamais en preuve (ADR-0142) ; manifestes C2PA en T30."
+note = "Le modèle refuse une preuve sans vérification ; les règles de T22 restituent une déclaration du fichier en indice, jamais en preuve (ADR-0142) ; une déclaration C2PA n'est une preuve que sous une signature valide d'un signataire reconnu (T30, ADR-0170)."
 
 [[exigence]]
 id = "ES-21"
