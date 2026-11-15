@@ -42,6 +42,7 @@ informations = "{nombre} information(s) neutre(s)."
 techniques = "Techniques : {appliquees} appliquée(s), {partielles} partielle(s), {non_menees} non menée(s), {non_applicables} non applicable(s)."
 non_menees = "{nombre} analyse(s) non menée(s)."
 non_menees_aucune = "Toutes les analyses prévues ont été menées."
+visualisations = "{nombre} visualisation(s) au rapport HTML et JSON : {natures}. Lisez son avertissement d'interprétation avant de l'utiliser."
 publication = "Contrôle avant publication : {nombre} donnée(s) des métadonnées peuvent identifier la source ({categories}). L'outil ne les retire pas : retirez-les avant de publier le fichier."
 publication_aucune = "Contrôle avant publication : aucune donnée identifiante relevée dans les métadonnées lues."
 publication_incomplete = "Contrôle avant publication incomplet : des parties du fichier n'ont pas été lues (analyses non menées) et peuvent porter d'autres marques."
@@ -56,12 +57,34 @@ isolation = "Isolation"
 preuves = "Preuves"
 indices = "Indices"
 informations = "Informations neutres"
+visualisations = "Visualisations"
 non_menees = "Analyses non menées"
 couverture = "Couverture"
 controle_publication = "Contrôle avant publication"
 donnees_identifiantes = "Données identifiantes"
 observations = "Observations"
 glossaire = "Glossaire"
+
+# Visualisations (F-84, ADR-0200) : titre, avertissement d'interprétation (F-32) affiché au-dessus
+# de l'image, texte de remplacement, couverture.
+[visualisations]
+aucune = "Aucune visualisation : aucune technique appliquée n'en produit pour ce fichier."
+masquee = "L'image montre le contenu du fichier, réduit : elle est masquée (catégorie « contenu de l'image »). Pour l'afficher, relancez l'analyse avec --reveler contenu."
+empreinte = "Empreinte SHA-256 de l'image : {empreinte}"
+couverture_entiere = "La carte couvre toute l'image : {blocs} blocs de 8 × 8 pixels de la luminance."
+couverture_partielle = "La carte ne couvre que le haut de l'image : {blocs} blocs de 8 × 8 pixels sur {blocs_image}, au-delà de la limite de 65 536 blocs que l'outil lit."
+
+[visualisations.carte_ela]
+titre = "Carte du niveau d'erreur de recompression (ELA)"
+alternative = "Carte ELA de {largeur} × {hauteur} blocs ; ses valeurs moyenne et maximale figurent aux observations du module ela."
+avertissement = [
+    "Cette carte n'est ni une preuve ni un indice, et ne désigne aucune zone retouchée : c'est une aide à la lecture, sans seuil ni constat.",
+    "Chaque point est un bloc de 8 × 8 pixels de la luminance : plus il est clair, plus le bloc change quand l'image est réenregistrée en JPEG à la qualité 95 de libjpeg.",
+    "Les contours, les textures fines et le texte sont naturellement plus clairs, les aplats et les ciels plus sombres : deux zones ne se comparent que si leur contenu est de même nature.",
+    "Une zone nettement plus claire que des zones semblables peut avoir été ajoutée ou modifiée après la dernière compression ; elle peut aussi venir du contenu lui-même, ou d'un réenregistrement de toute l'image.",
+    "Une image enregistrée une seule fois à une qualité élevée est claire partout, et un collage n'y ressort pas ; une image réenregistrée plusieurs fois, ou à faible qualité, est sombre partout et ne montre plus rien.",
+    "La carte ne distingue pas une image générée par IA d'une photo : une image générée puis enregistrée en JPEG donne une carte ordinaire.",
+]
 
 # Introductions et légendes des tableaux.
 [intros]
@@ -251,6 +274,7 @@ lieu = "lieux nommés"
 texte_libre = "textes libres"
 nom_de_fichier = "nom du fichier"
 empreinte = "empreinte du fichier"
+contenu = "contenu de l'image"
 
 [raisons]
 hors_v1 = "Technique non livrée dans cette version de l'outil."

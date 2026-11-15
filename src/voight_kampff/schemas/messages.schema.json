@@ -9,6 +9,7 @@
     { "$ref": "#/$defs/observation" },
     { "$ref": "#/$defs/constat" },
     { "$ref": "#/$defs/non_menee" },
+    { "$ref": "#/$defs/visualisation" },
     { "$ref": "#/$defs/module" },
     { "$ref": "#/$defs/versions" },
     { "$ref": "#/$defs/fin" }
@@ -20,7 +21,7 @@
       "required": ["type", "version_schema", "isolation"],
       "properties": {
         "type": { "const": "isolation" },
-        "version_schema": { "const": "0.6.0" },
+        "version_schema": { "const": "0.7.0" },
         "isolation": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/isolation" }
       }
     },
@@ -62,6 +63,18 @@
       "properties": {
         "type": { "const": "non_menee" },
         "non_menee": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/non_menee" }
+      }
+    },
+    "visualisation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "visualisation"],
+      "properties": {
+        "type": { "const": "visualisation" },
+        "visualisation": {
+          "$ref": "urn:voight-kampff:schema:rapport#/$defs/visualisation",
+          "required": ["donnees", "empreinte"]
+        }
       }
     },
     "module": {

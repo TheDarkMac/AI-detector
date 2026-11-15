@@ -3,8 +3,10 @@
 Le document est écrit par ce module, sans moteur de gabarits. Tout texte y entre par :func:`_t`,
 qui neutralise les caractères invisibles puis échappe le HTML (ES-12) ; seules les balises
 écrites ici sont du HTML. La politique de sécurité du contenu n'autorise que la feuille de style
-du document, désignée par son empreinte : ni script, ni image, ni police, ni formulaire, ni
-ressource distante (M-20).
+du document, désignée par son empreinte, et les images ``data:`` des visualisations (ADR-0200) :
+ni script, ni police, ni formulaire, ni ressource distante (M-20). Une image n'entre dans le
+document que comme PNG vérifié par le modèle (signature, dimensions, empreinte), encodé ici en
+base64 ; aucune donnée du fichier n'y entre telle quelle.
 
 Structure pour l'accessibilité (WCAG 2.2 AA, ADR-0025) : langue déclarée, un titre de niveau 1,
 rubriques en titres de niveau 2, tableaux avec légende et en-têtes, lien d'évitement, aucune
@@ -35,6 +37,7 @@ from voight_kampff.rapport.modele import (
     CategorieIdentifiante,
     Constat,
     NiveauIsolation,
+    Visualisation,
 )
 
 __all__ = ["STYLE", "html", "politique"]
@@ -64,6 +67,9 @@ caption{text-align:left;font-weight:600;padding:.25rem 0}
 th,td{border:1px solid var(--trait);padding:.25rem .5rem;text-align:left;vertical-align:top}
 tbody tr:nth-child(even){background:var(--zebre)}
 article{border:1px solid var(--trait);padding:0 1rem .5rem;margin:1rem 0}
+figure{margin:1rem 0}
+.carte{display:block;width:100%;height:auto;image-rendering:pixelated;border:1px solid var(--trait);
+background:#000}
 @media print{body{max-width:none}.evitement{display:none}article,tr{break-inside:avoid}}
 """
 """Feuille de style du rapport : sa seule ressource, autorisée par son empreinte."""
@@ -73,7 +79,8 @@ def politique() -> str:
     """Politique de sécurité du contenu : rien d'autre que la feuille de style (ES-12)."""
     condensat = base64.b64encode(hashlib.sha256(STYLE.encode()).digest()).decode()
     return (
-        f"default-src 'none'; style-src 'sha256-{condensat}'; base-uri 'none'; form-action 'none'"
+        f"default-src 'none'; style-src 'sha256-{condensat}'; img-src data:; base-uri 'none'; "
+        "form-action 'none'"
     )
 
 
@@ -220,6 +227,59 @@ def _isolation(vue: Presentation) -> str:
             (_champ("manques"), _liste(libelle("manques", m) for m in isolation.manques))
         )
     return _definitions(couples)
+
+
+def _visualisation(vue: Presentation, visualisation: Visualisation) -> str:
+    """Titre, avertissement d'interprétation au-dessus de l'image (F-32), couverture, image ou
+    mention du masquage, empreinte."""
+    cle = f"visualisations.{visualisation.nature}"
+    avertissement = "".join(
+        f"<p>{_t(p)}</p>" for p in textes()["visualisations"][visualisation.nature]["avertissement"]
+    )
+    siennes = {
+        o.nom: o.valeur
+        for o in vue.analyse.observations
+        if (o.module, o.partie) == (visualisation.module, visualisation.partie)
+    }
+    blocs, blocs_image = siennes.get("ela.blocs"), siennes.get("ela.blocs_image")
+    couverture = ""
+    if isinstance(blocs, int) and isinstance(blocs_image, int):
+        couverture = _t(
+            texte("visualisations.couverture_entiere", blocs=nombre(blocs))
+            if blocs == blocs_image
+            else texte(
+                "visualisations.couverture_partielle",
+                blocs=nombre(blocs),
+                blocs_image=nombre(blocs_image),
+            )
+        )
+        couverture = f"<p>{couverture}</p>"
+    if vue.masquee(visualisation.identifiante):
+        image = f"<p>{_t(texte('visualisations.masquee'))}</p>"
+        empreinte = ""
+    else:
+        alternative = texte(
+            f"{cle}.alternative", largeur=visualisation.largeur, hauteur=visualisation.hauteur
+        )
+        donnees = base64.b64encode(visualisation.png).decode("ascii")
+        image = (
+            f'<figure><img class="carte" src="data:image/png;base64,{donnees}" '
+            f'width="{visualisation.largeur}" height="{visualisation.hauteur}" '
+            f'alt="{_t(alternative)}"></figure>'
+        )
+        empreinte = texte("visualisations.empreinte", empreinte=visualisation.empreinte)
+        empreinte = f'<p class="discret">{_t(empreinte)}</p>'
+    return (
+        f"<article><h3>{_t(texte(f'{cle}.titre'))}</h3>{avertissement}{couverture}{image}"
+        f"{empreinte}</article>"
+    )
+
+
+def _visualisations(vue: Presentation) -> str:
+    visualisations = vue.analyse.visualisations
+    if not visualisations:
+        return f"<p>{_t(texte('visualisations.aucune'))}</p>"
+    return "".join(_visualisation(vue, visualisation) for visualisation in visualisations)
 
 
 def _non_menees(vue: Presentation) -> str:
@@ -417,6 +477,7 @@ def html(analyse: Analyse, masquees: Collection[CategorieIdentifiante]) -> str:
                 "informations",
                 _constats(vue, Categorie.INFORMATION_NEUTRE, "aucune"),
             ),
+            _rubrique("visualisations", _visualisations(vue)),
             _rubrique("non_menees", _non_menees(vue)),
             _rubrique("couverture", _couverture(vue)),
             _rubrique("controle_publication", _controle_publication(vue)),

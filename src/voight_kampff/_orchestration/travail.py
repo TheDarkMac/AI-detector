@@ -60,6 +60,7 @@ from voight_kampff.rapport.modele import (
     Partie,
     RaisonNonMenee,
     TechniqueCouverte,
+    Visualisation,
     plages_non_reconnues,
     verifier_parties,
 )
@@ -133,6 +134,7 @@ class ResultatTravail:
     dependances: tuple[Dependance, ...]
     empreinte: str | None
     """Empreinte recalculée en fin d'analyse ; comparée à celle du principal (ES-08)."""
+    visualisations: tuple[Visualisation, ...] = ()
 
     @property
     def interrompue(self) -> bool:
@@ -321,6 +323,7 @@ class _Module:
     observations: list[Observation] = field(default_factory=list)
     constats: list[Constat] = field(default_factory=list)
     non_menees: list[NonMenee] = field(default_factory=list)
+    visualisations: list[Visualisation] = field(default_factory=list)
     remplace: bool = False
     """Résultats remplacés par une raison du moteur : plus rien n'est admis ensuite."""
     applicable: bool | None = None
@@ -328,14 +331,14 @@ class _Module:
 
     @property
     def vide(self) -> bool:
-        return not (self.observations or self.constats or self.non_menees)
+        return not (self.observations or self.constats or self.non_menees or self.visualisations)
 
     def etat(self) -> EtatTechnique:
         if not self.applicable:
             return EtatTechnique.NON_APPLICABLE
         if not self.non_menees:
             return EtatTechnique.APPLIQUEE
-        if self.observations or self.constats:
+        if self.observations or self.constats or self.visualisations:
             return EtatTechnique.PARTIELLE
         return EtatTechnique.NON_MENEE
 
@@ -447,6 +450,8 @@ class _Reception:
                     self._constat(Constat.depuis_dict(message["constat"]))
                 case "non_menee":
                     self._non_menee(NonMenee.depuis_dict(message["non_menee"]))
+                case "visualisation":
+                    self._visualisation(Visualisation.depuis_dict(message["visualisation"]))
                 case "module":
                     self._fin_de_module(message["module"], message["partie"], message["applicable"])
                 case "versions":
@@ -497,6 +502,10 @@ class _Reception:
         _invalide(regle is not None and conforme(regle, constat))
         module.constats.append(constat)
 
+    def _visualisation(self, visualisation: Visualisation) -> None:
+        module = self._courant(visualisation.module, visualisation.partie)
+        module.visualisations.append(visualisation)
+
     def _non_menee(self, non_menee: NonMenee) -> None:
         if non_menee.module is None:
             _invalide(non_menee.raison in _RAISONS_DU_FICHIER)
@@ -540,6 +549,7 @@ class _Reception:
         observations: list[Observation] = []
         constats: list[Constat] = []
         non_menees: list[NonMenee] = []
+        visualisations: list[Visualisation] = []
         for partie in self._parties or ():
             # Ce que l'identification n'a pas pu analyser est déclaré ici (ADR-0056, ADR-0071).
             localisation = Localisation(octets=partie.octets)
@@ -574,6 +584,7 @@ class _Reception:
                     observations.extend(module.observations)
                     constats.extend(module.constats)
                     non_menees.extend(module.non_menees)
+                    visualisations.extend(module.visualisations)
         if self._parties:
             non_menees.extend(
                 NonMenee(RaisonNonMenee.FORMAT_PARTIEL, localisation=Localisation(octets=plage))
@@ -591,4 +602,5 @@ class _Reception:
             non_menees=tuple(non_menees),
             dependances=self._dependances or (),
             empreinte=self._empreinte if self._interruption is None else None,
+            visualisations=tuple(visualisations),
         )

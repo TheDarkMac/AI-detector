@@ -164,9 +164,9 @@ def etat_partie(partie: Partie) -> str:
 
 
 _NIVEAUX_DECROISSANTS = (Niveau.FORT, Niveau.MODERE, Niveau.FAIBLE)
-_SANS_METADONNEES = frozenset({"doublejpeg"})
+_SANS_METADONNEES = frozenset({"doublejpeg", "ela"})
 """Modules qui ne lisent aucune métadonnée : leur analyse non menée ne laisse aucune marque
-non lue (ADR-0158, ADR-0190)."""
+non lue (ADR-0158, ADR-0190, ADR-0201)."""
 
 
 class Presentation:
@@ -361,6 +361,15 @@ class Presentation:
             lignes.append(texte("resume.non_menees", nombre=len(self.analyse.non_menees)))
         else:
             lignes.append(texte("resume.non_menees_aucune"))
+        if visualisations := self.analyse.visualisations:
+            natures = dict.fromkeys(
+                texte(f"visualisations.{v.nature}.titre") for v in visualisations
+            )
+            lignes.append(
+                texte(
+                    "resume.visualisations", nombre=len(visualisations), natures=", ".join(natures)
+                )
+            )
         lignes.extend(self.publication())
         return lignes
 

@@ -8,7 +8,8 @@ procédé hiérarchique et la précision de douze bits ne sont pas lus (format p
 
 Seule une région du haut de l'image est décodée : les premières lignes de blocs de la première
 composante, au plus :data:`BLOCS_REGION` blocs, et au plus :data:`VISITES_MAX` blocs décodés en
-tout, balayages et autres composantes compris (ADR-0189). Le nombre de lignes se déduit des
+tout, balayages et autres composantes compris (ADR-0189) ; un module peut demander d'autres
+bornes (l'ELA, ADR-0199). Le nombre de lignes se déduit des
 balayages annoncés, avant le décodage : il est le même sur toutes les machines. Un balayage qui
 ne porte pas la première composante est sauté sans être décodé.
 
@@ -128,10 +129,16 @@ class _Balayage:
     """Intervalle de redémarrage, en MCU ; 0 sans redémarrage."""
 
 
-def lire(contexte: Contexte) -> Lecture:
-    """Coefficients de la première composante, sur la région du haut de l'image."""
+def lire(contexte: Contexte, *, blocs: int | None = None, visites: int | None = None) -> Lecture:
+    """Coefficients de la première composante, sur la région du haut de l'image.
+
+    ``blocs`` borne les blocs de la région, :data:`BLOCS_REGION` par défaut ; ``visites`` les
+    blocs décodés en tout, :data:`VISITES_MAX` par défaut.
+    """
+    blocs = BLOCS_REGION if blocs is None else blocs
+    visites = VISITES_MAX if visites is None else visites
     try:
-        return Lecture(_Lecteur(contexte).lire())
+        return Lecture(_Lecteur(contexte, blocs, visites).lire())
     except _Arret as arret:
         return Lecture(None, arret.raison, arret.position)
 
@@ -159,6 +166,7 @@ def _huffman(comptes: bytes, symboles: bytes, position: int) -> list[int]:
 class _Lecteur:
     __slots__ = (
         "_balayages",
+        "_blocs",
         "_composantes",
         "_contexte",
         "_definies",
@@ -169,10 +177,13 @@ class _Lecteur:
         "_procede",
         "_quantification",
         "_table",
+        "_visites_max",
     )
 
-    def __init__(self, contexte: Contexte) -> None:
+    def __init__(self, contexte: Contexte, blocs: int, visites: int) -> None:
         self._contexte = contexte
+        self._blocs = blocs
+        self._visites_max = visites
         self._quantification: dict[int, tuple[bool, tuple[int, ...]]] = {}
         self._huffman: dict[tuple[int, int], list[int]] = {}
         self._definies = 0
@@ -396,12 +407,12 @@ class _Lecteur:
         seule = len(composantes) == 1
         grille = colonnes if seule else mcu_colonnes * premiere.horizontal
         entrelaces = any(len(b.composantes) > 1 for b in self._balayages)
-        # Lignes de la région : au plus BLOCS_REGION blocs, au plus VISITES_MAX blocs décodés. Un
+        # Lignes de la région : au plus ``blocs`` blocs, au plus ``visites`` blocs décodés. Un
         # balayage entrelacé décode des lignes de MCU entières ; les lignes en trop sont oubliées.
-        lignes = max(1, min(lignes_image, BLOCS_REGION // colonnes))
-        while lignes > 1 and self._visites(lignes, colonnes, mcu_colonnes) > VISITES_MAX:
+        lignes = max(1, min(lignes_image, self._blocs // colonnes))
+        while lignes > 1 and self._visites(lignes, colonnes, mcu_colonnes) > self._visites_max:
             lignes = lignes * 3 // 4
-        if self._visites(lignes, colonnes, mcu_colonnes) > VISITES_MAX:
+        if self._visites(lignes, colonnes, mcu_colonnes) > self._visites_max:
             raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, self._balayages[0].debut)
         stockage = -(-lignes // premiere.vertical) * premiere.vertical if entrelaces else lignes
         valeurs = array("q", bytes(8 * 64 * stockage * grille))

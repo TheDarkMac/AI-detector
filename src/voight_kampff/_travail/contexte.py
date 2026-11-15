@@ -44,12 +44,14 @@ from voight_kampff.rapport.modele import (
     Constat,
     Direction,
     Localisation,
+    NatureVisualisation,
     NonMenee,
     Observation,
     Partie,
     Plage,
     RaisonNonMenee,
     Scalaire,
+    Visualisation,
 )
 
 __all__ = ["RAISONS_D_UN_MODULE", "Ancres", "Compression", "Contexte", "LimiteDepassee"]
@@ -314,6 +316,27 @@ class Contexte:
             raise ValueError("non_menee.raison : réservée au moteur")
         non_menee = NonMenee(raison, self.module, self._dans_le_fichier(localisation), self.partie)
         self._ajouter({"type": "non_menee", "non_menee": non_menee.vers_dict()})
+
+    def visualiser(
+        self,
+        nature: NatureVisualisation,
+        png: bytes,
+        largeur: int,
+        hauteur: int,
+        *,
+        localisation: Localisation | None = None,
+    ) -> None:
+        """Enregistre une image écrite par le module pour aider la lecture (F-84, ADR-0200)."""
+        visualisation = Visualisation(
+            self.module,
+            nature,
+            largeur,
+            hauteur,
+            png,
+            localisation=self._dans_le_fichier(localisation),
+            partie=self.partie,
+        )
+        self._ajouter({"type": "visualisation", "visualisation": visualisation.vers_dict()})
 
     def _dans_le_fichier(self, localisation: Localisation | None) -> Localisation | None:
         """Plage d'octets relative à la partie ramenée à une position dans le fichier."""

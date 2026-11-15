@@ -173,6 +173,11 @@ def _sans_masquees(
             observation = {cle: v for cle, v in observation.items() if cle != "valeur"}
         observations.append(observation)
     copie["observations"] = observations
+    if CategorieIdentifiante.CONTENU in caches:
+        copie["visualisations"] = [
+            {cle: v for cle, v in visualisation.items() if cle not in {"donnees", "empreinte"}}
+            for visualisation in copie["visualisations"]
+        ]
     return copie
 
 
