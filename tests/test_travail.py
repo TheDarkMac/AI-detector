@@ -180,6 +180,7 @@ def test_versions_des_bibliotheques_des_modules_actifs(descripteur: int) -> None
     assert principal.versions_des_bibliotheques() == {
         "c2pa-python": metadata.version("c2pa-python"),
         "expat": version,
+        "numpy": metadata.version("numpy"),
     }
 
 
@@ -520,6 +521,7 @@ def test_import_des_modules_livres() -> None:
     analyseurs, echecs = principal.importer()
     assert sorted(analyseurs) == [
         "c2pa",
+        "doublejpeg",
         "exif",
         "id3",
         "image",

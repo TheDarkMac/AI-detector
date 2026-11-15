@@ -66,7 +66,7 @@ REGLES_T24 = tuple(
     regle
     for regle in CATALOGUE.regles
     if regle.direction is Direction.TRANSFORMATION
-    and regle.module != "c2pa"
+    and regle.module not in {"c2pa", "doublejpeg"}
     and regle.identifiant not in REGLES_T40
 )
 SIGNATURES = {"R-EXIF-014", "R-XMP-013", "R-IPTC-003", "R-TEXTEPNG-007"}

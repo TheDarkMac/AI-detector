@@ -201,6 +201,7 @@ def test_vrai_processus_extrait_les_metadonnees(tmp_path: Path) -> None:
     assert resultat.dependances == (
         Dependance("c2pa-python", metadata.version("c2pa-python")),
         Dependance("expat", version),
+        Dependance("numpy", metadata.version("numpy")),
     )
     assert {t.etat for t in resultat.couverture.techniques if t.module == "iptc"} == {
         EtatTechnique.APPLIQUEE
@@ -345,9 +346,9 @@ def test_vrai_processus_bibliotheques_des_seuls_modules_actifs(tmp_path: Path) -
     contenu = (Path(__file__).parent / "donnees" / "metadonnees" / "photo.jpg").read_bytes()
     ouvert = ouvrir(tmp_path / "photo.jpg", contenu)
     try:
-        # expat sert à xmp, ooxml et odf, c2pa-python à c2pa : désactivés, ils ne sont plus cités
-        # (ADR-0120).
-        desactives = {"xmp", "ooxml", "odf", "c2pa"}
+        # expat sert à xmp, ooxml et odf, c2pa-python à c2pa, numpy à doublejpeg : désactivés,
+        # ils ne sont plus cités (ADR-0120).
+        desactives = {"xmp", "ooxml", "odf", "c2pa", "doublejpeg"}
         resultat = executer(ouvert, manifestes.decouvrir(), desactives=desactives)
     finally:
         os.close(ouvert)

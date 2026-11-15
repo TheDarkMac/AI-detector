@@ -4,8 +4,9 @@ Quatre familles d'analyseurs lisent aujourd'hui des données hostiles :
 
 - l'identification, dans le processus de travail, lit le fichier (ADR-0070) ;
 - les modules de métadonnées (image, PDF, audio, vidéo, DOCX, ODT) et leurs lecteurs de
-  structure (T20, T21, ADR-0114, ADR-0124, ADR-0131, ADR-0137), et le module ``image``, qui lit
-  dimensions et tables de quantification (T24, ADR-0154) ;
+  structure (T20, T21, ADR-0114, ADR-0124, ADR-0131, ADR-0137), le module ``image``, qui lit
+  dimensions et tables de quantification (T24, ADR-0154), et le module ``doublejpeg``, qui décode
+  les coefficients DCT d'un JPEG (T41, ADR-0187) ;
 - le décodage strict des lignes, dans le processus principal, lit ce qu'envoie un processus de
   travail peut-être compromis (ES-04) ;
 - la réception, qui valide chaque message par le schéma puis par le modèle (ADR-0065).
@@ -57,6 +58,8 @@ from echantillons import (
     riff,
     trame_adts,
 )
+from encodeur_jpeg import Composante, blocs_nuls
+from encodeur_jpeg import encoder as encoder_jpeg
 from hypothesis import given
 from hypothesis import strategies as st
 from medias import (
@@ -335,6 +338,20 @@ _INFO = (
     b"/Pages 3/Liste[(a) 1]/Sous<</A(b)>>/Creator 2 0 R>>"
 )
 _PNG = "<</Predictor 12/Columns 7>>"
+_ECHANTILLONS_T41 = Path(__file__).parent / "donnees" / "doublejpeg"
+
+
+def _jpeg_entrelace() -> bytes:
+    composantes = [Composante(1, 2, 2), Composante(2, table=1), Composante(3, table=1)]
+    blocs = blocs_nuls(composantes, 24, 16)
+    for rang, bloc in enumerate(blocs[0]):
+        bloc[0], bloc[rang + 1] = rang * 9 - 20, rang - 2
+    return encoder_jpeg(24, 16, composantes, blocs, {0: (3,) * 64, 1: (5,) * 64}, intervalle=1)
+
+
+_JPEG_ENTRELACE = _jpeg_entrelace()
+
+
 ECHANTILLONS_METADONNEES = (
     ("jpeg", jpeg_meta(app1_exif(_TIFF), app1_xmp(_XMP), app1_etendu(b"G" * 32, 4, 0, b"abcd"))),
     ("jpeg", jpeg_meta(app13(ressource(0x0404, jeu(1, 90, b"\x1b%G") + jeu(2, 25, b"mot"))))),
@@ -352,6 +369,10 @@ ECHANTILLONS_METADONNEES = (
     ("jpeg", jpeg_image(1600, 1200, tables=jpeg_ijg(80) + dqt((0, (2,) * 64), seize_bits=True))),
     ("webp", webp_image(vp8(1280, 720))),
     ("webp", webp_image(vp8l(1600, 900))),
+    # Coefficients DCT (T41) : JPEG décodables, séquentiel entrelacé à intervalles de
+    # redémarrage, et progressif écrit par jpegtran.
+    ("jpeg", _JPEG_ENTRELACE),
+    ("jpeg", (_ECHANTILLONS_T41 / "double_60_90_gris_progressif.jpg").read_bytes()[:3000]),
     (
         "heic",
         heic_meta(
@@ -487,7 +508,7 @@ ECHANTILLONS_METADONNEES = (
 )
 """Échantillons par format : toutes les familles, toutes les formes de conteneur lues."""
 _MODULES: dict[str, tuple[str, ...]] = {
-    "jpeg": ("exif", "xmp", "iptc", "image"),
+    "jpeg": ("exif", "xmp", "iptc", "image", "doublejpeg"),
     "png": ("exif", "xmp", "textepng", "image"),
     "webp": ("exif", "xmp", "image"),
     "heic": ("exif", "xmp"),
