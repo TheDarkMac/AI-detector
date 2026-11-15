@@ -199,3 +199,9 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0182](ADR-0182-regles-des-tables-connues.md) | Règles des tables connues : sur le modèle de R-IMAGE-004 | Accepté | 2026-11-14 |
 | [ADR-0183](ADR-0183-observations-des-tables-connues.md) | Observations des tables connues : une paire par famille, premier encodeur reconnu | Accepté | 2026-11-14 |
 | [ADR-0184](ADR-0184-versions-de-t40.md) | Versions de T40 : module `image` 0.2.0, catalogue 0.7.0, R-IMAGE-004 en version 2 | Accepté | 2026-11-14 |
+| [ADR-0185](ADR-0185-lecture-des-coefficients-dct.md) | Lecture des coefficients DCT : décodage entropique écrit par le projet, numpy pour le calcul | Accepté | 2026-11-15 |
+| [ADR-0186](ADR-0186-methode-de-detection.md) | Méthode de détection : premier pas de quantification estimé par calibrage | Accepté | 2026-11-15 |
+| [ADR-0187](ADR-0187-jpeg-lus.md) | JPEG lus : séquentiels et progressifs, codage de Huffman, huit bits | Accepté | 2026-11-15 |
+| [ADR-0188](ADR-0188-constat-de-double-compression.md) | Constat de double compression : indice faible vers la transformation | Accepté | 2026-11-15 |
+| [ADR-0189](ADR-0189-calcul-en-entiers-et-region.md) | Estimation : calcul en entiers, région du haut de l'image, paramètres et forme de la règle | Proposé | 2026-11-15 |
+| [ADR-0190](ADR-0190-module-et-versions-de-t41.md) | Module `doublejpeg`, un fil pour OpenBLAS, contrôle avant publication, versions de T41 | Proposé | 2026-11-15 |

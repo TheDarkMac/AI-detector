@@ -103,9 +103,9 @@ note = "Reformulée : empreinte masquée par défaut (ADR-0031)."
 [[exigence]]
 id = "F-06"
 etat = "realisee"
-taches = ["T24"]
+taches = ["T24", "T41"]
 methodes = ["test"]
-note = "Indices faibles vers la transformation : captures d'écran déclarées, marque de Facebook, JPEG sans métadonnées aux côtés d'une messagerie ou aux tables de libjpeg ; recommandation au résumé (ADR-0153 à ADR-0156). La double compression reste à T41 (F-31)."
+note = "Indices faibles vers la transformation : captures d'écran déclarées, marque de Facebook, JPEG sans métadonnées aux côtés d'une messagerie ou aux tables de libjpeg ; recommandation au résumé (ADR-0153 à ADR-0156). Double compression mesurée par T41 (F-31, R-DOUBLEJPEG-001)."
 
 # 5.2 Métadonnées
 
@@ -205,9 +205,10 @@ note = "Tables de libjpeg reconnues, qualité de 1 à 100 (T24, ADR-0153, ADR-01
 
 [[exigence]]
 id = "F-31"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T41"]
 methodes = ["test"]
+note = "Double compression alignée : premier pas de quantification estimé par calibrage, fréquence par fréquence, sur la luminance (Lukáš et Fridrich 2003, §4.1) ; décodage entropique du projet, séquentiel et progressif ; indice faible vers la transformation, seuils fixés à la main (ADR-0185 à ADR-0190). Double compression non alignée (recadrage) non cherchée ; taux d'erreur à mesurer (T100)."
 
 [[exigence]]
 id = "F-32"

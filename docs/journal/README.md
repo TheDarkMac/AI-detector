@@ -39,4 +39,5 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T25](T25-controle-avant-publication.md) | Contrôle avant publication : marques identifiantes des métadonnées | `tache/T25-controle-avant-publication` | [#26](https://github.com/TheDarkMac/AI-detector/pull/26) |
 | [T30](T30-c2pa.md) | C2PA : détection, vérification, états et déclarations | `tache/T30-c2pa` | [#27](https://github.com/TheDarkMac/AI-detector/pull/27) |
 | [T31](T31-filigranes-invisibles.md) | Filigranes invisibles : inventaire, point d'extension du catalogue, marquages recherchés | `tache/T31-filigranes-invisibles` | [#28](https://github.com/TheDarkMac/AI-detector/pull/28) |
-| [T40](T40-tables-de-quantification.md) | Tables de quantification JPEG comparées à des tables connues | `tache/T40-tables-de-quantification` | à venir |
+| [T40](T40-tables-de-quantification.md) | Tables de quantification JPEG comparées à des tables connues | `tache/T40-tables-de-quantification` | [#29](https://github.com/TheDarkMac/AI-detector/pull/29) |
+| [T41](T41-double-compression.md) | Double compression JPEG | `tache/T41-double-compression` | à venir |
