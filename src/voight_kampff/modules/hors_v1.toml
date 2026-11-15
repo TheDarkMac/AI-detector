@@ -11,13 +11,6 @@
 # Image (P4) — candidates V2
 
 [[technique]]
-identifiant = "ela"
-tache = "T42"
-exigences = ["F-32", "F-84"]
-statut = "candidate_v2"
-formats = ["jpeg"]
-
-[[technique]]
 identifiant = "bruit"
 tache = "T43"
 exigences = ["F-33", "F-84"]

@@ -182,6 +182,7 @@ def test_modules_de_metadonnees_livres() -> None:
     assert sorted(livres) == [
         "c2pa",
         "doublejpeg",
+        "ela",
         "exif",
         "id3",
         "image",
@@ -217,8 +218,8 @@ def test_modules_de_metadonnees_livres() -> None:
     for identifiant, manifeste in livres.items():
         if identifiant == "c2pa":
             continue  # règles « module » et cinq directions : tests/test_c2pa.py
-        if identifiant == "doublejpeg":
-            continue  # tests/test_double_compression.py
+        if identifiant in {"doublejpeg", "ela"}:
+            continue  # tests/test_double_compression.py, tests/test_ela.py
         assert manifeste.regles == ()
         if identifiant == "image":
             assert manifeste.exigences == ("F-06", "F-30")
@@ -240,7 +241,8 @@ def test_modules_de_metadonnees_livres() -> None:
 def test_techniques_hors_v1_livrees() -> None:
     techniques = hors_v1(decouvrir())
     identifiants = [technique.identifiant for technique in techniques]
-    assert {"ela", "stylometrie"} <= set(identifiants)
+    assert {"bruit", "stylometrie"} <= set(identifiants)
+    assert "ela" not in identifiants  # livrée par T42 (ADR-0197)
     assert all(set(technique.formats) <= PERIMETRE for technique in techniques)
     # ENF, stylométrie, références : hors V1 sans engagement (ADR-0012).
     sans_engagement = {t.tache for t in techniques if t.statut == "sans_engagement"}

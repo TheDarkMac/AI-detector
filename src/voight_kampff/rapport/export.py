@@ -2,7 +2,7 @@
 
 Le rapport d'une :class:`~voight_kampff.analyse.Analyse` s'exporte en JSON, conforme au schéma
 publié ``rapport`` (ADR-0025, ADR-0095), ou en HTML autonome, sans script ni ressource externe
-(ADR-0094). Les cinq catégories de données identifiantes sont masquées, sauf celles que
+(ADR-0094). Les catégories de données identifiantes sont toutes masquées, sauf celles que
 ``reveler`` nomme ; la levée est annoncée en tête de l'export (ES-13, ADR-0093). Une donnée
 masquée n'est pas cachée dans le fichier produit : elle en est absente.
 
@@ -42,6 +42,9 @@ def document(analyse: Analyse, reveler: Categories = ()) -> dict[str, Any]:
     for observation in rapport["observations"]:
         if observation.get("identifiante") in caches:
             del observation["valeur"]
+    if CategorieIdentifiante.CONTENU in caches:
+        for visualisation in rapport["visualisations"]:
+            del visualisation["donnees"], visualisation["empreinte"]
     masquage = {
         "masquees": [c.value for c in CategorieIdentifiante if c in caches],
         "levees": [c.value for c in CategorieIdentifiante if c not in caches],
@@ -52,8 +55,9 @@ def document(analyse: Analyse, reveler: Categories = ()) -> dict[str, Any]:
 def valider(document: Mapping[str, Any]) -> None:
     """Vérifie un export JSON : son schéma, puis ce que seul le code vérifie (ADR-0095).
 
-    Le masquage nomme chaque catégorie une fois ; une observation n'a pas de valeur si et
-    seulement si sa catégorie est masquée. Lève ``DocumentInvalide`` ou ``ValueError``.
+    Le masquage nomme chaque catégorie une fois ; une observation n'a pas de valeur, une
+    visualisation ni données ni empreinte, si et seulement si sa catégorie est masquée. Lève
+    ``DocumentInvalide`` ou ``ValueError``.
     """
     from voight_kampff import schemas  # jsonschema : seulement dans le processus principal
 
@@ -63,6 +67,11 @@ def valider(document: Mapping[str, Any]) -> None:
         masquee = observation.get("identifiante") in caches
         if masquee == ("valeur" in observation):
             raise ValueError("observations : valeur présente si et seulement si non masquée")
+    contenu_masque = CategorieIdentifiante.CONTENU in caches
+    for visualisation in document["visualisations"]:
+        presentes = {"donnees", "empreinte"} & set(visualisation)
+        if presentes != (set() if contenu_masque else {"donnees", "empreinte"}):
+            raise ValueError("visualisations : données présentes si et seulement si non masquées")
 
 
 def exporter_json(analyse: Analyse, *, reveler: Categories = ()) -> str:

@@ -357,6 +357,7 @@ def test_html_ordre_des_rubriques(analyse: Analyse) -> None:
         "preuves",
         "indices",
         "informations",
+        "visualisations",
         "non_menees",
         "couverture",
         "controle_publication",

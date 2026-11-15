@@ -205,3 +205,8 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0188](ADR-0188-constat-de-double-compression.md) | Constat de double compression : indice faible vers la transformation | Accepté | 2026-11-15 |
 | [ADR-0189](ADR-0189-calcul-en-entiers-et-region.md) | Estimation : calcul en entiers, région du haut de l'image, paramètres et forme de la règle | Accepté | 2026-11-15 |
 | [ADR-0190](ADR-0190-module-et-versions-de-t41.md) | Module `doublejpeg`, un fil pour OpenBLAS, contrôle avant publication, versions de T41 | Accepté | 2026-11-15 |
+| [ADR-0197](ADR-0197-t42-en-v1.md) | T42 (ELA) avancée en V1, après le complément de T40 | Accepté | 2026-11-15 |
+| [ADR-0198](ADR-0198-carte-sans-constat.md) | ELA : une carte et son avertissement, sans règle ni constat | Accepté | 2026-11-15 |
+| [ADR-0199](ADR-0199-methode-et-etendue-de-l-ela.md) | ELA : une valeur par bloc, qualité 95 en entiers, gain fixe, 65 536 blocs puis le haut de l'image | Accepté | 2026-11-15 |
+| [ADR-0200](ADR-0200-visualisations-au-rapport.md) | Visualisations au rapport : rubrique, image `data:`, avertissement au-dessus, catégorie identifiante « contenu » | Accepté | 2026-11-15 |
+| [ADR-0201](ADR-0201-module-et-versions-de-t42.md) | Module `ela`, DCT commune avec T41, contrôle avant publication, versions de T42 | Accepté | 2026-11-15 |

@@ -11,6 +11,9 @@ Les messages d'erreur ne recopient jamais une valeur reçue : elle peut venir d'
 hostile (ES-04, ES-15).
 """
 
+import base64
+import binascii
+import hashlib
 import math
 import re
 from collections.abc import Iterable, Mapping
@@ -24,6 +27,7 @@ from voight_kampff import formats
 
 __all__ = [
     "LONGUEUR_MAX_IDENTIFIANT",
+    "LONGUEUR_MAX_IMAGE",
     "LONGUEUR_MAX_NOM_DE_LISTE",
     "LONGUEUR_MAX_TEXTE",
     "LONGUEUR_MAX_UNITE",
@@ -51,6 +55,7 @@ __all__ = [
     "Localisation",
     "ManqueIsolation",
     "MarquageNonRecherche",
+    "NatureVisualisation",
     "Niveau",
     "NiveauIsolation",
     "NonMenee",
@@ -68,6 +73,7 @@ __all__ = [
     "VersionCatalogue",
     "VersionConfiance",
     "Versions",
+    "Visualisation",
     "Zone",
     "plages_non_reconnues",
     "verifier_masquage",
@@ -75,7 +81,7 @@ __all__ = [
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.6.0"
+VERSION_SCHEMA = "0.7.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -88,6 +94,12 @@ NOMBRE_MAX_ELEMENTS = 4096
 NOMBRE_MAX_DONNEES = 256
 NOMBRE_MAX_PARAMETRES = 32
 NOMBRE_MAX_PARTIES = 16
+LONGUEUR_MAX_IMAGE = 768 << 10
+"""Octets au plus d'une image de visualisation : son écriture en base64 tient dans un message
+du processus de travail (1 Mio, ADR-0200)."""
+NOMBRE_MAX_VISUALISATIONS = 16
+_COTE_MAX = 65535
+_SIGNATURE_PNG = b"\x89PNG\r\n\x1a\n"
 _ENTIER_MIN = -(2**63)
 _ENTIER_MAX = 2**63 - 1
 
@@ -149,6 +161,8 @@ class CategorieIdentifiante(StrEnum):
     """Texte écrit par une personne, sans forme fixée : titre, légende, commentaire (ADR-0159)."""
     NOM_DE_FICHIER = "nom_de_fichier"
     EMPREINTE = "empreinte"
+    CONTENU = "contenu"
+    """Image tirée du contenu du fichier, même réduite : carte ELA (ADR-0200)."""
 
 
 class RaisonNonMenee(StrEnum):
@@ -722,6 +736,99 @@ class NonMenee:
         )
 
 
+# Visualisation (F-84, ADR-0200)
+
+
+class NatureVisualisation(StrEnum):
+    """Ce que montre une visualisation ; l'export en tire son titre et son avertissement."""
+
+    CARTE_ELA = "carte_ela"
+    """Carte du niveau d'erreur de recompression, une valeur par bloc (ADR-0199)."""
+
+
+@dataclass(frozen=True, slots=True)
+class Visualisation:
+    """Image produite par un module pour aider la lecture (F-84) : un PNG écrit par le module,
+    jamais une image tirée telle quelle du fichier.
+
+    Elle montre le contenu du fichier : catégorie identifiante « contenu », masquée par défaut à
+    l'export (ADR-0200). Le PNG est vérifié (signature, dimensions de l'en-tête, empreinte) pour
+    que l'export n'intègre au rapport que l'image annoncée (ES-12).
+    """
+
+    module: str
+    nature: NatureVisualisation
+    largeur: int
+    """Largeur de l'image, en pixels de la visualisation (un bloc par pixel pour une carte ELA)."""
+    hauteur: int
+    png: bytes
+    localisation: Localisation | None = None
+    """Partie du fichier que couvre la visualisation."""
+    partie: int = 1
+
+    def __post_init__(self) -> None:
+        _identifiant(self.module, "visualisation.module")
+        _entier(self.partie, "visualisation.partie", minimum=1)
+        for cote, champ in ((self.largeur, "largeur"), (self.hauteur, "hauteur")):
+            _entier(cote, f"visualisation.{champ}", minimum=1)
+            if cote > _COTE_MAX:
+                raise ValueError(f"visualisation.{champ} : trop grande")
+        png = self.png
+        if not isinstance(png, bytes) or len(png) > LONGUEUR_MAX_IMAGE:
+            raise ValueError("visualisation.png : absente ou trop grande")
+        if len(png) < 24 or png[:8] != _SIGNATURE_PNG or png[12:16] != b"IHDR":
+            raise ValueError("visualisation.png : pas une image PNG")
+        dimensions = (int.from_bytes(png[16:20], "big"), int.from_bytes(png[20:24], "big"))
+        if dimensions != (self.largeur, self.hauteur):
+            raise ValueError("visualisation.png : dimensions différentes de celles annoncées")
+
+    @property
+    def identifiante(self) -> CategorieIdentifiante:
+        return CategorieIdentifiante.CONTENU
+
+    @property
+    def empreinte(self) -> str:
+        """SHA-256 du PNG, en hexadécimal minuscule ; masqué avec l'image (ADR-0200)."""
+        return hashlib.sha256(self.png).hexdigest()
+
+    def vers_dict(self) -> Document:
+        return _sans_none(
+            {
+                "module": self.module,
+                "nature": self.nature,
+                "type_media": "image/png",
+                "largeur": self.largeur,
+                "hauteur": self.hauteur,
+                "empreinte": self.empreinte,
+                "donnees": base64.b64encode(self.png).decode("ascii"),
+                "localisation": self.localisation.vers_dict() if self.localisation else None,
+                "identifiante": self.identifiante,
+                "partie": self.partie,
+            }
+        )
+
+    @classmethod
+    def depuis_dict(cls, document: Mapping[str, Any]) -> "Visualisation":
+        if document["identifiante"] != CategorieIdentifiante.CONTENU:
+            raise ValueError("visualisation.identifiante : « contenu » attendu")
+        try:
+            png = base64.b64decode(document["donnees"], validate=True)
+        except (binascii.Error, ValueError):
+            raise ValueError("visualisation.donnees : base64 invalide") from None
+        visualisation = cls(
+            module=document["module"],
+            nature=NatureVisualisation(document["nature"]),
+            largeur=document["largeur"],
+            hauteur=document["hauteur"],
+            png=png,
+            localisation=_localisation(document),
+            partie=document["partie"],
+        )
+        if document["empreinte"] != visualisation.empreinte:
+            raise ValueError("visualisation.empreinte : différente de celle du PNG")
+        return visualisation
+
+
 _ETATS_HORS_VERSION = frozenset({EtatTechnique.NON_MENEE, EtatTechnique.NON_APPLICABLE})
 """États possibles d'une technique hors de cette version, donc sans version (ADR-0087)."""
 
@@ -1180,6 +1287,7 @@ def verifier_resultats(
     observations: tuple[Observation, ...],
     constats: tuple[Constat, ...],
     non_menees: tuple[NonMenee, ...],
+    visualisations: tuple[Visualisation, ...] = (),
 ) -> None:
     """Renvois entre les objets d'une analyse, que les schémas ne vérifient pas.
 
@@ -1208,8 +1316,12 @@ def verifier_resultats(
     modules = {technique.module for technique in couverture.techniques}
     if set(techniques) != {(module, rang) for module in modules for rang in analysees}:
         raise ValueError("couverture : une entrée par technique et par partie analysée")
-    portees = [(o.module, o.partie) for o in observations] + [
-        (c.module, c.partie) for c in constats
+    if len(visualisations) > NOMBRE_MAX_VISUALISATIONS:
+        raise ValueError("visualisations : trop nombreuses")
+    portees = [
+        *((o.module, o.partie) for o in observations),
+        *((c.module, c.partie) for c in constats),
+        *((v.module, v.partie) for v in visualisations),
     ]
     for cle in portees:
         technique = techniques.get(cle)
@@ -1271,6 +1383,7 @@ class Rapport:
     observations: tuple[Observation, ...] = ()
     constats: tuple[Constat, ...] = ()
     non_menees: tuple[NonMenee, ...] = ()
+    visualisations: tuple[Visualisation, ...] = ()
 
     def __post_init__(self) -> None:
         verifier_resultats(
@@ -1279,6 +1392,7 @@ class Rapport:
             self.observations,
             self.constats,
             self.non_menees,
+            self.visualisations,
         )
 
     @property
@@ -1296,6 +1410,7 @@ class Rapport:
             "observations": [observation.vers_dict() for observation in self.observations],
             "constats": [constat.vers_dict() for constat in self.constats],
             "non_menees": [non_menee.vers_dict() for non_menee in self.non_menees],
+            "visualisations": [v.vers_dict() for v in self.visualisations],
             "interrompue": self.interrompue,
         }
 
@@ -1318,6 +1433,7 @@ class Rapport:
             observations=tuple(Observation.depuis_dict(o) for o in document["observations"]),
             constats=tuple(Constat.depuis_dict(c) for c in document["constats"]),
             non_menees=tuple(NonMenee.depuis_dict(n) for n in document["non_menees"]),
+            visualisations=tuple(Visualisation.depuis_dict(v) for v in document["visualisations"]),
         )
         if document["interrompue"] != rapport.interrompue:
             raise ValueError("rapport.interrompue : incohérent avec les non menées")

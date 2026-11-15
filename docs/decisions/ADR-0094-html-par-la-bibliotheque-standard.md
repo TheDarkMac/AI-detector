@@ -51,3 +51,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-10-28 | Création |
+| 2026-11-15 | Renvoi : première visualisation, la carte ELA ; `img-src data:` ajouté à la politique, image PNG vérifiée par le modèle, aucun élément `img` hors des visualisations (ADR-0200, T42) |

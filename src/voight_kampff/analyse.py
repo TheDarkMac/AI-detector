@@ -34,6 +34,7 @@ from voight_kampff.rapport.modele import (
     VersionCatalogue,
     VersionConfiance,
     Versions,
+    Visualisation,
     verifier_resultats,
 )
 
@@ -134,6 +135,8 @@ class Analyse:
     marquages: tuple[Marquage, ...] = ()
     """Marquages du catalogue que cite la couverture, et eux seuls : nom et description, lus
     par l'export (ADR-0178)."""
+    visualisations: tuple[Visualisation, ...] = ()
+    """Images écrites par les modules pour aider la lecture (F-84, ADR-0200)."""
 
     def __post_init__(self) -> None:
         verifier_resultats(
@@ -142,6 +145,7 @@ class Analyse:
             self.observations,
             self.constats,
             self.non_menees,
+            self.visualisations,
         )
         par_reference = {regle.reference: regle for regle in self.regles}
         if len(par_reference) != len(self.regles):
@@ -198,6 +202,7 @@ class Analyse:
             observations=self.observations,
             constats=self.constats,
             non_menees=self.non_menees,
+            visualisations=self.visualisations,
         )
 
     @property

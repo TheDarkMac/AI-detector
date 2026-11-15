@@ -40,4 +40,5 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T30](T30-c2pa.md) | C2PA : détection, vérification, états et déclarations | `tache/T30-c2pa` | [#27](https://github.com/TheDarkMac/AI-detector/pull/27) |
 | [T31](T31-filigranes-invisibles.md) | Filigranes invisibles : inventaire, point d'extension du catalogue, marquages recherchés | `tache/T31-filigranes-invisibles` | [#28](https://github.com/TheDarkMac/AI-detector/pull/28) |
 | [T40](T40-tables-de-quantification.md) | Tables de quantification JPEG comparées à des tables connues | `tache/T40-tables-de-quantification` | [#29](https://github.com/TheDarkMac/AI-detector/pull/29) |
-| [T41](T41-double-compression.md) | Double compression JPEG | `tache/T41-double-compression` | à venir |
+| [T41](T41-double-compression.md) | Double compression JPEG | `tache/T41-double-compression` | [#30](https://github.com/TheDarkMac/AI-detector/pull/30) |
+| [T42](T42-ela.md) | ELA, avertissement d'interprétation et carte | `tache/T42-ela` | à venir |

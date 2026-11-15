@@ -14,10 +14,11 @@
     "observations",
     "constats",
     "non_menees",
+    "visualisations",
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.6.0" },
+    "version_schema": { "const": "0.7.0" },
     "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
@@ -26,6 +27,11 @@
     "observations": { "type": "array", "items": { "$ref": "#/$defs/observation" } },
     "constats": { "type": "array", "items": { "$ref": "#/$defs/constat" } },
     "non_menees": { "type": "array", "items": { "$ref": "#/$defs/non_menee" } },
+    "visualisations": {
+      "type": "array",
+      "maxItems": 16,
+      "items": { "$ref": "#/$defs/visualisation" }
+    },
     "interrompue": { "type": "boolean" }
   },
   "allOf": [
@@ -44,20 +50,20 @@
   ],
   "$defs": {
     "masquage": {
-      "description": "État du masquage d'un export (ES-13, ADR-0093, ADR-0095) : catégories masquées et catégories levées par l'utilisateur ; ensemble, les sept catégories, chacune une fois (vérifié par le code).",
+      "description": "État du masquage d'un export (ES-13, ADR-0093, ADR-0095) : catégories masquées et catégories levées par l'utilisateur ; ensemble, les huit catégories, chacune une fois (vérifié par le code).",
       "type": "object",
       "additionalProperties": false,
       "required": ["masquees", "levees"],
       "properties": {
         "masquees": {
           "type": "array",
-          "maxItems": 7,
+          "maxItems": 8,
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/categorie_identifiante" }
         },
         "levees": {
           "type": "array",
-          "maxItems": 7,
+          "maxItems": 8,
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/categorie_identifiante" }
         }
@@ -181,7 +187,8 @@
         "lieu",
         "texte_libre",
         "nom_de_fichier",
-        "empreinte"
+        "empreinte",
+        "contenu"
       ]
     },
     "raison_non_menee": {
@@ -291,6 +298,38 @@
         "unite": { "type": "string", "minLength": 1, "maxLength": 32 },
         "localisation": { "$ref": "#/$defs/localisation" },
         "identifiante": { "$ref": "#/$defs/categorie_identifiante" },
+        "partie": { "$ref": "#/$defs/entier_strictement_positif" }
+      }
+    },
+
+    "visualisation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module",
+        "nature",
+        "type_media",
+        "largeur",
+        "hauteur",
+        "identifiante",
+        "partie"
+      ],
+      "description": "Image PNG écrite par un module pour aider la lecture (F-84, ADR-0200), en base64 ; elle montre le contenu du fichier, donc ses données et son empreinte (SHA-256 du PNG) manquent dans un export où la catégorie « contenu » est masquée, et seulement alors (vérifié par le code).",
+      "properties": {
+        "module": { "$ref": "#/$defs/identifiant" },
+        "nature": { "enum": ["carte_ela"] },
+        "type_media": { "const": "image/png" },
+        "largeur": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "hauteur": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "empreinte": { "$ref": "#/$defs/empreinte" },
+        "donnees": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1048576,
+          "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+        },
+        "localisation": { "$ref": "#/$defs/localisation" },
+        "identifiante": { "const": "contenu" },
         "partie": { "$ref": "#/$defs/entier_strictement_positif" }
       }
     },

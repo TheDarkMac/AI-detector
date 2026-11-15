@@ -27,7 +27,7 @@ import numpy as np
 import numpy.typing as npt
 
 from voight_kampff._travail.contexte import Contexte
-from voight_kampff.modules._lecture import jpeg
+from voight_kampff.modules._lecture import dct, jpeg
 from voight_kampff.modules._lecture.jpeg import Coefficients
 from voight_kampff.rapport.modele import Localisation, RaisonNonMenee
 
@@ -53,86 +53,10 @@ QUALITE_TRACES_MIN = 3
 """Traces au moins pour chercher les qualités de libjpeg qui les expliquent."""
 _DECALAGE = 4
 """Recadrage du calibrage, en pixels : la moitié d'un bloc."""
-_ECHELLE = 12
-"""Bits de la virgule fixe des cosinus."""
 _BORNE_MIN = 8
 _BORNE_MAX = 128
-
-_ZIGZAG = (
-    0, 1, 8, 16, 9, 2, 3, 10, 17, 24, 32, 25, 18, 11, 4, 5,
-    12, 19, 26, 33, 40, 48, 41, 34, 27, 20, 13, 6, 7, 14, 21, 28,
-    35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30, 37, 44, 51,
-    58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54, 47, 55, 62, 63,
-)  # fmt: skip
-"""Position dans le bloc de chaque coefficient, dans l'ordre du segment DQT (T.81, figure A.6)."""
-
-_LUMINANCE = (
-    16, 11, 10, 16, 24, 40, 51, 61,
-    12, 12, 14, 19, 26, 58, 60, 55,
-    14, 13, 16, 24, 40, 57, 69, 56,
-    14, 17, 22, 29, 51, 87, 80, 62,
-    18, 22, 37, 56, 68, 109, 103, 77,
-    24, 35, 55, 64, 81, 104, 113, 92,
-    49, 64, 78, 87, 103, 121, 120, 101,
-    72, 92, 95, 98, 112, 100, 103, 99,
-)  # fmt: skip
-"""Table de luminance de l'annexe K de T.81 (tableau K.1), dans l'ordre du bloc."""
-
-
-_COSINUS = (
-    1448, 1448, 1448, 1448, 1448, 1448, 1448, 1448,
-    2009, 1703, 1138, 400, -400, -1138, -1703, -2009,
-    1892, 784, -784, -1892, -1892, -784, 784, 1892,
-    1703, -400, -2009, -1138, 1138, 2009, 400, -1703,
-    1448, -1448, -1448, 1448, 1448, -1448, -1448, 1448,
-    1138, -2009, 400, 1703, -1703, -400, 2009, -1138,
-    784, -1892, 1892, -784, -784, 1892, -1892, 784,
-    400, -1138, 1703, -2009, 2009, -1703, 1138, -400,
-)  # fmt: skip
-"""DCT orthonormée de taille 8 (T.81, A.3.3) en virgule fixe : ``C[u][x] = c(u) cos((2x + 1)uπ/16)``
-fois 2^12, arrondi à l'entier, avec c(0) = 1/√8 et c(u) = 1/2 ; écrite en entiers pour que le
-calcul n'emploie aucun flottant (vérifiée par les tests)."""
-
-_C = np.array(_COSINUS, dtype=np.int64).reshape(8, 8)
-
-
-def _arrondir(valeurs: npt.NDArray[np.int64], pas: int) -> npt.NDArray[np.int64]:
-    """Quotient arrondi au plus proche, la moitié loin de zéro, comme la quantification de
-    libjpeg (jcdctmgr.c)."""
-    quotients: npt.NDArray[np.int64] = np.sign(valeurs) * ((np.abs(valeurs) + pas // 2) // pas)
-    return quotients
-
-
-def luminance(coefficients: Coefficients) -> npt.NDArray[np.int64]:
-    """Pixels de la première composante sur la région, de 0 à 255, par une IDCT en entiers.
-
-    Les coefficients déquantifiés sont bornés à ±2^15 (la plage d'un coefficient de libjpeg) ;
-    le résultat est arrondi au plus proche et borné comme le ferait un décodeur.
-    """
-    lignes, colonnes = coefficients.lignes, coefficients.colonnes
-    blocs = _naturels(coefficients) * np.array(_dans_le_bloc(coefficients.table))
-    blocs = np.clip(blocs, -(1 << 15), 1 << 15).reshape(-1, 8, 8)
-    # f = C^T F C : deux produits par 2^12, soit 2^24, retirés avec l'arrondi.
-    pixels = (np.matmul(np.matmul(_C.T, blocs), _C) + (1 << (2 * _ECHELLE - 1))) >> (2 * _ECHELLE)
-    pixels = np.clip(pixels + 128, 0, 255)
-    image = pixels.reshape(lignes, colonnes, 8, 8).transpose(0, 2, 1, 3)
-    plan: npt.NDArray[np.int64] = image.reshape(lignes * 8, colonnes * 8)
-    return plan[: coefficients.hauteur_region, : coefficients.largeur_composante]
-
-
-def _naturels(coefficients: Coefficients) -> npt.NDArray[np.int64]:
-    """Coefficients de chaque bloc dans l'ordre du bloc, un bloc par ligne."""
-    zigzag = np.frombuffer(coefficients.valeurs, dtype=np.int64).reshape(-1, 64)
-    naturels = np.zeros_like(zigzag)
-    naturels[:, list(_ZIGZAG)] = zigzag
-    return naturels
-
-
-def _dans_le_bloc(table: tuple[int, ...]) -> list[int]:
-    valeurs = [0] * 64
-    for rang, position in enumerate(_ZIGZAG):
-        valeurs[position] = table[rang]
-    return valeurs
+luminance = dct.luminance
+"""Pixels de la première composante sur la région (fonction du module ``_lecture.dct``)."""
 
 
 def _calibrage(image: npt.NDArray[np.int64]) -> npt.NDArray[np.int64] | None:
@@ -145,7 +69,7 @@ def _calibrage(image: npt.NDArray[np.int64]) -> npt.NDArray[np.int64] | None:
     blocs = recadree[: lignes * 8, : colonnes * 8] - 128
     blocs = blocs.reshape(lignes, 8, colonnes, 8).transpose(0, 2, 1, 3).reshape(-1, 8, 8)
     # F = C f C^T, fois 2^24.
-    calibres: npt.NDArray[np.int64] = np.matmul(np.matmul(_C, blocs), _C.T).reshape(-1, 64)
+    calibres: npt.NDArray[np.int64] = dct.transformer(blocs).reshape(-1, 64)
     return calibres
 
 
@@ -187,14 +111,14 @@ class Estimation:
 
 def estimer(coefficients: Coefficients) -> Estimation:
     """Fréquences examinées, et le pas antérieur de celles qui portent une trace."""
-    naturels = _naturels(coefficients)
+    naturels = dct.naturels(coefficients)
     estimation = Estimation(len(naturels))
     calibres = _calibrage(luminance(coefficients))
     if calibres is None:
         return estimation
-    echelle = 1 << (2 * _ECHELLE)
+    echelle = 1 << (2 * dct.ECHELLE)
     for rang in FREQUENCES:
-        position = _ZIGZAG[rang]
+        position = dct.ZIGZAG[rang]
         pas = coefficients.table[rang]
         observes = naturels[:, position]
         absolus = np.abs(observes)
@@ -206,8 +130,8 @@ def estimer(coefficients: Coefficients) -> Estimation:
         simple: Fraction | None = None
         double: tuple[Fraction, int] | None = None
         for anterieur in range(1, min(255, 4 * pas + 16) + 1):
-            quantifies = _arrondir(calibres[:, position], anterieur * echelle)
-            ecart = _ecart(observe, _histogramme(_arrondir(quantifies * anterieur, pas), borne))
+            quantifies = dct.arrondir(calibres[:, position], anterieur * echelle)
+            ecart = _ecart(observe, _histogramme(dct.arrondir(quantifies * anterieur, pas), borne))
             if ecart is None:
                 continue
             if pas % anterieur == 0:
@@ -232,13 +156,7 @@ def _borne(absolus: npt.NDArray[np.int64]) -> int:
     return _BORNE_MAX
 
 
-def _table_ijg(qualite: int) -> tuple[int, ...]:
-    """Table de luminance de libjpeg en huit bits à cette qualité, dans l'ordre en zigzag."""
-    facteur = 5000 // qualite if qualite < 50 else 200 - 2 * qualite
-    return tuple(min(max((_LUMINANCE[i] * facteur + 50) // 100, 1), 255) for i in _ZIGZAG)
-
-
-_TABLES_IJG = {qualite: _table_ijg(qualite) for qualite in range(1, 101)}
+_TABLES_IJG = {qualite: dct.table_ijg(qualite) for qualite in range(1, 101)}
 
 
 def qualites_ijg(tracees: list[int], anterieurs: list[int]) -> list[int]:

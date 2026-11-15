@@ -178,6 +178,7 @@ def soumettre(
             if any(constat.regle == regle.reference for constat in resultat.constats)
         ),
         marquages=tuple(m for m in catalogue.marquages if m.identifiant in cites),
+        visualisations=resultat.visualisations,
     )
 
 

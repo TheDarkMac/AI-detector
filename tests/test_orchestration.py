@@ -154,6 +154,7 @@ def analyse_de(resultat: ResultatTravail, taille: int = len(CONTENU)) -> Analyse
         catalogue=CATALOGUE.version,
         confiance=CONFIANCE,
         regles=CATALOGUE.regles,
+        visualisations=resultat.visualisations,
     )
 
 
@@ -346,9 +347,9 @@ def test_vrai_processus_bibliotheques_des_seuls_modules_actifs(tmp_path: Path) -
     contenu = (Path(__file__).parent / "donnees" / "metadonnees" / "photo.jpg").read_bytes()
     ouvert = ouvrir(tmp_path / "photo.jpg", contenu)
     try:
-        # expat sert à xmp, ooxml et odf, c2pa-python à c2pa, numpy à doublejpeg : désactivés,
-        # ils ne sont plus cités (ADR-0120).
-        desactives = {"xmp", "ooxml", "odf", "c2pa", "doublejpeg"}
+        # expat sert à xmp, ooxml et odf, c2pa-python à c2pa, numpy à doublejpeg et ela :
+        # désactivés, ils ne sont plus cités (ADR-0120).
+        desactives = {"xmp", "ooxml", "odf", "c2pa", "doublejpeg", "ela"}
         resultat = executer(ouvert, manifestes.decouvrir(), desactives=desactives)
     finally:
         os.close(ouvert)
@@ -565,6 +566,19 @@ def test_factice_valide(descripteur: int) -> None:
     analyse_de(resultat)
 
 
+def test_factice_visualisation_seule_rend_le_module_partiel(descripteur: int) -> None:
+    # Une visualisation est un résultat : avec une analyse non menée, le module est partiel
+    # (ADR-0200).
+    resultat = executer(
+        descripteur,
+        (manifeste("alpha"), manifeste("beta")),
+        commande=factice("visualisation_partielle"),
+    )
+    assert etats(resultat)["alpha"] is EtatTechnique.PARTIELLE
+    assert [(v.module, v.largeur, v.hauteur) for v in resultat.visualisations] == [("alpha", 1, 1)]
+    assert analyse_de(resultat).rapport().visualisations == resultat.visualisations
+
+
 def test_factice_polyglotte_valide(descripteur: int) -> None:
     resultat = executer(
         descripteur, (manifeste("alpha", ("jpeg", "pdf")),), commande=factice("polyglotte_valide")
@@ -652,6 +666,8 @@ MESSAGE_INVALIDE = [
     "dependance_non_declaree",
     "ligne_apres_fin",
     "ligne_coupee",
+    "visualisation_falsifiee",
+    "visualisation_d_un_autre_module",
 ]
 
 

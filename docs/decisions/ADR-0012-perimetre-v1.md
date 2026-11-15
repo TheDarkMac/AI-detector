@@ -94,3 +94,4 @@ Chemin critique T00 → T04, puis socle T10 → T18, puis métadonnées (P2), C2
 | 2026-10-26 | Renvoi : portée de T91 fixée par ADR-0030, garde-fous de T45, T93, T94 par ADR-0032 (T03) |
 | 2026-10-27 | Renvoi : formats du §3 acceptés et identifiés par ADR-0070 (T13) |
 | 2026-10-27 | Techniques hors V1 par format : `modules/hors_v1.toml`, livré avec l'outil et non dans le catalogue (ADR-0087, T15) |
+| 2026-11-15 | Renvoi : T42 (ELA) avancée en V1, après le complément de T40 (ADR-0197) |

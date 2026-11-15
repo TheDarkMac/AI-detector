@@ -1,0 +1,14 @@
+# Module ela : niveau d'erreur de recompression d'un JPEG, en carte (ADR-0197 à ADR-0201). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "ela"
+version = "0.1.0"
+formats = ["jpeg"]
+exigences = ["F-32", "F-84"]
+regles = []
+fiche = "ela"
+# Le module n'émet aucun constat (ADR-0198) ; le schéma exige une direction : la seule qui
+# n'oriente vers aucune hypothèse (ADR-0201).
+directions = ["rien_de_particulier"]
+requiert = []
+# numpy ne lit pas le fichier : il calcule sur les coefficients que lit le décodage du projet ; sa version figure au rapport (ADR-0185).
+bibliotheques = ["numpy"]

@@ -39,7 +39,7 @@ from voight_kampff._travail import garde
 from voight_kampff.analyse import analyser
 from voight_kampff.cli import resume
 from voight_kampff.modules import doublejpeg
-from voight_kampff.modules._lecture import jpeg
+from voight_kampff.modules._lecture import dct, jpeg
 from voight_kampff.rapport._presentation import texte as texte_du_rapport
 from voight_kampff.rapport.modele import (
     Categorie,
@@ -625,12 +625,12 @@ def test_cosinus_ecrits_en_entiers() -> None:
         echelle = math.sqrt(1 / 8) if u == 0 else 0.5
         for x in range(8):
             attendu = round(echelle * math.cos((2 * x + 1) * u * math.pi / 16) * 4096)
-            assert doublejpeg._COSINUS[8 * u + x] == attendu
+            assert dct.COSINUS[8 * u + x] == attendu
 
 
 def test_arrondi_la_moitie_loin_de_zero() -> None:
     valeurs = np.array([-15, -14, -5, -4, 0, 4, 5, 14, 15], dtype=np.int64)
-    assert doublejpeg._arrondir(valeurs, 10).tolist() == [-2, -1, -1, 0, 0, 0, 1, 1, 2]
+    assert dct.arrondir(valeurs, 10).tolist() == [-2, -1, -1, 0, 0, 0, 1, 1, 2]
 
 
 def test_borne_des_histogrammes() -> None:
@@ -644,7 +644,7 @@ def test_ecart_d_un_histogramme_vide() -> None:
 
 
 def test_qualites_ijg() -> None:
-    table = doublejpeg._table_ijg(60)
+    table = dct.table_ijg(60)
     rangs = list(range(1, 10))
     assert doublejpeg.qualites_ijg(rangs, [table[r] for r in rangs]) == [60]
     assert doublejpeg.qualites_ijg([1], [255]) == [1, 2]  # 11 fois 50 et 25, bornés à 255
