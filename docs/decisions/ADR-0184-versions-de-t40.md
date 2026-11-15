@@ -1,8 +1,8 @@
 # ADR-0184 — Versions de T40 : module `image` 0.2.0, catalogue 0.7.0, R-IMAGE-004 en version 2
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : l'assistant, proposition non posée en question pendant T40, soumise à la revue de la PR de T40
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T40, validée pendant la revue de la PR de T40
 - **Tâche** : T40
 - **Exigences liées** : NF-06, NF-07, F-26 ; ADR-0064, ADR-0085, ADR-0152, ADR-0157, ADR-0179
 
@@ -47,3 +47,4 @@ Option A dans les trois cas : module `image` 0.2.0 ; catalogue 0.7.0 du 2026-11-
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-15 | Validé par TheDarkMac pendant la revue de la PR de T40 (« Oui, les deux ») : statut « Accepté » |

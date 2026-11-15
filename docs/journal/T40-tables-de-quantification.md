@@ -1,9 +1,9 @@
 # T40 — Tables de quantification JPEG comparées à des tables connues
 
 - **Branche** : `tache/T40-tables-de-quantification`
-- **Dates** : 2026-11-14
+- **Dates** : 2026-11-14 au 2026-11-15
 - **Exigences couvertes** : F-30 en partie (logiciels : libjpeg, mozjpeg, ffmpeg ; Photoshop et appareils au complément), F-06, F-26
-- **Décisions** : ADR-0180 à ADR-0184 ; ADR-0180 à ADR-0182 acceptés, ADR-0183 et ADR-0184 proposés
+- **Décisions** : ADR-0180 à ADR-0184, tous acceptés
 - **Errata** : aucun
 
 ## Objectif
@@ -33,7 +33,7 @@ Comparer les tables de quantification d'un JPEG à des tables connues (F-30), au
    - point d'extension : empreinte des tables ([ADR-0181](../decisions/ADR-0181-empreinte-des-tables.md)) ;
    - règles : comme R-IMAGE-004 ([ADR-0182](../decisions/ADR-0182-regles-des-tables-connues.md)).
 
-   Puis une quatrième, faute de source pour Photoshop et les appareils : un complément de T40, sur sa propre branche et sa propre PR, qui relèvera les tables sur des fichiers publics de provenance établie (ADR-0180). Les autres choix, faits par l'assistant, sont soumis dans la PR : [ADR-0183](../decisions/ADR-0183-observations-des-tables-connues.md) (noms des observations, ordre, réglages reconnus) et [ADR-0184](../decisions/ADR-0184-versions-de-t40.md) (versions).
+   Puis une quatrième, faute de source pour Photoshop et les appareils : un complément de T40, sur sa propre branche et sa propre PR, qui relèvera les tables sur des fichiers publics de provenance établie (ADR-0180). Les autres choix, faits par l'assistant, ont été soumis dans la PR et validés par TheDarkMac pendant sa revue (« Oui, les deux », 2026-11-15) : [ADR-0183](../decisions/ADR-0183-observations-des-tables-connues.md) (noms des observations, ordre, réglages reconnus) et [ADR-0184](../decisions/ADR-0184-versions-de-t40.md) (versions).
 5. Branche `tache/T40-tables-de-quantification` créée depuis `detector` à jour (`5f711c6`).
 6. Module `image` 0.2.0 : jeux 2 à 8 de mozjpeg, matrice de MPEG-1 de FFmpeg ; reconnaissance de libjpeg à deux qualités, de mozjpeg et de ffmpeg, dans un ordre fixé ; empreinte des tables. Les littéraux de mozjpeg ont été produits par un script qui lit `jcparam.c` de la version 4.1.1.
 7. Catalogue 0.7.0 : `R-IMAGE-005` à `R-IMAGE-007` ; `R-IMAGE-004` en version 2 (limite qui annonçait mozjpeg non reconnu) ; description de l'en-tête réécrite, plus courte ; empreinte au registre.
@@ -41,6 +41,7 @@ Comparer les tables de quantification d'un JPEG à des tables connues (F-30), au
    - `tests/test_tables_connues.py` : chaque règle de T40 déclenchée et éprouvée, nature des règles, aucun constat avec des métadonnées ; encodeur reconnu sur onze jeux de tables (dont seize bits, niveaux de gris, matrice dupliquée, tables dégénérées attribuées à libjpeg) et non reconnu sur dix ; unicité de chaque couple de mozjpeg, de chaque qscale de ffmpeg, de chaque qualité de chrominance au-delà de 3 ; écriture canonique de l'empreinte ; oracles cjpeg de libjpeg-turbo, cjpeg de mozjpeg et ffmpeg, ignorés si l'outil manque ; analyse complète d'une image écrite par ffmpeg ;
    - tests adaptés : `test_transfert.py` (règles de T24 sans celles de T40, empreinte retirée de la comparaison des observations), `test_incoherences.py` (compte des règles), `test_soumission.py` et `test_cli.py` (version du module).
 9. Documentation : fiche `structure-image` (version 0.2.0, principe, sorties, règles, taux d'erreur, limites) et index des fiches ; guide du catalogue v1.8 (exemple d'une règle par empreinte) ; architecture v1.21 (§12) ; découpage v0.28 (T40, complément de T40, T32) ; matrice régénérée (F-30) ; index des ADR et du journal.
+10. PR [#29](https://github.com/TheDarkMac/AI-detector/pull/29) ouverte ; ADR-0183 et ADR-0184 validés par TheDarkMac pendant la revue (« Oui, les deux », 2026-11-15) : statut « Accepté ».
 
 ## Vérification
 

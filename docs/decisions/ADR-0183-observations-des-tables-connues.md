@@ -1,8 +1,8 @@
 # ADR-0183 — Observations des tables connues : une paire par famille, premier encodeur reconnu
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-14
-- **Décideur** : l'assistant, proposition non posée en question pendant T40, soumise à la revue de la PR de T40
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T40, validée pendant la revue de la PR de T40
 - **Tâche** : T40
 - **Exigences liées** : F-30, NF-06 ; ADR-0058, ADR-0154, ADR-0180, ADR-0181
 
@@ -49,3 +49,4 @@ Option A pour les noms et pour l'ordre ; les réglages ci-dessus. Chaque qualit�
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Proposé » |
+| 2026-11-15 | Validé par TheDarkMac pendant la revue de la PR de T40 (« Oui, les deux ») : statut « Accepté » |

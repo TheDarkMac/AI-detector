@@ -197,5 +197,5 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0180](ADR-0180-tables-connues-de-t40.md) | Tables connues de T40 : mozjpeg, ffmpeg, libjpeg à deux qualités ; Photoshop et appareils dans un complément | Accepté | 2026-11-14 |
 | [ADR-0181](ADR-0181-empreinte-des-tables.md) | Empreinte des tables de quantification : point d'extension du catalogue | Accepté | 2026-11-14 |
 | [ADR-0182](ADR-0182-regles-des-tables-connues.md) | Règles des tables connues : sur le modèle de R-IMAGE-004 | Accepté | 2026-11-14 |
-| [ADR-0183](ADR-0183-observations-des-tables-connues.md) | Observations des tables connues : une paire par famille, premier encodeur reconnu | Proposé | 2026-11-14 |
-| [ADR-0184](ADR-0184-versions-de-t40.md) | Versions de T40 : module `image` 0.2.0, catalogue 0.7.0, R-IMAGE-004 en version 2 | Proposé | 2026-11-14 |
+| [ADR-0183](ADR-0183-observations-des-tables-connues.md) | Observations des tables connues : une paire par famille, premier encodeur reconnu | Accepté | 2026-11-14 |
+| [ADR-0184](ADR-0184-versions-de-t40.md) | Versions de T40 : module `image` 0.2.0, catalogue 0.7.0, R-IMAGE-004 en version 2 | Accepté | 2026-11-14 |
