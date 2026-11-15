@@ -327,8 +327,9 @@ def test_chaque_regle_de_t23_est_eprouvee() -> None:
     assert {cas[3] for cas in CAS} == {regle.identifiant for regle in REGLES_T23}
     assert (len(REGLES_T23), len(ABSENCES)) == (38, 12)
     # Les 24 de T22 (test_signatures.py), les 8 de T24 (test_transfert.py), les 12 du module
-    # c2pa de T30 (test_c2pa.py), les 3 de T40 (test_tables_connues.py).
-    assert len(REGLES_T23) + 24 + 8 + 12 + 3 == len(CATALOGUE.regles)
+    # c2pa de T30 (test_c2pa.py), les 3 de T40 (test_tables_connues.py), celle de T41
+    # (test_double_compression.py).
+    assert len(REGLES_T23) + 24 + 8 + 12 + 3 + 1 == len(CATALOGUE.regles)
 
 
 @pytest.mark.exigence("F-14", "ES-20")

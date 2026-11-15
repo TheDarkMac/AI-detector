@@ -38,3 +38,8 @@ empreinte = "7725a960d3a03296e15a6878959511570df7eb10f9ac48736b8f360a31e93601"
 version = "0.7.0"
 date = "2026-11-14"
 empreinte = "903f026aadabdf167db299b4031e944ff668df29d60cbaeb09bf9f57cc440816"
+
+[[version]]
+version = "0.8.0"
+date = "2026-11-15"
+empreinte = "435b199c7d7fb158b4a3d36219be9278ff9fc86ee79ecde479ad414c2024cde9"

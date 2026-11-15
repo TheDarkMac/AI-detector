@@ -101,6 +101,7 @@ def versions_des_bibliotheques() -> dict[str, str]:
     return {
         "c2pa-python": metadata.version("c2pa-python"),
         "expat": ".".join(str(n) for n in expat.version_info),
+        "numpy": metadata.version("numpy"),
     }
 
 

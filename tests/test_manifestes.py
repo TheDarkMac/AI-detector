@@ -181,6 +181,7 @@ def test_modules_de_metadonnees_livres() -> None:
     livres = {manifeste.identifiant: manifeste for manifeste in decouvrir()}
     assert sorted(livres) == [
         "c2pa",
+        "doublejpeg",
         "exif",
         "id3",
         "image",
@@ -216,6 +217,8 @@ def test_modules_de_metadonnees_livres() -> None:
     for identifiant, manifeste in livres.items():
         if identifiant == "c2pa":
             continue  # règles « module » et cinq directions : tests/test_c2pa.py
+        if identifiant == "doublejpeg":
+            continue  # tests/test_double_compression.py
         assert manifeste.regles == ()
         if identifiant == "image":
             assert manifeste.exigences == ("F-06", "F-30")

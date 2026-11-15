@@ -60,11 +60,11 @@
       "items": { "$ref": "#/properties/identifiant" }
     },
     "bibliotheques": {
-      "description": "Bibliothèques qui lisent le fichier pour ce module ; leur version réelle figure à la rubrique Versions du rapport (ADR-0120).",
+      "description": "Bibliothèques qui lisent le fichier pour ce module, ou calculent sur ce qu'il en a lu (numpy, ADR-0185) ; leur version réelle figure à la rubrique Versions du rapport (ADR-0120).",
       "type": "array",
       "maxItems": 8,
       "uniqueItems": true,
-      "items": { "enum": ["c2pa-python", "expat"] }
+      "items": { "enum": ["c2pa-python", "expat", "numpy"] }
     }
   }
 }

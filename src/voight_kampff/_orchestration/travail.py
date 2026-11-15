@@ -219,10 +219,16 @@ def executer(
 
 
 def _environnement() -> dict[str, str]:
-    """Environnement vidé ; Windows ne démarre pas Python sans ``SYSTEMROOT``."""
+    """Environnement vidé ; Windows ne démarre pas Python sans ``SYSTEMROOT``.
+
+    Seule valeur fixée : un fil pour OpenBLAS, que numpy charge à son import (ADR-0185). Le
+    module ``doublejpeg`` ne s'en sert pas, et un fil par cœur, chacun avec sa mémoire, pourrait
+    dépasser la limite de mémoire du processus de travail sur une machine à nombreux cœurs.
+    """
+    environnement = {"OPENBLAS_NUM_THREADS": "1"}
     if sys.platform == "win32" and "SYSTEMROOT" in os.environ:  # pragma: no cover - CI Windows
-        return {"SYSTEMROOT": os.environ["SYSTEMROOT"]}
-    return {}
+        environnement["SYSTEMROOT"] = os.environ["SYSTEMROOT"]
+    return environnement
 
 
 def _lancer(

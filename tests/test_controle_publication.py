@@ -326,12 +326,18 @@ def test_publication_au_resume(analyse: Analyse) -> None:
 
 
 def test_publication_sans_marque_ni_partie_non_lue(tmp_path: Path) -> None:
-    # JPEG sans métadonnées : seules les techniques hors V1 sont non menées. Elles ne lisent
-    # pas de métadonnées et ne rendent pas le contrôle incomplet.
+    # JPEG sans métadonnées, ni données d'image : seuls les techniques hors V1 et le décodage
+    # des coefficients (doublejpeg, format partiel) sont non menés. Aucun ne lit de
+    # métadonnées : le contrôle n'est pas incomplet (ADR-0190).
     chemin = tmp_path / "image.jpg"
     chemin.write_bytes(jpeg_image(640, 480))
     analyse = analyser(chemin)
-    assert {n.raison for n in analyse.non_menees} == {RaisonNonMenee.HORS_V1}
+    assert {(n.raison, n.module) for n in analyse.non_menees if n.module == "doublejpeg"} == {
+        (RaisonNonMenee.FORMAT_PARTIEL, "doublejpeg")
+    }
+    assert {n.raison for n in analyse.non_menees if n.module != "doublejpeg"} == {
+        RaisonNonMenee.HORS_V1
+    }
     vue = Presentation(analyse, ())
     assert vue.marques() == []
     assert vue.publication() == [texte("resume.publication_aucune")]

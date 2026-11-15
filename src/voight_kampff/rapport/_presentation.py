@@ -164,6 +164,9 @@ def etat_partie(partie: Partie) -> str:
 
 
 _NIVEAUX_DECROISSANTS = (Niveau.FORT, Niveau.MODERE, Niveau.FAIBLE)
+_SANS_METADONNEES = frozenset({"doublejpeg"})
+"""Modules qui ne lisent aucune métadonnée : leur analyse non menée ne laisse aucune marque
+non lue (ADR-0158, ADR-0190)."""
 
 
 class Presentation:
@@ -372,9 +375,13 @@ class Presentation:
     def controle_incomplet(self) -> bool:
         """Une partie du fichier n'a pas été lue : des marques peuvent y rester (ADR-0158).
 
-        Les techniques hors V1 n'en font pas partie : aucune ne lit de métadonnées.
+        Les techniques hors V1 et les modules qui ne lisent pas de métadonnées (double
+        compression) n'en font pas partie.
         """
-        return any(n.raison is not RaisonNonMenee.HORS_V1 for n in self.analyse.non_menees)
+        return any(
+            n.raison is not RaisonNonMenee.HORS_V1 and n.module not in _SANS_METADONNEES
+            for n in self.analyse.non_menees
+        )
 
     def publication(self) -> list[str]:
         """Lignes du contrôle avant publication, au résumé : nombre et catégories (ADR-0158)."""
