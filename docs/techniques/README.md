@@ -18,7 +18,7 @@ Une fiche par module d'analyse (NF-09, livrable 4), livrée avec son code, ses t
 | [Métadonnées XMP](metadonnees-xmp.md) | `xmp` | T20, T21, T22, T23, T24, T25, T30 | JPEG, PNG, WebP, HEIC, PDF, WAV, M4A, MP4, MOV |
 | [Métadonnées IPTC-IIM](metadonnees-iptc.md) | `iptc` | T20, T22, T23, T24, T25 | JPEG |
 | [Blocs texte PNG](metadonnees-texte-png.md) | `textepng` | T20, T22, T23, T24, T25 | PNG |
-| [Structure d'une image](structure-image.md) | `image` | T24 | JPEG, PNG, WebP |
+| [Structure d'une image](structure-image.md) | `image` | T24, T40 | JPEG, PNG, WebP |
 | [Dictionnaire d'information PDF](metadonnees-info-pdf.md) | `infopdf` | T21, T22, T23, T25 | PDF |
 | [Balises ID3](metadonnees-id3.md) | `id3` | T21, T22, T23, T25 | MP3, AAC, FLAC, WAV |
 | [Liste INFO et bloc bext d'un WAV](metadonnees-info-wav.md) | `infowav` | T21, T22, T23, T25 | WAV |

@@ -59,11 +59,15 @@ pytestmark = pytest.mark.exigence("F-06")
 
 RECOMMANDATION = texte_du_rapport("resume.transformation")
 
-# La règle R-C2PA-006 (T30) a ses propres tests : tests/test_c2pa.py.
+# La règle R-C2PA-006 (T30) a ses propres tests : tests/test_c2pa.py ; les règles des tables
+# connues de T40, tests/test_tables_connues.py.
+REGLES_T40 = {"R-IMAGE-005", "R-IMAGE-006", "R-IMAGE-007"}
 REGLES_T24 = tuple(
     regle
     for regle in CATALOGUE.regles
-    if regle.direction is Direction.TRANSFORMATION and regle.module != "c2pa"
+    if regle.direction is Direction.TRANSFORMATION
+    and regle.module != "c2pa"
+    and regle.identifiant not in REGLES_T40
 )
 SIGNATURES = {"R-EXIF-014", "R-XMP-013", "R-IPTC-003", "R-TEXTEPNG-007"}
 
@@ -282,7 +286,11 @@ def test_observations_du_module_image(
     format_: str, contenu: bytes, attendu: dict[str, Any]
 ) -> None:
     lignes = resultats("image", contenu, format_)
-    assert valeurs_de(lignes) == attendu
+    valeurs = valeurs_de(lignes)
+    # L'empreinte des tables (T40) a ses propres tests : tests/test_tables_connues.py.
+    empreinte = valeurs.pop("image.jpeg.empreinte_tables", None)
+    assert valeurs == attendu
+    assert (empreinte is not None) == ("image.jpeg.tables" in attendu)
     assert raisons(lignes) == []
 
 

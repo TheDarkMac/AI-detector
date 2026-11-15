@@ -1,7 +1,7 @@
-# Module image : structure d'une image, dimensions et tables de quantification (ADR-0154). Validé par schemas/manifeste.schema.json (ADR-0064).
+# Module image : structure d'une image, dimensions et tables de quantification (ADR-0154, ADR-0180 à ADR-0183). Validé par schemas/manifeste.schema.json (ADR-0064).
 
 identifiant = "image"
-version = "0.1.0"
+version = "0.2.0"
 formats = ["jpeg", "png", "webp"]
 exigences = ["F-06", "F-30"]
 regles = []

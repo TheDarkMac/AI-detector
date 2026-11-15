@@ -84,7 +84,7 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
         for module, version in (
             ("exif", "0.4.0"),
             ("id3", "0.3.0"),
-            ("image", "0.1.0"),
+            ("image", "0.2.0"),
             ("infowav", "0.3.0"),
             ("iptc", "0.4.0"),
             ("matroska", "0.3.0"),
