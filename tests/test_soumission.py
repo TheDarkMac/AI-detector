@@ -83,6 +83,7 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
         (module, EtatTechnique.NON_APPLICABLE, version)
         for module, version in (
             ("doublejpeg", "0.1.0"),
+            ("ela", "0.1.0"),
             ("exif", "0.4.0"),
             ("id3", "0.3.0"),
             ("image", "0.2.0"),
@@ -135,13 +136,14 @@ def test_partie_hors_perimetre_declaree_non_analysee(tmp_path: Path) -> None:
     contenu = jpeg() + archive(("a.txt", b"a"))
     analyse = analyser(ecrire(tmp_path, "photo.jpg", contenu))
     # L'échantillon JPEG n'a pas d'en-tête de trame : le décodage des coefficients s'arrête
-    # (doublejpeg, format partiel) ; la seconde partie n'est pas analysée.
+    # (doublejpeg et ela, format partiel) ; la seconde partie n'est pas analysée.
     assert [
         (n.raison, n.module, n.partie)
         for n in analyse.non_menees
         if n.raison is not RaisonNonMenee.HORS_V1
     ] == [
         (RaisonNonMenee.FORMAT_PARTIEL, "doublejpeg", 1),
+        (RaisonNonMenee.FORMAT_PARTIEL, "ela", 1),
         (RaisonNonMenee.HORS_PERIMETRE, None, 2),
     ]
 

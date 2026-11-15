@@ -30,11 +30,20 @@ from voight_kampff.rapport.modele import (
     EtatIsolation,
     Localisation,
     ManqueIsolation,
+    NatureVisualisation,
     NiveauIsolation,
     Partie,
     Plage,
     RaisonNonMenee,
+    Visualisation,
 )
+
+PNG_1X1 = (
+    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x00\x00\x00\x00"
+    b":~\x9bU\x00\x00\x00\rIDATx\x01\x01\x02\x00\xfd\xff\x00\x00\x00\x02\x00\x01"
+    b"~\x05\r\xd2\x00\x00\x00\x00IEND\xaeB`\x82"
+)
+"""PNG d'un pixel noir, en niveaux de gris, tel que l'écrit ``ela.png_gris``."""
 
 FORMAT = "jpeg"
 """Format que l'identification factice attribue à tout le fichier (scénario ``modules``)."""
@@ -156,7 +165,7 @@ def sans_restriction() -> EtatIsolation:
 
 ISOLATION = {
     "type": "isolation",
-    "version_schema": "0.6.0",
+    "version_schema": "0.7.0",
     "isolation": {"niveau": "reduite", "manques": ["reseau"]},
 }
 
@@ -184,6 +193,11 @@ FIN = {"type": "fin", "empreinte": "0" * 64}
 def observation(identifiant: str, module: str = "alpha", **autres: Any) -> dict[str, Any]:
     contenu = {"identifiant": identifiant, "module": module, "nom": "n", "valeur": 1, "partie": 1}
     return {"type": "observation", "observation": contenu | autres}
+
+
+def visualisation(module: str = "alpha", **autres: Any) -> dict[str, Any]:
+    contenu = Visualisation(module, NatureVisualisation.CARTE_ELA, 1, 1, PNG_1X1).vers_dict()
+    return {"type": "visualisation", "visualisation": contenu | autres}
 
 
 def constat(
@@ -261,6 +275,13 @@ HOSTILES: dict[str, list[Ligne]] = {
         VERSIONS,
         FIN,
     ],
+    "visualisation_partielle": [
+        visualisation(),
+        non_menee("format_partiel"),
+        *FINS,
+    ],
+    "visualisation_falsifiee": [visualisation(empreinte="0" * 64)],
+    "visualisation_d_un_autre_module": [visualisation("intrus")],
     "identification_vide": [identification(), VERSIONS, FIN],
     "partie_tronquee": [identification(partie() | {"fin_connue": False, "tronquee": True}), *FINS],
     "hors_perimetre": [identification(partie(format_="gif")), VERSIONS, FIN],

@@ -508,7 +508,7 @@ ECHANTILLONS_METADONNEES = (
 )
 """Échantillons par format : toutes les familles, toutes les formes de conteneur lues."""
 _MODULES: dict[str, tuple[str, ...]] = {
-    "jpeg": ("exif", "xmp", "iptc", "image", "doublejpeg"),
+    "jpeg": ("exif", "xmp", "iptc", "image", "doublejpeg", "ela"),
     "png": ("exif", "xmp", "textepng", "image"),
     "webp": ("exif", "xmp", "image"),
     "heic": ("exif", "xmp"),
