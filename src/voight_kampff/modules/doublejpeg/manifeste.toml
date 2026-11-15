@@ -1,0 +1,13 @@
+# Module doublejpeg : double compression JPEG, premier pas estimé par calibrage (ADR-0185 à ADR-0190). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "doublejpeg"
+version = "0.1.0"
+formats = ["jpeg"]
+exigences = ["F-31"]
+regles = []
+fiche = "double-compression-jpeg"
+# Direction de la règle du catalogue sur ses observations (ADR-0188) ; le module lui-même n'émet aucun constat.
+directions = ["transformation"]
+requiert = []
+# numpy ne lit pas le fichier : il calcule sur les coefficients que lit le décodage du projet ; sa version figure au rapport (ADR-0185).
+bibliotheques = ["numpy"]

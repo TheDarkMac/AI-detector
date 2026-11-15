@@ -33,6 +33,7 @@ dependencies = [
     "c2pa-python>=0.39.0",
     "google-re2>=1.1.20251105",
     "jsonschema>=4.26",
+    "numpy>=2.5.4",
 ]
 
 [project.scripts]
