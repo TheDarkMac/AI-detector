@@ -1,8 +1,8 @@
 # ADR-0189 — Estimation : calcul en entiers, région du haut de l'image, paramètres et forme de la règle
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-15
-- **Décideur** : l'assistant, soumis à TheDarkMac dans la PR de T41
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T41, validée pendant la revue de la PR de T41
 - **Tâche** : T41
 - **Exigences liées** : F-31, NF-02, NF-06, ES-03 ; ADR-0018, ADR-0023, ADR-0076, ADR-0078, ADR-0108, ADR-0186, ADR-0188
 
@@ -61,3 +61,4 @@ Option A dans les trois cas, avec ces paramètres, dans le code du module et dan
 | Date | Modification |
 | --- | --- |
 | 2026-11-15 | Création, statut « Proposé » |
+| 2026-11-15 | Validé par TheDarkMac pendant la revue de la PR de T41 (« Oui, les deux ») : statut « Accepté » |

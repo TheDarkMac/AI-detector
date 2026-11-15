@@ -1,8 +1,8 @@
 # ADR-0190 — Module `doublejpeg`, un fil pour OpenBLAS, contrôle avant publication, versions de T41
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-15
-- **Décideur** : l'assistant, soumis à TheDarkMac dans la PR de T41
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T41, validée pendant la revue de la PR de T41
 - **Tâche** : T41
 - **Exigences liées** : F-31, NF-02, NF-06, NF-09, NF-10 ; ADR-0042, ADR-0064, ADR-0065, ADR-0085, ADR-0120, ADR-0154, ADR-0184
 
@@ -57,3 +57,4 @@ Option A dans les quatre cas.
 | Date | Modification |
 | --- | --- |
 | 2026-11-15 | Création, statut « Proposé » |
+| 2026-11-15 | Validé par TheDarkMac pendant la revue de la PR de T41 (« Oui, les deux ») : statut « Accepté » |

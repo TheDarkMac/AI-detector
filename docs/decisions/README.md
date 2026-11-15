@@ -203,5 +203,5 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0186](ADR-0186-methode-de-detection.md) | Méthode de détection : premier pas de quantification estimé par calibrage | Accepté | 2026-11-15 |
 | [ADR-0187](ADR-0187-jpeg-lus.md) | JPEG lus : séquentiels et progressifs, codage de Huffman, huit bits | Accepté | 2026-11-15 |
 | [ADR-0188](ADR-0188-constat-de-double-compression.md) | Constat de double compression : indice faible vers la transformation | Accepté | 2026-11-15 |
-| [ADR-0189](ADR-0189-calcul-en-entiers-et-region.md) | Estimation : calcul en entiers, région du haut de l'image, paramètres et forme de la règle | Proposé | 2026-11-15 |
-| [ADR-0190](ADR-0190-module-et-versions-de-t41.md) | Module `doublejpeg`, un fil pour OpenBLAS, contrôle avant publication, versions de T41 | Proposé | 2026-11-15 |
+| [ADR-0189](ADR-0189-calcul-en-entiers-et-region.md) | Estimation : calcul en entiers, région du haut de l'image, paramètres et forme de la règle | Accepté | 2026-11-15 |
+| [ADR-0190](ADR-0190-module-et-versions-de-t41.md) | Module `doublejpeg`, un fil pour OpenBLAS, contrôle avant publication, versions de T41 | Accepté | 2026-11-15 |

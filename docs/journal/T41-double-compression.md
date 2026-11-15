@@ -3,7 +3,7 @@
 - **Branche** : `tache/T41-double-compression`
 - **Dates** : 2026-11-15
 - **Exigences couvertes** : F-31 ; F-06 (indice vers la transformation) ; ES-19 (fuzzing du nouveau lecteur)
-- **Décisions** : ADR-0185 à ADR-0188, acceptés ; ADR-0189 et ADR-0190, proposés dans la PR
+- **Décisions** : ADR-0185 à ADR-0190, tous acceptés
 - **Errata** : aucun
 
 ## Objectif
@@ -27,7 +27,7 @@ Détecter une double compression JPEG (F-31), et trancher le moyen de lire les c
    - estimation du premier pas par calibrage, sur 36 images : trois images sans perte livrées avec le système (écran de démarrage de GIMP, avatar de Plasma, fond de GRUB), compressées une fois (qualités 75 et 90) ou deux fois (50 à 95 puis 75 et 90) par cjpeg ; puis sur une photographie (`grace_hopper.jpg` de matplotlib, qualité 80) réenregistrée de 70 à 95, recadrée de 3 et 5 pixels, réduite de moitié ; puis sur les 11 JPEG de `/usr/share` (aucune trace) ;
    - premier critère « simple compression = pas égal à celui du fichier » : jusqu'à 2 traces fortes sur une simple compression d'image de synthèse ; corrigé en prenant le meilleur pas qui divise celui du fichier (une telle double quantification ne laisse aucune trace) ;
    - import de numpy dans un interpréteur lancé comme le processus de travail : 0,45 s sans bytecode (uv n'en compile pas), 0,23 à 0,26 s avec ; chargement de tous les modules de 0,44–0,53 s à 0,55–0,64 s.
-3. Quatre questions à TheDarkMac, en un lot, chacune avec une recommandation, toutes retenues : lecture des coefficients ([ADR-0185](../decisions/ADR-0185-lecture-des-coefficients-dct.md)) ; méthode ([ADR-0186](../decisions/ADR-0186-methode-de-detection.md)) ; JPEG lus ([ADR-0187](../decisions/ADR-0187-jpeg-lus.md)) ; constat ([ADR-0188](../decisions/ADR-0188-constat-de-double-compression.md)). La première comprenait l'installation de uv depuis PyPI et le téléchargement de numpy. Les autres choix, faits par l'assistant, sont soumis dans la PR : [ADR-0189](../decisions/ADR-0189-calcul-en-entiers-et-region.md) (calcul en entiers, région, paramètres, forme de la règle) et [ADR-0190](../decisions/ADR-0190-module-et-versions-de-t41.md) (module à part, un fil pour OpenBLAS, versions).
+3. Quatre questions à TheDarkMac, en un lot, chacune avec une recommandation, toutes retenues : lecture des coefficients ([ADR-0185](../decisions/ADR-0185-lecture-des-coefficients-dct.md)) ; méthode ([ADR-0186](../decisions/ADR-0186-methode-de-detection.md)) ; JPEG lus ([ADR-0187](../decisions/ADR-0187-jpeg-lus.md)) ; constat ([ADR-0188](../decisions/ADR-0188-constat-de-double-compression.md)). La première comprenait l'installation de uv depuis PyPI et le téléchargement de numpy. Les autres choix, faits par l'assistant, ont été soumis dans la PR et validés par TheDarkMac pendant sa revue (« Oui, les deux », 2026-11-15) : [ADR-0189](../decisions/ADR-0189-calcul-en-entiers-et-region.md) (calcul en entiers, région, paramètres, forme de la règle) et [ADR-0190](../decisions/ADR-0190-module-et-versions-de-t41.md) (module à part, un fil pour OpenBLAS, versions).
 4. Branche `tache/T41-double-compression` créée depuis `detector` à jour (`796a0bc`). uv 0.13.5 (celui de la CI) installé dans un environnement du dossier temporaire ; `uv add numpy` : numpy 2.5.4 au verrou, critères d'ADR-0043 vérifiés (ADR-0185).
 5. Source primaire lue : Lukáš et Fridrich, DFRWS 2003 (PDF de l'université de Binghamton, texte extrait par `pdftotext`). Leur méthode principale est un classifieur à réseau de neurones (§4.3) ; c'est leur « test de compatibilité » (§4.1) que reprend le module, avec les écarts dits par ADR-0186.
 6. Décodage entropique `modules/_lecture/jpeg.py` : segments jusqu'à EOI, SOF0 à SOF2, DHT, DQT, DRI, SOS ; balayages séquentiels et progressifs (continu premier et raffiné, alternatif premier et raffiné) ; région et bornes d'ADR-0189 ; balayages des autres composantes sautés. Vérifié contre les transcodages sans perte de jpegtran (progressif, redémarrages, Huffman optimisé) en 4:2:0, 4:2:2, 4:4:4 et niveaux de gris.
@@ -41,6 +41,7 @@ Détecter une double compression JPEG (F-31), et trancher le moyen de lire les c
     - fuzzing : `doublejpeg` parmi les modules du JPEG, deux JPEG décodables parmi les échantillons mutés ;
     - tests adaptés : contrôle avant publication (`test_controle_publication.py`, ADR-0190) ; liste des modules (`test_manifestes.py`, `test_travail.py`, `test_cli.py`), versions des bibliothèques (`test_travail.py`, `test_orchestration.py`), couverture d'une analyse et non menée de l'échantillon JPEG sans trame (`test_soumission.py`), compte des règles (`test_incoherences.py`), règles de T24 (`test_transfert.py`).
 11. Documentation : fiche `double-compression-jpeg` et index des fiches ; limite de la fiche `structure-image` ; architecture v1.22 (§3, §4, §9, §12) ; découpage v0.29 (T41, T32) ; guide du catalogue v1.9 ; matrice régénérée (F-06, F-31) ; renvois dans ADR-0043, ADR-0065, ADR-0158 et ADR-0174 ; index des ADR et du journal.
+12. PR [#30](https://github.com/TheDarkMac/AI-detector/pull/30) ouverte ; ADR-0189 et ADR-0190 validés par TheDarkMac pendant la revue (« Oui, les deux », 2026-11-15) : statut « Accepté ».
 
 ## Vérification
 
@@ -61,7 +62,7 @@ Détecter une double compression JPEG (F-31), et trancher le moyen de lire les c
 | Script de balayages refusé par jpegtran | Erreur de l'assistant : un raffinement descend d'un bit à la fois (Ah = Al + 1) | Script corrigé |
 | Trois attentes fausses dans un premier jet des tests | Erreurs de l'assistant : différences du continu cumulées par bloc ; qualités 59 et 60 égales aux quatre premiers rangs ; nom de l'attribut des versions de l'analyse | Attentes corrigées |
 | La fiche `structure-image` a été modifiée pendant le passage de la suite complète | Erreur de méthode de l'assistant | Seul le corps a changé, pas l'en-tête que lisent les tests ; sans effet sur ce passage |
-| Premier passage de la suite complète : 1 échec, `test_publication_sans_marque_ni_partie_non_lue` | Un JPEG sans données d'image rend `doublejpeg` non mené, et le contrôle avant publication se disait alors incomplet (ADR-0158), alors que le module ne lit aucune métadonnée | Les analyses non menées de `doublejpeg` sont exclues, comme celles des techniques hors V1 (ADR-0190, proposé) ; test adapté |
+| Premier passage de la suite complète : 1 échec, `test_publication_sans_marque_ni_partie_non_lue` | Un JPEG sans données d'image rend `doublejpeg` non mené, et le contrôle avant publication se disait alors incomplet (ADR-0158), alors que le module ne lit aucune métadonnée | Les analyses non menées de `doublejpeg` sont exclues, comme celles des techniques hors V1 (ADR-0190) ; test adapté |
 | Statuts du découpage (v0.26), de l'architecture (v1.19) et du guide du catalogue (v1.7) en retard | Non mis à jour par les tâches précédentes, qui ne complétaient que la liste des versions | Corrigés, et dits à l'historique de chaque document |
 
 ## Écarts par rapport au découpage
@@ -78,7 +79,6 @@ Détecter une double compression JPEG (F-31), et trancher le moyen de lire les c
 
 ## Reste à faire
 
-- PR : validation d'ADR-0189 et d'ADR-0190 par TheDarkMac.
 - T100 : mesurer la règle et recalibrer ses seuils ; T32 : décoder les autres composantes et convertir les couleurs.
 - Coordonner avec le complément de T40 : version du catalogue et numéros d'ADR (ADR-0190).
 - Toujours en attente : voir « État initial ».
