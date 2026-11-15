@@ -1,7 +1,7 @@
 # Modèle de données
 
-> Statut : **v1.9** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 proposée dans la PR de T31. Document vivant : toute modification est inscrite à l'historique (§10).
-> Exigences : F-02, F-03, F-80, F-81, F-82, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
+> Statut : **v1.10** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 proposée dans la PR de T42. Document vivant : toute modification est inscrite à l'historique (§10).
+> Exigences : F-02, F-03, F-80, F-81, F-82, F-84, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
 ## 1. Objet
@@ -48,6 +48,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0112](../decisions/ADR-0112-comparaison-de-deux-rapports.md) | Comparaison de deux exports : écarts de condition, d'environnement, de résultat |
 | [ADR-0171](../decisions/ADR-0171-liste-de-confiance-au-rapport.md) | `Versions.confiance` : liste de confiance C2PA employée ; `VERSION_SCHEMA` 0.5.0 (T30) |
 | [ADR-0177](../decisions/ADR-0177-marquages-non-recherches-au-rapport.md), [ADR-0178](../decisions/ADR-0178-couverture-des-marquages.md) | `Couverture.marquages_non_recherches`, raisons ; marquages joints à l'analyse ; `VERSION_SCHEMA` 0.6.0 (T31, ADR-0179) |
+| [ADR-0200](../decisions/ADR-0200-visualisations-au-rapport.md) | Objet `Visualisation`, message `visualisation`, catégorie identifiante `contenu` ; `VERSION_SCHEMA` 0.7.0 (T42, ADR-0201) |
 
 ### Où se trouve le code
 
@@ -65,7 +66,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Exports JSON et HTML, masquage (T16) | `src/voight_kampff/rapport/export.py`, `rapport/_html.py`, `rapport/_presentation.py`, `rapport/textes.toml` |
 | Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py` |
 
-Version commune : `0.6.0` (`VERSION_SCHEMA`, ADR-0179 ; 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
+Version commune : `0.7.0` (`VERSION_SCHEMA`, ADR-0201 ; 0.6.0 depuis ADR-0179, 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
 
 ## 2. Vue d'ensemble
 
@@ -155,6 +156,16 @@ classDiagram
     module
     partie
   }
+  class Visualisation {
+    module
+    partie
+    nature
+    largeur
+    hauteur
+    png
+    empreinte : calculé
+    identifiante : contenu
+  }
   class Localisation {
     chemin
     octets
@@ -174,6 +185,7 @@ classDiagram
   Rapport *-- "0..*" Observation
   Rapport *-- "0..*" Constat
   Rapport *-- "0..*" NonMenee
+  Rapport *-- "0..16" Visualisation
   Constat *-- Phrase
   Constat *-- ReferenceRegle
   Constat *-- "0..1" Graduation
@@ -182,13 +194,14 @@ classDiagram
   Observation *-- "0..1" Localisation
   Constat *-- "0..1" Localisation
   NonMenee *-- "0..1" Localisation
+  Visualisation *-- "0..1" Localisation
 ```
 
 Description textuelle (accessibilité, ADR-0025) :
 
-- Un **rapport** porte sur un seul fichier. Son **identification** liste les **parties** reconnues : un format chacune, avec sa plage d'octets ; la partie 1 donne le format réel (ADR-0071). Il contient aussi des **versions** (outil, catalogue, dépendances), l'**état de l'isolation**, une **couverture** (techniques et marquages recherchés), et trois listes : **observations**, **constats**, **analyses non menées**.
+- Un **rapport** porte sur un seul fichier. Son **identification** liste les **parties** reconnues : un format chacune, avec sa plage d'octets ; la partie 1 donne le format réel (ADR-0071). Il contient aussi des **versions** (outil, catalogue, dépendances), l'**état de l'isolation**, une **couverture** (techniques et marquages recherchés), et quatre listes : **observations**, **constats**, **analyses non menées**, **visualisations** (images écrites par un module, au plus 16).
 - Un **constat** renvoie à une ou plusieurs observations (ses données) ; sa **phrase** est un gabarit dont chaque paramètre renvoie aussi à une de ces observations. Il cite sa **règle** (identifiant et version) et, s'il s'agit d'un indice, sa **graduation**.
-- Une observation, un constat ou une analyse non menée peuvent porter une **localisation** dans le fichier.
+- Une observation, un constat, une analyse non menée ou une visualisation peuvent porter une **localisation** dans le fichier.
 - Les résultats d'une technique et ses entrées de couverture nomment la **partie** analysée : une technique figure une fois par partie du périmètre.
 
 ## 3. Observation
@@ -203,7 +216,7 @@ Donnée relevée par un module : valeur d'un champ ou mesure, sans interprétati
 | `valeur` | Texte, nombre, booléen, ou liste d'au plus 4 096 de ceux-ci | Oui | Texte d'au plus 4 096 caractères, encodable en UTF-8 ; nombre fini, entre −2⁶³ et 2⁶³ − 1 |
 | `unite` | Texte de 1 à 32 caractères | Non | `px`, `s`, `ratio`… |
 | `localisation` | Localisation | Non | §6 |
-| `identifiante` | Catégorie | Non | `metadonnee_nominative`, `numero_de_serie`, `gps`, `lieu`, `texte_libre`, `nom_de_fichier`, `empreinte` (ADR-0057, ADR-0159) |
+| `identifiante` | Catégorie | Non | `metadonnee_nominative`, `numero_de_serie`, `gps`, `lieu`, `texte_libre`, `nom_de_fichier`, `empreinte`, `contenu` (ADR-0057, ADR-0159, ADR-0200 ; `contenu` n'est employée que par les visualisations) |
 | `partie` | Entier ≥ 1 | Oui | Rang de la partie analysée (ADR-0071) ; numérotation `<module>/<n>` continue d'une partie à l'autre |
 
 Une absence se dit aussi par une observation : « pas de bloc XMP » est l'observation `xmp.present` de valeur `false`.
@@ -273,6 +286,8 @@ Le processus principal tire de l'identification trois sortes d'analyses non men�
 
 **Couverture** (ADR-0059) : la liste des techniques, une fois par partie du périmètre (ADR-0071), chacune avec sa version et son état (`appliquee`, `partielle`, `non_menee`, `non_applicable`), et les marquages du catalogue qui pourraient se trouver dans le fichier, d'après les formats de ses parties analysées : identifiants des marquages recherchés (F-25), puis marquages non recherchés, chacun avec sa raison (`lecteur_neuronal`, `lecteur_proprietaire`, `cle_du_fournisseur`, `lecteur_a_venir`, inscrites au catalogue ; `technique_non_menee`, constatée quand le module qui recherche le marquage n'a été appliqué à aucune de ces parties). Un marquage y figure au plus une fois. Le processus principal les calcule après le processus de travail ; l'analyse joint les entrées du catalogue qu'ils citent et vérifie que chaque raison est la leur (ADR-0176 à ADR-0178). Une technique hors de cette version de l'outil y figure sans version, à l'état non menée, avec la seule raison `hors_v1` (ADR-0012) ; sur une autre partie d'un polyglotte, qui n'est pas de ses formats, elle est non applicable, toujours sans version. Ces techniques sont lues dans `modules/hors_v1.toml` et ne figurent que si une partie analysée est d'un de leurs formats (ADR-0087).
 
+**Visualisation** (F-84, ADR-0200) : image écrite par un module pour aider la lecture, jamais une image tirée telle quelle du fichier. `module`, `partie`, `nature` (liste fermée : `carte_ela`), `largeur` et `hauteur` de 1 à 65 535 pixels, le PNG (au plus 768 Kio) et sa `localisation` facultative. Le modèle vérifie la signature du PNG et que les dimensions de son en-tête sont celles annoncées ; l'empreinte SHA-256 est calculée. Catégorie identifiante fixe `contenu` : elle montre le contenu du fichier. Comme une observation, une visualisation n'appartient qu'à une technique appliquée ou partielle ; une technique qui n'a rendu qu'une visualisation et une analyse non menée est partielle. Au plus 16 par rapport. Dans le JSON : `type_media` (`image/png`), `empreinte`, `donnees` (base64), `identifiante`.
+
 ## 6. Localisation, identification, versions, isolation
 
 **Localisation** (A-46), au moins un élément :
@@ -309,7 +324,7 @@ Les expressions des schémas sont des classes de caractères ancrées, linéaire
 
 ### Export JSON (T16)
 
-Un export est le document du rapport dont les données des catégories masquées sont retirées : `nom` et `empreinte` de l'identification, `valeur` des observations identifiantes. L'objet `masquage`, juste après `version_schema`, liste les catégories `masquees` et `levees`, les sept une fois chacune (ADR-0095, ADR-0159). Le schéma vérifie que le nom et l'empreinte manquent si et seulement si `masquage` les masque, et qu'une observation non identifiante a sa valeur ; le code (`rapport.export.valider`) vérifie la partition des catégories et l'absence de la valeur de chaque observation masquée. `Rapport.depuis_dict` refuse un export masqué ; un export où tout est levé se relit à l'identique.
+Un export est le document du rapport dont les données des catégories masquées sont retirées : `nom` et `empreinte` de l'identification, `valeur` des observations identifiantes, `donnees` et `empreinte` des visualisations (catégorie `contenu`, ADR-0200). L'objet `masquage`, juste après `version_schema`, liste les catégories `masquees` et `levees`, les huit une fois chacune (ADR-0095, ADR-0159, ADR-0200). Le schéma vérifie que le nom et l'empreinte manquent si et seulement si `masquage` les masque, et qu'une observation non identifiante a sa valeur ; le code (`rapport.export.valider`) vérifie la partition des catégories, l'absence de la valeur de chaque observation masquée et celle des données et de l'empreinte de chaque visualisation si `contenu` est masqué, leur présence sinon. `Rapport.depuis_dict` refuse un export masqué ; un export où tout est levé se relit à l'identique.
 
 ## 8. Messages du processus de travail
 
@@ -322,6 +337,7 @@ Une ligne JSON par message (ADR-0036), validée par `messages.schema.json` :
 | `observation` | `observation` | Pendant l'analyse |
 | `constat` | `constat` | Pendant l'analyse |
 | `non_menee` | `non_menee` | Pendant l'analyse |
+| `visualisation` | `visualisation`, avec ses `donnees` et son `empreinte`, recalculée à la réception (ADR-0200) | Pendant l'analyse |
 | `module` | `module`, `partie`, `applicable` | Après les résultats de chaque module actif, dans l'ordre de la configuration, pour chaque partie du périmètre (ADR-0062, ADR-0071) |
 | `versions` | `dependances` | Versions réelles des bibliothèques des modules actifs, celles que citent leurs manifestes, une fois chacune, dans l'ordre de leurs noms ; P1 refuse toute autre liste (ADR-0120) |
 | `fin` | `empreinte` recalculée par P2 après les modules (ES-08, ADR-0075) | Dernier message |
@@ -340,6 +356,7 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | ES-13, NF-18 | Catégorie identifiante de l'observation (ADR-0057) ; nom et empreinte identifiants d'office ; masqués par défaut, absents de l'export, levée par catégorie (T16, ADR-0093, ADR-0095) | Marquage par chaque module : métadonnées d'image en T20 (ADR-0119), puis chaque technique |
 | ES-04 | Données simples, bornées, validées par schéma puis par le modèle ; erreurs sans contenu ; lecture bornée et délai (T12), valeurs fixées (T14, ADR-0077) | — |
 | ES-20 | Une preuve exige un fondement de vérification ; une déclaration ne peut être qu'un indice ou une information | Rédaction « le fichier déclare » (T22, T30) |
+| F-84 | Visualisations au rapport : objet, message, rubrique HTML, masquage (ADR-0200) ; carte ELA (T42) | Spectre (T43), spectrogramme (T60), chronologie des révisions PDF (T50) |
 | A-10 | Glossaire du projet | Glossaire utilisateur (T103) |
 | A-23 | Couverture : état « non applicable », produit par T12 d'après les formats des manifestes ; techniques hors V1 par format (T15, ADR-0087) | Formats de chaque technique livrée, dans sa fiche : quatre modules en T20 (ADR-0115), puis chaque technique |
 
@@ -358,3 +375,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-11-14 | 1.8 | Catégories identifiantes `lieu` et `texte_libre`, `VERSION_SCHEMA` 0.4.0 (§1, §2, §4, §7, ADR-0159) ; contrôle avant publication produit à l'export, comme le résumé (ADR-0158) | T25 |
 | 2026-11-14 | 1.9 | `Versions.confiance`, `VERSION_SCHEMA` 0.5.0 (§1, §6, ADR-0171) ; exemple du constat du cahier avec la règle R-C2PA-001 (§4, ADR-0170) | T30 |
 | 2026-11-14 | 1.10 | Marquages non recherchés de la couverture, `VERSION_SCHEMA` 0.6.0 (§1, §2, §5, ADR-0177 à ADR-0179) | T31 |
+| 2026-11-15 | 1.11 | Visualisations : objet, catégorie identifiante `contenu`, message, export masqué, `VERSION_SCHEMA` 0.7.0 (§1 à §5, §7 à §9, ADR-0200, ADR-0201) | T42 |

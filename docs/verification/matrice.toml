@@ -212,10 +212,10 @@ note = "Double compression alignée : premier pas de quantification estimé par 
 
 [[exigence]]
 id = "F-32"
-etat = "hors_v1"
+etat = "realisee"
 taches = ["T42"]
 methodes = ["test"]
-note = "Candidate V2 (ADR-0012) : au rapport comme analyse non menée."
+note = "ELA de la luminance : recompression à la qualité 95 de libjpeg en entiers, une valeur par bloc, gain fixe ; image entière jusqu'à 65 536 blocs, le haut au-delà ; carte sans règle ni constat, avertissement d'interprétation au rapport, au-dessus de la carte, et dans la fiche (ADR-0197 à ADR-0201). Avancée en V1 (ADR-0197). Lecture des cartes par des personnes non mesurée (T104)."
 
 [[exigence]]
 id = "F-33"
@@ -382,11 +382,11 @@ methodes = ["test"]
 
 [[exigence]]
 id = "F-84"
-etat = "a_venir"
-taches = ["T50"]
+etat = "partielle"
+taches = ["T42", "T50"]
 methodes = ["test", "inspection"]
 justification = "La lisibilité d'une visualisation se juge à la relecture ; sa présence et sa description textuelle se testent."
-note = "Chronologie des révisions PDF en V1 (T50) ; les autres visualisations arrivent avec leurs techniques, candidates V2."
+note = "Visualisations au rapport (objet, message, rubrique HTML, image data:, masquage par la catégorie « contenu », ADR-0200) ; carte ELA (T42), rapport HTML relu dans un navigateur pendant T42. Chronologie des révisions PDF en V1 (T50) ; spectre et spectrogramme avec leurs techniques, candidates V2."
 
 # 5.6 Contrôle avant publication
 
