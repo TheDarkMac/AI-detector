@@ -3,7 +3,7 @@
 - **Branche** : `tache/T42-ela`
 - **Dates** : 2026-11-15
 - **Exigences couvertes** : F-32 ; F-84 (carte ELA, premier élément) ; ES-12 et ES-13 (image du rapport, masquage) ; NF-06 (carte identique sur toutes les machines)
-- **Décisions** : ADR-0197 à ADR-0200 acceptés ; ADR-0201 proposé, à valider dans la PR
+- **Décisions** : ADR-0197 à ADR-0201, tous acceptés (ADR-0201 validé pendant la revue de la PR)
 - **Errata** : aucun
 
 ## Objectif
@@ -35,6 +35,7 @@ Livrer l'ELA (F-32) avec son avertissement d'interprétation et sa carte (F-84),
 8. Oracle : la recompression simulée, comparée à `cjpeg -grayscale -quality 95 -dct int` puis `djpeg -dct int` (libjpeg-turbo 2.1.5), diffère jusqu'à 7 niveaux sur un pixel, mais l'écart moyen est égal au millième (1,045 contre 1,046 ; 0,148 contre 0,149 ; 0,157 contre 0,156). La phrase de la fiche, d'abord écrite de mémoire (« au plus un niveau »), a été corrigée par cette mesure avant tout commit.
 9. Tests : `tests/test_ela.py` (carte des échantillons à empreinte fixée, collage visible, gain et borne, oracle libjpeg-turbo, étendue réduite, JPEG non lu, PNG relu par zlib et sans compression, modèle et refus, exports masqués et révélés, HTML, résumé, comparaison) ; `tests/donnees/ela/` : trois JPEG de 256 × 192 pixels écrits par `generer.sh` ; scénarios du travail factice (visualisation seule rendant un module partiel, empreinte falsifiée, module étranger) ; attentes mises à jour (liste des modules, version du schéma, ordre des rubriques, techniques hors V1).
 10. Documentation : ADR-0197 à ADR-0201, fiche [`ela`](../techniques/ela.md), modèle de données (v1.11), architecture (v1.23), découpage (v0.30), matrice (F-32 réalisée, F-84 partielle), ce journal.
+11. PR [#31](https://github.com/TheDarkMac/AI-detector/pull/31) ouverte (commits `fe2638b`, `a536a06`, `f07306c`). ADR-0201 validé par TheDarkMac pendant la revue (« Oui, valide ADR-0201 ») : statut « Accepté ».
 
 ## Problèmes rencontrés
 
@@ -62,7 +63,6 @@ Livrer l'ELA (F-32) avec son avertissement d'interprétation et sa carte (F-84),
 
 ## Reste à faire
 
-- Valider ADR-0201 dans la PR.
 - Finir le complément de T40 (relevé fini le 2026-11-15, analyse, question des deux jeux de tables de Photoshop, règles, ADR-0193 à ADR-0196) ; il partira du schéma 0.7.0 et prendra le catalogue 0.9.0.
 - Lecture des cartes par des personnes : étude d'usage (T104, hors V1). Chrominance non examinée.
 - Autres visualisations de F-84 : spectre (T43), spectrogramme (T60), chronologie des révisions PDF (T50).

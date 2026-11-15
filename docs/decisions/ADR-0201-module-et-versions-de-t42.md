@@ -1,8 +1,8 @@
 # ADR-0201 — Module `ela`, DCT commune avec T41, contrôle avant publication, versions de T42
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-15
-- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T42, à valider pendant la revue de la PR de T42
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T42, validée pendant la revue de la PR de T42
 - **Tâche** : T42
 - **Exigences liées** : F-32, F-84, NF-06, NF-07, ES-13 ; ADR-0064, ADR-0158, ADR-0184, ADR-0190
 
@@ -56,3 +56,4 @@ Option A dans les quatre cas. Le lecteur JPEG reçoit ses bornes en paramètres 
 | Date | Modification |
 | --- | --- |
 | 2026-11-15 | Création, statut « Proposé » |
+| 2026-11-15 | Validé par TheDarkMac pendant la revue de la PR de T42 (« Oui, valide ADR-0201 ») : statut « Accepté » |

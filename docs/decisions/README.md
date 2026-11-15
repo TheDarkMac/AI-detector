@@ -209,4 +209,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0198](ADR-0198-carte-sans-constat.md) | ELA : une carte et son avertissement, sans règle ni constat | Accepté | 2026-11-15 |
 | [ADR-0199](ADR-0199-methode-et-etendue-de-l-ela.md) | ELA : une valeur par bloc, qualité 95 en entiers, gain fixe, 65 536 blocs puis le haut de l'image | Accepté | 2026-11-15 |
 | [ADR-0200](ADR-0200-visualisations-au-rapport.md) | Visualisations au rapport : rubrique, image `data:`, avertissement au-dessus, catégorie identifiante « contenu » | Accepté | 2026-11-15 |
-| [ADR-0201](ADR-0201-module-et-versions-de-t42.md) | Module `ela`, DCT commune avec T41, contrôle avant publication, versions de T42 | Proposé | 2026-11-15 |
+| [ADR-0201](ADR-0201-module-et-versions-de-t42.md) | Module `ela`, DCT commune avec T41, contrôle avant publication, versions de T42 | Accepté | 2026-11-15 |
