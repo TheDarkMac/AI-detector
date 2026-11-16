@@ -221,3 +221,9 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0204](ADR-0204-seuils-et-releve.md) | Seuils du dwtDct : loi hypergéométrique à 10^-6, vérifiés sur un relevé de Wikimedia Commons | Accepté | 2026-11-16 |
 | [ADR-0205](ADR-0205-etendue-de-la-lecture.md) | Étendue de la lecture du dwtDct : 4 Mpx, puis le haut de l'image ; 65 536 pixels au moins | Accepté | 2026-11-16 |
 | [ADR-0206](ADR-0206-constat-et-versions-de-t32.md) | Constat du dwtDct : trois règles du catalogue, indice faible vers l'origine IA ; module `dwtdct` et versions de T32 | Accepté | 2026-11-16 |
+| [ADR-0207](ADR-0207-versions-d-un-pdf.md) | Versions d'un PDF : sections de la chaîne regroupées, fin par la marque `%%EOF`, reconstitution par la plage | Accepté | 2026-11-16 |
+| [ADR-0208](ADR-0208-nature-d-une-version.md) | Nature d'une version : objets changés comparés entrée par entrée, rangés par leur type et ce qui les désigne | Accepté | 2026-11-16 |
+| [ADR-0209](ADR-0209-signatures-pdf-par-leur-structure.md) | Signatures d'un PDF : lues par leur structure, sans vérification cryptographique | Accepté | 2026-11-16 |
+| [ADR-0210](ADR-0210-versions-d-un-pdf-chiffre.md) | Versions d'un PDF chiffré : rien n'est déchiffré | Accepté | 2026-11-16 |
+| [ADR-0211](ADR-0211-constats-et-versions-de-t50.md) | Constats des versions d'un PDF : une information neutre et deux indices faibles vers la retouche ; module `revisionspdf` et versions de T50 | Accepté | 2026-11-16 |
+| [ADR-0212](ADR-0212-chronologie-en-tableau.md) | Chronologie des versions d'un PDF : visualisation en tableau, non masquée ; schéma 0.8.0 | Accepté | 2026-11-16 |

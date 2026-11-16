@@ -18,7 +18,7 @@
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.7.0" },
+    "version_schema": { "const": "0.8.0" },
     "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
@@ -303,6 +303,44 @@
     },
 
     "visualisation": {
+      "description": "Visualisation écrite par un module pour aider la lecture (F-84) : une image (ADR-0200) ou un tableau (ADR-0212).",
+      "oneOf": [
+        { "$ref": "#/$defs/visualisation_image" },
+        { "$ref": "#/$defs/visualisation_tableau" }
+      ]
+    },
+    "visualisation_tableau": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "nature", "colonnes", "lignes", "partie"],
+      "description": "Tableau d'une visualisation (ADR-0212) : les noms de ses colonnes, fixés par sa nature, et ses lignes de cellules, entiers positifs ou textes courts (le code vérifie le type de chaque colonne). Il ne montre pas le contenu du fichier et n'est jamais masqué.",
+      "properties": {
+        "module": { "$ref": "#/$defs/identifiant" },
+        "nature": { "const": "chronologie_revisions" },
+        "colonnes": {
+          "const": ["version", "fin", "nature", "ajoutes", "remplaces", "supprimes", "date", "signatures"]
+        },
+        "lignes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "items": {
+            "type": "array",
+            "minItems": 8,
+            "maxItems": 8,
+            "items": {
+              "anyOf": [
+                { "type": "integer", "minimum": 0, "maximum": 9223372036854775807 },
+                { "type": "string", "maxLength": 64 }
+              ]
+            }
+          }
+        },
+        "localisation": { "$ref": "#/$defs/localisation" },
+        "partie": { "$ref": "#/$defs/entier_strictement_positif" }
+      }
+    },
+    "visualisation_image": {
       "type": "object",
       "additionalProperties": false,
       "required": [

@@ -86,6 +86,38 @@ avertissement = [
     "La carte ne distingue pas une image générée par IA d'une photo : une image générée puis enregistrée en JPEG donne une carte ordinaire.",
 ]
 
+[visualisations.chronologie_revisions]
+titre = "Chronologie des versions du PDF"
+legende = "Versions du document, de la première à la dernière enregistrée"
+couverture_partielle = "Le tableau ne montre que les {lignes} premières versions sur {versions} ; les observations du module revisionspdf les décrivent toutes."
+avertissement = [
+    "Ce tableau n'est ni une preuve ni un indice : c'est une aide à la lecture. Les constats du module revisionspdf, s'il y en a, figurent plus haut.",
+    "Chaque ligne est une version que le fichier garde : la version n est faite des premiers octets du fichier, jusqu'à la fin indiquée. Pour la retrouver, copiez ce début du fichier.",
+    "La nature d'une version dit quels objets elle change, d'après leur type : une signature, un remplissage de formulaire, des annotations ou des métadonnées sont des ajouts que la norme prévoit ; « non reconnue » veut dire que l'outil ne sait pas ranger un objet changé, pas qu'il a été falsifié.",
+    "Les dates sont celles qu'écrit le logiciel dans le dictionnaire d'information, quand elles changent d'une version à l'autre : n'importe qui peut les écrire, et beaucoup de logiciels ne les mettent pas à jour.",
+    "Les signatures sont comptées à la version dont elles couvrent exactement le contenu ; leur validité cryptographique n'est pas vérifiée.",
+]
+
+[visualisations.chronologie_revisions.colonnes]
+version = "Version"
+fin = "Fin (octets)"
+nature = "Nature"
+ajoutes = "Objets ajoutés"
+remplaces = "Objets remplacés"
+supprimes = "Objets supprimés"
+date = "Date déclarée"
+signatures = "Signatures"
+
+[visualisations.chronologie_revisions.natures]
+originale = "première version"
+structure = "structure seulement"
+signature = "signature"
+formulaire = "formulaire"
+annotation = "annotations"
+metadonnees = "métadonnées"
+non_reconnue = "non reconnue"
+non_lue = "objets non lus"
+
 # Introductions et légendes des tableaux.
 [intros]
 couverture = "Un résultat négatif ne vaut que pour les techniques appliquées et les marquages recherchés ci-dessous. Les marquages connus non recherchés peuvent se trouver dans le fichier sans que l'outil le voie."

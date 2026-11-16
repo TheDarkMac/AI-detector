@@ -44,7 +44,8 @@ def document(analyse: Analyse, reveler: Categories = ()) -> dict[str, Any]:
             del observation["valeur"]
     if CategorieIdentifiante.CONTENU in caches:
         for visualisation in rapport["visualisations"]:
-            del visualisation["donnees"], visualisation["empreinte"]
+            if "donnees" in visualisation:  # une image ; un tableau n'est pas masqué (ADR-0212)
+                del visualisation["donnees"], visualisation["empreinte"]
     masquage = {
         "masquees": [c.value for c in CategorieIdentifiante if c in caches],
         "levees": [c.value for c in CategorieIdentifiante if c not in caches],
@@ -55,8 +56,8 @@ def document(analyse: Analyse, reveler: Categories = ()) -> dict[str, Any]:
 def valider(document: Mapping[str, Any]) -> None:
     """Vérifie un export JSON : son schéma, puis ce que seul le code vérifie (ADR-0095).
 
-    Le masquage nomme chaque catégorie une fois ; une observation n'a pas de valeur, une
-    visualisation ni données ni empreinte, si et seulement si sa catégorie est masquée. Lève
+    Le masquage nomme chaque catégorie une fois ; une observation n'a pas de valeur, une image
+    de visualisation ni données ni empreinte, si et seulement si sa catégorie est masquée. Lève
     ``DocumentInvalide`` ou ``ValueError``.
     """
     from voight_kampff import schemas  # jsonschema : seulement dans le processus principal
@@ -69,6 +70,8 @@ def valider(document: Mapping[str, Any]) -> None:
             raise ValueError("observations : valeur présente si et seulement si non masquée")
     contenu_masque = CategorieIdentifiante.CONTENU in caches
     for visualisation in document["visualisations"]:
+        if "lignes" in visualisation:
+            continue  # tableau, jamais masqué (ADR-0212)
         presentes = {"donnees", "empreinte"} & set(visualisation)
         if presentes != (set() if contenu_masque else {"donnees", "empreinte"}):
             raise ValueError("visualisations : données présentes si et seulement si non masquées")

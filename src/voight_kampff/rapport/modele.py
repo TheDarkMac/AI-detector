@@ -16,7 +16,7 @@ import binascii
 import hashlib
 import math
 import re
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, timedelta
 from enum import StrEnum
@@ -26,6 +26,9 @@ from typing import Any
 from voight_kampff import formats
 
 __all__ = [
+    "COLONNES",
+    "LIGNES_MAX_TABLEAU",
+    "LONGUEUR_MAX_CELLULE",
     "LONGUEUR_MAX_IDENTIFIANT",
     "LONGUEUR_MAX_IMAGE",
     "LONGUEUR_MAX_NOM_DE_LISTE",
@@ -52,6 +55,7 @@ __all__ = [
     "Graduation",
     "Identification",
     "Intervalle",
+    "Ligne",
     "Localisation",
     "ManqueIsolation",
     "MarquageNonRecherche",
@@ -81,7 +85,7 @@ __all__ = [
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.7.0"
+VERSION_SCHEMA = "0.8.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -98,6 +102,10 @@ LONGUEUR_MAX_IMAGE = 768 << 10
 """Octets au plus d'une image de visualisation : son écriture en base64 tient dans un message
 du processus de travail (1 Mio, ADR-0200)."""
 NOMBRE_MAX_VISUALISATIONS = 16
+LIGNES_MAX_TABLEAU = 256
+"""Lignes au plus d'une visualisation en tableau (ADR-0212)."""
+LONGUEUR_MAX_CELLULE = 64
+"""Caractères au plus d'une cellule de texte d'un tableau."""
 _COTE_MAX = 65535
 _SIGNATURE_PNG = b"\x89PNG\r\n\x1a\n"
 _ENTIER_MIN = -(2**63)
@@ -744,16 +752,42 @@ class NatureVisualisation(StrEnum):
 
     CARTE_ELA = "carte_ela"
     """Carte du niveau d'erreur de recompression, une valeur par bloc (ADR-0199)."""
+    CHRONOLOGIE_REVISIONS = "chronologie_revisions"
+    """Chronologie des versions d'un PDF, une ligne par version, en tableau (ADR-0212)."""
+
+
+COLONNES: dict[NatureVisualisation, tuple[tuple[str, type], ...]] = {
+    NatureVisualisation.CHRONOLOGIE_REVISIONS: (
+        ("version", int),
+        ("fin", int),
+        ("nature", str),
+        ("ajoutes", int),
+        ("remplaces", int),
+        ("supprimes", int),
+        ("date", str),
+        ("signatures", int),
+    ),
+}
+"""Colonnes d'une visualisation en tableau, par nature : nom et type des cellules (entier
+positif ou nul, ou texte d'au plus :data:`LONGUEUR_MAX_CELLULE` caractères). Une nature absente
+est une image."""
+
+type Ligne = tuple[int | str, ...]
+"""Ligne d'une visualisation en tableau, dans l'ordre de ses colonnes."""
 
 
 @dataclass(frozen=True, slots=True)
 class Visualisation:
-    """Image produite par un module pour aider la lecture (F-84) : un PNG écrit par le module,
-    jamais une image tirée telle quelle du fichier.
+    """Image ou tableau produit par un module pour aider la lecture (F-84).
 
+    Une image est un PNG écrit par le module, jamais une image tirée telle quelle du fichier.
     Elle montre le contenu du fichier : catégorie identifiante « contenu », masquée par défaut à
     l'export (ADR-0200). Le PNG est vérifié (signature, dimensions de l'en-tête, empreinte) pour
     que l'export n'intègre au rapport que l'image annoncée (ES-12).
+
+    Un tableau (nature de :data:`COLONNES`) porte des lignes de cellules typées, que l'export
+    échappe ; il ne montre pas le contenu et n'est pas masqué (ADR-0212). ``largeur`` y est le
+    nombre de colonnes, ``hauteur`` celui des lignes, et ``png`` est vide.
     """
 
     module: str
@@ -765,10 +799,46 @@ class Visualisation:
     localisation: Localisation | None = None
     """Partie du fichier que couvre la visualisation."""
     partie: int = 1
+    lignes: tuple[Ligne, ...] = ()
+    """Lignes d'un tableau ; vide pour une image."""
+
+    @classmethod
+    def tableau(
+        cls,
+        module: str,
+        nature: NatureVisualisation,
+        lignes: Sequence[Sequence[int | str]],
+        *,
+        localisation: Localisation | None = None,
+        partie: int = 1,
+    ) -> "Visualisation":
+        """Visualisation en tableau ; ses dimensions se déduisent des lignes."""
+        colonnes = COLONNES.get(nature)
+        if colonnes is None:
+            raise ValueError("visualisation.nature : pas un tableau")
+        return cls(
+            module,
+            nature,
+            len(colonnes),
+            len(lignes),
+            b"",
+            localisation=localisation,
+            partie=partie,
+            lignes=tuple(tuple(ligne) for ligne in lignes),
+        )
+
+    @property
+    def est_un_tableau(self) -> bool:
+        return self.nature in COLONNES
 
     def __post_init__(self) -> None:
         _identifiant(self.module, "visualisation.module")
         _entier(self.partie, "visualisation.partie", minimum=1)
+        if self.est_un_tableau:
+            self._verifier_tableau()
+            return
+        if self.lignes:
+            raise ValueError("visualisation.lignes : seulement pour un tableau")
         for cote, champ in ((self.largeur, "largeur"), (self.hauteur, "hauteur")):
             _entier(cote, f"visualisation.{champ}", minimum=1)
             if cote > _COTE_MAX:
@@ -782,9 +852,30 @@ class Visualisation:
         if dimensions != (self.largeur, self.hauteur):
             raise ValueError("visualisation.png : dimensions différentes de celles annoncées")
 
+    def _verifier_tableau(self) -> None:
+        colonnes = COLONNES[self.nature]
+        if self.png:
+            raise ValueError("visualisation.png : pas d'image dans un tableau")
+        if not 1 <= len(self.lignes) <= LIGNES_MAX_TABLEAU:
+            raise ValueError("visualisation.lignes : aucune ou trop nombreuses")
+        if (self.largeur, self.hauteur) != (len(colonnes), len(self.lignes)):
+            raise ValueError("visualisation : dimensions différentes de celles du tableau")
+        for ligne in self.lignes:
+            if not isinstance(ligne, tuple) or len(ligne) != len(colonnes):
+                raise ValueError("visualisation.lignes : ligne d'une autre largeur")
+            for cellule, (nom, genre) in zip(ligne, colonnes, strict=True):
+                champ = f"visualisation.lignes.{nom}"
+                if type(cellule) is not genre:
+                    raise TypeError(f"{champ} : type de cellule non admis")
+                if isinstance(cellule, int):
+                    _entier(cellule, champ, minimum=0)
+                else:
+                    _texte(cellule, champ, LONGUEUR_MAX_CELLULE)
+
     @property
-    def identifiante(self) -> CategorieIdentifiante:
-        return CategorieIdentifiante.CONTENU
+    def identifiante(self) -> CategorieIdentifiante | None:
+        """« contenu » pour une image ; aucune pour un tableau, qui n'est pas masqué."""
+        return None if self.est_un_tableau else CategorieIdentifiante.CONTENU
 
     @property
     def empreinte(self) -> str:
@@ -792,6 +883,17 @@ class Visualisation:
         return hashlib.sha256(self.png).hexdigest()
 
     def vers_dict(self) -> Document:
+        if self.est_un_tableau:
+            return _sans_none(
+                {
+                    "module": self.module,
+                    "nature": self.nature,
+                    "colonnes": [nom for nom, _ in COLONNES[self.nature]],
+                    "lignes": [list(ligne) for ligne in self.lignes],
+                    "localisation": self.localisation.vers_dict() if self.localisation else None,
+                    "partie": self.partie,
+                }
+            )
         return _sans_none(
             {
                 "module": self.module,
@@ -809,6 +911,17 @@ class Visualisation:
 
     @classmethod
     def depuis_dict(cls, document: Mapping[str, Any]) -> "Visualisation":
+        nature = NatureVisualisation(document["nature"])
+        if nature in COLONNES:
+            if document["colonnes"] != [nom for nom, _ in COLONNES[nature]]:
+                raise ValueError("visualisation.colonnes : autres que celles de sa nature")
+            return cls.tableau(
+                document["module"],
+                nature,
+                document["lignes"],
+                localisation=_localisation(document),
+                partie=document["partie"],
+            )
         if document["identifiante"] != CategorieIdentifiante.CONTENU:
             raise ValueError("visualisation.identifiante : « contenu » attendu")
         try:

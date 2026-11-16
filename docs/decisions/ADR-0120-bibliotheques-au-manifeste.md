@@ -58,3 +58,4 @@ Option A.
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-11-12 | Validé par TheDarkMac au début de T21, la PR de T20 ayant été mergée sans changement de statut (ERR-0008) : statut « Accepté » |
 | 2026-11-13 | Renvoi : expat déclaré aussi par `ooxml` et `odf` ; il figure aux Versions dès que l'un des trois modules est actif (ADR-0136) (T21, complément bureautique) |
+| 2026-11-16 | Renvoi : T50 n'emploie aucune bibliothèque, `pypdf` comprise : la structure PDF est lue par le projet ([ADR-0124](ADR-0124-lecteur-pdf-du-projet.md), [ADR-0211](ADR-0211-constats-et-versions-de-t50.md)) |
