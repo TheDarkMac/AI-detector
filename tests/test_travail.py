@@ -522,6 +522,7 @@ def test_import_des_modules_livres() -> None:
     assert sorted(analyseurs) == [
         "c2pa",
         "doublejpeg",
+        "dwtdct",
         "ela",
         "exif",
         "id3",

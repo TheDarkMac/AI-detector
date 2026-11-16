@@ -347,9 +347,9 @@ def test_vrai_processus_bibliotheques_des_seuls_modules_actifs(tmp_path: Path) -
     contenu = (Path(__file__).parent / "donnees" / "metadonnees" / "photo.jpg").read_bytes()
     ouvert = ouvrir(tmp_path / "photo.jpg", contenu)
     try:
-        # expat sert à xmp, ooxml et odf, c2pa-python à c2pa, numpy à doublejpeg et ela :
-        # désactivés, ils ne sont plus cités (ADR-0120).
-        desactives = {"xmp", "ooxml", "odf", "c2pa", "doublejpeg", "ela"}
+        # expat sert à xmp, ooxml et odf, c2pa-python à c2pa, numpy à doublejpeg, dwtdct et
+        # ela : désactivés, ils ne sont plus cités (ADR-0120).
+        desactives = {"xmp", "ooxml", "odf", "c2pa", "doublejpeg", "dwtdct", "ela"}
         resultat = executer(ouvert, manifestes.decouvrir(), desactives=desactives)
     finally:
         os.close(ouvert)

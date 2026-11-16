@@ -1,0 +1,9 @@
+# Bits concordants que lit le décodeur d'invisible-watermark 0.2.0 (generer.py).
+
+"aucun.png" = 65
+"sd1.png" = 114
+"sdxl.png" = 39
+"sdxl_rvb.png" = 42
+"flux.jpg" = 39
+"sdxl_420.jpg" = 37
+"sd1_progressif.jpg" = 114

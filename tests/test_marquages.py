@@ -64,16 +64,19 @@ def ecrire(dossier: Path, contenu: str, entete: str = FORMAT_3) -> Path:
 def test_catalogue_livre() -> None:
     livre = charger(decouvrir())
     recherches = {m.identifiant: m.module for m in livre.marquages if m.module is not None}
-    assert recherches == {"M-C2PA": "c2pa", "M-IPTC-DST": "xmp"}
+    assert recherches == {"M-C2PA": "c2pa", "M-DWTDCT": "dwtdct", "M-IPTC-DST": "xmp"}
     assert [m.identifiant for m in livre.marquages] == sorted(MARQUAGES_LIVRES)
-    assert MARQUAGES_LIVRES["M-DWTDCT"].raison is RaisonNonRecherche.LECTEUR_A_VENIR
+    assert MARQUAGES_LIVRES["M-C2PA-TEXTE"].raison is RaisonNonRecherche.LECTEUR_A_VENIR
     assert MARQUAGES_LIVRES["M-SYNTHID"].raison is RaisonNonRecherche.LECTEUR_PROPRIETAIRE
     # Le marquage C2PA est recherché partout où le module c2pa lit un manifeste.
     par_module = {manifeste.identifiant: manifeste for manifeste in decouvrir()}
     assert MARQUAGES_LIVRES["M-C2PA"].formats == par_module["c2pa"].formats
     assert MARQUAGES_LIVRES["M-IPTC-DST"].formats == par_module["xmp"].formats
+    assert MARQUAGES_LIVRES["M-DWTDCT"].formats == par_module["dwtdct"].formats
     for entree in livre.marquages:
-        assert entree.verifie == date(2026, 11, 14)
+        # Inventaire de T31 ; entrée du dwtDct revue par T32 (ERR-0011).
+        attendue = date(2026, 11, 16) if entree.identifiant == "M-DWTDCT" else date(2026, 11, 14)
+        assert entree.verifie == attendue
         assert all(reference.startswith("https://") for reference in entree.references)
 
 
@@ -270,7 +273,7 @@ def test_rapport_avec_marquages_valide_et_relu() -> None:
     rapport = construire_rapport()
     document = rapport.vers_dict()
     assert document["couverture"]["marquages_non_recherches"] == [
-        {"identifiant": "M-DWTDCT", "raison": "lecteur_a_venir"},
+        {"identifiant": "M-C2PA-TEXTE", "raison": "lecteur_a_venir"},
         {"identifiant": "M-SYNTHID", "raison": "lecteur_proprietaire"},
     ]
     schemas.valider("rapport", document)
@@ -374,10 +377,16 @@ def test_analyse_d_un_jpeg(tmp_path: Path) -> None:
     analyse = analyser(chemin)
     couverture = analyse.couverture
     assert couverture.marquages_recherches == ("M-C2PA", "M-IPTC-DST")
+    # Les données entropiques de cet échantillon ne se décodent pas : le module dwtdct est non
+    # mené, et son marquage non recherché pour cette raison.
     attendus = {
         m.identifiant for m in MARQUAGES_LIVRES.values() if m.module is None and "jpeg" in m.formats
-    }
+    } | {"M-DWTDCT"}
     assert {m.identifiant for m in couverture.marquages_non_recherches} == attendus
+    assert (
+        MarquageNonRecherche("M-DWTDCT", RaisonNonRecherche.TECHNIQUE_NON_MENEE)
+        in couverture.marquages_non_recherches
+    )
     assert {m.identifiant for m in analyse.marquages} == attendus | {"M-C2PA", "M-IPTC-DST"}
     # Le module c2pa désactivé : son marquage n'est plus recherché, et le rapport le dit.
     desactive = analyser(chemin, desactiver=("c2pa",))

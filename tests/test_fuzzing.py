@@ -21,6 +21,7 @@ lance une recherche longue (``CONTRIBUTING.md``).
 
 import importlib
 import json
+import struct
 import tempfile
 import zlib
 from pathlib import Path
@@ -46,6 +47,7 @@ from echantillons import (
     PDF,
     TRAME_MP3,
     archive,
+    bloc_png,
     boite,
     docx,
     ebml,
@@ -352,6 +354,27 @@ def _jpeg_entrelace() -> bytes:
 _JPEG_ENTRELACE = _jpeg_entrelace()
 
 
+def _png_pixels() -> bytes:
+    """PNG de 256 x 256 pixels en RVB, le minimum du module dwtdct : lignes nulles, chacune
+    sous l'un des cinq filtres, pour que le lecteur de pixels (T32) les défasse tous."""
+    brut = b"".join(bytes([ligne % 5]) + bytes(256 * 3) for ligne in range(256))
+    entete = struct.pack(">IIBBBBB", 256, 256, 8, 2, 0, 0, 0)
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + bloc_png(b"IHDR", entete)
+        + bloc_png(b"IDAT", zlib.compress(brut))
+        + bloc_png(b"IEND", b"")
+    )
+
+
+def _jpeg_couleurs() -> bytes:
+    """JPEG de 256 x 256 pixels en 4:2:0, blocs nuls : décodé en couleurs par le module dwtdct."""
+    composantes = [Composante(1, 2, 2), Composante(2, table=1), Composante(3, table=1)]
+    return encoder_jpeg(
+        256, 256, composantes, blocs_nuls(composantes, 256, 256), {0: (2,) * 64, 1: (3,) * 64}
+    )
+
+
 ECHANTILLONS_METADONNEES = (
     ("jpeg", jpeg_meta(app1_exif(_TIFF), app1_xmp(_XMP), app1_etendu(b"G" * 32, 4, 0, b"abcd"))),
     ("jpeg", jpeg_meta(app13(ressource(0x0404, jeu(1, 90, b"\x1b%G") + jeu(2, 25, b"mot"))))),
@@ -372,6 +395,9 @@ ECHANTILLONS_METADONNEES = (
     # Coefficients DCT (T41) : JPEG décodables, séquentiel entrelacé à intervalles de
     # redémarrage, et progressif écrit par jpegtran.
     ("jpeg", _JPEG_ENTRELACE),
+    # Pixels en couleurs (T32) : PNG à tous les filtres, JPEG décodé en trois composantes.
+    ("png", _png_pixels()),
+    ("jpeg", _jpeg_couleurs()),
     ("jpeg", (_ECHANTILLONS_T41 / "double_60_90_gris_progressif.jpg").read_bytes()[:3000]),
     (
         "heic",
@@ -508,10 +534,10 @@ ECHANTILLONS_METADONNEES = (
 )
 """Échantillons par format : toutes les familles, toutes les formes de conteneur lues."""
 _MODULES: dict[str, tuple[str, ...]] = {
-    "jpeg": ("exif", "xmp", "iptc", "image", "doublejpeg", "ela"),
-    "png": ("exif", "xmp", "textepng", "image"),
-    "webp": ("exif", "xmp", "image"),
-    "heic": ("exif", "xmp"),
+    "jpeg": ("exif", "xmp", "iptc", "image", "doublejpeg", "ela", "dwtdct"),
+    "png": ("exif", "xmp", "textepng", "image", "dwtdct"),
+    "webp": ("exif", "xmp", "image", "dwtdct"),
+    "heic": ("exif", "xmp", "dwtdct"),
     "pdf": ("infopdf", "xmp"),
     "mp3": ("id3",),
     "aac": ("id3",),
