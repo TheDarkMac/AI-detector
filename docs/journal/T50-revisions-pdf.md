@@ -33,6 +33,8 @@ Reconstituer les versions successives d'un PDF enregistré par mises à jour inc
 12. Suite complète sous coverage, en 14 minutes : 2 484 tests verts, 4 ignorés, couverture de 100 % ; deux échecs, des attentes de `tests/test_orchestration.py` qui ne connaissaient pas encore `revisionspdf` sur un PDF : corrigées, le fichier relancé (80 tests verts).
 13. Documentation : ADR-0207 à ADR-0212, renvois dans ADR-0120, ADR-0126 et ADR-0200 ; fiche [`revisions-pdf`](../techniques/revisions-pdf.md) ; modèle de données (v1.12), architecture (v1.25), découpage (v0.33), guide du catalogue (v1.12), glossaire (v1.12), matrice (F-60 réalisée, F-84 complétée), ce journal.
 
+14. PR [#34](https://github.com/TheDarkMac/AI-detector/pull/34) ouverte (commits `7a0065b`, `79471d8`, `e71ac0a`). ADR-0207 et ADR-0208 restent au statut « Proposé » jusqu'à la revue : le job docs échoue d'ici là, comme prévu (ADR-0129).
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |
