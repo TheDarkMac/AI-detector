@@ -193,6 +193,7 @@ def test_modules_de_metadonnees_livres() -> None:
         "matroska",
         "odf",
         "ooxml",
+        "pagespdf",
         "quicktime",
         "revisionspdf",
         "textepng",
@@ -220,8 +221,9 @@ def test_modules_de_metadonnees_livres() -> None:
     for identifiant, manifeste in livres.items():
         if identifiant == "c2pa":
             continue  # règles « module » et cinq directions : tests/test_c2pa.py
-        if identifiant in {"doublejpeg", "dwtdct", "ela", "revisionspdf"}:
-            # tests/test_double_compression.py, test_dwtdct.py, test_ela.py, test_revisions_pdf.py
+        if identifiant in {"doublejpeg", "dwtdct", "ela", "pagespdf", "revisionspdf"}:
+            # tests/test_double_compression.py, test_dwtdct.py, test_ela.py, test_pages_pdf.py,
+            # test_revisions_pdf.py
             continue
         assert manifeste.regles == ()
         if identifiant == "image":

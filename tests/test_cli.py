@@ -55,7 +55,8 @@ def test_liste_des_modules(capsys: pytest.CaptureFixture[str]) -> None:
         "c2pa 0.1.0\ndoublejpeg 0.1.0\ndwtdct 0.1.0\nela 0.1.0\nexif 0.4.0\nid3 0.3.0\n"
         "image 0.3.0\n"
         "infopdf 0.3.0\ninfowav 0.3.0\niptc 0.4.0\nmatroska 0.3.0\nodf 0.3.0\nooxml 0.3.0\n"
-        "quicktime 0.3.0\nrevisionspdf 0.1.0\ntextepng 0.4.0\nvorbis 0.3.0\nxmp 0.7.0\n"
+        "pagespdf 0.1.0\nquicktime 0.3.0\nrevisionspdf 0.2.0\ntextepng 0.4.0\nvorbis 0.3.0\n"
+        "xmp 0.7.0\n"
     )
 
 
@@ -182,7 +183,7 @@ def test_desactiver_un_module_inconnu(capsys: pytest.CaptureFixture[str]) -> Non
     erreur = capsys.readouterr().err
     livres = (
         "c2pa, doublejpeg, dwtdct, ela, exif, id3, image, infopdf, infowav, iptc, matroska, odf, "
-        "ooxml, quicktime, revisionspdf, textepng, vorbis, xmp"
+        "ooxml, pagespdf, quicktime, revisionspdf, textepng, vorbis, xmp"
     )
     assert f"module inconnu : omega ; modules livrés : {livres}" in erreur
 
