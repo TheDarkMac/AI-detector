@@ -1,8 +1,8 @@
 # ADR-0196 — Versions du complément de T40 : module `image` 0.3.0, catalogue 0.9.0, règles R-IMAGE-008 à R-IMAGE-022
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-16
-- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant le complément de T40, à valider pendant la revue de sa PR
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant le complément de T40, validée pendant la revue de sa PR
 - **Tâche** : complément de T40
 - **Exigences liées** : NF-06, NF-07, F-26 ; ADR-0064, ADR-0085, ADR-0146, ADR-0184, ADR-0201
 
@@ -47,3 +47,4 @@ Option A dans les trois cas. Schéma du rapport inchangé (0.7.0, ADR-0201). Les
 | Date | Modification |
 | --- | --- |
 | 2026-11-16 | Création, statut « Proposé » |
+| 2026-11-16 | Validé par TheDarkMac pendant la revue de la PR du complément de T40 (« Oui, valide ADR-0196 ») : statut « Accepté » |

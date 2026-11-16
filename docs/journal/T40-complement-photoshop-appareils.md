@@ -3,7 +3,7 @@
 - **Branche** : `tache/T40-complement-photoshop-appareils`
 - **Dates** : 2026-11-15 → 2026-11-16
 - **Exigences couvertes** : F-30 (réalisée) ; F-26 (tables fixes au catalogue, sans nouvelle version de l'outil)
-- **Décisions** : ADR-0191 à ADR-0195 acceptés ; ADR-0196 proposé, à valider dans la PR
+- **Décisions** : ADR-0191 à ADR-0196, tous acceptés (ADR-0196 validé pendant la revue de la PR)
 - **Errata** : aucun
 
 ## Objectif
@@ -33,6 +33,7 @@ Relever les tables de quantification de Photoshop (niveaux 0 à 12) et de quelqu
 7. Scripts du relevé mis au niveau de ruff et de mypy strict pour être au dépôt (`noqa: S310` motivé : adresses https fixes).
 8. Tests : `tests/test_tables_relevees.py` (empreinte recalculée pour chaque jeu, règle déclenchée avec et sans EXIF, une règle par empreinte, nature des règles, concordance et licences des sources, appareils d'une seule marque) ; attentes mises à jour (directions du module `image`, nombre de règles du catalogue).
 9. Documentation : ADR-0193 à ADR-0196, fiche [`structure-image`](../techniques/structure-image.md) (0.3.0), [`README` du relevé](../../banc/releves/tables-T40c/README.md), guide du catalogue (v1.10), découpage (v0.31), matrice (F-30 réalisée), ce journal.
+10. PR [#32](https://github.com/TheDarkMac/AI-detector/pull/32) ouverte (commits `871481a`, `c06bc2e`, `20ece1f`, qui remplacent le commit local de travail en cours). ADR-0196 validé par TheDarkMac pendant la revue (« Oui, valide ADR-0196 ») : statut « Accepté ».
 
 ## Problèmes rencontrés
 
@@ -57,7 +58,6 @@ Relever les tables de quantification de Photoshop (niveaux 0 à 12) et de quelqu
 
 ## Reste à faire
 
-- Valider ADR-0196 dans la PR.
 - Mesurer les règles de tables sur le corpus (T100).
 - Relevés plus larges (autres appareils, autres logiciels, niveaux 0, 1, 2 et 4 de Photoshop) avec les mêmes scripts.
 - Comparer les tables à l'appareil déclaré dans l'EXIF : point ouvert de l'architecture (§12).

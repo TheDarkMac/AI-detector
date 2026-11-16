@@ -210,7 +210,7 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0193](ADR-0193-releve-des-tables.md) | Relevé des tables : originaux de Wikimedia Commons, au moins 3 fichiers de 2 comptes, données au dépôt | Accepté | 2026-11-16 |
 | [ADR-0194](ADR-0194-tables-d-appareils.md) | Tables d'appareils : une seule marque, jamais sur Photoshop, appareils adaptatifs exclus, une règle par marque | Accepté | 2026-11-16 |
 | [ADR-0195](ADR-0195-tables-de-photoshop.md) | Tables de Photoshop : tous les jeux d'un niveau, une règle par niveau | Accepté | 2026-11-16 |
-| [ADR-0196](ADR-0196-versions-du-complement-de-t40.md) | Versions du complément de T40 : module `image` 0.3.0, catalogue 0.9.0, règles R-IMAGE-008 à R-IMAGE-022 | Proposé | 2026-11-16 |
+| [ADR-0196](ADR-0196-versions-du-complement-de-t40.md) | Versions du complément de T40 : module `image` 0.3.0, catalogue 0.9.0, règles R-IMAGE-008 à R-IMAGE-022 | Accepté | 2026-11-16 |
 | [ADR-0197](ADR-0197-t42-en-v1.md) | T42 (ELA) avancée en V1, après le complément de T40 | Accepté | 2026-11-15 |
 | [ADR-0198](ADR-0198-carte-sans-constat.md) | ELA : une carte et son avertissement, sans règle ni constat | Accepté | 2026-11-15 |
 | [ADR-0199](ADR-0199-methode-et-etendue-de-l-ela.md) | ELA : une valeur par bloc, qualité 95 en entiers, gain fixe, 65 536 blocs puis le haut de l'image | Accepté | 2026-11-15 |
