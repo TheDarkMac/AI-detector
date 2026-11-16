@@ -21,7 +21,7 @@
       "required": ["type", "version_schema", "isolation"],
       "properties": {
         "type": { "const": "isolation" },
-        "version_schema": { "const": "0.7.0" },
+        "version_schema": { "const": "0.8.0" },
         "isolation": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/isolation" }
       }
     },
@@ -72,8 +72,13 @@
       "properties": {
         "type": { "const": "visualisation" },
         "visualisation": {
-          "$ref": "urn:voight-kampff:schema:rapport#/$defs/visualisation",
-          "required": ["donnees", "empreinte"]
+          "oneOf": [
+            {
+              "$ref": "urn:voight-kampff:schema:rapport#/$defs/visualisation_image",
+              "required": ["donnees", "empreinte"]
+            },
+            { "$ref": "urn:voight-kampff:schema:rapport#/$defs/visualisation_tableau" }
+          ]
         }
       }
     },

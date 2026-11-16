@@ -1,0 +1,12 @@
+# Module revisionspdf : versions successives d'un PDF et leur chronologie (ADR-0207 à ADR-0212). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "revisionspdf"
+version = "0.1.0"
+formats = ["pdf"]
+exigences = ["F-60", "F-84"]
+regles = []
+fiche = "revisions-pdf"
+# Directions des règles du catalogue sur ses observations (ADR-0211) ; le module lui-même n'émet aucun constat.
+directions = ["retouche", "rien_de_particulier"]
+requiert = []
+bibliotheques = []

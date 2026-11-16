@@ -33,6 +33,7 @@ from voight_kampff.rapport._presentation import (
     textes,
 )
 from voight_kampff.rapport.modele import (
+    COLONNES,
     Categorie,
     CategorieIdentifiante,
     Constat,
@@ -229,13 +230,56 @@ def _isolation(vue: Presentation) -> str:
     return _definitions(couples)
 
 
+def _cellule(nature: str, colonne: str, valeur: int | str) -> str:
+    """Texte d'une cellule de tableau : nombre groupé, natures nommées, texte tel quel."""
+    if isinstance(valeur, int):
+        return nombre(valeur)
+    if colonne == "nature":
+        libelles = textes()["visualisations"][nature]["natures"]
+        return ", ".join(libelles.get(code, code) for code in valeur.split("+"))
+    return valeur or "—"
+
+
+def _chronologie(vue: Presentation, visualisation: Visualisation) -> str:
+    """Tableau d'une visualisation : une ligne par élément, en-têtes de ``textes.toml``."""
+    nature = visualisation.nature
+    colonnes = [nom for nom, _ in COLONNES[nature]]
+    siennes = {
+        o.nom: o.valeur
+        for o in vue.analyse.observations
+        if (o.module, o.partie) == (visualisation.module, visualisation.partie)
+    }
+    total = siennes.get("revisionspdf.versions")
+    couverture = ""
+    if isinstance(total, int) and total > visualisation.hauteur:
+        couverture = texte(
+            f"visualisations.{nature}.couverture_partielle",
+            lignes=nombre(visualisation.hauteur),
+            versions=nombre(total),
+        )
+        couverture = f"<p>{_t(couverture)}</p>"
+    return couverture + _tableau(
+        texte(f"visualisations.{nature}.legende"),
+        [texte(f"visualisations.{nature}.colonnes.{nom}") for nom in colonnes],
+        (
+            [_cellule(nature, nom, valeur) for nom, valeur in zip(colonnes, ligne, strict=True)]
+            for ligne in visualisation.lignes
+        ),
+    )
+
+
 def _visualisation(vue: Presentation, visualisation: Visualisation) -> str:
     """Titre, avertissement d'interprétation au-dessus de l'image (F-32), couverture, image ou
-    mention du masquage, empreinte."""
+    mention du masquage, empreinte ; pour un tableau, le tableau sous son avertissement."""
     cle = f"visualisations.{visualisation.nature}"
     avertissement = "".join(
         f"<p>{_t(p)}</p>" for p in textes()["visualisations"][visualisation.nature]["avertissement"]
     )
+    if visualisation.est_un_tableau:
+        return (
+            f"<article><h3>{_t(texte(f'{cle}.titre'))}</h3>{avertissement}"
+            f"{_chronologie(vue, visualisation)}</article>"
+        )
     siennes = {
         o.nom: o.valeur
         for o in vue.analyse.observations
@@ -254,7 +298,7 @@ def _visualisation(vue: Presentation, visualisation: Visualisation) -> str:
             )
         )
         couverture = f"<p>{couverture}</p>"
-    if vue.masquee(visualisation.identifiante):
+    if vue.masquee(CategorieIdentifiante.CONTENU):
         image = f"<p>{_t(texte('visualisations.masquee'))}</p>"
         empreinte = ""
     else:

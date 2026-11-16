@@ -164,9 +164,9 @@ def etat_partie(partie: Partie) -> str:
 
 
 _NIVEAUX_DECROISSANTS = (Niveau.FORT, Niveau.MODERE, Niveau.FAIBLE)
-_SANS_METADONNEES = frozenset({"doublejpeg", "dwtdct", "ela"})
-"""Modules qui ne lisent aucune métadonnée : leur analyse non menée ne laisse aucune marque
-non lue (ADR-0158, ADR-0190, ADR-0201, ADR-0206)."""
+_SANS_METADONNEES = frozenset({"doublejpeg", "dwtdct", "ela", "revisionspdf"})
+"""Modules qui ne lisent aucune métadonnée identifiante : leur analyse non menée ne laisse
+aucune marque non lue (ADR-0158, ADR-0190, ADR-0201, ADR-0206, ADR-0211)."""
 
 
 class Presentation:

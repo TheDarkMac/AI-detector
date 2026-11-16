@@ -11,6 +11,11 @@ Seul le filtre ``FlateDecode`` est décodé, prédicteurs PNG et TIFF compris, p
 ``Contexte.decompresser`` (ADR-0078). Un document chiffré est reconnu, jamais déchiffré
 (ADR-0126). Rien n'est exécuté ni suivi hors du fichier : un flux dont les données sont dans
 un autre fichier (``/F``) n'est pas lu.
+
+Chaque section de la chaîne est aussi décrite par une :class:`Section` (position, trailer, fin
+de sa marque ``%%EOF``) ; :meth:`Document.vue` lit le document tel qu'il était à une section,
+sans les mises à jour qui la suivent, et :meth:`Document.entrees` donne les entrées qu'une
+section déclare (T50, ADR-0207).
 """
 
 import codecs
@@ -22,7 +27,18 @@ from voight_kampff._protocole import TAILLE_MAX_LECTURE
 from voight_kampff._travail.contexte import Contexte
 from voight_kampff.rapport.modele import Localisation, Plage, RaisonNonMenee
 
-__all__ = ["Document", "Flux", "Illisible", "Nom", "Objet", "Ref", "entier", "texte"]
+__all__ = [
+    "Document",
+    "Entree",
+    "Flux",
+    "Illisible",
+    "Nom",
+    "Objet",
+    "Ref",
+    "Section",
+    "entier",
+    "texte",
+]
 
 
 class Nom(str):
@@ -444,8 +460,28 @@ class _FluxXref:
     donnees: bytes
 
 
-type _Entree = tuple[int, int, int]
-"""Type d'entrée (0 libre, 1 dans le fichier, 2 dans un flux d'objets) et ses deux champs."""
+type Entree = tuple[int, int, int]
+"""Type d'entrée (0 libre, 1 dans le fichier, 2 dans un flux d'objets) et ses deux champs :
+position et génération (type 1), numéro du flux d'objets et rang (type 2)."""
+
+
+@dataclass(frozen=True, slots=True)
+class Section:
+    """Section de la chaîne des références croisées, de la plus récente à la plus ancienne."""
+
+    position: int
+    """Position du mot ``xref`` ou de l'objet flux de références croisées."""
+    flux: bool
+    """Vrai pour un flux de références croisées (§7.5.8), faux pour une table classique."""
+    trailer: dict[str, "Objet"]
+    """Son dictionnaire de fin : le trailer, ou le dictionnaire du flux."""
+    fin: int
+    """Fin de la version qu'elle termine : après le ``%%EOF`` qui suit son ``startxref`` et sa
+    fin de ligne ; à défaut de cette marque, après son trailer ou son objet flux."""
+    marquee: bool
+    """Vrai si ``startxref`` et ``%%EOF`` suivent la section."""
+    hybride: bool
+    """Vrai si une section en flux la complète (``/XRefStm``, §7.5.8.4)."""
 
 
 class Document:
@@ -457,7 +493,9 @@ class Document:
         "_en_cours",
         "_etendues",
         "_flux_objets",
+        "_groupes",
         "_sections",
+        "chaine",
         "sections",
         "trailer",
     )
@@ -470,10 +508,13 @@ class Document:
         self._en_cours: set[int] = set()
         self._etendues: dict[Ref, Plage] = {}
         self._flux_objets: dict[int, tuple[tuple[tuple[int, int], ...], int, bytes]] = {}
+        self._groupes: list[tuple[_Table | _FluxXref, ...]] = []
         self.trailer: dict[str, Objet] = {}
         """Dictionnaire de fin de la section la plus récente, complété par les antérieures."""
         self.sections = 0
         """Nombre de sections lues : une, plus une par mise à jour incrémentale."""
+        self.chaine: tuple[Section, ...] = ()
+        """Sections de la chaîne, de la plus récente à la plus ancienne (``/Prev``)."""
         self._ouvrir()
 
     # Lecture de la table
@@ -481,23 +522,63 @@ class Document:
     def _ouvrir(self) -> None:
         position: int | None = self._startxref()
         vues: set[int] = set()
+        chaine: list[Section] = []
         while position is not None:
             if position in vues:
                 raise _partiel(position, "sections de références croisées en boucle")
             vues.add(position)
             self._contexte.compter_objets()
-            section, trailer = self._section(position)
-            self._sections.append(section)
+            section, trailer, apres = self._section(position)
+            groupe: list[_Table | _FluxXref] = [section]
             self.sections += 1
             for cle in _CLES_DU_TRAILER:
                 if cle in trailer and cle not in self.trailer:
                     self.trailer[cle] = trailer[cle]
             hybride = entier(trailer.get("XRefStm"))
-            if isinstance(section, _Table) and hybride is not None and hybride not in vues:
+            complete = isinstance(section, _Table) and hybride is not None and hybride not in vues
+            if complete and hybride is not None:
                 vues.add(hybride)
-                complement, _ = self._section(hybride, flux_seulement=True)
-                self._sections.append(complement)
+                complement, _, _ = self._section(hybride, flux_seulement=True)
+                groupe.append(complement)
+            fin = self._marque_de_fin(apres)
+            chaine.append(
+                Section(
+                    position=position,
+                    flux=isinstance(section, _FluxXref),
+                    trailer=trailer,
+                    fin=apres if fin is None else fin,
+                    marquee=fin is not None,
+                    hybride=complete,
+                )
+            )
+            self._groupes.append(tuple(groupe))
+            self._sections.extend(groupe)
             position = entier(trailer.get("Prev"))
+        self.chaine = tuple(chaine)
+
+    def _marque_de_fin(self, apres: int) -> int | None:
+        """Fin de ``startxref``, de son nombre et de ``%%EOF`` après une section ; ``None`` si
+        ces mots ne la suivent pas (blancs, commentaires et ``endobj`` permis avant)."""
+        donnees = self._contexte.lire(apres, 1024)
+        analyseur = _Analyseur(self._contexte, donnees, apres, complet=True)
+        try:
+            mot = analyseur.jeton()
+            if _est(mot, b"endobj"):
+                mot = analyseur.jeton()
+            if not _est(mot, b"startxref") or entier(analyseur.jeton()) is None:
+                return None
+        except (_Fin, Illisible):
+            return None
+        i = analyseur.position
+        while i < len(donnees) and donnees[i] in _BLANCS:
+            i += 1
+        if donnees[i : i + 5] != b"%%EOF":
+            return None
+        i += 5
+        i += (
+            2 if donnees[i : i + 2] == b"\r\n" else 1 if donnees[i : i + 1] in (b"\r", b"\n") else 0
+        )
+        return apres + i
 
     def _startxref(self) -> int:
         taille = self._contexte.taille
@@ -534,17 +615,18 @@ class Document:
 
     def _section(
         self, position: int, *, flux_seulement: bool = False
-    ) -> tuple[_Table | _FluxXref, dict[str, Objet]]:
+    ) -> tuple[_Table | _FluxXref, dict[str, Objet], int]:
+        """Section, son dictionnaire de fin et la position qui suit son trailer ou son objet."""
         tete = self._contexte.lire(position, 64)
         decalage = len(tete) - len(tete.lstrip(bytes(_BLANCS)))
         if tete[decalage:].startswith(b"xref") and not flux_seulement:
             return self._table(position + decalage + 4)
-        _, objet, _ = self._fenetre(position, lambda a: a.indirect(None))
+        _, objet, fin = self._fenetre(position, lambda a: a.indirect(None))
         if not isinstance(objet, Flux) or objet.dico.get("Type") != "XRef":
             raise _partiel(position, "section de références croisées")
-        return self._flux_xref(objet), objet.dico
+        return self._flux_xref(objet), objet.dico, fin
 
-    def _table(self, position: int) -> tuple[_Table, dict[str, Objet]]:
+    def _table(self, position: int) -> tuple[_Table, dict[str, Objet], int]:
         sous_sections: list[tuple[int, int, int, int]] = []
         while True:
             self._contexte.compter_objets()
@@ -552,7 +634,7 @@ class Document:
             if _est(premier, b"trailer"):
                 if not isinstance(second, dict):
                     raise _partiel(position, "trailer")
-                return _Table(tuple(sous_sections)), second
+                return _Table(tuple(sous_sections)), second, suite
             debut, nombre = entier(premier), entier(second)
             if debut is None or nombre is None or debut < 0 or nombre < 0:
                 raise _partiel(position, "table de références croisées")
@@ -594,7 +676,7 @@ class Document:
             raise _partiel(flux.debut, "flux de références croisées")
         return _FluxXref(tuple(sous_sections), (w1, w2, w3), donnees)
 
-    def _entree(self, numero: int) -> _Entree | None:
+    def _entree(self, numero: int) -> Entree | None:
         """Entrée de la section la plus récente qui connaît l'objet ; ``None`` si aucune."""
         for section in self._sections:
             if isinstance(section, _Table):
@@ -610,6 +692,77 @@ class Document:
                 if premier <= numero < premier + nombre:
                     return _entree_flux(section, rang + numero - premier)
         return None
+
+    def entree(self, numero: int) -> Entree | None:
+        """Entrée de l'objet dans la section la plus récente qui le connaît ; ``None`` sinon."""
+        return self._entree(numero)
+
+    def entrees(self, rang: int) -> dict[int, Entree]:
+        """Entrées que déclare la section ``rang`` de la chaîne, sa section en flux comprise.
+
+        Une entrée compte comme un objet parcouru (ES-03) ; pour un numéro déclaré deux fois,
+        la première l'emporte, comme à la lecture (§7.5.8.4).
+        """
+        trouvees: dict[int, Entree] = {}
+        for section in self._groupes[rang]:
+            if isinstance(section, _Table):
+                for premier, nombre, position, largeur in section.sous_sections:
+                    self._contexte.compter_objets(nombre)
+                    par_lecture = TAILLE_MAX_LECTURE // largeur
+                    for debut in range(0, nombre, par_lecture):
+                        compte = min(par_lecture, nombre - debut)
+                        endroit = position + debut * largeur
+                        donnees = self._contexte.lire(endroit, compte * largeur)
+                        for i in range(compte):
+                            ligne = donnees[i * largeur : i * largeur + 18]
+                            entree = _entree_classique(ligne)
+                            if entree is None:
+                                raise _partiel(
+                                    endroit + i * largeur, "table de références croisées"
+                                )
+                            trouvees.setdefault(premier + debut + i, entree)
+                continue
+            for premier, nombre, rang_ in section.sous_sections:
+                self._contexte.compter_objets(nombre)
+                for i in range(nombre):
+                    trouvees.setdefault(premier + i, _entree_flux(section, rang_ + i))
+        return trouvees
+
+    def vue(self, rang: int) -> "Document":
+        """Le document tel que l'enregistrait la section ``rang`` de la chaîne : cette section et
+        les antérieures, sans les mises à jour qui la suivent ; objets relus à la demande."""
+        vue = object.__new__(Document)
+        vue._contexte = self._contexte
+        vue._groupes = self._groupes[rang:]
+        vue._sections = [section for groupe in vue._groupes for section in groupe]
+        vue._cache = {}
+        vue._en_cours = set()
+        vue._etendues = {}
+        vue._flux_objets = {}
+        vue.chaine = self.chaine[rang:]
+        vue.sections = len(vue.chaine)
+        vue.trailer = {}
+        for section in vue.chaine:
+            for cle in _CLES_DU_TRAILER:
+                if cle in section.trailer and cle not in vue.trailer:
+                    vue.trailer[cle] = section.trailer[cle]
+        return vue
+
+    def premier_objet(self) -> Objet:
+        """Premier objet indirect du fichier, après l'en-tête ; ``None`` s'il ne se lit pas.
+
+        Sert à reconnaître le dictionnaire de linéarisation (annexe F.2), qui doit être le
+        premier objet du fichier.
+        """
+
+        def lire(analyseur: _Analyseur) -> Objet:
+            analyseur.blancs()
+            return analyseur.indirect(None)[1]
+
+        try:
+            return self._fenetre(0, lire)
+        except Illisible:
+            return None
 
     # Objets
 
@@ -641,7 +794,7 @@ class Document:
         self._cache[ref] = valeur
         return valeur
 
-    def _lire(self, ref: Ref, entree: _Entree) -> Objet:
+    def _lire(self, ref: Ref, entree: Entree) -> Objet:
         nature, premier, second = entree
         if nature == 1 and second == ref.generation:
             if premier >= self._contexte.taille:
@@ -733,7 +886,7 @@ def _tete_de_sous_section(analyseur: _Analyseur) -> tuple[Objet | _Mot, Objet | 
     return premier, nombre, analyseur.absolue
 
 
-def _entree_classique(entree: bytes) -> _Entree | None:
+def _entree_classique(entree: bytes) -> Entree | None:
     """Entrée ``nnnnnnnnnn ggggg n`` d'une table classique ; ``None`` si elle n'en est pas une."""
     position, generation, marque = entree[:10], entree[11:16], entree[17:18]
     if not (
@@ -743,7 +896,7 @@ def _entree_classique(entree: bytes) -> _Entree | None:
     return (1 if marque == b"n" else 0, int(position), int(generation))
 
 
-def _entree_flux(section: _FluxXref, rang: int) -> _Entree:
+def _entree_flux(section: _FluxXref, rang: int) -> Entree:
     largeur = sum(section.largeurs)
     ligne = section.donnees[rang * largeur : (rang + 1) * largeur]
     champs, position = [], 0

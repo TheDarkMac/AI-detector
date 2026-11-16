@@ -1,0 +1,92 @@
+# Règles du module revisionspdf (T50) : versions successives d'un PDF (F-60, ADR-0207 à
+# ADR-0212). Mises à jour incrémentales : ISO 32000-2, §7.5.6 ; linéarisation : annexe F ;
+# signatures et droits DocMDP : §12.8 ; fiche revisions-pdf.
+
+[[regle]]
+identifiant = "R-REVISIONSPDF-001"
+version = "1"
+module = "revisionspdf"
+titre = "PDF enregistré en plusieurs versions"
+description = "La chaîne des références croisées du PDF compte au moins deux versions : chaque mise à jour incrémentale a été ajoutée à la fin du fichier, et les versions antérieures y restent (ISO 32000-2, §7.5.6). Les deux sections d'un document linéarisé ne font qu'une version (ADR-0207). Information neutre : signer, remplir un formulaire, annoter ou changer les métadonnées ajoute une version."
+gabarit = "revisionspdf.versions"
+phrase = { fr = "Le PDF garde {versions} versions successives : chaque mise à jour a été ajoutée à la fin du fichier, et les versions antérieures restent lisibles (chronologie au rapport)." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Une version antérieure peut garder ce qu'une version ultérieure semble avoir retiré (auteur, texte, image) : le contrôle avant publication ne porte que sur la dernière version.",
+  "Un document réécrit d'un seul tenant (« Enregistrer sous », optimisation, impression en PDF) n'a plus qu'une version : l'absence de versions antérieures ne dit rien de son histoire.",
+  "Seule la chaîne déclarée par /Prev est lue : des données laissées hors de cette chaîne ne sont pas vues comme une version (la fin de la dernière version et les octets qui la suivent figurent aux observations).",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-16 par définition : une seule version n'a aucune version antérieure ; la règle ne mesure rien, elle compte les versions de la chaîne des références croisées."
+
+[[regle.condition]]
+observation = "revisionspdf.versions"
+seuil = { operateur = ">=", valeur = 2 }
+parametre = "versions"
+
+[[regle]]
+identifiant = "R-REVISIONSPDF-002"
+version = "1"
+module = "revisionspdf"
+titre = "Version postérieure qui change des objets non reconnus"
+description = "Au moins une version postérieure à la première ajoute, remplace ou supprime un objet que le module ne range ni parmi les signatures (dictionnaires de signature, champs et apparences de signature, DSS), ni parmi les formulaires (champs, widgets, leurs apparences), ni parmi les annotations, ni parmi les métadonnées (dictionnaire Info, flux XMP) : par exemple un flux de contenu, une page, une police ou une image désignée par une page, ou une clé du catalogue hors AcroForm, DSS, Perms, Metadata, Version et Extensions (ADR-0208)."
+gabarit = "revisionspdf.non-reconnues"
+phrase = { fr = "{non_reconnues} version(s) ajoutée(s) après la première changent des objets que l'outil ne reconnaît pas comme une signature, un remplissage de formulaire, une annotation ou des métadonnées : le document a été modifié après sa première version." }
+categorie = "indice"
+direction = "retouche"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Beaucoup de logiciels enregistrent en mise à jour incrémentale toute modification faite par l'auteur lui-même (Acrobat, certains éditeurs) : le constat dit que le contenu a changé après la première version, pas qui l'a changé ni dans quelle intention.",
+  "Le classement suit le type des objets et ce qui les désigne, pas ce qu'ils affichent : une apparence de formulaire ou d'annotation peut recouvrir le contenu sans être relevée ici (attaques « par ombre », Mainka, Mladenov et Rohlmann, NDSS 2021).",
+  "Un objet ajouté que rien ne désigne depuis le catalogue ou le dictionnaire Info compte comme structure ; un objet qui ne se lit pas (flux d'objets chiffré, structure illisible) n'est pas rangé et ne compte pas ici.",
+  "Pas mesurée sur le corpus de référence (T100) : la part de documents ordinaires qui la déclenchent n'est pas connue.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Classement fixé le 2026-11-16 et vérifié sur les échantillons de tests/donnees/revisions, écrits par Ghostscript, LibreOffice, exiftool et pyHanko 0.38.1 : champs ajoutés, formulaire rempli, signature d'approbation, signature de certification, annotation, métadonnées et linéarisation ne la déclenchent pas ; un flux de contenu ajouté à une page la déclenche."
+
+[[regle.condition]]
+observation = "revisionspdf.versions_non_reconnues"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "non_reconnues"
+
+[[regle]]
+identifiant = "R-REVISIONSPDF-003"
+version = "1"
+module = "revisionspdf"
+titre = "Objets non reconnus changés après une signature"
+description = "Une signature du formulaire couvre exactement une version : sa plage signée (/ByteRange) part du début du fichier, ne laisse de côté qu'une chaîne hexadécimale et finit à la fin de cette version (ADR-0209). Au moins une version postérieure à la dernière version ainsi signée change des objets non reconnus au sens de R-REVISIONSPDF-002 : ce qu'affiche un lecteur n'est plus ce qui a été signé."
+gabarit = "revisionspdf.apres-signature"
+phrase = { fr = "Après la version {signee}, couverte par une signature, {apres} version(s) changent des objets que l'outil ne reconnaît pas comme un ajout permis : ce qu'affiche un lecteur de PDF n'est pas ce qui a été signé." }
+categorie = "indice"
+direction = "retouche"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "La signature n'est pas vérifiée cryptographiquement (ADR-0209) : le constat porte sur la structure du fichier, pas sur la validité de la signature ni sur l'identité du signataire.",
+  "Les droits accordés par une signature de certification (DocMDP, observés à part) ne sont pas comparés aux changements : un remplissage de formulaire interdit par le signataire n'est pas relevé ici.",
+  "Mêmes limites de classement que R-REVISIONSPDF-002 : une modification maquillée en apparence d'annotation ou de formulaire n'est pas vue, et un ajout légitime d'un type que l'outil ne connaît pas la déclenche.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Vérifiée le 2026-11-16 sur les échantillons de tests/donnees/revisions : la plage signée de chaque signature finit, pour pyHanko 0.38.1 et pdfsig de Poppler 25.03.0, à la fin de la version que lui attribue le module (oracle.json) ; seule la signature suivie d'un flux de contenu ajouté la déclenche."
+
+[[regle.condition]]
+observation = "revisionspdf.derniere_version_signee"
+presente = true
+parametre = "signee"
+
+[[regle.condition]]
+observation = "revisionspdf.non_reconnues_apres_signature"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "apres"

@@ -338,6 +338,23 @@ class Contexte:
         )
         self._ajouter({"type": "visualisation", "visualisation": visualisation.vers_dict()})
 
+    def visualiser_tableau(
+        self,
+        nature: NatureVisualisation,
+        lignes: Sequence[Sequence[int | str]],
+        *,
+        localisation: Localisation | None = None,
+    ) -> None:
+        """Enregistre un tableau écrit par le module pour aider la lecture (F-84, ADR-0212)."""
+        visualisation = Visualisation.tableau(
+            self.module,
+            nature,
+            lignes,
+            localisation=self._dans_le_fichier(localisation),
+            partie=self.partie,
+        )
+        self._ajouter({"type": "visualisation", "visualisation": visualisation.vers_dict()})
+
     def _dans_le_fichier(self, localisation: Localisation | None) -> Localisation | None:
         """Plage d'octets relative à la partie ramenée à une position dans le fichier."""
         if localisation is None or localisation.octets is None or not self._debut:
