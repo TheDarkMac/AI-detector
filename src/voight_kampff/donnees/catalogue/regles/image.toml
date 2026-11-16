@@ -250,3 +250,421 @@ egal = 0
 observation = "image.jpeg.qscale_ffmpeg"
 presente = true
 parametre = "qscale"
+
+# Tables relevées du complément de T40 (F-30, ADR-0191 à ADR-0196) : tables de Photoshop par
+# niveau et tables d'appareils par marque, relevées sur des originaux de Wikimedia Commons
+# (banc/releves/tables-T40c : scripts, tables en clair, fichiers sources et licences). Une
+# règle nomme des tables fixes par leur empreinte (ADR-0181) ; aucune condition sur les
+# métadonnées (ADR-0192).
+
+[[regle]]
+identifiant = "R-IMAGE-008"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 3"
+description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 3 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 6 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 1 jeu de tables. Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
+gabarit = "image.tables-photoshop-3"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'écrit Adobe Photoshop à la qualité 3 : c'est le profil d'un fichier enregistré en dernier par Photoshop, ou par un autre logiciel d'Adobe qui emploie les mêmes tables (Photoshop Elements, Lightroom)." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
+  "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les niveaux 0, 1, 2 et 4, les jeux trop rares et les enregistrements sans ressource 0x0406 ne sont pas reconnus.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "208492a067c936e8e58edf8b17c9cc72e93c756aad25361b8e8d21931fd2b35d",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-009"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 5"
+description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 5 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 23 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 3 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé), et selon la couleur (images en couleur ou en niveaux de gris). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
+gabarit = "image.tables-photoshop-5"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'écrit Adobe Photoshop à la qualité 5 : c'est le profil d'un fichier enregistré en dernier par Photoshop, ou par un autre logiciel d'Adobe qui emploie les mêmes tables (Photoshop Elements, Lightroom)." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
+  "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les niveaux 0, 1, 2 et 4, les jeux trop rares et les enregistrements sans ressource 0x0406 ne sont pas reconnus.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "8bc7b23b8a6d2d8f98f88852f1f8769e260f5868f3297abb0c4d424443afa6b6",
+  "acd2d5535376961d7457ecce8ea75fdf26bfb7e9a561a55a18b5e092447c674f",
+  "c5f387edcb2259402b138791c41b24a0778cb8b7681446846ca9a4bcdfb8fb81",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-010"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 6"
+description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 6 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 17 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 2 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
+gabarit = "image.tables-photoshop-6"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'écrit Adobe Photoshop à la qualité 6 : c'est le profil d'un fichier enregistré en dernier par Photoshop, ou par un autre logiciel d'Adobe qui emploie les mêmes tables (Photoshop Elements, Lightroom)." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
+  "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les niveaux 0, 1, 2 et 4, les jeux trop rares et les enregistrements sans ressource 0x0406 ne sont pas reconnus.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "b0aac657ded99a09506aa75ca479037ab5b9b421da7fec989c411c464078d681",
+  "c3978157baa75805b8ce5f691ee74ec1d207d2433c3d4e135315b4196a32979e",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-011"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 7"
+description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 7 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 13 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 3 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé), et selon la couleur (images en couleur ou en niveaux de gris). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
+gabarit = "image.tables-photoshop-7"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'écrit Adobe Photoshop à la qualité 7 : c'est le profil d'un fichier enregistré en dernier par Photoshop, ou par un autre logiciel d'Adobe qui emploie les mêmes tables (Photoshop Elements, Lightroom)." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
+  "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les niveaux 0, 1, 2 et 4, les jeux trop rares et les enregistrements sans ressource 0x0406 ne sont pas reconnus.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "be6b69200e2de7fa43338d1345229e3f06ba89aa4eff7eacf5af216202591b19",
+  "d8a300ac671edf8199ed03cc2dee2ee98a4234ff9c56e4d819170e608d06a119",
+  "f44587f513bc594e4805327ce1fec3b796c368c36f723b9711ed557994c4b189",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-012"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 8"
+description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 8 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 111 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 2 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
+gabarit = "image.tables-photoshop-8"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'écrit Adobe Photoshop à la qualité 8 : c'est le profil d'un fichier enregistré en dernier par Photoshop, ou par un autre logiciel d'Adobe qui emploie les mêmes tables (Photoshop Elements, Lightroom)." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
+  "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les niveaux 0, 1, 2 et 4, les jeux trop rares et les enregistrements sans ressource 0x0406 ne sont pas reconnus.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "18e91bdecb2b25ccf09c5aba3838e422ab53eb893e216f90c1f85a4688c102f9",
+  "6a386daffb954fcded9fa648c589b0134ee90fa9de8a3d2cf9cb6cd042e52bc0",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-013"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 9"
+description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 9 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 43 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 2 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
+gabarit = "image.tables-photoshop-9"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'écrit Adobe Photoshop à la qualité 9 : c'est le profil d'un fichier enregistré en dernier par Photoshop, ou par un autre logiciel d'Adobe qui emploie les mêmes tables (Photoshop Elements, Lightroom)." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
+  "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les niveaux 0, 1, 2 et 4, les jeux trop rares et les enregistrements sans ressource 0x0406 ne sont pas reconnus.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "19d12707ddd5b940b3337aedce9f6d3c32a5c041d3d47d53dc8f364107cac4ce",
+  "df3fb35ab50e94f4cef641f91764bef927a9f9bb983697dab452ad44f0c3b864",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-014"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 10"
+description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 10 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 124 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 2 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
+gabarit = "image.tables-photoshop-10"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'écrit Adobe Photoshop à la qualité 10 : c'est le profil d'un fichier enregistré en dernier par Photoshop, ou par un autre logiciel d'Adobe qui emploie les mêmes tables (Photoshop Elements, Lightroom)." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
+  "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les niveaux 0, 1, 2 et 4, les jeux trop rares et les enregistrements sans ressource 0x0406 ne sont pas reconnus.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "188f33074a637bbd278781d929061739e38f0ae9a43a34ca2cacc2f6ea5059ff",
+  "5d600a79a3492faa00f7589b47975602f0fa251232f6b1c660a58e18b1f1f67b",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-015"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 11"
+description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 11 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 61 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 2 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
+gabarit = "image.tables-photoshop-11"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'écrit Adobe Photoshop à la qualité 11 : c'est le profil d'un fichier enregistré en dernier par Photoshop, ou par un autre logiciel d'Adobe qui emploie les mêmes tables (Photoshop Elements, Lightroom)." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
+  "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les niveaux 0, 1, 2 et 4, les jeux trop rares et les enregistrements sans ressource 0x0406 ne sont pas reconnus.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "92b29bd520fc81712052d467fc4563db567b6dec69139fd672c293243504bc65",
+  "dd62db0ea1ccf21ca63726277255cc2c4fbd8e014b78c2df052a05aedae1c25d",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-016"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 12"
+description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 12 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 482 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 4 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé), et selon la couleur (images en couleur ou en niveaux de gris). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
+gabarit = "image.tables-photoshop-12"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'écrit Adobe Photoshop à la qualité 12 : c'est le profil d'un fichier enregistré en dernier par Photoshop, ou par un autre logiciel d'Adobe qui emploie les mêmes tables (Photoshop Elements, Lightroom)." }
+categorie = "indice"
+direction = "transformation"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
+  "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les niveaux 0, 1, 2 et 4, les jeux trop rares et les enregistrements sans ressource 0x0406 ne sont pas reconnus.",
+  "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "191b1b59b97ee7412030a8ee331fb44682350da0b62e02a1f85293ef038ba345",
+  "37cbddbb18ffd0992404703d807e405dc3cf70357d198d93fcbeda2993e34618",
+  "8f475a5e13fc2b0c1eb7c7a403fc2a477c1c3cab53a2b8ad000833f07b938518",
+  "a38b4e5c063378dca062730b485224351c8a7380efc97b0a2950d465766843e5",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-017"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'appareils Apple"
+description = "JPEG dont les tables de quantification sont exactement l'un des 2 jeux relevés sur 9 photos originales d'appareils Apple (modèles iPhone, iPhone 4) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
+gabarit = "image.tables-appareils-apple"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification relevées sur des photos originales d'appareils Apple : c'est le profil d'un fichier dont la dernière compression est celle d'un appareil, sans réenregistrement par un logiciel qui change les tables." }
+categorie = "indice"
+direction = "authenticite"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein.",
+  "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les appareils rares, et les 28 modèles du relevé qui semblent calculer leurs tables pour chaque image (reflex Nikon, compacts Olympus et Fujifilm notamment, ADR-0194), ne sont pas reconnus.",
+  "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "6b70a52eda0cad09f8809f82ff04ab3b837f0cefacd47eaa5304538ac3e48973",
+  "9559fb4a7148eb0d16aaec037f5ffae13e1498176713ef6b35c15c2ec8d7ce0a",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-018"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'appareils Canon"
+description = "JPEG dont les tables de quantification sont exactement l'un des 8 jeux relevés sur 174 photos originales d'appareils Canon (modèles DIGITAL IXUS 50, DIGITAL IXUS 500, DIGITAL IXUS 70, DIGITAL IXUS 750, DIGITAL IXUS 80 IS, DIGITAL IXUS 800 IS, DIGITAL IXUS 850 IS, DIGITAL IXUS 870 IS, DIGITAL IXUS 900Ti, EOS 300D DIGITAL, EOS 400D DIGITAL, EOS 40D, EOS 450D, EOS 500D, EOS 7D, EOS DIGITAL REBEL, EOS DIGITAL REBEL XS, EOS DIGITAL REBEL XSi, EOS Kiss Digital, EOS REBEL T1i, EOS REBEL T2i, IXY DIGITAL 50, IXY DIGITAL 600, PowerShot A1200, PowerShot A400, PowerShot A430, PowerShot A460, PowerShot A470, PowerShot A510, PowerShot A520, PowerShot A530, PowerShot A540, PowerShot A560, PowerShot A570 IS, PowerShot A590 IS, PowerShot A610, PowerShot A620, PowerShot A650 IS, PowerShot A710 IS, PowerShot A720 IS, PowerShot A75, PowerShot A80, PowerShot A95, PowerShot G10, PowerShot G12, PowerShot G9, PowerShot S2 IS, PowerShot S3 IS, PowerShot SD1000, PowerShot SD1300 IS, PowerShot SD550, PowerShot SD600, PowerShot SD780 IS, PowerShot SD800 IS, PowerShot SX10 IS, PowerShot SX110 IS, PowerShot SX120 IS) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
+gabarit = "image.tables-appareils-canon"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification relevées sur des photos originales d'appareils Canon : c'est le profil d'un fichier dont la dernière compression est celle d'un appareil, sans réenregistrement par un logiciel qui change les tables." }
+categorie = "indice"
+direction = "authenticite"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein. Sur le relevé, des fichiers enregistrés par Adobe Photoshop Album, GIMP, Galerie de photos Windows, Picasa, Visionneuse de photos Windows portent ces tables.",
+  "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les appareils rares, et les 28 modèles du relevé qui semblent calculer leurs tables pour chaque image (reflex Nikon, compacts Olympus et Fujifilm notamment, ADR-0194), ne sont pas reconnus.",
+  "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "05f4625d8fdf4e7d001b95430c9d0dbfc4569663b4b53030e3b8221126ec6015",
+  "4e652feb7ce61f1a160fd373061ac4010709bb93e7e051b9d13f4b9a9c3658ce",
+  "55021d68bcf91e2b294ec268c1e5edc1d9e340bdaae2cb43a9c4bc998a5b2986",
+  "6c60640f2aef05e7a5d7efaba070ce0d3bbc1ed4415814c8e555e95248aca831",
+  "a0888056b58f1cecc949e637935d296b6f7460d4381dcc26081a9a28ddaf7cee",
+  "ad2b07a0459b262e05d76a9f5dba856d05c8b3f95a9dffb507a1aaba75b650de",
+  "aeea7bcc0c802bf7a70859259d78938ae6368dc8db53775ebf94c729749023dd",
+  "dcd521d905939adf89f6514cd977d0f2dfd2830e857a51bbe7285eccafccac65",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-019"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'appareils Kodak"
+description = "JPEG dont les tables de quantification sont exactement le jeu relevé sur 10 photos originales d'appareils Kodak (modèles C875 ZOOM DIGITAL CAMERA, CX7330 ZOOM DIGITAL CAMERA, DX3900 ZOOM DIGITAL CAMERA, Z740 ZOOM DIGITAL CAMERA) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
+gabarit = "image.tables-appareils-kodak"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification relevées sur des photos originales d'appareils Kodak : c'est le profil d'un fichier dont la dernière compression est celle d'un appareil, sans réenregistrement par un logiciel qui change les tables." }
+categorie = "indice"
+direction = "authenticite"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein.",
+  "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les appareils rares, et les 28 modèles du relevé qui semblent calculer leurs tables pour chaque image (reflex Nikon, compacts Olympus et Fujifilm notamment, ADR-0194), ne sont pas reconnus.",
+  "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "e636e81c61229b5d4fe54fdd0796f59946affb00a0c57b2274ebabf9aa57f8ff",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-020"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'appareils Olympus"
+description = "JPEG dont les tables de quantification sont exactement le jeu relevé sur 4 photos originales d'appareils Olympus (modèles C300Z,D550Z, C70Z,C7000Z, C740UZ) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
+gabarit = "image.tables-appareils-olympus"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification relevées sur des photos originales d'appareils Olympus : c'est le profil d'un fichier dont la dernière compression est celle d'un appareil, sans réenregistrement par un logiciel qui change les tables." }
+categorie = "indice"
+direction = "authenticite"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein.",
+  "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les appareils rares, et les 28 modèles du relevé qui semblent calculer leurs tables pour chaque image (reflex Nikon, compacts Olympus et Fujifilm notamment, ADR-0194), ne sont pas reconnus.",
+  "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "baca74a423cf3d78d7b557e489593e303167d5dd00c1fab9b27b16745269dd2e",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-021"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'appareils Panasonic"
+description = "JPEG dont les tables de quantification sont exactement l'un des 3 jeux relevés sur 12 photos originales d'appareils Panasonic (modèles DMC-FS3, DMC-FX35, DMC-FZ28, DMC-LZ7, DMC-TZ5, DMC-TZ6, DMC-TZ7) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
+gabarit = "image.tables-appareils-panasonic"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification relevées sur des photos originales d'appareils Panasonic : c'est le profil d'un fichier dont la dernière compression est celle d'un appareil, sans réenregistrement par un logiciel qui change les tables." }
+categorie = "indice"
+direction = "authenticite"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein. Sur le relevé, des fichiers enregistrés par GIMP portent ces tables.",
+  "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les appareils rares, et les 28 modèles du relevé qui semblent calculer leurs tables pour chaque image (reflex Nikon, compacts Olympus et Fujifilm notamment, ADR-0194), ne sont pas reconnus.",
+  "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "08d55dade5d67b0025b7511bfff7b57528695bef3c655dcca11753acfaaad24c",
+  "56401c159ac0511d9e869327b15eb7e7402d23f20e53b7b67521012dec1da50a",
+  "9d80f35c98e781a13fb06c46a022283c34e03529e12a8e64bf74703033bd143c",
+]
+
+[[regle]]
+identifiant = "R-IMAGE-022"
+version = "1"
+module = "image"
+titre = "JPEG aux tables de quantification d'appareils Sony"
+description = "JPEG dont les tables de quantification sont exactement le jeu relevé sur 4 photos originales d'appareils Sony (modèles DSLR-A100, DSLR-A200, DSLR-A350) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
+gabarit = "image.tables-appareils-sony"
+phrase = { fr = "L'image JPEG est encodée avec des tables de quantification relevées sur des photos originales d'appareils Sony : c'est le profil d'un fichier dont la dernière compression est celle d'un appareil, sans réenregistrement par un logiciel qui change les tables." }
+categorie = "indice"
+direction = "authenticite"
+fondement = "verification_deterministe"
+niveau = "faible"
+limites = [
+  "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein. Sur le relevé, des fichiers enregistrés par GIMP portent ces tables.",
+  "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
+  "Relevé sur un échantillon de Wikimedia Commons (ADR-0193) : les appareils rares, et les 28 modèles du relevé qui semblent calculer leurs tables pour chaque image (reflex Nikon, compacts Olympus et Fujifilm notamment, ADR-0194), ne sont pas reconnus.",
+  "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "image.jpeg.empreinte_tables"
+parmi = [
+  "f634f04d53c702fb6fef900ee2e497132d8740a69fc794de9cae05c3e115e3fa",
+]

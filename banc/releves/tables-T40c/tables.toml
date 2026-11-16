@@ -1,0 +1,462 @@
+# Tables relevées par le complément de T40 (ADR-0193 à ADR-0195), écrites par
+# phase4_selection.py. Tables dans l'ordre du segment DQT ; empreinte : ADR-0181.
+
+[[tables]]
+empreinte = "208492a067c936e8e58edf8b17c9cc72e93c756aad25361b8e8d21931fd2b35d"
+famille = "photoshop"
+niveau = 3
+fichiers = 6
+comptes = 5
+composantes = [3]
+cote_long = [1585, 6048]
+ailleurs = {}
+table_0 = [18, 14, 14, 22, 16, 22, 35, 21, 21, 35, 44, 34, 27, 34, 44, 39, 28, 28, 28, 28, 39, 34, 23, 23, 23, 23, 23, 34, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [20, 22, 22, 29, 25, 29, 34, 24, 24, 34, 20, 14, 14, 14, 20, 20, 14, 14, 14, 14, 20, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "8bc7b23b8a6d2d8f98f88852f1f8769e260f5868f3297abb0c4d424443afa6b6"
+famille = "photoshop"
+niveau = 5
+fichiers = 7
+comptes = 6
+composantes = [1]
+cote_long = [320, 600]
+ailleurs = {}
+table_0 = [12, 8, 8, 8, 9, 8, 12, 9, 9, 12, 17, 11, 10, 11, 17, 21, 15, 12, 12, 15, 21, 24, 19, 19, 21, 19, 19, 24, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "acd2d5535376961d7457ecce8ea75fdf26bfb7e9a561a55a18b5e092447c674f"
+famille = "photoshop"
+niveau = 5
+fichiers = 7
+comptes = 6
+composantes = [3]
+cote_long = [1417, 12458]
+ailleurs = { "COOLPIX P50V1.0" = 1, "Adobe Photoshop Elements 2.0" = 1, "Adobe Photoshop Elements 8.0 Windows" = 1 }
+table_0 = [12, 8, 8, 13, 9, 13, 21, 12, 12, 21, 26, 20, 16, 20, 26, 32, 27, 26, 26, 27, 32, 34, 23, 23, 23, 23, 23, 34, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [13, 13, 13, 17, 14, 17, 27, 17, 17, 27, 20, 14, 14, 14, 20, 20, 14, 14, 14, 14, 20, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "c5f387edcb2259402b138791c41b24a0778cb8b7681446846ca9a4bcdfb8fb81"
+famille = "photoshop"
+niveau = 5
+fichiers = 9
+comptes = 8
+composantes = [3]
+cote_long = [400, 1190]
+ailleurs = { "E4500v1.1" = 2, "SONY DSC-W80" = 1, "Adobe Photoshop Elements 2.0" = 1 }
+table_0 = [12, 8, 8, 8, 9, 8, 12, 9, 9, 12, 17, 11, 10, 11, 17, 21, 15, 12, 12, 15, 21, 24, 19, 19, 21, 19, 19, 24, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [13, 11, 11, 13, 14, 13, 16, 14, 14, 16, 20, 14, 14, 14, 20, 20, 14, 14, 14, 14, 20, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "b0aac657ded99a09506aa75ca479037ab5b9b421da7fec989c411c464078d681"
+famille = "photoshop"
+niveau = 6
+fichiers = 6
+comptes = 4
+composantes = [3]
+cote_long = [1920, 4912]
+ailleurs = {}
+table_0 = [8, 6, 6, 9, 6, 9, 14, 8, 8, 14, 17, 13, 11, 13, 17, 21, 18, 17, 17, 18, 21, 28, 23, 23, 23, 23, 23, 28, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [9, 9, 9, 11, 10, 11, 18, 11, 11, 18, 20, 14, 14, 14, 20, 20, 14, 14, 14, 14, 20, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "c3978157baa75805b8ce5f691ee74ec1d207d2433c3d4e135315b4196a32979e"
+famille = "photoshop"
+niveau = 6
+fichiers = 11
+comptes = 9
+composantes = [3]
+cote_long = [432, 1200]
+ailleurs = {}
+table_0 = [8, 6, 6, 6, 6, 6, 8, 6, 6, 8, 12, 8, 7, 8, 12, 14, 10, 8, 8, 10, 14, 16, 13, 13, 14, 13, 13, 16, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [9, 8, 8, 9, 10, 9, 11, 9, 9, 11, 14, 11, 13, 11, 14, 17, 14, 14, 14, 14, 17, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "be6b69200e2de7fa43338d1345229e3f06ba89aa4eff7eacf5af216202591b19"
+famille = "photoshop"
+niveau = 7
+fichiers = 3
+comptes = 3
+composantes = [3]
+cote_long = [386, 1177]
+ailleurs = {}
+table_0 = [10, 7, 7, 7, 8, 7, 10, 8, 8, 10, 15, 10, 8, 10, 15, 18, 13, 10, 10, 13, 18, 20, 16, 16, 18, 16, 16, 20, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [11, 12, 12, 21, 19, 21, 34, 24, 24, 34, 20, 14, 14, 14, 20, 20, 14, 14, 14, 14, 20, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "d8a300ac671edf8199ed03cc2dee2ee98a4234ff9c56e4d819170e608d06a119"
+famille = "photoshop"
+niveau = 7
+fichiers = 7
+comptes = 6
+composantes = [3]
+cote_long = [1900, 14547]
+ailleurs = { "Adobe Photoshop Elements 2.0" = 3, "Adobe Photoshop Elements 8.0 Windows" = 1 }
+table_0 = [10, 7, 7, 11, 8, 11, 18, 10, 10, 18, 22, 17, 14, 17, 22, 27, 23, 22, 22, 23, 27, 34, 23, 23, 23, 23, 23, 34, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [11, 14, 14, 31, 19, 31, 34, 24, 24, 34, 20, 14, 14, 14, 20, 20, 14, 14, 14, 14, 20, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "f44587f513bc594e4805327ce1fec3b796c368c36f723b9711ed557994c4b189"
+famille = "photoshop"
+niveau = 7
+fichiers = 3
+comptes = 3
+composantes = [1]
+cote_long = [472, 849]
+ailleurs = { "Adobe Photoshop Elements 2.0" = 1 }
+table_0 = [10, 7, 7, 7, 8, 7, 10, 8, 8, 10, 15, 10, 8, 10, 15, 18, 13, 10, 10, 13, 18, 20, 16, 16, 18, 16, 16, 20, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "18e91bdecb2b25ccf09c5aba3838e422ab53eb893e216f90c1f85a4688c102f9"
+famille = "photoshop"
+niveau = 8
+fichiers = 75
+comptes = 55
+composantes = [3]
+cote_long = [1330, 21314]
+ailleurs = { "Adobe Photoshop Elements 3.0 Macintosh" = 4, "Digital Camera FinePix S9500   Ver1.02" = 3, "Adobe Photoshop Elements 2.0" = 2, "GIMP 2.6.8" = 1, "Adobe Photoshop Elements 9.0 Macintosh" = 1 }
+table_0 = [6, 4, 4, 7, 5, 7, 11, 6, 6, 11, 14, 10, 8, 10, 14, 17, 14, 14, 14, 14, 17, 22, 19, 19, 19, 19, 19, 22, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [7, 9, 9, 19, 12, 19, 34, 19, 19, 34, 20, 14, 14, 14, 20, 20, 14, 14, 14, 14, 20, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "6a386daffb954fcded9fa648c589b0134ee90fa9de8a3d2cf9cb6cd042e52bc0"
+famille = "photoshop"
+niveau = 8
+fichiers = 36
+comptes = 31
+composantes = [3]
+cote_long = [252, 1200]
+ailleurs = { "Adobe Photoshop Elements 5.0 (20060914.r.77)  Windows" = 1, "Adobe Photoshop Elements 4.0 Windows" = 1, "Adobe Photoshop Elements 8.0 Macintosh" = 1 }
+table_0 = [6, 4, 4, 4, 5, 4, 6, 5, 5, 6, 9, 6, 5, 6, 9, 11, 8, 6, 6, 8, 11, 12, 10, 10, 11, 10, 10, 12, 16, 12, 12, 12, 12, 12, 12, 16, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [7, 7, 7, 13, 12, 13, 24, 16, 16, 24, 20, 14, 14, 14, 20, 20, 14, 14, 14, 14, 20, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "19d12707ddd5b940b3337aedce9f6d3c32a5c041d3d47d53dc8f364107cac4ce"
+famille = "photoshop"
+niveau = 9
+fichiers = 25
+comptes = 20
+composantes = [3]
+cote_long = [1400, 4752]
+ailleurs = { "Adobe Photoshop Elements 2.0" = 1 }
+table_0 = [4, 3, 3, 4, 3, 4, 7, 4, 4, 7, 9, 7, 5, 7, 9, 11, 9, 9, 9, 9, 11, 14, 12, 12, 12, 12, 12, 14, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [4, 6, 6, 12, 8, 12, 22, 12, 12, 22, 20, 14, 14, 14, 20, 20, 14, 14, 14, 14, 20, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "df3fb35ab50e94f4cef641f91764bef927a9f9bb983697dab452ad44f0c3b864"
+famille = "photoshop"
+niveau = 9
+fichiers = 18
+comptes = 16
+composantes = [3]
+cote_long = [261, 1202]
+ailleurs = { "Adobe Photoshop Elements 7.0 Windows" = 2, "Adobe Photoshop Elements 2.0" = 1 }
+table_0 = [4, 3, 3, 3, 3, 3, 4, 3, 3, 4, 6, 4, 3, 4, 6, 7, 5, 4, 4, 5, 7, 8, 6, 6, 7, 6, 6, 8, 10, 8, 9, 9, 9, 9, 8, 10, 10, 12, 12, 12, 12, 12, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [4, 5, 5, 8, 7, 8, 15, 10, 10, 15, 20, 14, 14, 14, 20, 20, 14, 14, 14, 14, 20, 17, 12, 12, 12, 12, 12, 17, 17, 12, 12, 12, 12, 12, 12, 17, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "188f33074a637bbd278781d929061739e38f0ae9a43a34ca2cacc2f6ea5059ff"
+famille = "photoshop"
+niveau = 10
+fichiers = 42
+comptes = 33
+composantes = [3]
+cote_long = [305, 1283]
+ailleurs = { "Adobe Photoshop Elements 2.0" = 2, "Adobe Photoshop Elements 3.0 Windows" = 2, "SONY DSC-H1" = 1, "Adobe Photoshop Elements 4.0 Windows" = 1, "Adobe Photoshop Elements 6.0 Macintosh" = 1 }
+table_0 = [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 3, 4, 3, 2, 2, 3, 4, 5, 4, 4, 4, 4, 4, 5, 6, 5, 5, 5, 5, 5, 5, 6, 6, 7, 7, 8, 7, 7, 6, 9, 9, 10, 10, 9, 9, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [3, 3, 3, 5, 4, 5, 9, 6, 6, 9, 13, 10, 9, 10, 13, 15, 14, 14, 14, 14, 15, 15, 12, 12, 12, 12, 12, 15, 15, 12, 12, 12, 12, 12, 12, 15, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "5d600a79a3492faa00f7589b47975602f0fa251232f6b1c660a58e18b1f1f67b"
+famille = "photoshop"
+niveau = 10
+fichiers = 82
+comptes = 62
+composantes = [3, 4]
+cote_long = [1408, 20789]
+ailleurs = { "Adobe Photoshop Elements 8.0 Windows" = 3, "Adobe Photoshop Elements 3.0 Windows" = 3, "Adobe Photoshop Elements 5.0 Windows" = 2, "Adobe Photoshop Elements 7.0 Windows" = 2, "E990v1.1" = 1, "Adobe Photoshop Elements 4.0 Macintosh" = 1, "Ver.1.00" = 1, "SONY DSC-H50" = 1, "Adobe Photoshop Elements 6.0 Windows" = 1, "Adobe Photoshop Elements 9.0 Windows" = 1, "Adobe Photoshop" = 1 }
+table_0 = [2, 2, 2, 3, 2, 3, 4, 2, 2, 4, 5, 4, 3, 4, 5, 6, 5, 5, 5, 5, 6, 8, 7, 7, 7, 7, 7, 8, 11, 9, 9, 9, 9, 9, 9, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+table_1 = [3, 3, 3, 7, 4, 7, 13, 7, 7, 13, 15, 13, 13, 13, 15, 15, 14, 14, 14, 14, 15, 15, 12, 12, 12, 12, 12, 15, 15, 12, 12, 12, 12, 12, 12, 15, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12]
+
+[[tables]]
+empreinte = "92b29bd520fc81712052d467fc4563db567b6dec69139fd672c293243504bc65"
+famille = "photoshop"
+niveau = 11
+fichiers = 51
+comptes = 38
+composantes = [3]
+cote_long = [1341, 6006]
+ailleurs = { "v558-78" = 3, "Adobe Photoshop Elements 6.0 Windows" = 1, "Adobe Photoshop Elements 5.0 Windows" = 1, "Adobe Photoshop Elements 7.0 Windows" = 1, "Adobe Photoshop Lightroom 3.4.1" = 1, "Adobe Photoshop Lightroom 3.4" = 1 }
+table_0 = [1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 3, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 5, 6, 5, 5, 5, 5, 5, 6, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+table_1 = [1, 2, 2, 4, 2, 4, 7, 4, 4, 7, 8, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+
+[[tables]]
+empreinte = "dd62db0ea1ccf21ca63726277255cc2c4fbd8e014b78c2df052a05aedae1c25d"
+famille = "photoshop"
+niveau = 11
+fichiers = 10
+comptes = 9
+composantes = [3]
+cote_long = [285, 1290]
+ailleurs = { "Adobe Photoshop Lightroom" = 2 }
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 3, 3, 3, 3, 2, 3, 3, 4, 4, 4, 4, 4, 3, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+table_1 = [1, 1, 1, 2, 2, 2, 4, 3, 3, 4, 7, 5, 4, 5, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+
+[[tables]]
+empreinte = "191b1b59b97ee7412030a8ee331fb44682350da0b62e02a1f85293ef038ba345"
+famille = "photoshop"
+niveau = 12
+fichiers = 9
+comptes = 7
+composantes = [1]
+cote_long = [1398, 4582]
+ailleurs = { "GIMP 2.6.4" = 1, "Adobe Photoshop Elements 5.0 (20060914.r.77)  Windows" = 1, "Adobe Photoshop Elements 2.0" = 1 }
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+
+[[tables]]
+empreinte = "37cbddbb18ffd0992404703d807e405dc3cf70357d198d93fcbeda2993e34618"
+famille = "photoshop"
+niveau = 12
+fichiers = 129
+comptes = 112
+composantes = [3, 4]
+cote_long = [155, 1296]
+ailleurs = { "Digital Camera FinePix S5800 S800 Ver1.01" = 3, "Adobe Photoshop Elements 3.0 Windows" = 3, "Adobe Photoshop Elements 5.0 (20060914.r.77)  Windows" = 3, "Adobe Photoshop Elements 4.0 Windows" = 3, "Adobe Photoshop Elements 2.0" = 2, "Canon Canon PowerShot A40" = 1, "Adobe Photoshop Elements 4.0 Macintosh" = 1, "Adobe Photoshop Elements 6.0 Windows" = 1, "Adobe Photoshop" = 1, "GIMP 2.6.8" = 1 }
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+table_1 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+
+[[tables]]
+empreinte = "8f475a5e13fc2b0c1eb7c7a403fc2a477c1c3cab53a2b8ad000833f07b938518"
+famille = "photoshop"
+niveau = 12
+fichiers = 5
+comptes = 5
+composantes = [1]
+cote_long = [450, 1256]
+ailleurs = { "Adobe Photoshop Elements 5.0 (20060914.r.77)  Windows" = 1 }
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+
+[[tables]]
+empreinte = "a38b4e5c063378dca062730b485224351c8a7380efc97b0a2950d465766843e5"
+famille = "photoshop"
+niveau = 12
+fichiers = 339
+comptes = 252
+composantes = [3, 4]
+cote_long = [1305, 19840]
+ailleurs = { "Adobe Photoshop Elements 5.0 Windows" = 6, "Adobe Photoshop Elements 2.0" = 5, "Adobe Photoshop Elements 6.0 Windows" = 4, "Ver.1.00" = 4, "Picasa 3.0" = 3, "Adobe Photoshop Elements 8.0 Windows" = 3, "Adobe Photoshop Lightroom" = 2, "Microsoft Windows Live Photo Gallery14.0.8081.709" = 2, "E2500v1.0" = 1, "Ver.1.02" = 1, "GIMP 2.6.4" = 1, "Adobe Photoshop Elements 4.0 Windows" = 1, "GIMP 2.6.6" = 1, "Canon Canon EOS 50D" = 1 }
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+table_1 = [1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 3, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+
+[[tables]]
+empreinte = "05f4625d8fdf4e7d001b95430c9d0dbfc4569663b4b53030e3b8221126ec6015"
+famille = "appareil"
+marque = "Canon"
+modeles = ["Canon IXY DIGITAL 600", "Canon PowerShot A560", "Canon PowerShot A650 IS", "Canon PowerShot A80", "Canon PowerShot G10", "Canon PowerShot S3 IS", "Canon PowerShot SD1000", "Canon PowerShot SX110 IS"]
+fichiers = 12
+comptes = 5
+composantes = [3]
+cote_long = [2048, 4416]
+ailleurs = { "Microsoft Windows Photo Gallery 6.0.6000.16386" = 2, "Microsoft Windows Photo Gallery 6.0.6001.18000" = 1, "Picasa" = 1 }
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1, 3, 2, 2, 5, 3, 3, 4, 2, 3, 3, 3, 3, 3, 4, 4, 3, 4, 5, 5, 4, 4, 6, 4, 3, 3, 6, 5, 5, 5, 5, 6, 6, 4, 5, 6, 5, 5, 5, 5]
+table_1 = [1, 1, 1, 2, 1, 2, 4, 2, 2, 4, 6, 4, 3, 4, 6, 11, 8, 4, 4, 8, 11, 11, 11, 11, 5, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11]
+
+[[tables]]
+empreinte = "08d55dade5d67b0025b7511bfff7b57528695bef3c655dcca11753acfaaad24c"
+famille = "appareil"
+marque = "Panasonic"
+modeles = ["DMC-FX35", "DMC-TZ7"]
+fichiers = 3
+comptes = 3
+composantes = [3]
+cote_long = [2048, 3648]
+ailleurs = {}
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 2, 2, 1, 2, 3, 3, 3, 2, 3, 3, 3, 3, 3, 4, 4, 3, 3, 3, 4, 3, 3, 5, 4, 4, 4, 4, 4, 5, 5, 3, 5, 5, 4, 5, 5, 5, 5, 5, 4, 5, 5]
+table_1 = [1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 3, 5, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+[[tables]]
+empreinte = "4e652feb7ce61f1a160fd373061ac4010709bb93e7e051b9d13f4b9a9c3658ce"
+famille = "appareil"
+marque = "Canon"
+modeles = ["Canon EOS 300D DIGITAL", "Canon EOS 400D DIGITAL", "Canon EOS DIGITAL REBEL", "Canon EOS Kiss Digital"]
+fichiers = 6
+comptes = 4
+composantes = [3]
+cote_long = [2048, 3888]
+ailleurs = { "GIMP 2.4.2" = 1, "GIMP 2.6.0" = 1 }
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1, 2, 2, 2, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3, 4, 5, 5, 4, 4, 5, 4, 3, 3, 5, 5, 5, 5, 6, 6, 6, 4, 5, 6, 5, 5, 5, 5]
+table_1 = [1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 5, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+[[tables]]
+empreinte = "55021d68bcf91e2b294ec268c1e5edc1d9e340bdaae2cb43a9c4bc998a5b2986"
+famille = "appareil"
+marque = "Canon"
+modeles = ["Canon DIGITAL IXUS 50", "Canon DIGITAL IXUS 500", "Canon DIGITAL IXUS 80 IS", "Canon DIGITAL IXUS 870 IS", "Canon DIGITAL IXUS 900Ti", "Canon PowerShot A540", "Canon PowerShot A570 IS", "Canon PowerShot A590 IS", "Canon PowerShot A610", "Canon PowerShot A720 IS", "Canon PowerShot A75", "Canon PowerShot A95", "Canon PowerShot G9", "Canon PowerShot S2 IS", "Canon PowerShot SD1000", "Canon PowerShot SD600", "Canon PowerShot SX10 IS", "Canon PowerShot SX110 IS"]
+fichiers = 39
+comptes = 21
+composantes = [3]
+cote_long = [1024, 4000]
+ailleurs = { "Adobe Photoshop Album Starter Edition 3.0" = 1 }
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 3, 1, 2, 3, 3, 3, 3, 3, 2, 4, 3, 3, 5, 5, 4, 3, 4, 4, 3, 3, 3, 4, 6, 4, 4, 5, 5, 5, 5, 6, 3, 4, 6, 6, 5, 5, 6, 5, 5, 5, 5]
+table_1 = [1, 1, 1, 2, 1, 2, 4, 2, 2, 4, 6, 4, 3, 4, 6, 11, 8, 4, 4, 8, 11, 11, 11, 11, 5, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11]
+
+[[tables]]
+empreinte = "56401c159ac0511d9e869327b15eb7e7402d23f20e53b7b67521012dec1da50a"
+famille = "appareil"
+marque = "Panasonic"
+modeles = ["DMC-FS3", "DMC-FX35", "DMC-FZ28"]
+fichiers = 6
+comptes = 4
+composantes = [3]
+cote_long = [3264, 3648]
+ailleurs = {}
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 3, 3, 3, 3, 2, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3]
+table_1 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+
+[[tables]]
+empreinte = "6b70a52eda0cad09f8809f82ff04ab3b837f0cefacd47eaa5304538ac3e48973"
+famille = "appareil"
+marque = "Apple"
+modeles = ["iPhone"]
+fichiers = 5
+comptes = 3
+composantes = [3]
+cote_long = [1600, 1600]
+ailleurs = {}
+table_0 = [4, 2, 3, 3, 3, 2, 4, 3, 3, 3, 4, 4, 4, 4, 6, 10, 6, 6, 5, 5, 6, 12, 8, 9, 7, 10, 14, 12, 15, 15, 14, 12, 14, 13, 16, 18, 23, 19, 16, 17, 21, 17, 13, 14, 20, 27, 20, 21, 23, 24, 25, 26, 25, 15, 19, 28, 30, 28, 25, 30, 23, 25, 25, 24]
+table_1 = [4, 4, 4, 6, 5, 6, 11, 6, 6, 11, 24, 16, 14, 16, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24]
+
+[[tables]]
+empreinte = "6c60640f2aef05e7a5d7efaba070ce0d3bbc1ed4415814c8e555e95248aca831"
+famille = "appareil"
+marque = "Canon"
+modeles = ["Canon DIGITAL IXUS 850 IS", "Canon PowerShot A510", "Canon PowerShot A520", "Canon PowerShot A710 IS", "Canon PowerShot S3 IS", "Canon PowerShot SD550", "Canon PowerShot SD780 IS"]
+fichiers = 11
+comptes = 2
+composantes = [3]
+cote_long = [2048, 4000]
+ailleurs = { "Microsoft Windows Photo Gallery 6.0.6001.18000" = 3, "Picasa 3.0" = 2, "Microsoft Windows Photo Viewer 6.1.7600.16385" = 1, "Microsoft Windows Photo Gallery 6.0.6000.16386" = 1 }
+table_0 = [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 2, 2, 3, 3, 3, 3, 3, 4, 6, 8, 8, 6, 4, 8, 5, 7, 14, 10, 8, 11, 7, 8, 9, 10, 8, 10, 12, 10, 10, 11, 13, 13, 12, 12, 16, 11, 8, 9, 15, 15, 15, 15, 15, 17, 16, 11, 13, 17, 14, 14, 14, 14]
+table_1 = [4, 4, 4, 5, 4, 5, 9, 5, 5, 9, 15, 10, 8, 10, 15, 26, 19, 9, 9, 19, 26, 26, 26, 26, 13, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26]
+
+[[tables]]
+empreinte = "9559fb4a7148eb0d16aaec037f5ffae13e1498176713ef6b35c15c2ec8d7ce0a"
+famille = "appareil"
+marque = "Apple"
+modeles = ["iPhone 4"]
+fichiers = 4
+comptes = 2
+composantes = [3]
+cote_long = [2592, 2592]
+ailleurs = {}
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 4, 2, 2, 2, 2, 2, 4, 3, 3, 2, 4, 5, 5, 6, 6, 5, 5, 5, 5, 6, 7, 9, 7, 6, 6, 8, 6, 5, 5, 8, 10, 8, 8, 9, 9, 10, 10, 10, 6, 7, 11, 12, 11, 10, 12, 9, 10, 10, 9]
+table_1 = [1, 1, 1, 2, 2, 2, 4, 2, 2, 4, 9, 6, 5, 6, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
+
+[[tables]]
+empreinte = "9d80f35c98e781a13fb06c46a022283c34e03529e12a8e64bf74703033bd143c"
+famille = "appareil"
+marque = "Panasonic"
+modeles = ["DMC-LZ7", "DMC-TZ5", "DMC-TZ6"]
+fichiers = 3
+comptes = 3
+composantes = [3]
+cote_long = [2560, 3712]
+ailleurs = { "Ver.1.0" = 1, "GIMP 2.4.7" = 1 }
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 3, 4, 4, 4, 3, 4, 4, 4, 5, 5, 5, 6, 5, 5, 5, 5, 4, 5, 7, 5, 5, 5, 6, 6, 7, 7, 4, 7, 8, 5, 8, 8, 8, 7, 7, 6, 7, 7]
+table_1 = [2, 1, 2, 2, 2, 2, 2, 3, 3, 2, 5, 7, 5, 4, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7]
+
+[[tables]]
+empreinte = "a0888056b58f1cecc949e637935d296b6f7460d4381dcc26081a9a28ddaf7cee"
+famille = "appareil"
+marque = "Canon"
+modeles = ["Canon EOS 40D", "Canon EOS 450D", "Canon EOS 500D", "Canon EOS 7D", "Canon EOS DIGITAL REBEL XS", "Canon EOS DIGITAL REBEL XSi", "Canon EOS REBEL T1i", "Canon EOS REBEL T2i"]
+fichiers = 20
+comptes = 10
+composantes = [3]
+cote_long = [3088, 5184]
+ailleurs = {}
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 3, 3, 4, 3, 3, 3, 4, 5, 4, 4, 5, 5, 5, 5, 5, 3, 4, 5, 6, 5, 5, 6, 4, 5, 5, 5]
+table_1 = [1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 5, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+[[tables]]
+empreinte = "ad2b07a0459b262e05d76a9f5dba856d05c8b3f95a9dffb507a1aaba75b650de"
+famille = "appareil"
+marque = "Canon"
+modeles = ["Canon EOS 40D", "Canon EOS 450D", "Canon EOS 500D", "Canon EOS 7D"]
+fichiers = 8
+comptes = 3
+composantes = [3]
+cote_long = [3888, 5184]
+ailleurs = { "Microsoft Windows Photo Viewer 6.1.7600.16385" = 2, "Picasa 3.0" = 2, "Microsoft Windows Photo Gallery 6.0.6001.18000" = 1 }
+table_0 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 2, 2, 2, 2, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 3, 4, 4, 5, 4, 4, 5, 4, 3, 3, 5, 5, 5, 5, 5, 6, 5, 4, 4, 6, 5, 5, 5, 5]
+table_1 = [1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 5, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+[[tables]]
+empreinte = "aeea7bcc0c802bf7a70859259d78938ae6368dc8db53775ebf94c729749023dd"
+famille = "appareil"
+marque = "Canon"
+modeles = ["Canon DIGITAL IXUS 50", "Canon DIGITAL IXUS 500", "Canon DIGITAL IXUS 750", "Canon DIGITAL IXUS 800 IS", "Canon IXY DIGITAL 50", "Canon PowerShot A1200", "Canon PowerShot A400", "Canon PowerShot A430", "Canon PowerShot A460", "Canon PowerShot A470", "Canon PowerShot A520", "Canon PowerShot A530", "Canon PowerShot A540", "Canon PowerShot A560", "Canon PowerShot A570 IS", "Canon PowerShot A590 IS", "Canon PowerShot A610", "Canon PowerShot A620", "Canon PowerShot A710 IS", "Canon PowerShot A75", "Canon PowerShot A80", "Canon PowerShot A95", "Canon PowerShot G12", "Canon PowerShot S3 IS", "Canon PowerShot SD1000", "Canon PowerShot SD1300 IS", "Canon PowerShot SD600", "Canon PowerShot SD780 IS", "Canon PowerShot SD800 IS", "Canon PowerShot SX10 IS", "Canon PowerShot SX120 IS"]
+fichiers = 71
+comptes = 36
+composantes = [3]
+cote_long = [640, 4000]
+ailleurs = { "Picasa 3.0" = 1 }
+table_0 = [1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 3, 2, 2, 3, 3, 6, 4, 3, 3, 3, 3, 7, 5, 8, 4, 6, 8, 8, 10, 9, 8, 7, 11, 8, 10, 14, 13, 11, 10, 10, 12, 10, 8, 8, 11, 16, 12, 12, 13, 15, 15, 15, 15, 9, 11, 16, 17, 15, 14, 17, 13, 14, 14, 14]
+table_1 = [4, 4, 4, 5, 4, 5, 9, 5, 5, 9, 15, 10, 8, 10, 15, 26, 19, 9, 9, 19, 26, 26, 26, 26, 13, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26]
+
+[[tables]]
+empreinte = "baca74a423cf3d78d7b557e489593e303167d5dd00c1fab9b27b16745269dd2e"
+famille = "appareil"
+marque = "Olympus"
+modeles = ["C300Z,D550Z", "C70Z,C7000Z", "C740UZ"]
+fichiers = 4
+comptes = 3
+composantes = [3]
+cote_long = [1984, 3072]
+ailleurs = {}
+table_0 = [6, 4, 4, 5, 4, 4, 6, 5, 5, 5, 6, 6, 6, 7, 9, 14, 9, 9, 8, 8, 9, 18, 13, 13, 10, 14, 21, 18, 22, 22, 21, 18, 20, 20, 23, 26, 33, 28, 23, 24, 31, 25, 20, 20, 29, 39, 29, 31, 34, 35, 37, 37, 37, 22, 28, 41, 44, 40, 36, 43, 33, 36, 37, 36]
+table_1 = [6, 6, 6, 9, 8, 9, 17, 9, 9, 17, 36, 24, 20, 24, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36]
+table_2 = [6, 6, 6, 9, 8, 9, 17, 9, 9, 17, 36, 24, 20, 24, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36]
+
+[[tables]]
+empreinte = "dcd521d905939adf89f6514cd977d0f2dfd2830e857a51bbe7285eccafccac65"
+famille = "appareil"
+marque = "Canon"
+modeles = ["Canon DIGITAL IXUS 70", "Canon DIGITAL IXUS 750", "Canon PowerShot A560", "Canon PowerShot A610", "Canon PowerShot S2 IS", "Canon PowerShot SD800 IS"]
+fichiers = 7
+comptes = 4
+composantes = [3]
+cote_long = [1600, 3072]
+ailleurs = {}
+table_0 = [9, 6, 6, 8, 6, 5, 9, 8, 7, 8, 10, 9, 9, 11, 13, 22, 15, 13, 12, 12, 13, 28, 19, 21, 16, 22, 33, 29, 35, 34, 33, 28, 32, 31, 36, 41, 52, 44, 36, 39, 49, 39, 30, 31, 45, 61, 45, 49, 54, 55, 58, 58, 58, 34, 42, 63, 68, 62, 56, 66, 51, 55, 57, 54]
+table_1 = [9, 9, 9, 12, 10, 12, 20, 12, 12, 20, 15, 10, 10, 10, 15, 26, 26, 10, 10, 26, 26, 79, 26, 26, 26, 26, 26, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79, 79]
+
+[[tables]]
+empreinte = "e636e81c61229b5d4fe54fdd0796f59946affb00a0c57b2274ebabf9aa57f8ff"
+famille = "appareil"
+marque = "Kodak"
+modeles = ["KODAK C875 ZOOM DIGITAL CAMERA", "KODAK CX7330 ZOOM DIGITAL CAMERA", "KODAK DX3900 ZOOM DIGITAL CAMERA", "KODAK Z740 ZOOM DIGITAL CAMERA"]
+fichiers = 10
+comptes = 5
+composantes = [3]
+cote_long = [1080, 3264]
+ailleurs = {}
+table_0 = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 6, 6, 5, 6, 7, 6, 6, 7, 6, 6, 7, 8, 7, 7, 8, 8, 7, 7, 8, 9, 8, 9, 9, 9, 8, 9, 10, 10, 11, 11, 10, 10, 11, 12, 13, 12, 11, 14, 15, 15, 14, 16, 17, 16, 20, 20, 23]
+table_1 = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 6, 6, 7, 6, 6, 7, 9, 8, 7, 8, 8, 7, 8, 9, 9, 9, 9, 10, 9, 9, 9, 10, 10, 11, 11, 10, 10, 12, 13, 13, 13, 12, 14, 15, 15, 14, 17, 18, 17, 20, 20, 24]
+
+[[tables]]
+empreinte = "f634f04d53c702fb6fef900ee2e497132d8740a69fc794de9cae05c3e115e3fa"
+famille = "appareil"
+marque = "Sony"
+modeles = ["DSLR-A100", "DSLR-A200", "DSLR-A350"]
+fichiers = 4
+comptes = 3
+composantes = [3]
+cote_long = [3872, 4592]
+ailleurs = { "GIMP 2.4.5" = 2 }
+table_0 = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 3, 2, 2, 3, 4, 5, 4, 3, 3, 3, 4, 5, 7, 5, 4, 3, 3, 4, 5, 7, 7, 6, 5, 4, 5, 6, 7, 8, 6, 5, 5, 6, 8, 8, 7, 7, 7, 8, 9, 8, 8, 9, 10, 10, 10, 12, 12, 14]
+table_1 = [2, 2, 2, 2, 2, 2, 3, 2, 2, 3, 6, 3, 2, 3, 6, 12, 6, 4, 4, 6, 12, 15, 12, 7, 5, 7, 12, 15, 15, 15, 13, 9, 9, 13, 15, 15, 15, 15, 15, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
+
+[modeles_adaptatifs]
+liste = ["CASIO COMPUTER CO.,LTD | EX-Z50", "Canon | Canon EOS 30D", "Canon | Canon EOS 350D DIGITAL", "FUJIFILM | FinePix S5500", "FUJIFILM | FinePix S5600", "FUJIFILM | FinePix S5700 S700", "NIKON CORPORATION | NIKON D40", "NIKON CORPORATION | NIKON D50", "NIKON CORPORATION | NIKON D70", "NIKON | COOLPIX L10", "NIKON | COOLPIX P50", "NIKON | COOLPIX S200", "NIKON | E2500", "OLYMPUS CORPORATION | C770UZ", "OLYMPUS IMAGING CORP. | E-410", "OLYMPUS IMAGING CORP. | FE100,X710", "OLYMPUS IMAGING CORP. | FE320,X835,C540", "OLYMPUS IMAGING CORP. | SP510UZ", "OLYMPUS IMAGING CORP. | u40D,S500,uD500", "Panasonic | DMC-FX01", "Panasonic | DMC-FX100", "Panasonic | DMC-FZ8", "Panasonic | DMC-LX3", "Panasonic | DMC-TZ10", "SAMSUNG | SAMSUNG ES55,ES57 / VLUU ES55 / SAMSUNG SL102", "SONY | DSC-HX1", "SONY | DSC-S750", "Samsung Techwin | <Digimax S600 / Kenox S600 / Digimax Cyber 630>"]
