@@ -1,0 +1,91 @@
+# Règles du module dwtdct (T32) : filigrane dwtDct d'invisible-watermark (F-24, ADR-0202 à
+# ADR-0206). Algorithme lu dans imwatermark/maxDct.py (invisible-watermark 0.2.0) ; messages lus
+# dans les codes de référence de Stable Diffusion 1, de SDXL et de FLUX.1 (inventaire des
+# marquages, §3) ; fiche filigrane-dwtdct.
+
+[[regle]]
+identifiant = "R-DWTDCT-001"
+version = "1"
+module = "dwtdct"
+titre = "Filigrane dwtDct de Stable Diffusion 1"
+description = "La composante U de l'image porte, dans la méthode dwtDct de la bibliothèque invisible-watermark, au moins 98 des 136 bits du message « StableDiffusionV1 » que pose le script de référence de Stable Diffusion 1 (CompVis, scripts/txt2img.py), lu sur huit bits comme il le pose. Sur une image non marquée, la probabilité d'au moins 98 bits concordants est de 2,2 x 10^-7 sous l'hypothèse d'un ordre des scores indépendant du message (ADR-0204)."
+gabarit = "dwtdct.stable-diffusion-1"
+phrase = { fr = "La chrominance de l'image porte {concordants} des 136 bits du filigrane invisible que pose le script de référence de Stable Diffusion 1 : l'image est passée par ce script, ou quelqu'un y a posé le même message." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "mesure"
+niveau = "faible"
+limites = [
+  "Le message est public et fixe, le schéma n'est pas cryptographique : n'importe qui peut le poser sur une photographie avec la bibliothèque. Le constat n'établit pas qui l'a posé (ADR-0021).",
+  "Son absence ne dit rien : la plupart des interfaces de Stable Diffusion ne le posent pas, et un recadrage d'un seul pixel en haut ou à gauche, un redimensionnement ou une rotation l'effacent. Une compression JPEG à chrominance sous-échantillonnée (4:2:0) l'affaiblit, même à qualité 95.",
+  "Seuil fixé par le calcul et vérifié sur un relevé d'images de Wikimedia Commons versées avant la publication de Stable Diffusion 1, pas mesuré sur le corpus de référence (T100) : des images aux couleurs très uniformes s'écartent de l'hypothèse du calcul.",
+  "Seuls le JPEG et le PNG sont lus, jusqu'à 4 194 304 pixels, puis le haut de l'image au-delà ; une image en niveaux de gris ou de moins de 65 536 pixels n'est pas lue.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-16 : le plus petit nombre de bits concordants dont la probabilité, pour une image non marquée, est au plus 10^-6 sous l'hypothèse d'un ordre des scores indépendant du message (loi hypergéométrique, ADR-0204) ; aucune image authentique du relevé de T32 ne l'atteint (banc/releves/dwtdct-T32)."
+
+[[regle.condition]]
+observation = "dwtdct.concordants_sd1"
+seuil = { operateur = ">=", valeur = 98 }
+parametre = "concordants"
+
+[[regle]]
+identifiant = "R-DWTDCT-002"
+version = "1"
+module = "dwtdct"
+titre = "Filigrane dwtDct de SDXL"
+description = "La composante U de l'image porte, dans la méthode dwtDct de la bibliothèque invisible-watermark, au moins 42 des 48 bits du message 0xB3EC907BB19E que posent les codes de SDXL (Stability-AI, generative-models ; diffusers), lu en flottant comme ils le posent. Le message est lu dans l'ordre des couleurs qu'attend la bibliothèque, puis le rouge et le bleu échangés, comme le pipeline SDXL de diffusers l'a posé du 2023-07-06 au 2024-04-26 : la meilleure des deux lectures est gardée. Sur une image non marquée, la probabilité d'au moins 42 bits concordants est au plus de 3,6 x 10^-7 (deux lectures de 1,8 x 10^-7 chacune) sous l'hypothèse d'un ordre des scores indépendant du message (ADR-0204)."
+gabarit = "dwtdct.sdxl"
+phrase = { fr = "La chrominance de l'image porte {concordants} des 48 bits du filigrane invisible que posent les codes de référence de SDXL : l'image est passée par l'un de ces codes, ou quelqu'un y a posé le même message." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "mesure"
+niveau = "faible"
+limites = [
+  "Le message est public et fixe, le schéma n'est pas cryptographique : n'importe qui peut le poser sur une photographie avec la bibliothèque. Le constat n'établit pas qui l'a posé (ADR-0021).",
+  "Son absence ne dit rien : diffusers ne le pose que si invisible-watermark est installée, d'autres interfaces jamais, et un recadrage d'un seul pixel en haut ou à gauche, un redimensionnement ou une rotation l'effacent. Une compression JPEG à chrominance sous-échantillonnée (4:2:0) l'affaiblit, même à qualité 95.",
+  "Seuil fixé par le calcul et vérifié sur un relevé d'images de Wikimedia Commons versées avant la publication de Stable Diffusion 1, pas mesuré sur le corpus de référence (T100) : des images aux couleurs très uniformes s'écartent de l'hypothèse du calcul.",
+  "Seuls le JPEG et le PNG sont lus, jusqu'à 4 194 304 pixels, puis le haut de l'image au-delà ; une image en niveaux de gris ou de moins de 65 536 pixels n'est pas lue.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-16 : le plus petit nombre de bits concordants dont la probabilité, pour une image non marquée, est au plus 10^-6 pour les deux lectures ensemble, sous l'hypothèse d'un ordre des scores indépendant du message (loi hypergéométrique, ADR-0204) ; aucune image authentique du relevé de T32 ne l'atteint (banc/releves/dwtdct-T32)."
+
+[[regle.condition]]
+observation = "dwtdct.concordants_sdxl"
+seuil = { operateur = ">=", valeur = 42 }
+parametre = "concordants"
+
+[[regle]]
+identifiant = "R-DWTDCT-003"
+version = "1"
+module = "dwtdct"
+titre = "Filigrane dwtDct de FLUX.1"
+description = "La composante U de l'image porte, dans la méthode dwtDct de la bibliothèque invisible-watermark, au moins 39 des 46 bits du message que pose le code de référence de FLUX.1 (Black Forest Labs, src/flux/util.py : 0x2AFE879CF52E écrit par bin(), sans ses deux zéros de tête), lu en flottant comme il le pose. Sur une image non marquée, la probabilité d'au moins 39 bits concordants est de 9,7 x 10^-7 sous l'hypothèse d'un ordre des scores indépendant du message (ADR-0204)."
+gabarit = "dwtdct.flux-1"
+phrase = { fr = "La chrominance de l'image porte {concordants} des 46 bits du filigrane invisible que pose le code de référence de FLUX.1 : l'image est passée par ce code, ou quelqu'un y a posé le même message." }
+categorie = "indice"
+direction = "origine_ia"
+fondement = "mesure"
+niveau = "faible"
+limites = [
+  "Le message est public et fixe, le schéma n'est pas cryptographique : n'importe qui peut le poser sur une photographie avec la bibliothèque. Le constat n'établit pas qui l'a posé (ADR-0021).",
+  "Son absence ne dit rien : les services et interfaces qui emploient FLUX.1 ne le posent pas tous, et un recadrage d'un seul pixel en haut ou à gauche, un redimensionnement ou une rotation l'effacent. Une compression JPEG à chrominance sous-échantillonnée (4:2:0) l'affaiblit, même à qualité 95.",
+  "Seuil fixé par le calcul et vérifié sur un relevé d'images de Wikimedia Commons versées avant la publication de Stable Diffusion 1, pas mesuré sur le corpus de référence (T100) : des images aux couleurs très uniformes s'écartent de l'hypothèse du calcul.",
+  "Seuls le JPEG et le PNG sont lus, jusqu'à 4 194 304 pixels, puis le haut de l'image au-delà ; une image en niveaux de gris ou de moins de 65 536 pixels n'est pas lue.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-16 : le plus petit nombre de bits concordants dont la probabilité, pour une image non marquée, est au plus 10^-6 sous l'hypothèse d'un ordre des scores indépendant du message (loi hypergéométrique, ADR-0204) ; aucune image authentique du relevé de T32 ne l'atteint (banc/releves/dwtdct-T32)."
+
+[[regle.condition]]
+observation = "dwtdct.concordants_flux"
+seuil = { operateur = ">=", valeur = 39 }
+parametre = "concordants"
