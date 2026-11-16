@@ -61,7 +61,10 @@ RECOMMANDATION = texte_du_rapport("resume.transformation")
 
 # La règle R-C2PA-006 (T30) a ses propres tests : tests/test_c2pa.py ; les règles des tables
 # connues de T40, tests/test_tables_connues.py.
-REGLES_T40 = {"R-IMAGE-005", "R-IMAGE-006", "R-IMAGE-007"}
+REGLES_T40 = {"R-IMAGE-005", "R-IMAGE-006", "R-IMAGE-007"} | {
+    f"R-IMAGE-{numero:03d}" for numero in range(8, 23)
+}
+"""Règles de T40 (test_tables_connues.py) et de son complément (test_tables_relevees.py)."""
 REGLES_T24 = tuple(
     regle
     for regle in CATALOGUE.regles

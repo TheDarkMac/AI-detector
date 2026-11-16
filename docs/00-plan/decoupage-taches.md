@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.30** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 avec T40, v0.29 avec T41, v0.30 proposée dans la PR de T42. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.31** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 avec T40, v0.29 avec T41, v0.30 avec T42, v0.31 proposée dans la PR du complément de T40. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -85,7 +85,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 
 | ID | Tâche | Exigences |
 | --- | --- | --- |
-| T40 | Tables de quantification JPEG comparées à des tables connues (tables de libjpeg reconnues dès T24, ADR-0153) : libjpeg à deux qualités, mozjpeg, encodeur MJPEG de ffmpeg, empreinte des tables comme point d'extension du catalogue (ADR-0180 à ADR-0184). Complément, sur sa propre branche et sa propre PR (ADR-0180) : tables de Photoshop et d'appareils relevées sur des fichiers publics de provenance établie, livrées au catalogue par leur empreinte | F-30 |
+| T40 | Tables de quantification JPEG comparées à des tables connues (tables de libjpeg reconnues dès T24, ADR-0153) : libjpeg à deux qualités, mozjpeg, encodeur MJPEG de ffmpeg, empreinte des tables comme point d'extension du catalogue (ADR-0180 à ADR-0184). Complément, sur sa propre branche et sa propre PR (ADR-0180) : tables de Photoshop et d'appareils relevées sur des fichiers publics de provenance établie, livrées au catalogue par leur empreinte ; relevé de 2 646 en-têtes d'originaux de Wikimedia Commons, au moins 3 fichiers de 2 comptes, Photoshop par niveau (deux jeux selon la taille de l'image), appareils par marque, appareils adaptatifs exclus, catalogue 0.9.0 (ADR-0191 à ADR-0196) | F-30 |
 | T41 | Double compression JPEG : premier pas de quantification estimé par calibrage sur la luminance (Lukáš et Fridrich 2003), décodage entropique du projet, séquentiel et progressif, numpy pour le calcul en entiers, indice faible vers la transformation (ADR-0185 à ADR-0190) ; double compression non alignée non cherchée | F-31 |
 | T42 | ELA + avertissement d'interprétation + carte : luminance recompressée à la qualité 95 de libjpeg en entiers, une valeur par bloc, gain fixe ; image entière jusqu'à 65 536 blocs, le haut au-delà ; carte sans règle ni constat, rubrique « Visualisations » sous son avertissement, masquée par défaut (catégorie « contenu ») ; avancée en V1 (ADR-0197 à ADR-0201) | F-32, F-84 |
 | T43 | Analyse spectrale du résidu de bruit | F-33, F-84 |
@@ -211,3 +211,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-11-14 | 0.28 | T40 renvoie à ses décisions (ADR-0180 à ADR-0184) ; complément de T40 ajouté, en V1 (§3, §4) ; T32 sans T40 pour le décodage des pixels | T40 |
 | 2026-11-15 | 0.29 | T41 renvoie à ses décisions (ADR-0185 à ADR-0190) ; T32 sur le décodage de T41 ; statut corrigé, il annonçait encore la v0.26 | T41 |
 | 2026-11-15 | 0.30 | T42 avancée en V1, après le complément de T40, et renvoyée à ses décisions (ADR-0197 à ADR-0201) ; retirée des candidates V2 (§3, §4) | T42 |
+| 2026-11-16 | 0.31 | Complément de T40 renvoyé à ses décisions (ADR-0191 à ADR-0196) (§3) | Complément de T40 |

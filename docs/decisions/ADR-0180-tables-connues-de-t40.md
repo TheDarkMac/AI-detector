@@ -57,3 +57,4 @@ T40 reconnaît, en plus des tables de libjpeg à une même qualité : libjpeg à
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création |
+| 2026-11-16 | Renvoi : complément de T40 livré, tables de Photoshop et d'appareils relevées (ADR-0191 à ADR-0196) |

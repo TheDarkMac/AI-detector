@@ -1,0 +1,12 @@
+# Données brutes du relevé, régénérables par les scripts (ADR-0193) : hors du dépôt.
+phase1.jsonl
+phase1.etat.json
+phase1.log
+phase2.jsonl
+phase2.log
+phase2.err
+phase3.json
+phase3.txt
+phase4.log
+licences.json
+__pycache__/
