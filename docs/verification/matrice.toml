@@ -296,9 +296,10 @@ note = "Candidate V2 (ADR-0012)."
 
 [[exigence]]
 id = "F-60"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T50"]
 methodes = ["test"]
+note = "Module revisionspdf (T50) : versions de la chaîne des sections, linéarisation et sections hybrides regroupées, fin de chaque version au rapport pour la reconstituer (ADR-0207) ; nature de chaque version, ajouts permis (signature, formulaire, annotation, métadonnées) distingués des objets non reconnus (ADR-0208) ; signatures lues par leur structure (ADR-0209) ; rien déchiffré (ADR-0210) ; règles R-REVISIONSPDF-001 à R-REVISIONSPDF-003 (ADR-0211). Vérifié contre pyHanko et pdfsig sur les échantillons de tests/donnees/revisions."
 
 [[exigence]]
 id = "F-61"
@@ -386,7 +387,7 @@ etat = "partielle"
 taches = ["T42", "T50"]
 methodes = ["test", "inspection"]
 justification = "La lisibilité d'une visualisation se juge à la relecture ; sa présence et sa description textuelle se testent."
-note = "Visualisations au rapport (objet, message, rubrique HTML, image data:, masquage par la catégorie « contenu », ADR-0200) ; carte ELA (T42), rapport HTML relu dans un navigateur pendant T42. Chronologie des révisions PDF en V1 (T50) ; spectre et spectrogramme avec leurs techniques, candidates V2."
+note = "Visualisations au rapport (objet, message, rubrique HTML, image data:, masquage par la catégorie « contenu », ADR-0200) ; carte ELA (T42), rapport HTML relu dans un navigateur pendant T42. Chronologie des révisions PDF (T50) : visualisation en tableau, non masquée, schéma 0.8.0 (ADR-0212), rapport HTML relu dans un navigateur pendant T50. Spectre et spectrogramme avec leurs techniques, candidates V2."
 
 # 5.6 Contrôle avant publication
 

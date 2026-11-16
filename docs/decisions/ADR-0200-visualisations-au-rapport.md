@@ -52,3 +52,4 @@ Option A dans les deux cas. Précisions de l'assistant :
 | Date | Modification |
 | --- | --- |
 | 2026-11-15 | Création |
+| 2026-11-16 | Renvoi : la chronologie des révisions PDF est un tableau, nouvelle forme de visualisation non masquée ; la prévision « sans nouveau mécanisme » ne tient pas pour elle ([ADR-0212](ADR-0212-chronologie-en-tableau.md)) |
