@@ -1,8 +1,8 @@
 # ADR-0206 — Constat du dwtDct : trois règles du catalogue, indice faible vers l'origine IA ; module `dwtdct` et versions de T32
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-16
-- **Décideur** : proposition de l'assistant, non posée en question pendant T32, à valider pendant la revue de la PR
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T32, validée pendant la revue de la PR
 - **Tâche** : T32
 - **Exigences liées** : F-24, F-25, F-80, F-81, ES-20 ; ADR-0018, ADR-0021, ADR-0050, ADR-0085, ADR-0101, ADR-0152, ADR-0174, ADR-0177, ADR-0188
 
@@ -62,3 +62,4 @@ Observations du module : `dwtdct.pixels_image` ; `dwtdct.chrominance` (faux pour
 | Date | Modification |
 | --- | --- |
 | 2026-11-16 | Création, statut « Proposé » |
+| 2026-11-16 | Validé par TheDarkMac pendant la revue de la PR (« Oui, valide ADR-0206 ») : statut « Accepté » |

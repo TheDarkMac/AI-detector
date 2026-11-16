@@ -3,7 +3,7 @@
 - **Branche** : `tache/T32-dwtdct`
 - **Dates** : 2026-11-16
 - **Exigences couvertes** : F-24 (réalisée) ; F-25 (le dwtDct passe des marquages non recherchés aux recherchés)
-- **Décisions** : ADR-0202 à ADR-0206 ; ADR-0206 proposé, à valider pendant la revue de la PR
+- **Décisions** : ADR-0202 à ADR-0206, tous acceptés (ADR-0206 validé pendant la revue de la PR)
 - **Errata** : [ERR-0011](../errata/ERR-0011-dwtdct-sans-dct.md)
 
 ## Objectif
@@ -40,6 +40,7 @@ Lire le filigrane dwtDct d'invisible-watermark, posé par les codes de référen
 10. Relevé ([ADR-0204](../decisions/ADR-0204-seuils-et-releve.md)) : phase 1, 16 260 fichiers listés (environ 700 appels à l'API) ; phase 2, 1 580 fichiers téléchargés, tous en statut 200, de 10:33 à 14:57 (heure du poste) : les 356 originaux déclarés en 35 minutes, les 1 224 rendus authentiques en 3 h 50, une requête toutes les 2 s ; 224 PNG authentiques seulement, Commons n'en ayant pas assez pour 300 au tirage prévu ; phase 3, lecture par `analyser` en 52 minutes (poste chargé). Aucun constat sur les 1 224 authentiques ; un constat de SDXL, couleurs échangées, sur un des 356 déclarés, versé en janvier 2024, dans la période où diffusers posait ainsi le message. Seuils gardés ; catalogue et empreinte inchangés.
 11. Documentation : ADR-0202 à ADR-0206, ERR-0011, fiche [`filigrane-dwtdct`](../techniques/filigrane-dwtdct.md), inventaire des marquages (v1.1), catalogue (v1.11), architecture (v1.24), découpage (v0.32), matrice (F-24 réalisée), ce journal.
 
+12. PR [#33](https://github.com/TheDarkMac/AI-detector/pull/33) ouverte (commits `11e3484`, `118c1c8`, `e2fec35`). ADR-0206 validé par TheDarkMac pendant la revue (« Oui, valide ADR-0206 ») : statut « Accepté ».
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |

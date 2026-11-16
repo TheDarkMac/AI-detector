@@ -220,4 +220,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0203](ADR-0203-methode-de-lecture.md) | Lecture du dwtDct : chaque message dans son domaine, bits décidés par rang, SDXL dans les deux ordres des couleurs | Accepté | 2026-11-16 |
 | [ADR-0204](ADR-0204-seuils-et-releve.md) | Seuils du dwtDct : loi hypergéométrique à 10^-6, vérifiés sur un relevé de Wikimedia Commons | Accepté | 2026-11-16 |
 | [ADR-0205](ADR-0205-etendue-de-la-lecture.md) | Étendue de la lecture du dwtDct : 4 Mpx, puis le haut de l'image ; 65 536 pixels au moins | Accepté | 2026-11-16 |
-| [ADR-0206](ADR-0206-constat-et-versions-de-t32.md) | Constat du dwtDct : trois règles du catalogue, indice faible vers l'origine IA ; module `dwtdct` et versions de T32 | Proposé | 2026-11-16 |
+| [ADR-0206](ADR-0206-constat-et-versions-de-t32.md) | Constat du dwtDct : trois règles du catalogue, indice faible vers l'origine IA ; module `dwtdct` et versions de T32 | Accepté | 2026-11-16 |
