@@ -33,6 +33,8 @@ Décrire un par un les objets qu'ajoute ou remplace chaque version d'un PDF, rel
 12. Rapport de `annotation.pdf` relu dans le navigateur, servi par un serveur local : constats R-PAGESPDF-001, R-PAGESPDF-002 et R-REVISIONSPDF-002, chronologie, puis tableau des objets (page remplacée, police, apparence et annotation ajoutées).
 13. Documentation : ADR-0213 à ADR-0218, renvois dans ADR-0043, ADR-0124, ADR-0208 et ADR-0212 ; fiche [`pages-pdf`](../techniques/pages-pdf.md), fiche [`revisions-pdf`](../techniques/revisions-pdf.md) (0.2.0) ; modèle de données (v1.13), architecture (v1.26), découpage (v0.34), guide du catalogue (v1.13), glossaire (v1.13), matrice (F-61 réalisée, F-84 complétée), ce journal.
 
+14. PR [#35](https://github.com/TheDarkMac/AI-detector/pull/35) ouverte (commits `f783665`, `f048a6d`, puis la documentation) ; ADR-0215 reste à valider pendant la revue.
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |

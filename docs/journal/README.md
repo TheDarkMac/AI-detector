@@ -45,4 +45,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T42](T42-ela.md) | ELA, avertissement d'interprétation et carte | `tache/T42-ela` | [#31](https://github.com/TheDarkMac/AI-detector/pull/31) |
 | [T32](T32-lecteur-dwtdct.md) | Lecteur du filigrane dwtDct d'invisible-watermark | `tache/T32-dwtdct` | [#33](https://github.com/TheDarkMac/AI-detector/pull/33) |
 | [T50](T50-revisions-pdf.md) | Révisions incrémentales d'un PDF et leur chronologie | `tache/T50-revisions-pdf` | [#34](https://github.com/TheDarkMac/AI-detector/pull/34) |
-| [T51](T51-objets-pdf.md) | Objets changés, textes superposés et polices incohérentes d'un PDF | `tache/T51-objets-pdf` | à venir |
+| [T51](T51-objets-pdf.md) | Objets changés, textes superposés et polices incohérentes d'un PDF | `tache/T51-objets-pdf` | [#35](https://github.com/TheDarkMac/AI-detector/pull/35) |
