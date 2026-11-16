@@ -23,3 +23,4 @@ Toute erreur constatée — d'analyse, de documentation, de décision ou d'exéc
 | [ERR-0008](ERR-0008-merge-de-la-pr-19.md) | PR #19 mergée sans titre fixé ni validation des ADR proposés : récidive d'ERR-0007 | commit `dfd0216`, `decisions/ADR-0117-…` à `ADR-0122-…` | T21 | 2026-11-12 |
 | [ERR-0009](ERR-0009-codecs-charges-apres-les-restrictions.md) | Codecs UTF-16 et Shift_JIS chargés après les restrictions : module `exif` en erreur | `modules/exif/` (0.1.0) | T21 | 2026-11-12 |
 | [ERR-0010](ERR-0010-test-de-l-empreinte-du-catalogue.md) | Test de la procédure d'empreinte du catalogue : lignes triées par empreinte, pas par chemin | `tests/test_catalogue.py` | T22 | 2026-11-13 |
+| [ERR-0011](ERR-0011-dwtdct-sans-dct.md) | La méthode dwtDct décrite avec une DCT qu'elle n'emploie pas | `catalogue/inventaire-des-marquages.md`, `decisions/ADR-0174-…`, `M-DWTDCT` | T32 | 2026-11-16 |

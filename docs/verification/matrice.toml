@@ -176,10 +176,10 @@ note = "Outil d'origine, titre, signataire, actions et source numérique IPTC, i
 
 [[exigence]]
 id = "F-24"
-etat = "partielle"
+etat = "realisee"
 taches = ["T31", "T32"]
 methodes = ["test"]
-note = "Point d'extension : marquages au catalogue, format 3 (ADR-0175) ; inventaire de T31 : un seul filigrane lisible sans réseau de neurones ni clé, le dwtDct, inscrit non recherché, lecteur en T32 (ADR-0174)."
+note = "Point d'extension : marquages au catalogue, format 3 (ADR-0175) ; inventaire de T31 : un seul filigrane lisible sans réseau de neurones ni clé, le dwtDct (ADR-0174). Lu par le module dwtdct (T32) dans les JPEG et les PNG, règles R-DWTDCT-001 à R-DWTDCT-003, seuils vérifiés sur un relevé de Commons (ADR-0202 à ADR-0206) ; WebP et HEIC non décodés, signalés non recherchés."
 
 [[exigence]]
 id = "F-25"

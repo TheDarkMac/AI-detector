@@ -46,3 +46,4 @@ Option A. T31 livre l'inventaire et le point d'extension ; le lecteur dwtDct dev
 | 2026-11-14 | Création, statut « Accepté » (réponse de TheDarkMac à la question posée pendant T31) |
 | 2026-11-14 | Statut V1 de T32, après T40 et T41, validé par TheDarkMac pendant la revue de la PR (« Yes, all four ») |
 | 2026-11-15 | Renvoi : T41 décode les coefficients et recalcule la luminance, en entiers (ADR-0185, ADR-0189) ; les autres composantes et la conversion de couleurs restent à T32 |
+| 2026-11-16 | Renvoi : la méthode dwtDct n'emploie aucune DCT, contrairement au contexte ci-dessus ([ERR-0011](../errata/ERR-0011-dwtdct-sans-dct.md)) ; lecteur livré par T32 (ADR-0202 à ADR-0206) |
