@@ -1,0 +1,98 @@
+{
+  "certifie.pdf": {
+    "taille": 10612,
+    "revisions_pyhanko": 2,
+    "signatures": [
+      {
+        "champ": "Certification",
+        "fin": 10612,
+        "intacte": true,
+        "couverture": "ENTIRE_FILE",
+        "modification": "NONE",
+        "docmdp": 1,
+        "docmdp_respecte": true
+      }
+    ],
+    "pdfsig": [
+      "- Total document signed"
+    ]
+  },
+  "formulaire.pdf": {
+    "taille": 9166,
+    "revisions_pyhanko": 4,
+    "signatures": [],
+    "pdfsig": []
+  },
+  "lineaire.pdf": {
+    "taille": 4107,
+    "revisions_pyhanko": 2,
+    "signatures": [],
+    "pdfsig": []
+  },
+  "lineaire_maj.pdf": {
+    "taille": 4518,
+    "revisions_pyhanko": 3,
+    "signatures": [],
+    "pdfsig": []
+  },
+  "modifie.pdf": {
+    "taille": 14774,
+    "revisions_pyhanko": 2,
+    "signatures": [],
+    "pdfsig": []
+  },
+  "signe.pdf": {
+    "taille": 16540,
+    "revisions_pyhanko": 5,
+    "signatures": [
+      {
+        "champ": "Signature",
+        "fin": 16540,
+        "intacte": true,
+        "couverture": "ENTIRE_FILE",
+        "modification": "NONE",
+        "docmdp": null,
+        "docmdp_respecte": true
+      }
+    ],
+    "pdfsig": [
+      "- Total document signed"
+    ]
+  },
+  "signe_annote.pdf": {
+    "taille": 18673,
+    "revisions_pyhanko": 6,
+    "signatures": [
+      {
+        "champ": "Signature",
+        "fin": 16540,
+        "intacte": true,
+        "couverture": "ENTIRE_REVISION",
+        "modification": "OTHER",
+        "docmdp": null,
+        "docmdp_respecte": false
+      }
+    ],
+    "pdfsig": [
+      "- Not total document signed"
+    ]
+  },
+  "signe_modifie.pdf": {
+    "taille": 18780,
+    "revisions_pyhanko": 6,
+    "signatures": [
+      {
+        "champ": "Signature",
+        "fin": 16540,
+        "intacte": true,
+        "couverture": "ENTIRE_REVISION",
+        "modification": "OTHER",
+        "docmdp": null,
+        "docmdp_respecte": false
+      }
+    ],
+    "pdfsig": [
+      "- Not total document signed"
+    ]
+  }
+}

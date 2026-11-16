@@ -37,7 +37,8 @@ pytestmark = pytest.mark.exigence("F-13")
 REGLES_T23 = tuple(
     regle
     for regle in CATALOGUE.regles
-    if regle.categorie is Categorie.INFORMATION_NEUTRE and regle.module != "c2pa"
+    if regle.categorie is Categorie.INFORMATION_NEUTRE
+    and regle.module not in {"c2pa", "revisionspdf"}  # T50 : tests/test_revisions_pdf.py
 )
 ABSENCES = tuple(regle for regle in REGLES_T23 if regle.gabarit.endswith(".absence"))
 
@@ -329,8 +330,8 @@ def test_chaque_regle_de_t23_est_eprouvee() -> None:
     # Les 24 de T22 (test_signatures.py), les 8 de T24 (test_transfert.py), les 12 du module
     # c2pa de T30 (test_c2pa.py), les 3 de T40 (test_tables_connues.py), celle de T41
     # (test_double_compression.py), les 15 du complément de T40 (test_tables_relevees.py), les 3
-    # de T32 (test_dwtdct.py).
-    assert len(REGLES_T23) + 24 + 8 + 12 + 3 + 1 + 15 + 3 == len(CATALOGUE.regles)
+    # de T32 (test_dwtdct.py), les 3 de T50 (test_revisions_pdf.py).
+    assert len(REGLES_T23) + 24 + 8 + 12 + 3 + 1 + 15 + 3 + 3 == len(CATALOGUE.regles)
 
 
 @pytest.mark.exigence("F-14", "ES-20")

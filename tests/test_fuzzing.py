@@ -335,6 +335,7 @@ _XMP = xmp(
     '<dc:source rdf:parseType="Resource"><dc:x>1</dc:x></dc:source>'
 )
 _ORACLE = Path(__file__).parent / "donnees" / "metadonnees"
+_REVISIONS = Path(__file__).parent / "donnees" / "revisions"
 _INFO = (
     b"<</Title(Titre \\(entre parenth\\350ses\\))/Author<FEFF004A0065>/Trapped/False"
     b"/Pages 3/Liste[(a) 1]/Sous<</A(b)>>/Creator 2 0 R>>"
@@ -417,6 +418,8 @@ ECHANTILLONS_METADONNEES = (
     ("pdf", (_ORACLE / "document.pdf").read_bytes()),
     ("pdf", (_ORACLE / "ghostscript.pdf").read_bytes()),
     ("pdf", (_ORACLE / "chiffre.pdf").read_bytes()),
+    ("pdf", (_REVISIONS / "signe_modifie.pdf").read_bytes()),
+    ("pdf", (_REVISIONS / "lineaire_maj.pdf").read_bytes()),
     (
         "mp3",
         mp3(
@@ -538,7 +541,7 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "png": ("exif", "xmp", "textepng", "image", "dwtdct"),
     "webp": ("exif", "xmp", "image", "dwtdct"),
     "heic": ("exif", "xmp", "dwtdct"),
-    "pdf": ("infopdf", "xmp"),
+    "pdf": ("infopdf", "xmp", "revisionspdf"),
     "mp3": ("id3",),
     "aac": ("id3",),
     "wav": ("id3", "infowav", "xmp"),
