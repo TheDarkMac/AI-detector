@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 avec T42, v1.12 proposée dans la PR de T50. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 avec T42, v1.12 avec T50, v1.13 proposée dans la PR de T51. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, F-84, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -50,6 +50,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0177](../decisions/ADR-0177-marquages-non-recherches-au-rapport.md), [ADR-0178](../decisions/ADR-0178-couverture-des-marquages.md) | `Couverture.marquages_non_recherches`, raisons ; marquages joints à l'analyse ; `VERSION_SCHEMA` 0.6.0 (T31, ADR-0179) |
 | [ADR-0200](../decisions/ADR-0200-visualisations-au-rapport.md) | Objet `Visualisation`, message `visualisation`, catégorie identifiante `contenu` ; `VERSION_SCHEMA` 0.7.0 (T42, ADR-0201) |
 | [ADR-0212](../decisions/ADR-0212-chronologie-en-tableau.md) | Visualisation en tableau, nature `chronologie_revisions`, non masquée ; `VERSION_SCHEMA` 0.8.0 (T50) |
+| [ADR-0217](../decisions/ADR-0217-objets-changes-un-par-un.md) | Nature de tableau `objets_revisions` ; `VERSION_SCHEMA` 0.9.0 (T51) |
 
 ### Où se trouve le code
 
@@ -67,7 +68,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Exports JSON et HTML, masquage (T16) | `src/voight_kampff/rapport/export.py`, `rapport/_html.py`, `rapport/_presentation.py`, `rapport/textes.toml` |
 | Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py` |
 
-Version commune : `0.8.0` (`VERSION_SCHEMA`, ADR-0212 ; 0.7.0 depuis ADR-0201, 0.6.0 depuis ADR-0179, 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
+Version commune : `0.9.0` (`VERSION_SCHEMA`, ADR-0217 ; 0.8.0 depuis ADR-0212, 0.7.0 depuis ADR-0201, 0.6.0 depuis ADR-0179, 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
 
 ## 2. Vue d'ensemble
 
@@ -290,7 +291,7 @@ Le processus principal tire de l'identification trois sortes d'analyses non men�
 
 **Visualisation** (F-84, ADR-0200) : image écrite par un module pour aider la lecture, jamais une image tirée telle quelle du fichier. `module`, `partie`, `nature` (liste fermée : `carte_ela`), `largeur` et `hauteur` de 1 à 65 535 pixels, le PNG (au plus 768 Kio) et sa `localisation` facultative. Le modèle vérifie la signature du PNG et que les dimensions de son en-tête sont celles annoncées ; l'empreinte SHA-256 est calculée. Catégorie identifiante fixe `contenu` : elle montre le contenu du fichier. Comme une observation, une visualisation n'appartient qu'à une technique appliquée ou partielle ; une technique qui n'a rendu qu'une visualisation et une analyse non menée est partielle. Au plus 16 par rapport. Dans le JSON : `type_media` (`image/png`), `empreinte`, `donnees` (base64), `identifiante`.
 
-**Visualisation en tableau** (F-84, ADR-0212) : une nature de `COLONNES` (liste fermée : `chronologie_revisions`) porte des `lignes` au lieu d'une image : 1 à 256 lignes, chacune d'autant de cellules que la nature a de colonnes, du type de sa colonne (entier positif ou nul, ou texte de 64 caractères au plus). `largeur` vaut le nombre de colonnes, `hauteur` celui des lignes, le PNG est vide. Aucune catégorie identifiante : un tableau n'est jamais masqué. Dans le JSON : `colonnes` (les noms, fixés par la nature) et `lignes`, sans `type_media`, dimensions, `donnees`, `empreinte` ni `identifiante`. Colonnes de `chronologie_revisions` : `version`, `fin`, `nature`, `ajoutes`, `remplaces`, `supprimes`, `date`, `signatures`.
+**Visualisation en tableau** (F-84, ADR-0212) : une nature de `COLONNES` (liste fermée : `chronologie_revisions`, `objets_revisions`) porte des `lignes` au lieu d'une image : 1 à 256 lignes, chacune d'autant de cellules que la nature a de colonnes, du type de sa colonne (entier positif ou nul, ou texte de 64 caractères au plus). `largeur` vaut le nombre de colonnes, `hauteur` celui des lignes, le PNG est vide. Aucune catégorie identifiante : un tableau n'est jamais masqué. Dans le JSON : `colonnes` (les noms, fixés par la nature) et `lignes`, sans `type_media`, dimensions, `donnees`, `empreinte` ni `identifiante`. Colonnes de `chronologie_revisions` : `version`, `fin`, `nature`, `ajoutes`, `remplaces`, `supprimes`, `date`, `signatures` ; de `objets_revisions` (ADR-0217) : `version`, `objet`, `generation`, `etat`, `type`, `nature`, `page`. Le schéma du rapport décrit chaque nature à part (`tableau_chronologie_revisions`, `tableau_objets_revisions`).
 
 ## 6. Localisation, identification, versions, isolation
 
@@ -381,3 +382,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-11-14 | 1.10 | Marquages non recherchés de la couverture, `VERSION_SCHEMA` 0.6.0 (§1, §2, §5, ADR-0177 à ADR-0179) | T31 |
 | 2026-11-15 | 1.11 | Visualisations : objet, catégorie identifiante `contenu`, message, export masqué, `VERSION_SCHEMA` 0.7.0 (§1 à §5, §7 à §9, ADR-0200, ADR-0201) | T42 |
 | 2026-11-16 | 1.12 | Visualisation en tableau, nature `chronologie_revisions`, `VERSION_SCHEMA` 0.8.0 (§1, §2, §5, §7 à §9, ADR-0212) ; statut corrigé, il annonçait encore la v1.10 | T50 |
+| 2026-11-17 | 1.13 | Nature de tableau `objets_revisions`, `VERSION_SCHEMA` 0.9.0 (§1, §2, §7, ADR-0217) | T51 |

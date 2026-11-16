@@ -63,3 +63,4 @@ Option A. Précisions de l'assistant :
 | Date | Modification |
 | --- | --- |
 | 2026-11-16 | Création ; option choisie par TheDarkMac au début de T50 |
+| 2026-11-17 | Renvoi : seconde nature de tableau, `objets_revisions`, schéma 0.9.0 (T51, ADR-0217) |

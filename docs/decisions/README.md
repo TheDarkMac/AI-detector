@@ -227,3 +227,9 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0210](ADR-0210-versions-d-un-pdf-chiffre.md) | Versions d'un PDF chiffré : rien n'est déchiffré | Accepté | 2026-11-16 |
 | [ADR-0211](ADR-0211-constats-et-versions-de-t50.md) | Constats des versions d'un PDF : une information neutre et deux indices faibles vers la retouche ; module `revisionspdf` et versions de T50 | Accepté | 2026-11-16 |
 | [ADR-0212](ADR-0212-chronologie-en-tableau.md) | Chronologie des versions d'un PDF : visualisation en tableau, non masquée ; schéma 0.8.0 | Accepté | 2026-11-16 |
+| [ADR-0213](ADR-0213-contenus-de-pages-par-le-lecteur-du-projet.md) | Contenus de pages et polices d'un PDF : lus par le lecteur du projet ; arrêt avant le budget | Accepté | 2026-11-17 |
+| [ADR-0214](ADR-0214-textes-superposes-et-caches.md) | Textes superposés et caches : texte sur un texte différent, rectangle opaque sur un texte, apparences des annotations comprises | Accepté | 2026-11-17 |
+| [ADR-0215](ADR-0215-mesure-des-textes.md) | Mesure des textes d'une page : largeurs déclarées, montée et descente de la police ; 14 polices standard par les fichiers AFM d'Adobe | Proposé | 2026-11-17 |
+| [ADR-0216](ADR-0216-polices-incoherentes.md) | Polices incohérentes : même police en plusieurs incorporations sur une page, codes hors de la plage déclarée | Accepté | 2026-11-17 |
+| [ADR-0217](ADR-0217-objets-changes-un-par-un.md) | Objets changés par les versions d'un PDF : un par un, en tableau ; `revisionspdf` 0.2.0, schéma 0.9.0 | Accepté | 2026-11-17 |
+| [ADR-0218](ADR-0218-constats-et-versions-de-t51.md) | Constats des pages d'un PDF : quatre indices faibles vers la retouche ; module `pagespdf` et versions de T51 | Accepté | 2026-11-17 |
