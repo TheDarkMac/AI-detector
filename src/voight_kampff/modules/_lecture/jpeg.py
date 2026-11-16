@@ -3,15 +3,19 @@
 Le lecteur parcourt les segments du JPEG entier, balayages compris, et décode les codes de
 Huffman des procédés séquentiels (SOF0, SOF1) et progressif (SOF2), en huit bits : il rend les
 coefficients quantifiés de la première composante (la luminance d'un JPEG en YCbCr), sans
-transformée inverse ni conversion de couleurs. Le codage arithmétique, le procédé sans perte, le
-procédé hiérarchique et la précision de douze bits ne sont pas lus (format partiel).
+transformée inverse ni conversion de couleurs ; sur demande (``toutes``), ceux de toutes les
+composantes, avec ce que disent les segments JFIF et Adobe de leurs couleurs (ADR-0202). Le
+codage arithmétique, le procédé sans perte, le procédé hiérarchique et la précision de douze bits
+ne sont pas lus (format partiel).
 
 Seule une région du haut de l'image est décodée : les premières lignes de blocs de la première
 composante, au plus :data:`BLOCS_REGION` blocs, et au plus :data:`VISITES_MAX` blocs décodés en
 tout, balayages et autres composantes compris (ADR-0189) ; un module peut demander d'autres
 bornes (l'ELA, ADR-0199). Le nombre de lignes se déduit des
 balayages annoncés, avant le décodage : il est le même sur toutes les machines. Un balayage qui
-ne porte pas la première composante est sauté sans être décodé.
+ne porte pas la première composante est sauté sans être décodé, sauf quand toutes les
+composantes sont demandées ; la région est alors faite de lignes de MCU entières, et chaque
+composante y couvre les mêmes lignes de l'image.
 
 Un JPEG malformé n'y lève jamais d'exception : la lecture s'arrête et rend sa raison, fichier
 tronqué si les données manquent avant la fin de la région, format partiel sinon.
@@ -48,8 +52,10 @@ _NON_LUS = frozenset(
 )
 """Procédés sans perte, hiérarchiques et arithmétiques (SOF3, SOF5 à SOF7, SOF9 à SOF15), JPG,
 DAC, DNL, DHP et EXP (T.81, tableau B.1)."""
-_LUS = frozenset({0xC0, 0xC1, 0xC2, 0xC4, 0xDA, 0xDB, 0xDD})
-"""Segments dont le lecteur lit le contenu : SOF0 à SOF2, DHT, SOS, DQT, DRI."""
+_LUS = frozenset({0xC0, 0xC1, 0xC2, 0xC4, 0xDA, 0xDB, 0xDD, 0xE0, 0xEE})
+"""Segments dont le lecteur lit le contenu : SOF0 à SOF2, DHT, SOS, DQT, DRI, APP0 et APP14."""
+_JFIF = b"JFIF\x00"
+_ADOBE = b"Adobe"
 _TABLES_MAX = 256
 """Tables de Huffman définies au plus ; chacune coûte une table de lecture de 65 536 entrées."""
 _FIN = re.compile(rb"\xff[^\x00\xd0-\xd7]")
@@ -86,6 +92,13 @@ class Coefficients:
     valeurs: array[int]
     """``lignes * colonnes * 64`` entiers signés de 64 bits, bloc après bloc dans l'ordre de la
     trame, chaque bloc dans l'ordre en zigzag du segment DQT."""
+    identifiant: int = 1
+    """Identifiant de la composante dans le segment SOF."""
+    horizontal: int = 1
+    """Facteurs d'échantillonnage de la composante, puis les plus grands de l'image."""
+    vertical: int = 1
+    horizontal_max: int = 1
+    vertical_max: int = 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -95,6 +108,12 @@ class Lecture:
     coefficients: Coefficients | None
     arret: RaisonNonMenee | None = None
     position: int = 0
+    composantes: tuple[Coefficients, ...] = ()
+    """Toutes les composantes, la première en tête, quand elles sont demandées."""
+    jfif: bool = False
+    """Le fichier porte un segment APP0 JFIF (composantes en YCbCr, ou en niveaux de gris)."""
+    adobe: int | None = None
+    """Transformation de couleurs du segment APP14 Adobe (0 : aucune, 1 : YCbCr, 2 : YCCK)."""
 
     def localisation_arret(self) -> Localisation:
         return Localisation(chemin="données entropiques du JPEG", octets=Plage(self.position, 1))
@@ -129,18 +148,32 @@ class _Balayage:
     """Intervalle de redémarrage, en MCU ; 0 sans redémarrage."""
 
 
-def lire(contexte: Contexte, *, blocs: int | None = None, visites: int | None = None) -> Lecture:
+def lire(
+    contexte: Contexte,
+    *,
+    blocs: int | None = None,
+    visites: int | None = None,
+    toutes: bool = False,
+) -> Lecture:
     """Coefficients de la première composante, sur la région du haut de l'image.
 
-    ``blocs`` borne les blocs de la région, :data:`BLOCS_REGION` par défaut ; ``visites`` les
-    blocs décodés en tout, :data:`VISITES_MAX` par défaut.
+    ``blocs`` borne les blocs de la première composante dans la région, :data:`BLOCS_REGION`
+    par défaut ; ``visites`` les blocs décodés en tout, :data:`VISITES_MAX` par défaut.
+    ``toutes`` demande aussi les autres composantes, dans :attr:`Lecture.composantes`.
     """
     blocs = BLOCS_REGION if blocs is None else blocs
     visites = VISITES_MAX if visites is None else visites
+    lecteur = _Lecteur(contexte, blocs, visites, toutes)
     try:
-        return Lecture(_Lecteur(contexte, blocs, visites).lire())
+        composantes = lecteur.lire()
     except _Arret as arret:
         return Lecture(None, arret.raison, arret.position)
+    return Lecture(
+        composantes[0],
+        composantes=composantes if toutes else (),
+        jfif=lecteur.jfif,
+        adobe=lecteur.adobe,
+    )
 
 
 def _huffman(comptes: bytes, symboles: bytes, position: int) -> list[int]:
@@ -163,6 +196,20 @@ def _huffman(comptes: bytes, symboles: bytes, position: int) -> list[int]:
     return table
 
 
+@dataclass(frozen=True, slots=True)
+class _Geometrie:
+    """Dimensions d'une composante dans l'image et dans la région."""
+
+    largeur: int
+    """Largeur de la composante en pixels, sous-échantillonnage compris."""
+    hauteur: int
+    colonnes: int
+    """Blocs par ligne qui recouvrent la composante."""
+    lignes_image: int
+    grille: int
+    """Blocs par ligne dans le stockage : MCU entières quand l'image en a plusieurs."""
+
+
 class _Lecteur:
     __slots__ = (
         "_balayages",
@@ -176,14 +223,18 @@ class _Lecteur:
         "_largeur",
         "_procede",
         "_quantification",
-        "_table",
+        "_tables",
+        "_toutes",
         "_visites_max",
+        "adobe",
+        "jfif",
     )
 
-    def __init__(self, contexte: Contexte, blocs: int, visites: int) -> None:
+    def __init__(self, contexte: Contexte, blocs: int, visites: int, toutes: bool) -> None:
         self._contexte = contexte
         self._blocs = blocs
         self._visites_max = visites
+        self._toutes = toutes
         self._quantification: dict[int, tuple[bool, tuple[int, ...]]] = {}
         self._huffman: dict[tuple[int, int], list[int]] = {}
         self._definies = 0
@@ -192,15 +243,26 @@ class _Lecteur:
         self._largeur = 0
         self._hauteur = 0
         self._procede = 0
-        self._table: tuple[bool, tuple[int, ...]] | None = None
+        self._tables: dict[int, tuple[bool, tuple[int, ...]]] = {}
+        """Table de quantification de chaque composante, fixée à son premier balayage."""
         self._balayages: list[_Balayage] = []
+        self.jfif = False
+        self.adobe: int | None = None
 
     # Segments
 
-    def lire(self) -> Coefficients:
+    def lire(self) -> tuple[Coefficients, ...]:
         self._segments()
-        if not self._composantes or self._table is None:
+        if not self._composantes or 0 not in self._tables:
             raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, self._contexte.taille)
+        if self._toutes:
+            for indice, composante in enumerate(self._composantes):
+                # Composante sans balayage : ses coefficients restent nuls.
+                if indice not in self._tables:
+                    table = self._quantification.get(composante.table)
+                    if table is None:
+                        raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, self._contexte.taille)
+                    self._tables[indice] = table
         return self._decoder()
 
     def _segments(self) -> None:
@@ -250,6 +312,10 @@ class _Lecteur:
                 self._sof(marqueur, donnees, position)
             elif marqueur == 0xDA:
                 position = self._sos(donnees, position)
+            elif marqueur == 0xE0:
+                self.jfif = self.jfif or donnees.startswith(_JFIF)
+            elif marqueur == 0xEE and donnees.startswith(_ADOBE) and len(donnees) >= 12:
+                self.adobe = donnees[11]
 
     def _dqt(self, donnees: bytes, position: int) -> None:
         rang = 0
@@ -330,7 +396,7 @@ class _Lecteur:
             indices.append((indice, donnees[2 + 2 * i] >> 4, donnees[2 + 2 * i] & 0x0F))
         self._verifier_balayage(nombre, ss, se, ah, al, indices, position)
         fin = self._fin_entropie(position)
-        if indices[0][0] == 0:
+        if indices[0][0] == 0 or self._toutes:
             composantes = []
             for indice, continu, alternatif in indices:
                 # Seules les tables dont le balayage se sert doivent exister.
@@ -341,11 +407,11 @@ class _Lecteur:
                 if tables[0] is None or tables[1] is None:
                     raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
                 composantes.append((indice, tables[0], tables[1]))
-            if self._table is None:
-                table = self._quantification.get(self._composantes[0].table)
-                if table is None:
-                    raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
-                self._table = table
+                if indice not in self._tables and (indice == 0 or self._toutes):
+                    table = self._quantification.get(self._composantes[indice].table)
+                    if table is None:
+                        raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, position)
+                    self._tables[indice] = table
             self._balayages.append(
                 _Balayage(tuple(composantes), position, fin, ss, se, ah, al, self._intervalle)
             )
@@ -394,55 +460,107 @@ class _Lecteur:
 
     # Décodage
 
-    def _decoder(self) -> Coefficients:
+    def _geometrie(self, composante: _Composante, hmax: int, vmax: int) -> _Geometrie:
+        largeur = -(-self._largeur * composante.horizontal // hmax)
+        hauteur = -(-self._hauteur * composante.vertical // vmax)
+        colonnes = -(-largeur // 8)
+        mcu_colonnes = -(-self._largeur // (8 * hmax))
+        seule = len(self._composantes) == 1
+        grille = colonnes if seule else mcu_colonnes * composante.horizontal
+        return _Geometrie(largeur, hauteur, colonnes, -(-hauteur // 8), grille)
+
+    def _lignes(self, lignes: int, geometries: list[_Geometrie]) -> list[int]:
+        """Lignes de blocs de chaque composante sur une région de ``lignes`` lignes de la
+        première : celles des mêmes lignes de MCU, dans la composante."""
+        if len(self._composantes) == 1:
+            return [lignes]
+        mcu_lignes = -(-lignes // self._composantes[0].vertical)
+        return [lignes] + [
+            min(geometrie.lignes_image, mcu_lignes * composante.vertical)
+            for composante, geometrie in zip(self._composantes[1:], geometries[1:], strict=True)
+        ]
+
+    def _decoder(self) -> tuple[Coefficients, ...]:
         composantes = self._composantes
         premiere = composantes[0]
         hmax = max(c.horizontal for c in composantes)
         vmax = max(c.vertical for c in composantes)
         mcu_colonnes = -(-self._largeur // (8 * hmax))
-        largeur_c = -(-self._largeur * premiere.horizontal // hmax)
-        hauteur_c = -(-self._hauteur * premiere.vertical // vmax)
-        colonnes = -(-largeur_c // 8)
-        lignes_image = -(-hauteur_c // 8)
-        seule = len(composantes) == 1
-        grille = colonnes if seule else mcu_colonnes * premiere.horizontal
+        geometries = [self._geometrie(c, hmax, vmax) for c in composantes]
+        colonnes, lignes_image = geometries[0].colonnes, geometries[0].lignes_image
         entrelaces = any(len(b.composantes) > 1 for b in self._balayages)
         # Lignes de la région : au plus ``blocs`` blocs, au plus ``visites`` blocs décodés. Un
-        # balayage entrelacé décode des lignes de MCU entières ; les lignes en trop sont oubliées.
-        lignes = max(1, min(lignes_image, self._blocs // colonnes))
-        while lignes > 1 and self._visites(lignes, colonnes, mcu_colonnes) > self._visites_max:
-            lignes = lignes * 3 // 4
-        if self._visites(lignes, colonnes, mcu_colonnes) > self._visites_max:
+        # balayage entrelacé décode des lignes de MCU entières ; les lignes en trop sont oubliées,
+        # sauf quand toutes les composantes sont demandées : la région est alors faite de lignes
+        # de MCU entières, pour que chacune couvre les mêmes lignes de l'image.
+        unite = premiere.vertical if self._toutes else 1
+        lignes = self._entieres(min(lignes_image, self._blocs // colonnes), unite, lignes_image)
+        while (
+            lignes > unite and self._visites(lignes, geometries, mcu_colonnes) > self._visites_max
+        ):
+            lignes = self._entieres(lignes * 3 // 4, unite, lignes_image)
+        if self._visites(lignes, geometries, mcu_colonnes) > self._visites_max:
             raise _Arret(RaisonNonMenee.FORMAT_PARTIEL, self._balayages[0].debut)
-        stockage = -(-lignes // premiere.vertical) * premiere.vertical if entrelaces else lignes
-        valeurs = array("q", bytes(8 * 64 * stockage * grille))
+        regions = self._lignes(lignes, geometries)
+        gardees = range(len(composantes)) if self._toutes else range(1)
+        mcu_lignes = -(-lignes // premiere.vertical)
+        stockages = [
+            mcu_lignes * composantes[i].vertical if entrelaces else regions[i] for i in gardees
+        ]
+        decalages = [0]
+        for i in gardees:
+            decalages.append(decalages[-1] + 64 * stockages[i] * geometries[i].grille)
+        valeurs = array("q", bytes(8 * decalages[-1]))
         for balayage in self._balayages:
-            self._balayage(balayage, valeurs, grille, lignes, colonnes, mcu_colonnes)
-        if grille != colonnes or stockage != lignes:
-            valeurs = _colonnes(valeurs, grille, colonnes, lignes)
-        precision, table = self._table or (False, ())
-        return Coefficients(
-            largeur=self._largeur,
-            hauteur=self._hauteur,
-            procede="progressif" if self._procede == _PROGRESSIF else "sequentiel",
-            precision_table=precision,
-            table=table,
-            colonnes=colonnes,
-            lignes=lignes,
-            largeur_composante=largeur_c,
-            hauteur_region=min(hauteur_c, 8 * lignes),
-            blocs_image=colonnes * lignes_image,
-            valeurs=valeurs,
-        )
+            self._balayage(balayage, valeurs, geometries, regions, decalages, mcu_colonnes)
+        procede = "progressif" if self._procede == _PROGRESSIF else "sequentiel"
+        resultat = []
+        for i in gardees:
+            geometrie, region = geometries[i], regions[i]
+            propres = valeurs[decalages[i] : decalages[i + 1]] if self._toutes else valeurs
+            if geometrie.grille != geometrie.colonnes or stockages[i] != region:
+                propres = _colonnes(propres, geometrie.grille, geometrie.colonnes, region)
+            precision, table = self._tables[i]
+            resultat.append(
+                Coefficients(
+                    largeur=self._largeur,
+                    hauteur=self._hauteur,
+                    procede=procede,
+                    precision_table=precision,
+                    table=table,
+                    colonnes=geometrie.colonnes,
+                    lignes=region,
+                    largeur_composante=geometrie.largeur,
+                    hauteur_region=min(geometrie.hauteur, 8 * region),
+                    blocs_image=geometrie.colonnes * geometrie.lignes_image,
+                    valeurs=propres,
+                    identifiant=composantes[i].identifiant,
+                    horizontal=composantes[i].horizontal,
+                    vertical=composantes[i].vertical,
+                    horizontal_max=hmax,
+                    vertical_max=vmax,
+                )
+            )
+        return tuple(resultat)
 
-    def _visites(self, lignes: int, colonnes: int, mcu_colonnes: int) -> int:
+    @staticmethod
+    def _entieres(lignes: int, unite: int, lignes_image: int) -> int:
+        """``lignes`` arrondi à un multiple de ``unite`` vers le bas, sans descendre sous
+        ``unite`` ; inchangé si la région couvre déjà toute la composante."""
+        if unite == 1 or lignes >= lignes_image:
+            return max(1, lignes)
+        return max(unite, lignes // unite * unite)
+
+    def _visites(self, lignes: int, geometries: list[_Geometrie], mcu_colonnes: int) -> int:
         """Blocs décodés pour une région de ``lignes`` lignes, tous balayages compris."""
         composantes = self._composantes
+        regions = self._lignes(lignes, geometries)
         mcu_lignes = -(-lignes // composantes[0].vertical)
         visites = 0
         for balayage in self._balayages:
             if len(balayage.composantes) == 1:
-                visites += lignes * colonnes
+                indice = balayage.composantes[0][0]
+                visites += regions[indice] * geometries[indice].colonnes
             else:
                 visites += (
                     mcu_lignes
@@ -458,18 +576,20 @@ class _Lecteur:
         self,
         balayage: _Balayage,
         valeurs: array[int],
-        grille: int,
-        lignes: int,
-        colonnes: int,
+        geometries: list[_Geometrie],
+        regions: list[int],
+        decalages: list[int],
         mcu_colonnes: int,
     ) -> None:
         """Décode le balayage jusqu'à la dernière ligne de la région."""
         composantes = self._composantes
+        gardees = len(decalages) - 1
         # Blocs à décoder, dans l'ordre du balayage : (composante, ligne, colonne) par MCU.
         if len(balayage.composantes) == 1:
+            indice = balayage.composantes[0][0]
             unites = [(0, 0, 0)]
-            mcus = lignes * colonnes
-            par_ligne = colonnes
+            mcus = regions[indice] * geometries[indice].colonnes
+            par_ligne = geometries[indice].colonnes
         else:
             unites = [
                 (rang, v, h)
@@ -478,7 +598,7 @@ class _Lecteur:
                 for h in range(composantes[i].horizontal)
             ]
             par_ligne = mcu_colonnes
-            mcus = -(-lignes // composantes[0].vertical) * mcu_colonnes
+            mcus = -(-regions[0] // composantes[0].vertical) * mcu_colonnes
         self._contexte.compter_objets(mcus * len(unites))
         intervalle = balayage.intervalle or mcus
         borne = mcus * len(unites) * _OCTETS_PAR_BLOC + (mcus // intervalle + 1) * 2 + 16
@@ -486,23 +606,30 @@ class _Lecteur:
         morceaux = [m.replace(b"\xff\x00", b"\xff") for m in _RST.split(donnees)]
         if len(morceaux) < -(-mcus // intervalle):
             raise self._manque(balayage)
-        premiere = composantes[0]
         for numero in range(-(-mcus // intervalle)):
             debut = numero * intervalle
             fin = min(mcus, debut + intervalle)
             positions = []
+            rangs = []
             for mcu in range(debut, fin):
                 ligne_mcu, colonne_mcu = divmod(mcu, par_ligne)
                 for rang, v, h in unites:
-                    if len(balayage.composantes) == 1:
-                        positions.append((ligne_mcu * grille + colonne_mcu) * 64)
-                    elif balayage.composantes[rang][0] == 0:
-                        ligne = ligne_mcu * premiere.vertical + v
-                        colonne = colonne_mcu * premiere.horizontal + h
-                        positions.append((ligne * grille + colonne) * 64)
+                    i = balayage.composantes[rang][0]
+                    rangs.append(rang)
+                    if i >= gardees:
+                        positions.append(-1)
+                    elif len(balayage.composantes) == 1:
+                        grille = geometries[i].grille
+                        positions.append(decalages[i] + (ligne_mcu * grille + colonne_mcu) * 64)
                     else:
-                        positions.append(-1 - rang)
-            if not _intervalle(morceaux[numero], balayage, positions, valeurs, self._procede):
+                        ligne = ligne_mcu * composantes[i].vertical + v
+                        colonne = colonne_mcu * composantes[i].horizontal + h
+                        positions.append(
+                            decalages[i] + (ligne * geometries[i].grille + colonne) * 64
+                        )
+            if not _intervalle(
+                morceaux[numero], balayage, positions, rangs, valeurs, self._procede
+            ):
                 raise self._manque(balayage)
 
     def _manque(self, balayage: _Balayage) -> _Arret:
@@ -529,17 +656,24 @@ def _colonnes(valeurs: array[int], grille: int, colonnes: int, lignes: int) -> a
 
 
 def _intervalle(
-    donnees: bytes, balayage: _Balayage, positions: list[int], valeurs: array[int], procede: int
+    donnees: bytes,
+    balayage: _Balayage,
+    positions: list[int],
+    rangs: list[int],
+    valeurs: array[int],
+    procede: int,
 ) -> bool:
     """Décode les blocs d'un intervalle de redémarrage ; faux si les données manquent.
 
     ``positions`` donne, pour chaque bloc dans l'ordre, sa place dans ``valeurs`` ; un bloc d'une
-    autre composante (valeur négative ``-1 - rang``) est décodé puis oublié.
+    composante qui n'est pas gardée (position -1) est décodé puis oublié. ``rangs`` donne le rang
+    de sa composante dans le balayage : ses tables de Huffman et sa prédiction du coefficient
+    continu.
     """
     if procede != _PROGRESSIF:
-        return _sequentiel(donnees, balayage, positions, valeurs)
+        return _sequentiel(donnees, balayage, positions, rangs, valeurs)
     if balayage.ss == 0:
-        return _continu_progressif(donnees, balayage, positions, valeurs)
+        return _continu_progressif(donnees, balayage, positions, rangs, valeurs)
     if balayage.ah == 0:
         return _alternatif_premier(donnees, balayage, positions, valeurs)
     return _alternatif_raffine(donnees, balayage, positions, valeurs)
@@ -558,14 +692,17 @@ def _etendre(bits: int, taille: int) -> int:
 
 
 def _sequentiel(
-    donnees: bytes, balayage: _Balayage, positions: list[int], valeurs: array[int]
+    donnees: bytes,
+    balayage: _Balayage,
+    positions: list[int],
+    rangs: list[int],
+    valeurs: array[int],
 ) -> bool:
     tables = balayage.composantes
     predictions = [0] * len(tables)
     tampon = bits = lus = 0
     disponibles = len(donnees) * 8
-    for position in positions:
-        rang = 0 if position >= 0 else -1 - position
+    for position, rang in zip(positions, rangs, strict=True):
         _, continu, alternatif = tables[rang]
         if bits < 32:
             tampon = (tampon & ((1 << bits) - 1)) << 32 | int.from_bytes(
@@ -616,7 +753,11 @@ def _sequentiel(
 
 
 def _continu_progressif(
-    donnees: bytes, balayage: _Balayage, positions: list[int], valeurs: array[int]
+    donnees: bytes,
+    balayage: _Balayage,
+    positions: list[int],
+    rangs: list[int],
+    valeurs: array[int],
 ) -> bool:
     tables = balayage.composantes
     predictions = [0] * len(tables)
@@ -624,8 +765,7 @@ def _continu_progressif(
     premier = balayage.ah == 0
     tampon = bits = lus = 0
     disponibles = len(donnees) * 8
-    for position in positions:
-        rang = 0 if position >= 0 else -1 - position
+    for position, rang in zip(positions, rangs, strict=True):
         if bits < 32:
             tampon = (tampon & ((1 << bits) - 1)) << 32 | int.from_bytes(
                 donnees[lus : lus + 4].ljust(4, b"\x00")

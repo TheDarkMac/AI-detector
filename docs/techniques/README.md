@@ -21,6 +21,7 @@ Une fiche par module d'analyse (NF-09, livrable 4), livrée avec son code, ses t
 | [Structure d'une image](structure-image.md) | `image` | T24, T40 | JPEG, PNG, WebP |
 | [Double compression JPEG](double-compression-jpeg.md) | `doublejpeg` | T41 | JPEG |
 | [Niveau d'erreur de recompression (ELA)](ela.md) | `ela` | T42 | JPEG |
+| [Filigrane dwtDct d'invisible-watermark](filigrane-dwtdct.md) | `dwtdct` | T32 | JPEG, PNG (WebP, HEIC non lus) |
 | [Dictionnaire d'information PDF](metadonnees-info-pdf.md) | `infopdf` | T21, T22, T23, T25 | PDF |
 | [Balises ID3](metadonnees-id3.md) | `id3` | T21, T22, T23, T25 | MP3, AAC, FLAC, WAV |
 | [Liste INFO et bloc bext d'un WAV](metadonnees-info-wav.md) | `infowav` | T21, T22, T23, T25 | WAV |

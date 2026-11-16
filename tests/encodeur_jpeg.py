@@ -89,6 +89,10 @@ class _Bits:
         return octets
 
 
+def _plafond(a: int, b: int) -> int:
+    return -(-a // b)
+
+
 def _taille(valeur: int) -> int:
     return abs(valeur).bit_length()
 
@@ -126,17 +130,22 @@ def encoder(
     intervalle: int = 0,
     marqueur_sof: int = 0xC0,
     avant_balayage: bytes = b"",
+    seule: int | None = None,
 ) -> bytes:
     """JPEG séquentiel : ``blocs[c]`` donne les blocs de la composante ``c`` (64 valeurs dans
-    l'ordre en zigzag), ligne après ligne sur la grille des MCU (ou de la composante seule)."""
+    l'ordre en zigzag), ligne après ligne sur la grille des MCU (ou de la composante seule).
+
+    ``seule`` : rang de la seule composante du balayage, les autres n'en ont aucun ; ses blocs
+    sont alors sur sa propre grille."""
     hmax = max(c.horizontal for c in composantes)
     vmax = max(c.vertical for c in composantes)
     entete = struct.pack(">BHHB", 8, hauteur, largeur, len(composantes)) + b"".join(
         bytes([c.identifiant, c.horizontal << 4 | c.vertical, c.table]) for c in composantes
     )
+    balayees = composantes if seule is None else [composantes[seule]]
     sos = (
-        bytes([len(composantes)])
-        + b"".join(bytes([c.identifiant, 0x00]) for c in composantes)
+        bytes([len(balayees)])
+        + b"".join(bytes([c.identifiant, 0x00]) for c in balayees)
         + bytes([0, 63, 0])
     )
     fichier = bytearray(b"\xff\xd8")
@@ -149,7 +158,16 @@ def encoder(
         fichier += segment(0xDD, struct.pack(">H", intervalle))
     fichier += avant_balayage + segment(0xDA, sos)
     # Ordre des blocs dans le balayage.
-    if len(composantes) == 1:
+    if seule is not None:
+        c = composantes[seule]
+        largeur_blocs = _plafond(_plafond(largeur * c.horizontal, hmax), 8)
+        hauteur_blocs = _plafond(_plafond(hauteur * c.vertical, vmax), 8)
+        unites = [
+            [(seule, ligne * largeur_blocs + colonne)]
+            for ligne in range(hauteur_blocs)
+            for colonne in range(largeur_blocs)
+        ]
+    elif len(composantes) == 1:
         largeur_blocs = -(-largeur // 8)
         hauteur_blocs = -(-hauteur // 8)
         unites = [

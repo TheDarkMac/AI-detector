@@ -20,6 +20,21 @@ references = ["https://spec.c2pa.org/specifications/specifications/2.2/specs/C2P
 verifie = "2026-11-14"
 
 [[marquage]]
+identifiant = "M-DWTDCT"
+nom = "Filigrane dwtDct d'invisible-watermark (Stable Diffusion 1, SDXL, FLUX.1)"
+nature = "filigrane"
+description = "Message fixe caché dans la bande basse fréquence d'une transformée de Haar de la chrominance U, par la méthode dwtDct de la bibliothèque invisible-watermark (qui n'emploie aucune DCT) : « StableDiffusionV1 » dans les scripts de CompVis, 48 bits dans ceux de SDXL (generative-models, diffusers), 46 bits dans le code de référence de FLUX.1. Recherché par le module dwtdct dans les JPEG et les PNG ; les WebP et HEIC ne sont pas lus. Fragile au recadrage et au redimensionnement."
+formats = ["jpeg", "png", "webp", "heic"]
+module = "dwtdct"
+references = [
+    "https://github.com/ShieldMnt/invisible-watermark",
+    "https://github.com/CompVis/stable-diffusion/blob/main/scripts/txt2img.py",
+    "https://github.com/Stability-AI/generative-models/blob/main/sgm/inference/helpers.py",
+    "https://github.com/black-forest-labs/flux/blob/main/src/flux/util.py",
+]
+verifie = "2026-11-16"
+
+[[marquage]]
 identifiant = "M-IPTC-DST"
 nom = "Type de source numérique IPTC (DigitalSourceType)"
 nature = "declaration"
@@ -33,21 +48,6 @@ references = [
 verifie = "2026-11-14"
 
 # Non recherchés : lecteur public et déterministe, à livrer
-
-[[marquage]]
-identifiant = "M-DWTDCT"
-nom = "Filigrane dwtDct d'invisible-watermark (Stable Diffusion 1, SDXL, FLUX.1)"
-nature = "filigrane"
-description = "Message fixe caché dans les coefficients DCT d'une transformée en ondelettes de la chrominance, par la bibliothèque invisible-watermark : « StableDiffusionV1 » dans les scripts de CompVis, 48 bits dans ceux de SDXL (generative-models, diffusers), 46 bits dans le code de référence de FLUX.1. Lecteur public, sans réseau de neurones ni clé, mais qui demande de décoder les pixels : tâche T32. Fragile au recadrage et au redimensionnement."
-formats = ["jpeg", "png", "webp", "heic"]
-raison = "lecteur_a_venir"
-references = [
-    "https://github.com/ShieldMnt/invisible-watermark",
-    "https://github.com/CompVis/stable-diffusion/blob/main/scripts/txt2img.py",
-    "https://github.com/Stability-AI/generative-models/blob/main/sgm/inference/helpers.py",
-    "https://github.com/black-forest-labs/flux/blob/main/src/flux/util.py",
-]
-verifie = "2026-11-14"
 
 [[marquage]]
 identifiant = "M-C2PA-TEXTE"

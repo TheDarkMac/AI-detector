@@ -327,14 +327,15 @@ def test_publication_au_resume(analyse: Analyse) -> None:
 
 def test_publication_sans_marque_ni_partie_non_lue(tmp_path: Path) -> None:
     # JPEG sans métadonnées, ni données d'image : seuls les techniques hors V1 et le décodage
-    # des coefficients (doublejpeg et ela, format partiel) sont non menés. Aucun ne lit de
-    # métadonnées : le contrôle n'est pas incomplet (ADR-0190, ADR-0201).
+    # des coefficients (doublejpeg, dwtdct et ela, format partiel) sont non menés. Aucun ne lit
+    # de métadonnées : le contrôle n'est pas incomplet (ADR-0190, ADR-0201, ADR-0206).
     chemin = tmp_path / "image.jpg"
     chemin.write_bytes(jpeg_image(640, 480))
     analyse = analyser(chemin)
-    signal = {"doublejpeg", "ela"}
+    signal = {"doublejpeg", "dwtdct", "ela"}
     assert {(n.raison, n.module) for n in analyse.non_menees if n.module in signal} == {
         (RaisonNonMenee.FORMAT_PARTIEL, "doublejpeg"),
+        (RaisonNonMenee.FORMAT_PARTIEL, "dwtdct"),
         (RaisonNonMenee.FORMAT_PARTIEL, "ela"),
     }
     assert {n.raison for n in analyse.non_menees if n.module not in signal} == {

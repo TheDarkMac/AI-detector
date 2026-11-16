@@ -1,0 +1,10 @@
+# Données brutes du relevé de T32, régénérables par les scripts : hors du dépôt.
+phase1.jsonl
+phase1.etat.json
+phase1.log
+phase2.jsonl
+phase2.log
+fichiers/
+__pycache__/
+phase3.txt
+phase3.log

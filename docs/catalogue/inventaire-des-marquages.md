@@ -1,6 +1,6 @@
 # Inventaire des marquages et des filigranes invisibles
 
-> Statut : **v1.0**, proposée dans la PR de T31. Inventaire daté : chaque affirmation a été vérifiée le **2026-11-14** sur la source citée, et vaut à cette date. Les marquages évoluent vite : l'inventaire se refait avant chaque version du catalogue qui touche aux marquages.
+> Statut : **v1.1**, proposée dans la PR de T32. Inventaire daté : chaque affirmation a été vérifiée le **2026-11-14** sur la source citée, et vaut à cette date ; le §3 a été revu le **2026-11-16** (T32, [ERR-0011](../errata/ERR-0011-dwtdct-sans-dct.md)). Les marquages évoluent vite : l'inventaire se refait avant chaque version du catalogue qui touche aux marquages.
 > Exigences : F-24, F-25, F-26 ; A-03, A-21, A-35 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Décisions : [ADR-0012](../decisions/ADR-0012-perimetre-v1.md), [ADR-0016](../decisions/ADR-0016-frontiere-sans-ia.md), [ADR-0174](../decisions/ADR-0174-inventaire-et-lecteur-dwtdct.md) à [ADR-0179](../decisions/ADR-0179-versions-de-t31.md).
 
@@ -21,13 +21,13 @@ Un schéma est **lisible** par l'outil s'il réunit quatre conditions :
 
 ## 2. Résultat
 
-Un seul schéma de filigrane remplit les quatre conditions : le **dwtDct** de la bibliothèque invisible-watermark, posé par les codes de référence de Stable Diffusion 1, de SDXL et de FLUX.1 (§3). Son lecteur demande de décoder les pixels : il est confié à une tâche à part, T32 ([ADR-0174](../decisions/ADR-0174-inventaire-et-lecteur-dwtdct.md)). Deux marquages qui ne sont pas des filigranes se lisent sans IA et sont déjà recherchés : le manifeste C2PA (module `c2pa`, T30) et le type de source numérique de l'IPTC (module `xmp`, T22). Un troisième, le manifeste C2PA écrit dans un texte brut, se lit de façon déterministe ; sa lecture relève du module texte (T80).
+Un seul schéma de filigrane remplit les quatre conditions : le **dwtDct** de la bibliothèque invisible-watermark, posé par les codes de référence de Stable Diffusion 1, de SDXL et de FLUX.1 (§3). Son lecteur demande de décoder les pixels : il a été confié à une tâche à part, T32 ([ADR-0174](../decisions/ADR-0174-inventaire-et-lecteur-dwtdct.md)), qui le livre dans le module `dwtdct` (catalogue 0.10.0, [ADR-0202](../decisions/ADR-0202-decodage-des-pixels.md) à [ADR-0206](../decisions/ADR-0206-constat-et-versions-de-t32.md)). Deux marquages qui ne sont pas des filigranes se lisent sans IA et sont déjà recherchés : le manifeste C2PA (module `c2pa`, T30) et le type de source numérique de l'IPTC (module `xmp`, T22). Un troisième, le manifeste C2PA écrit dans un texte brut, se lit de façon déterministe ; sa lecture relève du module texte (T80).
 
 | Marquage | Médias | Posé par | Lecteur public | Réseau de neurones | Clé du fournisseur | Catalogue |
 | --- | --- | --- | --- | --- | --- | --- |
 | Manifeste C2PA intégré | image, son, vidéo, PDF, bureautique | Générateurs et logiciels qui suivent la C2PA | Oui (c2pa-rs) | Non | Non (signature vérifiée par une liste de confiance) | `M-C2PA`, recherché (`c2pa`) |
 | Type de source IPTC dans XMP | formats qui portent du XMP | Générateurs et logiciels qui suivent l'IPTC | Oui (lecture XMP) | Non | Non | `M-IPTC-DST`, recherché (`xmp`) |
-| Filigrane dwtDct d'invisible-watermark | image | Codes de référence de SD 1, SDXL, FLUX.1 | Oui | Non | Non (message fixe, publié) | `M-DWTDCT`, lecteur à venir (T32) |
+| Filigrane dwtDct d'invisible-watermark | image | Codes de référence de SD 1, SDXL, FLUX.1 | Oui | Non | Non (message fixe, publié) | `M-DWTDCT`, recherché (`dwtdct`, T32) |
 | Manifeste C2PA dans un texte brut | texte | Spécification C2PA 2.3, annexe A.7 | Algorithme publié | Non | Non | `M-C2PA-TEXTE`, lecteur à venir (T80) |
 | SynthID (images, son, vidéo) | image, son, vidéo | Services de Google ; d'après la presse, aussi d'autres fournisseurs lus par le même portail | Non : portail SynthID Detector | — | — | `M-SYNTHID`, lecteur propriétaire |
 | SynthID Text | texte | Modèles de langage qui l'emploient | Code public | Détecteur entraîné pour chaque clé | Oui | `M-SYNTHID-TEXTE`, clé du fournisseur |
@@ -45,10 +45,10 @@ Un seul schéma de filigrane remplit les quatre conditions : le **dwtDct** de la
 1. L'image, en BGR, est convertie en YUV par OpenCV (`COLOR_BGR2YUV`), recadrée à un multiple de 4 pixels.
 2. Pour chaque canal dont l'échelle est positive parmi les deux premiers (Y, U) : transformée en ondelettes de Haar à un niveau ; seule la bande basse fréquence (`ca1`) est employée. Les échelles par défaut sont `[0, 36, 36]` et la boucle ne parcourt que les canaux 0 et 1 : seul U porte le message.
 3. La bande est découpée en blocs de 4 × 4 ; chaque bloc porte un bit, les bits du message se répétant dans l'ordre des blocs.
-4. À la lecture, chaque bloc donne un score tiré de son plus grand coefficient DCT non trivial, quantifié à l'échelle 36 ; les scores d'un même bit sont moyennés, et le bit vaut 1 si la moyenne dépasse 127/255.
+4. Dans chaque bloc, la plus grande valeur absolue hors de la première est quantifiée à l'échelle 36 : posée à un quart d'échelle pour un 0, à trois quarts pour un 1. Aucune DCT n'est appliquée, malgré le nom de la méthode et de ses fonctions ([ERR-0011](../errata/ERR-0011-dwtdct-sans-dct.md)). À la lecture, chaque bloc vaut 1 si cette valeur, modulo 36, dépasse 18 ; les scores d'un même bit sont moyennés, et le bit vaut 1 si la moyenne dépasse 127/255.
 5. Le lecteur refuse une image de moins de 256 × 256 pixels (produit des côtés inférieur à 65 536).
 
-Le lecteur rend toujours des bits : la présence du filigrane se juge en comparant ces bits au message attendu, ce qui demande un seuil de bits concordants. Le taux de faux positifs dépend de ce seuil et de la distribution des bits lus sur des images non marquées ; il n'est pas mesuré (T32).
+Le lecteur rend toujours des bits : la présence du filigrane se juge en comparant ces bits au message attendu, ce qui demande un seuil de bits concordants. Seuils, faux positifs et écarts du lecteur de l'outil avec celui de la bibliothèque : fiche [`filigrane-dwtdct`](../techniques/filigrane-dwtdct.md) (T32).
 
 **Messages posés.**
 
@@ -58,9 +58,9 @@ Le lecteur rend toujours des bits : la présence du filigrane se juge en compara
 | SDXL | [Stability-AI, `sgm/inference/helpers.py`](https://github.com/Stability-AI/generative-models/blob/main/sgm/inference/helpers.py) ; repris par [diffusers](https://github.com/huggingface/diffusers/blob/main/src/diffusers/pipelines/stable_diffusion_xl/watermark.py) | `0xB3EC907BB19E` | 48 bits |
 | FLUX.1 | [Black Forest Labs, `src/flux/util.py`](https://github.com/black-forest-labs/flux/blob/main/src/flux/util.py) | `0x2AFE879CF52E`, écrit par `bin()`, qui retire les deux zéros de tête | 46 bits |
 
-Dans diffusers, le pipeline SDXL pose le filigrane par défaut si invisible-watermark est installée (`add_watermarker`). Stable Diffusion 2 poserait « SDV2 » ; seules des copies du script l'attestent, le dépôt d'origine (`Stability-AI/stablediffusion`) répondant 404 le 2026-11-14 : non retenu.
+Dans diffusers, le pipeline SDXL pose le filigrane par défaut si invisible-watermark est installée (`add_watermarker`) ; du 2023-07-06 (commit `bc9a8cef6f`) au 2024-04-26 (PR huggingface/diffusers#7013, commit `ebc99a77aa`), il lui passait l'image en RVB, quand la bibliothèque attend du BVR : le message était posé le rouge et le bleu échangés (vérifié dans l'historique du fichier le 2026-11-16, T32). Stable Diffusion 2 poserait « SDV2 » ; seules des copies du script l'attestent, le dépôt d'origine (`Stability-AI/stablediffusion`) répondant 404 le 2026-11-14 : non retenu.
 
-**Robustesse**, selon le README de la bibliothèque (essais sur une image de 1960 × 1080, message de 64 bits) : la méthode résiste à la compression JPEG, au bruit, à la luminosité, à la superposition et au masquage ; elle ne résiste ni au redimensionnement de moitié, ni au recadrage qui change les proportions, ni à la rotation.
+**Robustesse**, selon le README de la bibliothèque (essais sur une image de 1960 × 1080, message de 64 bits) : la méthode résiste à la compression JPEG, au bruit, à la luminosité, à la superposition et au masquage ; elle ne résiste ni au redimensionnement de moitié, ni au recadrage qui change les proportions, ni à la rotation. Mesures de T32 avec le lecteur de l'outil : la fiche [`filigrane-dwtdct`](../techniques/filigrane-dwtdct.md).
 
 **Ce qu'il établirait.** Un message dwtDct retrouvé est un indice que l'image est passée par un de ces codes de référence ; il ne prouve rien (ADR-0021) : le message est public et fixe, n'importe qui peut le poser sur une photo ; le schéma n'est pas cryptographique. Son absence ne dit rien : la plupart des interfaces peuvent ne pas le poser, et un redimensionnement l'efface.
 
@@ -97,3 +97,4 @@ La [liste des algorithmes de liaison souple](https://github.com/c2pa-org/softbin
 | Date | Version | Modification | Origine |
 | --- | --- | --- | --- |
 | 2026-11-14 | 1.0 | Création | T31 |
+| 2026-11-16 | 1.1 | §3 : la méthode dwtDct n'emploie aucune DCT ([ERR-0011](../errata/ERR-0011-dwtdct-sans-dct.md)) ; ordre des couleurs de diffusers de 2023 à 2024 ; renvois à la fiche du lecteur ; `M-DWTDCT` recherché par le module `dwtdct` (§2) | T32 |
