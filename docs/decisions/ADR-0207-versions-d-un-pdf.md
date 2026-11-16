@@ -1,8 +1,8 @@
 # ADR-0207 — Versions d'un PDF : sections de la chaîne regroupées, fin par la marque `%%EOF`, reconstitution par la plage
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-16
-- **Décideur** : proposition de l'assistant, à valider par TheDarkMac pendant la revue de la PR
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T50, validée pendant la revue de la PR
 - **Tâche** : T50
 - **Exigences liées** : F-60, F-82, NF-06, ES-03, ES-15 ; ADR-0124, ADR-0125
 
@@ -58,3 +58,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-11-16 | Création, statut « Proposé » |
+| 2026-11-16 | Validé par TheDarkMac pendant la revue de la PR (« Oui, valide les deux ») : statut « Accepté » |
