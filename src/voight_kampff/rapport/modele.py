@@ -85,7 +85,7 @@ __all__ = [
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.8.0"
+VERSION_SCHEMA = "0.9.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -754,6 +754,8 @@ class NatureVisualisation(StrEnum):
     """Carte du niveau d'erreur de recompression, une valeur par bloc (ADR-0199)."""
     CHRONOLOGIE_REVISIONS = "chronologie_revisions"
     """Chronologie des versions d'un PDF, une ligne par version, en tableau (ADR-0212)."""
+    OBJETS_REVISIONS = "objets_revisions"
+    """Objets que change chaque version d'un PDF, un par ligne, en tableau (ADR-0217)."""
 
 
 COLONNES: dict[NatureVisualisation, tuple[tuple[str, type], ...]] = {
@@ -766,6 +768,15 @@ COLONNES: dict[NatureVisualisation, tuple[tuple[str, type], ...]] = {
         ("supprimes", int),
         ("date", str),
         ("signatures", int),
+    ),
+    NatureVisualisation.OBJETS_REVISIONS: (
+        ("version", int),
+        ("objet", int),
+        ("generation", int),
+        ("etat", str),
+        ("type", str),
+        ("nature", str),
+        ("page", int),
     ),
 }
 """Colonnes d'une visualisation en tableau, par nature : nom et type des cellules (entier

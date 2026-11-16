@@ -16,7 +16,9 @@ de sa marque ``%%EOF``. Le module :
    (ADR-0208) ;
 3. lit les signatures du formulaire par leur seule structure : la plage signée (``/ByteRange``)
    comparée aux fins de version, sans vérification cryptographique (ADR-0209) ;
-4. rend la chronologie des versions en tableau (ADR-0212).
+4. rend la chronologie des versions en tableau (ADR-0212), et les objets que change chaque
+   version postérieure à la première, un par un, dans un second tableau : numéro, état, type,
+   nature et page qui le désigne (T51, ADR-0217).
 
 Rien n'est déchiffré : dans un document chiffré, les objets rangés dans des flux d'objets ne se
 lisent pas, ni les dates (ADR-0210). Le module n'émet aucun constat : les règles du catalogue
@@ -45,7 +47,7 @@ from voight_kampff.rapport.modele import (
     Plage,
 )
 
-__all__ = ["LIGNES_MAX", "NATURES", "SIGNATURES_MAX", "analyser"]
+__all__ = ["LIGNES_MAX", "NATURES", "OBJETS_MAX", "SIGNATURES_MAX", "analyser"]
 
 SIGNATURE = "signature"
 FORMULAIRE = "formulaire"
@@ -65,6 +67,10 @@ PERMISES = frozenset({SIGNATURE, FORMULAIRE, ANNOTATION, METADONNEES})
 
 LIGNES_MAX = 256
 """Versions au plus dans le tableau de la chronologie ; les observations les comptent toutes."""
+OBJETS_MAX = 256
+"""Objets changés au plus dans le tableau des objets ; ``revisionspdf.objets`` les compte tous."""
+_GENRE_MAX = 64
+"""Caractères au plus du type d'un objet au tableau."""
 SIGNATURES_MAX = 32
 """Signatures au plus décrites une à une ; ``revisionspdf.signatures`` les compte toutes."""
 _CONTENU_MAX = 1 << 20
@@ -108,6 +114,8 @@ class _Version:
     date: str = ""
     signatures: int = 0
     natures: set[str] = field(default_factory=set)
+    objets: list[tuple[int, int, str, str, str]] = field(default_factory=list)
+    """Objets changés : numéro, génération, état, type et nature, par numéro croissant."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -173,6 +181,7 @@ def analyser(contexte: Contexte) -> None:
                 chemin="versions du document", octets=Plage(0, max(versions[-1].fin, 1))
             ),
         )
+    _objets(contexte, document, versions)
 
 
 # Versions
@@ -321,6 +330,8 @@ class _Classement:
         self._ancienne = ancienne
         self._changes = {c.ref.numero: c for c in changes}
         self._valeurs: dict[int, Objet] = {}
+        self.valeurs = self._valeurs
+        """Valeur lue de chaque objet changé (dans la version précédente s'il est supprimé)."""
         self.categories: dict[int, str | None] = {}
         self._catalogue_change: set[str] = set()
         """Natures des clés changées du catalogue."""
@@ -509,8 +520,107 @@ def _comparer(
     classement = _Classement(contexte, nouvelle, ancienne, changes)
     version.natures = classement.ranger()
     version.nature = "+".join(n for n in NATURES if n in version.natures) or STRUCTURE
+    for change in sorted(changes, key=lambda c: c.ref.numero):
+        numero = change.ref.numero
+        categorie = classement.categories.get(numero)
+        version.objets.append(
+            (
+                numero,
+                change.ref.generation,
+                change.etat,
+                _genre(classement.valeurs.get(numero), lue=categorie != NON_LUE),
+                NON_RECONNUE if categorie is None else categorie,
+            )
+        )
     if classement.illisible is not None:
         _non_lue(contexte, classement.illisible)
+
+
+# Objets changés, un par un (T51, ADR-0217)
+
+
+def _genre(valeur: Objet, *, lue: bool) -> str:
+    """Type d'un objet : ``/Type`` et ``/Subtype`` joints par « / », sinon sa forme (flux,
+    dictionnaire, tableau, valeur) ; vide pour un objet nul ou non lu."""
+    if not lue or valeur is None:
+        return ""
+    dico = _dico(valeur)
+    if dico is not None:
+        noms = [n for n in (_nom(dico.get("Type")), _nom(dico.get("Subtype"))) if n]
+        if noms:
+            return "/".join(noms)[:_GENRE_MAX]
+        return "flux" if isinstance(valeur, Flux) else "dictionnaire"
+    return "tableau" if isinstance(valeur, list) else "valeur"
+
+
+def _pages_des_objets(contexte: Contexte, document: Document) -> dict[int, int]:
+    """Rang de la page qui désigne chaque objet : la page elle-même, ses flux de contenu, ses
+    annotations, ses ressources, ses polices et ses objets externes ; la première page qui le
+    désigne l'emporte. Au plus :data:`PARCOURS_MAX` objets parcourus ; une structure illisible
+    arrête le relevé là où il en est."""
+    trouves: dict[int, int] = {}
+
+    def noter(objet: Objet, rang: int) -> Objet:
+        if isinstance(objet, Ref):
+            trouves.setdefault(objet.numero, rang)
+            return document.resoudre(objet)
+        return objet
+
+    try:
+        catalogue = _dico(document.resoudre(document.trailer.get("Root"))) or {}
+        pile: list[Objet] = [catalogue.get("Pages")]
+        vus: set[int] = set()
+        rang = 0
+        while pile and len(vus) < PARCOURS_MAX:
+            designe = pile.pop()
+            if isinstance(designe, Ref):
+                if designe.numero in vus:
+                    continue
+                vus.add(designe.numero)
+            contexte.compter_objets()
+            noeud = _dico(document.resoudre(designe))
+            if noeud is None:
+                continue
+            enfants = document.resoudre(noeud.get("Kids"))
+            if _nom(noeud.get("Type")) != _PAGE and isinstance(enfants, list):
+                pile.extend(reversed(enfants[:_ELEMENTS_MAX]))
+                continue
+            rang += 1
+            if isinstance(designe, Ref):
+                trouves.setdefault(designe.numero, rang)
+            for cle in ("Contents", "Annots"):
+                valeur = noter(noeud.get(cle), rang)
+                for element in valeur[:_ELEMENTS_MAX] if isinstance(valeur, list) else []:
+                    noter(element, rang)
+            ressources = _dico(noter(noeud.get("Resources"), rang)) or {}
+            for cle in ("Font", "XObject"):
+                for element in (_dico(noter(ressources.get(cle), rang)) or {}).values():
+                    noter(element, rang)
+    except Illisible:
+        pass
+    return trouves
+
+
+def _objets(contexte: Contexte, document: Document, versions: list[_Version]) -> None:
+    """Objets que change chaque version postérieure à la première, un par un, en tableau ; les
+    :data:`OBJETS_MAX` premiers au tableau, tous comptés par ``revisionspdf.objets``."""
+    total = sum(len(v.objets) for v in versions)
+    contexte.observer("revisionspdf.objets", total)
+    lignes: list[tuple[int, int, int, str, str, str, int]] = []
+    for rang, version in enumerate(versions, start=1):
+        if not version.objets or len(lignes) >= OBJETS_MAX:
+            continue
+        nouvelle = _pages_des_objets(contexte, document.vue(version.rangs[0]))
+        ancienne = _pages_des_objets(contexte, document.vue(versions[rang - 2].rangs[0]))
+        for numero, generation, etat, genre, nature in version.objets[: OBJETS_MAX - len(lignes)]:
+            pages = ancienne if etat == "supprime" else nouvelle
+            lignes.append((rang, numero, generation, etat, genre, nature, pages.get(numero, 0)))
+    if lignes:
+        contexte.visualiser_tableau(
+            NatureVisualisation.OBJETS_REVISIONS,
+            lignes,
+            localisation=Localisation(chemin="objets changés par les versions du document"),
+        )
 
 
 # Dates déclarées

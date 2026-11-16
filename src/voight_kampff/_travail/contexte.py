@@ -379,6 +379,11 @@ class Contexte:
         return self._numero
 
     @property
+    def objets(self) -> int:
+        """Objets comptés jusqu'ici : un module peut s'arrêter avant le budget (ADR-0213)."""
+        return self._objets
+
+    @property
     def depasse(self) -> bool:
         """Vrai si le module a dépassé une limite, même s'il a intercepté l'exception."""
         return self._depasse

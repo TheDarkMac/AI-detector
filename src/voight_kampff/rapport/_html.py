@@ -37,6 +37,7 @@ from voight_kampff.rapport.modele import (
     Categorie,
     CategorieIdentifiante,
     Constat,
+    NatureVisualisation,
     NiveauIsolation,
     Visualisation,
 )
@@ -230,12 +231,22 @@ def _isolation(vue: Presentation) -> str:
     return _definitions(couples)
 
 
+_TOTAUX = {
+    NatureVisualisation.CHRONOLOGIE_REVISIONS: "revisionspdf.versions",
+    NatureVisualisation.OBJETS_REVISIONS: "revisionspdf.objets",
+}
+"""Observation qui compte les éléments d'un tableau, coupé au-delà de 256 lignes."""
+_LIBELLES = frozenset({"nature", "etat"})
+"""Colonnes dont les codes sont nommés par ``textes.toml`` (``natures``, ``etats``)."""
+
+
 def _cellule(nature: str, colonne: str, valeur: int | str) -> str:
-    """Texte d'une cellule de tableau : nombre groupé, natures nommées, texte tel quel."""
+    """Texte d'une cellule de tableau : nombre groupé, codes nommés, texte tel quel ; une page
+    nulle ou une cellule vide en tiret."""
     if isinstance(valeur, int):
-        return nombre(valeur)
-    if colonne == "nature":
-        libelles = textes()["visualisations"][nature]["natures"]
+        return "—" if colonne == "page" and not valeur else nombre(valeur)
+    if colonne in _LIBELLES:
+        libelles = textes()["visualisations"][nature][f"{colonne}s"]
         return ", ".join(libelles.get(code, code) for code in valeur.split("+"))
     return valeur or "—"
 
@@ -249,13 +260,13 @@ def _chronologie(vue: Presentation, visualisation: Visualisation) -> str:
         for o in vue.analyse.observations
         if (o.module, o.partie) == (visualisation.module, visualisation.partie)
     }
-    total = siennes.get("revisionspdf.versions")
+    total = siennes.get(_TOTAUX[nature])
     couverture = ""
     if isinstance(total, int) and total > visualisation.hauteur:
         couverture = texte(
             f"visualisations.{nature}.couverture_partielle",
             lignes=nombre(visualisation.hauteur),
-            versions=nombre(total),
+            total=nombre(total),
         )
         couverture = f"<p>{_t(couverture)}</p>"
     return couverture + _tableau(
