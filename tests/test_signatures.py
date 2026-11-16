@@ -76,6 +76,7 @@ REGLES_T22 = tuple(
     if regle.categorie is Categorie.INDICE
     and regle.direction is not Direction.TRANSFORMATION
     and regle.module != "c2pa"  # règles de T30 : tests/test_c2pa.py
+    and regle.module != "image"  # tables d'appareils : tests/test_tables_relevees.py
 )
 """Règles de T22 : les indices du catalogue, hors indices de transfert de T24 (vers la
 transformation, ``test_transfert.py``) ; celles de T23 sont des informations neutres

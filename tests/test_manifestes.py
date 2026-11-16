@@ -223,7 +223,8 @@ def test_modules_de_metadonnees_livres() -> None:
         assert manifeste.regles == ()
         if identifiant == "image":
             assert manifeste.exigences == ("F-06", "F-30")
-            assert manifeste.directions == (Direction.TRANSFORMATION,)
+            # Tables d'appareils vers l'authenticité (complément de T40, ADR-0191).
+            assert manifeste.directions == (Direction.TRANSFORMATION, Direction.AUTHENTICITE)
             continue
         assert {"F-10", "F-12"} <= set(manifeste.exigences)
         attendues = [Direction.ORIGINE_IA, Direction.RIEN_DE_PARTICULIER]
