@@ -41,6 +41,7 @@ Lire le filigrane dwtDct d'invisible-watermark, posé par les codes de référen
 11. Documentation : ADR-0202 à ADR-0206, ERR-0011, fiche [`filigrane-dwtdct`](../techniques/filigrane-dwtdct.md), inventaire des marquages (v1.1), catalogue (v1.11), architecture (v1.24), découpage (v0.32), matrice (F-24 réalisée), ce journal.
 
 12. PR [#33](https://github.com/TheDarkMac/AI-detector/pull/33) ouverte (commits `11e3484`, `118c1c8`, `e2fec35`). ADR-0206 validé par TheDarkMac pendant la revue (« Oui, valide ADR-0206 ») : statut « Accepté ».
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |
