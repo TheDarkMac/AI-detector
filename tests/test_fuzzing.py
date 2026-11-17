@@ -381,6 +381,19 @@ def _jpeg_couleurs() -> bytes:
 
 
 ECHANTILLONS_METADONNEES = (
+    # Caractères invisibles et homoglyphes (T80) : familles, mot mêlé, enveloppe C2PATXT.
+    (
+        "texte",
+        (
+            "p\u0430ypal\u200b \u202eabc \U000e0041\u00a0\ufe0f\ufe0f \U0001d401\n"
+            "\ufeff"
+            + "".join(
+                chr(0xE0100 + o - 16) if o >= 16 else chr(0xFE00 + o)
+                for o in b"C2PATXT\x00\x01\x00\x00\x00\x08\x00\x00\x00\x08jumb"
+            )
+        ).encode(),
+    ),
+    ("texte", "\ufeffligne\u200d\n".encode("utf-16-le")),
     ("jpeg", jpeg_meta(app1_exif(_TIFF), app1_xmp(_XMP), app1_etendu(b"G" * 32, 4, 0, b"abcd"))),
     ("jpeg", jpeg_meta(app13(ressource(0x0404, jeu(1, 90, b"\x1b%G") + jeu(2, 25, b"mot"))))),
     (
@@ -568,6 +581,7 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "webm": ("matroska",),
     "docx": ("ooxml", "actifsbureau"),
     "odt": ("odf", "actifsbureau"),
+    "texte": ("caracteres",),
 }
 
 

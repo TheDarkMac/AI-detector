@@ -165,7 +165,7 @@ def sans_restriction() -> EtatIsolation:
 
 ISOLATION = {
     "type": "isolation",
-    "version_schema": "0.10.0",
+    "version_schema": "0.11.0",
     "isolation": {"niveau": "reduite", "manques": ["reseau"]},
 }
 
