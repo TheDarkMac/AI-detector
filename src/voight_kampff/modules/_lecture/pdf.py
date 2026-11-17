@@ -38,6 +38,7 @@ __all__ = [
     "Section",
     "entier",
     "operations",
+    "pages",
     "texte",
 ]
 
@@ -928,6 +929,47 @@ class Document:
                 raise _partiel(flux.debut, "flux compressé") from None
             donnees = _predire(donnees, self.resoudre(parametre), flux.debut)
         return donnees
+
+
+# Arbre des pages (§7.7.3 ; T51, partagé avec T52)
+
+
+def pages(
+    contexte: Contexte, document: Document, maximum: int
+) -> tuple[list[tuple[dict[str, Objet], Objet]], int]:
+    """Pages du document, dans l'ordre, avec leurs ressources héritées (§7.7.3.4), au plus
+    ``maximum`` ; et le nombre de pages trouvées. Un nœud déjà vu n'est pas relu."""
+    racine = document.resoudre(document.trailer.get("Root"))
+    if isinstance(racine, Flux):
+        racine = racine.dico
+    catalogue = racine if isinstance(racine, dict) else {}
+    pile: list[tuple[Objet, Objet]] = [(catalogue.get("Pages"), None)]
+    vues: set[Ref] = set()
+    retenues: list[tuple[dict[str, Objet], Objet]] = []
+    trouvees = 0
+    while pile:
+        designe, heritees = pile.pop()
+        if isinstance(designe, Ref):
+            if designe in vues:
+                continue
+            vues.add(designe)
+        contexte.compter_objets()
+        noeud = document.resoudre(designe)
+        if isinstance(noeud, Flux):
+            noeud = noeud.dico
+        if not isinstance(noeud, dict):
+            continue
+        ressources = noeud.get("Resources", heritees)
+        enfants = document.resoudre(noeud.get("Kids"))
+        nature = noeud.get("Type")
+        if nature == "Pages" or (isinstance(enfants, list) and nature != "Page"):
+            if isinstance(enfants, list):
+                pile.extend((enfant, ressources) for enfant in reversed(enfants))
+            continue
+        trouvees += 1
+        if len(retenues) < maximum:
+            retenues.append((noeud, ressources))
+    return retenues, trouvees
 
 
 def _positifs(objet: Objet) -> list[int] | None:
