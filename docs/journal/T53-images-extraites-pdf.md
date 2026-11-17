@@ -41,6 +41,7 @@ Extraire les images d'un PDF et les faire analyser par les modules d'image (F-63
 | Description du catalogue trop longue (1 036 caractères) | Limite de 1 024 du schéma | « (complément de T40) » ramené à « (T40) », sens gardé |
 | Ghostscript refuse de lire les JPEG à afficher | `-dSAFER` par défaut, chemin relatif hors des dossiers permis | `-dNOSAFER` et chemins complets, sur les fichiers de l'échantillon seulement |
 | Un module de test extrayait aussi de la partie extraite | Le module factice traitait le JPEG comme le PDF | Il n'extrait que d'un PDF ; l'erreur d'une extraction dans une partie extraite a son test |
+| `matrice.md` pas à jour dans la CI (neuf jobs de tests) | Régénérée avant l'ajout des derniers tests marqués F-63 (`test_identification.py`) | `python -m banc.matrice`, commit à part |
 | Contrôle avant publication incomplet sur `chiffre.pdf` | Non menées d'autres modules (document chiffré), pas d'`imagespdf` | Test sur `imagespdf` désactivé ; module ajouté aux modules sans métadonnées (ADR-0227) |
 
 ## Écarts par rapport au découpage
