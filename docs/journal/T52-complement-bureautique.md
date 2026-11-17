@@ -33,6 +33,8 @@ Signaler les éléments actifs des documents bureautiques (macros, événements 
 11. Rapports de `macros.odt` et `liens.docx` produits par `vk --rapport` : R-ACTIFSBUREAU-001 et 002 pour le premier, 002 et 004 pour le second ; aucune adresse dans le HTML ni le JSON.
 12. Documentation : ADR-0228 à ADR-0231, renvois dans ADR-0033, ADR-0116, ADR-0120, ADR-0136 à ADR-0139, ADR-0158, ADR-0219 à ADR-0222 ; ERR-0012 ; fiche [`actifs-bureau`](../techniques/actifs-bureau.md), fiches `metadonnees-ooxml`, `metadonnees-odf`, `metadonnees-xmp` et `actifs-pdf` (renvois, versions) ; architecture (v1.29), découpage (v0.37 : le complément manquait à l'ordre de la V1), guide du catalogue (v1.16), glossaire (v1.16), matrice (F-62, NF-01, ES-06), index du journal (T53 et ce complément), ce journal. Modèle de données inchangé : aucun schéma ne change.
 
+13. PR [#38](https://github.com/TheDarkMac/AI-detector/pull/38) ouverte vers `detector` (commits `cc6221c`, `158e117`, `6decc21`).
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |
