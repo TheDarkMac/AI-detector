@@ -5,7 +5,9 @@
    verrouillé, envoyer l'état de l'isolation : aucun octet du fichier n'a encore été lu.
 3. Lire la configuration : modules actifs, dans l'ordre d'exécution, règles du catalogue qui
    relèvent d'eux (ADR-0084) et ancres de la liste de confiance C2PA (ADR-0171).
-4. Identifier les formats et envoyer les parties reconnues (ADR-0070, ADR-0071).
+4. Identifier les formats et envoyer les parties reconnues (ADR-0070, ADR-0071). Un texte collé
+   (``--texte``) suit la configuration sur l'entrée standard ; il est une seule partie « texte »
+   s'il est de l'UTF-8, aucune sinon (ADR-0233).
 5. Pour chaque partie du périmètre, exécuter chaque module actif, lui appliquer ses règles
    « moteur », envoyer ses résultats puis son message « module » (ADR-0062).
 6. Reconnaître les contenus que des modules ont extraits de ces parties, envoyer les parties
@@ -32,7 +34,7 @@ from typing import BinaryIO
 from xml.parsers import expat
 
 from voight_kampff import modules
-from voight_kampff._limites import OCTETS_EXTRAITS_MAX
+from voight_kampff._limites import OCTETS_EXTRAITS_MAX, TAILLE_MAX_TEXTE
 from voight_kampff._protocole import (
     TAILLE_MAX_CONFIGURATION,
     TAILLE_MAX_SORTIE,
@@ -41,7 +43,7 @@ from voight_kampff._protocole import (
 from voight_kampff._regles import Regle
 from voight_kampff._travail import garde, identification, restrictions
 from voight_kampff._travail.contexte import Ancres, Contexte, Extraction, LimiteDepassee
-from voight_kampff._travail.fichier import Fichier, ouvrir_herite
+from voight_kampff._travail.fichier import Fichier, FichierEnMemoire, ouvrir_herite
 from voight_kampff.rapport.modele import (
     NOMBRE_MAX_EXTRAITES,
     VERSION_SCHEMA,
@@ -65,6 +67,7 @@ __all__ = [
     "canal_du_protocole",
     "importer",
     "lire_configuration",
+    "lire_texte",
     "principal",
     "versions_des_bibliotheques",
 ]
@@ -101,6 +104,8 @@ class Configuration:
     """Modules actifs, dans l'ordre d'exécution."""
     ancres: Ancres
     """Ancres de la liste de confiance C2PA, remises à chaque module (ADR-0171)."""
+    texte: int | None = None
+    """Octets du texte collé qui suivent la configuration ; ``None`` pour un fichier (ADR-0233)."""
 
 
 def versions_des_bibliotheques() -> dict[str, str]:
@@ -180,7 +185,22 @@ def lire_configuration(entree: BinaryIO) -> Configuration:
     )
     confiance = document["confiance"]
     ancres = Ancres(str(confiance["signataires"]), str(confiance["horodatage"]))
-    return Configuration(modules, ancres)
+    texte = document.get("texte")
+    if texte is not None and (type(texte) is not int or not 0 < texte <= TAILLE_MAX_TEXTE):
+        raise ValueError("configuration : longueur du texte collé hors bornes")
+    return Configuration(modules, ancres, texte)
+
+
+def lire_texte(entree: BinaryIO, longueur: int) -> bytes:
+    """Lit le texte collé qui suit la configuration : exactement ``longueur`` octets."""
+    morceaux: list[bytes] = []
+    reste = longueur
+    while reste and (morceau := entree.read(reste)):
+        morceaux.append(morceau)
+        reste -= len(morceau)
+    if reste:
+        raise ValueError("texte collé : incomplet")
+    return b"".join(morceaux)
 
 
 class _Canal:
@@ -373,6 +393,7 @@ def principal(
     *,
     analyseurs: Mapping[str, Analyseur] | None = None,
     identifier: Identifieur = identification.identifier,
+    identifier_texte: Identifieur = identification.identifier_texte,
     reconnaitre: Reconnaisseur = identification.reconnaitre,
     restreindre: Restricteur = restrictions.appliquer,
 ) -> int:
@@ -383,8 +404,10 @@ def principal(
     restrictions, que les tests du déroulé ne peuvent pas appliquer à leur propre processus.
     """
     arguments = argparse.ArgumentParser(prog="voight_kampff._travail")
-    arguments.add_argument("--descripteur", type=int, required=True)
-    descripteur = arguments.parse_args(argv).descripteur
+    source = arguments.add_mutually_exclusive_group(required=True)
+    source.add_argument("--descripteur", type=int)
+    source.add_argument("--texte", action="store_true")
+    lus = arguments.parse_args(argv)
 
     echecs: frozenset[str] = frozenset()
     if analyseurs is None:
@@ -399,8 +422,14 @@ def principal(
     )
 
     configuration = lire_configuration(entree)
-    fichier = Fichier(ouvrir_herite(descripteur))
-    parties = identifier(fichier, fichier.taille())
+    if lus.texte != (configuration.texte is not None):
+        raise ValueError("configuration : texte collé annoncé sans --texte, ou l'inverse")
+    if configuration.texte is not None:
+        fichier: Fichier = FichierEnMemoire(lire_texte(entree, configuration.texte))
+        parties = identifier_texte(fichier, fichier.taille())
+    else:
+        fichier = Fichier(ouvrir_herite(lus.descripteur))
+        parties = identifier(fichier, fichier.taille())
     canal.message({"type": "identification", "parties": [p.vers_dict() for p in parties]})
     deroule = _Deroule(
         configuration, analyseurs, echecs, fichier, canal, reconnaitre, len(parties) + 1

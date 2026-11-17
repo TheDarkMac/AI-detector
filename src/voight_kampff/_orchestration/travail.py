@@ -10,6 +10,9 @@ périmètre ; une partie hors périmètre est déclarée non analysée ici, pas 
 enfin, s'il y en a, les parties extraites par un module : un message « extraction » les annonce,
 puis leurs résultats arrivent de la même façon (ADR-0224).
 
+Un texte collé (ADR-0233) n'a pas de descripteur : ses octets suivent la configuration sur
+l'entrée standard du travail, qui en annonce la longueur.
+
 Chaque constat doit dire ce que fixe sa règle du catalogue : gabarit, catégorie, direction,
 fondement, niveau (ADR-0090). Tout écart arrête le processus de travail. Les modules terminés
 gardent leurs résultats ; les autres deviennent des analyses non menées, avec la raison de
@@ -68,7 +71,7 @@ from voight_kampff.rapport.modele import (
     verifier_parties,
 )
 
-__all__ = ["DELAI", "ResultatTravail", "commande_travail", "executer"]
+__all__ = ["DELAI", "SANS_DESCRIPTEUR", "ResultatTravail", "commande_travail", "executer"]
 
 _RAISONS_DU_FICHIER = frozenset(
     {RaisonNonMenee.FORMAT_PARTIEL, RaisonNonMenee.FICHIER_TRONQUE, RaisonNonMenee.LIMITE_DEPASSEE}
@@ -147,27 +150,28 @@ class ResultatTravail:
         return any(non_menee.raison in RAISONS_D_INTERRUPTION for non_menee in self.non_menees)
 
 
+SANS_DESCRIPTEUR = -1
+"""Passé à la commande du travail pour un texte collé, qui n'a pas de descripteur (ADR-0233)."""
+
+
 def commande_travail(descripteur: int) -> list[str]:
-    """Commande du processus de travail : Python isolé (``-I``), sans fichier ``.pyc`` (``-B``)."""
-    return [
-        sys.executable,
-        "-I",
-        "-B",
-        "-m",
-        "voight_kampff._travail",
-        "--descripteur",
-        str(descripteur),
-    ]
+    """Commande du processus de travail : Python isolé (``-I``), sans fichier ``.pyc`` (``-B``) ;
+    ``--texte`` pour un texte collé (``SANS_DESCRIPTEUR``)."""
+    commande = [sys.executable, "-I", "-B", "-m", "voight_kampff._travail"]
+    if descripteur == SANS_DESCRIPTEUR:
+        return [*commande, "--texte"]
+    return [*commande, "--descripteur", str(descripteur)]
 
 
 def executer(
-    descripteur: int,
+    descripteur: int | None,
     manifestes: Sequence[Manifeste],
     desactives: Collection[str] = (),
     *,
     catalogue: Catalogue | None = None,
     confiance: ListeDeConfiance | None = None,
     taille: int | None = None,
+    texte: bytes | None = None,
     delai: float = DELAI,
     commande: Callable[[int], Sequence[str]] = commande_travail,
 ) -> ResultatTravail:
@@ -177,8 +181,12 @@ def executer(
     modules désactivés par l'utilisateur. ``catalogue`` vaut par défaut le catalogue livré,
     validé avec ces manifestes, et ``confiance`` la liste de confiance livrée (ADR-0171).
     ``taille``, celle que le principal a hachée, borne les parties reçues ; à défaut, celle du
-    descripteur. ``commande`` remplace, pour les tests, le processus de travail livré.
+    descripteur. ``texte``, sans descripteur (``None``), est un texte collé, envoyé après la
+    configuration (ADR-0233). ``commande`` remplace, pour les tests, le processus de travail
+    livré.
     """
+    if (descripteur is None) == (texte is None):
+        raise ValueError("executer : un descripteur ou un texte, l'un des deux")
     actifs, eteints = selectionner(manifestes, desactives)
     if catalogue is None:
         catalogue = catalogues.charger(manifestes)
@@ -188,7 +196,12 @@ def executer(
     regles = {
         regle.identifiant: regle for regle in catalogue.regles if regle.module in identifiants
     }
-    taille_hachee = os.fstat(descripteur).st_size if taille is None else taille
+    if texte is not None:
+        taille_hachee = len(texte)
+    elif taille is not None or descripteur is None:
+        taille_hachee = taille or 0
+    else:
+        taille_hachee = os.fstat(descripteur).st_size
     reception = _Reception(actifs, regles, taille_hachee)
     configuration = encoder(
         {
@@ -206,9 +219,12 @@ def executer(
             "regles": catalogue.configuration(identifiants),
             "confiance": confiance.configuration(),
         }
+        | ({} if texte is None else {"texte": len(texte)})
     )
     if len(configuration) > TAILLE_MAX_CONFIGURATION:
         raise ValueError("configuration : trop longue pour le processus de travail")
+    if texte is not None:
+        configuration += texte
     echeance = time.monotonic() + delai
     with _lancer(descripteur, commande) as processus:
         try:
@@ -240,9 +256,11 @@ def _environnement() -> dict[str, str]:
 
 
 def _lancer(
-    descripteur: int, commande: Callable[[int], Sequence[str]]
+    descripteur: int | None, commande: Callable[[int], Sequence[str]]
 ) -> "subprocess.Popen[bytes]":
-    """Lance le processus de travail ; seuls le fichier et les trois flux standard sont hérités."""
+    """Lance le processus de travail ; seuls le fichier et les trois flux standard sont hérités.
+
+    Sans descripteur (texte collé), seuls les trois flux le sont."""
     options: dict[str, Any] = {
         "stdin": subprocess.PIPE,
         "stdout": subprocess.PIPE,
@@ -251,6 +269,8 @@ def _lancer(
         "env": _environnement(),
         "close_fds": True,
     }
+    if descripteur is None:
+        return subprocess.Popen(commande(SANS_DESCRIPTEUR), **options)  # noqa: S603
     if sys.platform == "win32":  # pragma: no cover - exécuté par la CI Windows
         import msvcrt
 

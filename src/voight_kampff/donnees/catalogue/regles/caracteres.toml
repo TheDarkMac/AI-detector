@@ -1,0 +1,372 @@
+# Règles du module caracteres (T80) : caractères invisibles ou substitués d'un texte brut,
+# enregistré ou collé (F-73 ; ADR-0232 à ADR-0237). Tables : Unicode 18.0 (UCD, UTS #39,
+# UTS #51) ; manifeste dans un texte : C2PA 2.3, annexe A.7 ; fiche caracteres-invisibles.
+# Toutes en information neutre (A-43, ADR-0237) : l'outil ne sait pas pourquoi un caractère est là.
+
+[[regle]]
+identifiant = "R-CARACTERES-001"
+version = "1"
+module = "caracteres"
+titre = "Caractères de contrôle dans le texte"
+description = "Le texte porte au moins un caractère de contrôle autre que la tabulation, le saut de ligne, le retour chariot et le saut de page : un caractère C0, DEL ou C1, que la mise en page n'emploie pas (ADR-0234). Information neutre : une conversion d'encodage ratée ou un copier-coller depuis un terminal en laisse aussi."
+gabarit = "caracteres.controles"
+phrase = { fr = "Le texte porte {inhabituels} caractère(s) de contrôle ({codes}), qu'aucune mise en page n'emploie." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Un fichier dont les octets portent un contrôle C0 ou DEL n'est pas reconnu comme un texte (ADR-0070) : seuls les contrôles C1 d'un fichier, et tous ceux d'un texte collé, sont relevés.",
+  "Le constat ne dit pas comment le caractère est arrivé là : conversion d'encodage, copie depuis un terminal, dissimulation.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul caractère suffit à le signaler (F-73). Vérifié sur les textes construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.controles.inhabituels"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "inhabituels"
+
+[[regle.condition]]
+observation = "caracteres.controles.codes"
+presente = true
+parametre = "codes"
+
+[[regle]]
+identifiant = "R-CARACTERES-002"
+version = "1"
+module = "caracteres"
+titre = "Caractères bidirectionnels hors d'un texte de droite à gauche"
+description = "Le texte porte au moins un forçage, un plongement ou un isolat bidirectionnel, ou une marque de direction dans une ligne qui n'a aucune lettre d'une écriture de droite à gauche (ADR-0234). Ces caractères changent l'ordre d'affichage : un texte peut se lire autrement qu'il ne s'écrit. Information neutre : des logiciels en insèrent autour des noms ou des nombres."
+gabarit = "caracteres.bidirectionnels"
+phrase = { fr = "Le texte porte {inhabituels} caractère(s) bidirectionnel(s) hors d'un texte de droite à gauche ({codes}) : l'ordre affiché peut différer de l'ordre écrit." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Une marque de direction est ordinaire dans une ligne qui a une lettre arabe, hébraïque ou d'une autre écriture de droite à gauche ; forçages, plongements et isolats sont toujours relevés, même dans une telle ligne.",
+  "Le rapport montre ces caractères sous la forme ⟨U+XXXX⟩ (ADR-0096) : il ne dit pas comment le texte s'affiche dans un logiciel.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul caractère suffit à le signaler (F-73). Vérifié sur les textes construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.bidirectionnels.inhabituels"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "inhabituels"
+
+[[regle.condition]]
+observation = "caracteres.bidirectionnels.codes"
+presente = true
+parametre = "codes"
+
+[[regle]]
+identifiant = "R-CARACTERES-003"
+version = "1"
+module = "caracteres"
+titre = "Étiquettes Unicode hors d'un drapeau"
+description = "Le texte porte au moins une étiquette Unicode (U+E0000 à U+E007F) hors d'un drapeau de subdivision (ADR-0234). Les étiquettes ne s'affichent pas, mais chacune porte un caractère ASCII : elles peuvent écrire un texte invisible, par exemple une consigne destinée à un modèle de langage. Ce texte est observé, masqué par défaut (catégorie contenu). Information neutre."
+gabarit = "caracteres.etiquettes"
+phrase = { fr = "Le texte porte {inhabituels} étiquette(s) Unicode hors d'un drapeau ({codes}) : elles écrivent un texte invisible, cité au rapport." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Seuls les 1 024 premiers caractères du texte écrit par les étiquettes sont cités ; il reste masqué tant que la catégorie contenu n'est pas révélée (ES-13).",
+  "Un drapeau de subdivision (Angleterre, Écosse, pays de Galles) est fait d'étiquettes : il n'est pas relevé.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule étiquette suffit à la signaler (F-73). Vérifié sur les textes construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.etiquettes.inhabituels"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "inhabituels"
+
+[[regle.condition]]
+observation = "caracteres.etiquettes.codes"
+presente = true
+parametre = "codes"
+
+[[regle]]
+identifiant = "R-CARACTERES-004"
+version = "1"
+module = "caracteres"
+titre = "Sélecteurs de variante inhabituels"
+description = "Le texte porte au moins un sélecteur de variante (U+FE00 à U+FE0F, U+E0100 à U+E01EF, sélecteurs mongols) qui ne suit pas, seul, un caractère visible : en suite, après une espace ou en tête (ADR-0234). Une suite de sélecteurs peut écrire des octets cachés. Ceux d'une enveloppe C2PA sont comptés à part (R-CARACTERES-010 à R-CARACTERES-012). Information neutre."
+gabarit = "caracteres.selecteurs"
+phrase = { fr = "Le texte porte {inhabituels} sélecteur(s) de variante hors de leur emploi ordinaire ({codes}) : une suite de sélecteurs peut écrire des données invisibles." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Un sélecteur seul après un caractère visible est tenu pour ordinaire (émoji, variante idéographique) sans vérifier que la séquence est normalisée par Unicode : un octet caché par caractère passe inaperçu.",
+  "Le constat ne décode pas les octets d'une suite de sélecteurs, hors de l'enveloppe C2PA.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul sélecteur suffit à le signaler (F-73). Vérifié sur les textes construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.selecteurs.inhabituels"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "inhabituels"
+
+[[regle.condition]]
+observation = "caracteres.selecteurs.codes"
+presente = true
+parametre = "codes"
+
+[[regle]]
+identifiant = "R-CARACTERES-005"
+version = "1"
+module = "caracteres"
+titre = "Caractères sans chasse inhabituels"
+description = "Le texte porte au moins un caractère qui ne s'affiche pas, hors de son emploi ordinaire : espace sans chasse, liant ou antiliant, gluon de mot, opérateur invisible, remplisseur hangûl, caractère ignorable par défaut ou de mise en forme (ADR-0234). Ces caractères coupent ou marquent un mot sans que le lecteur le voie : ils peuvent déjouer une recherche ou marquer une copie. Information neutre : des éditeurs et des pages web en laissent."
+gabarit = "caracteres.sans-chasse"
+phrase = { fr = "Le texte porte {inhabituels} caractère(s) sans chasse hors de leur emploi ordinaire ({codes})." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Sont ordinaires : la marque d'ordre en tête du texte, le liant entre deux émojis, liant et antiliant entre deux lettres d'une même écriture qui s'en sert (arabe, persan, écritures de l'Inde), la césure conditionnelle dans un mot, les remplisseurs entre deux lettres hangûl.",
+  "Le constat ne dit pas qui a inséré le caractère : éditeur, page web, logiciel de suivi des copies, dissimulation.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul caractère suffit à le signaler (F-73). Vérifié sur les textes construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.sans_chasse.inhabituels"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "inhabituels"
+
+[[regle.condition]]
+observation = "caracteres.sans_chasse.codes"
+presente = true
+parametre = "codes"
+
+[[regle]]
+identifiant = "R-CARACTERES-006"
+version = "1"
+module = "caracteres"
+titre = "Espaces ou séparateurs inhabituels"
+description = "Le texte porte au moins une espace autre que l'espace ordinaire, l'insécable, l'insécable étroite, l'espace fine, l'espace de chiffre et l'espace idéographique, ou un séparateur de ligne ou de paragraphe Unicode (ADR-0234). Information neutre : une mise en page soignée ou un logiciel de publication en emploie."
+gabarit = "caracteres.espaces"
+phrase = { fr = "Le texte porte {inhabituels} espace(s) ou séparateur(s) inhabituel(s) ({codes})." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Les espaces de la typographie française (insécable, fine insécable) sont ordinaires partout dans le texte, pas seulement devant une ponctuation.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule espace suffit à la signaler (F-73). Vérifié sur les textes construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.espaces.inhabituels"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "inhabituels"
+
+[[regle.condition]]
+observation = "caracteres.espaces.codes"
+presente = true
+parametre = "codes"
+
+[[regle]]
+identifiant = "R-CARACTERES-007"
+version = "1"
+module = "caracteres"
+titre = "Caractères à usage privé"
+description = "Le texte porte au moins un caractère d'une zone à usage privé (U+E000 à U+F8FF, plans 15 et 16), que chaque police dessine à sa façon, ou pas du tout (ADR-0234). Information neutre : des polices d'icônes et de logos les emploient."
+gabarit = "caracteres.prive"
+phrase = { fr = "Le texte porte {inhabituels} caractère(s) à usage privé ({codes}), sans signification commune." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "L'affichage dépend de la police : un caractère à usage privé peut être invisible, une icône ou un carré vide.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul caractère suffit à le signaler (F-73). Vérifié sur les textes construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.prive.inhabituels"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "inhabituels"
+
+[[regle.condition]]
+observation = "caracteres.prive.codes"
+presente = true
+parametre = "codes"
+
+[[regle]]
+identifiant = "R-CARACTERES-008"
+version = "1"
+module = "caracteres"
+titre = "Mots qui mêlent des lettres de deux écritures confusables"
+description = "Au moins un mot du texte mêle à son écriture dominante des lettres d'une autre écriture qui se confondent avec des lettres de celle-ci, d'après les confusables d'Unicode (UTS #39, ADR-0235) : un a cyrillique (U+0430) dans un mot latin. Le mot s'affiche comme un autre, mais ne se trouve plus par une recherche. Information neutre : un changement de disposition du clavier en pleine saisie en produit aussi."
+gabarit = "caracteres.homoglyphes"
+phrase = { fr = "Le texte porte {mots} mot(s) qui mêlent des lettres d'écritures différentes, confusables entre elles ({lettres} lettre(s) : {codes})." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Un mot écrit tout entier dans une autre écriture (un mot russe dont toutes les lettres ressemblent à du latin) n'est pas relevé : il n'est pas mêlé.",
+  "Japonais, coréen et chinois avec bopomofo mêlent leurs écritures sans être relevés (ensembles augmentés d'UTS #39).",
+  "Le constat ne dit pas pourquoi le mot est mêlé : dissimulation, clavier, copie d'un document mal converti.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul mot suffit à le signaler (F-73). Vérifié sur les textes construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.homoglyphes"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "mots"
+
+[[regle.condition]]
+observation = "caracteres.homoglyphes.lettres"
+presente = true
+parametre = "lettres"
+
+[[regle.condition]]
+observation = "caracteres.homoglyphes.codes"
+presente = true
+parametre = "codes"
+
+[[regle]]
+identifiant = "R-CARACTERES-009"
+version = "1"
+module = "caracteres"
+titre = "Lettres de compatibilité"
+description = "Le texte porte au moins une lettre ou un chiffre de compatibilité : variante de police (gras, italique, ajouré mathématiques), lettre ou chiffre pleine chasse hors d'une ligne de chinois, de japonais ou de coréen (ADR-0235). Ces lettres ressemblent à des lettres ordinaires mais n'en sont pas pour une recherche. Information neutre : des réseaux sociaux s'en servent pour mettre un texte en gras."
+gabarit = "caracteres.compatibilite"
+phrase = { fr = "Le texte porte {inhabituels} lettre(s) de compatibilité ({codes}), qui ressemblent à des lettres ordinaires." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Une lettre pleine chasse est ordinaire dans une ligne qui a une lettre chinoise, japonaise ou coréenne, même si elle est loin de cette lettre.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule lettre suffit à la signaler (F-73). Vérifié sur les textes construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.compatibilite.inhabituels"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "inhabituels"
+
+[[regle.condition]]
+observation = "caracteres.compatibilite.codes"
+presente = true
+parametre = "codes"
+
+[[regle]]
+identifiant = "R-CARACTERES-010"
+version = "1"
+module = "caracteres"
+titre = "Manifeste C2PA écrit dans le texte, non vérifié"
+description = "Le texte porte une enveloppe C2PATXT complète (annexe A.7 de la spécification C2PA 2.3) : un manifeste C2PA écrit en sélecteurs de variante, après U+FEFF, dont la boîte JUMBF porte l'étiquette c2pa (ADR-0236). Ni la signature ni l'empreinte du texte ne sont vérifiées : la bibliothèque C2PA de l'outil ne lit pas un texte brut. Information neutre : rien n'établit encore qui a signé ni ce qui est déclaré."
+gabarit = "caracteres.c2pa"
+phrase = { fr = "Le texte porte {completes} manifeste(s) C2PA écrit(s) en caractères invisibles (version {version} de l'enveloppe, {octets}) : ni la signature ni l'empreinte du texte n'ont été vérifiées." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Le manifeste n'est ni lu ni vérifié (ADR-0236) : il peut être forgé, copié d'un autre texte ou ne plus correspondre au texte.",
+  "Un texte qui a perdu ses caractères invisibles en passant par un logiciel n'a plus d'enveloppe : son absence ne dit rien.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une enveloppe complète suffit à la signaler (F-24). Vérifié sur des enveloppes construites par tests/test_caracteres.py selon l'annexe A.7."
+
+[[regle.condition]]
+observation = "caracteres.c2pa.completes"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "completes"
+
+[[regle.condition]]
+observation = "caracteres.c2pa.version"
+presente = true
+parametre = "version"
+
+[[regle.condition]]
+observation = "caracteres.c2pa.octets"
+presente = true
+parametre = "octets"
+
+[[regle]]
+identifiant = "R-CARACTERES-011"
+version = "1"
+module = "caracteres"
+titre = "Enveloppe C2PA corrompue"
+description = "Le texte porte l'en-tête C2PATXT d'une enveloppe de manifeste C2PA, mais l'enveloppe est incomplète ou mal formée : version inconnue, longueur différente de celle annoncée, boîte JUMBF absente ou sans l'étiquette c2pa (manifest.text.corruptedWrapper, C2PA 2.3, A.7.7.1 ; ADR-0236). Information neutre : un logiciel qui retire ou remplace une partie des caractères invisibles coupe l'enveloppe."
+gabarit = "caracteres.c2pa-corrompue"
+phrase = { fr = "Le texte porte {corrompues} enveloppe(s) de manifeste C2PA corrompue(s) : l'en-tête C2PATXT est là, la suite ne l'est pas comme annoncé." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Le constat ne dit pas ce qui a coupé l'enveloppe : logiciel, copie partielle, modification volontaire.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une enveloppe corrompue suffit à la signaler. Vérifié sur des enveloppes construites par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.c2pa.corrompues"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "corrompues"
+
+[[regle]]
+identifiant = "R-CARACTERES-012"
+version = "1"
+module = "caracteres"
+titre = "Plusieurs enveloppes C2PA dans le texte"
+description = "Le texte porte plusieurs enveloppes de manifeste C2PA (en-tête C2PATXT), quand la spécification n'en prévoit qu'une (manifest.text.multipleWrappers, C2PA 2.3, A.7.7.1 ; ADR-0236). Le texte d'un manifeste peut avoir été collé dans un autre. Information neutre."
+gabarit = "caracteres.c2pa-plusieurs"
+phrase = { fr = "Le texte porte {enveloppes} enveloppes de manifeste C2PA, quand une seule est prévue." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Le choix de l'enveloppe qui vaut pour le texte se fait par les exclusions de son empreinte, que l'outil ne lit pas (ADR-0236).",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : deux enveloppes suffisent à le signaler. Vérifié sur des textes construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.c2pa"
+seuil = { operateur = ">=", valeur = 2 }
+parametre = "enveloppes"

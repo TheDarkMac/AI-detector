@@ -11,6 +11,8 @@ masquage d'une catégorie, au terminal comme dans les rapports, et le signale (A
 ``--regles`` affiche la version, la date, l'empreinte, les règles et les marquages du catalogue
 (NF-07, ADR-0175).
 ``--confiance DOSSIER`` remplace de même la liste de confiance C2PA livrée (ADR-0171).
+``--texte`` analyse le texte lu sur l'entrée standard, collé ou reçu d'un tube, au lieu d'un
+fichier (ADR-0233) ; il s'emploie sans fichier, et son rapport s'écrit ``1.html`` et ``1.json``.
 
 Codes de sortie : 0 si chaque fichier a été analysé, même partiellement, et son rapport écrit ;
 1 si au moins un a été refusé ou n'a pas pu être écrit ; 2 pour une commande invalide, un
@@ -28,10 +30,11 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from voight_kampff import __version__
+from voight_kampff._limites import TAILLE_MAX_TEXTE
 from voight_kampff._orchestration import catalogue as catalogues
 from voight_kampff._orchestration import confiance as listes
 from voight_kampff._orchestration import manifestes
-from voight_kampff.analyse import Analyse, AnalyseRefusee, analyser
+from voight_kampff.analyse import Analyse, AnalyseRefusee, analyser, analyser_texte
 from voight_kampff.rapport import comparaison, export
 from voight_kampff.rapport._presentation import (
     Presentation,
@@ -118,6 +121,12 @@ def construire_analyseur() -> argparse.ArgumentParser:
         default=[],
         metavar="MODULE",
         help="n'exécute pas ce module ; le rapport le signale (option répétable)",
+    )
+    analyseur.add_argument(
+        "--texte",
+        action="store_true",
+        help="analyse le texte lu sur l'entrée standard (collé, puis Ctrl-D, ou Ctrl-Z et "
+        "Entrée sous Windows ; ou reçu d'un tube) au lieu d'un fichier ; s'emploie sans fichier",
     )
     analyseur.add_argument(
         "--comparer",
@@ -276,21 +285,27 @@ def _preparer(dossier: str, nombre: int) -> Path:
 
 
 def _analyser(
-    fichiers: Sequence[str],
+    fichiers: Sequence[str | None],
     desactiver: Sequence[str],
     catalogue: str | None,
     confiance: str | None,
     dossier: Path | None,
     reveler: Sequence[str],
 ) -> int:
+    """Analyse chaque fichier ; ``None`` désigne le texte de l'entrée standard (ADR-0233)."""
     code = 0
     analysees = 0
     for rang, chemin in enumerate(fichiers, start=1):
         repere = f"[{rang}/{len(fichiers)}]"
         try:
-            analyse = analyser(
-                chemin, desactiver=desactiver, catalogue=catalogue, confiance=confiance
-            )
+            if chemin is None:
+                analyse = analyser_texte(
+                    _lire_entree(), desactiver=desactiver, catalogue=catalogue, confiance=confiance
+                )
+            else:
+                analyse = analyser(
+                    chemin, desactiver=desactiver, catalogue=catalogue, confiance=confiance
+                )
         except AnalyseRefusee as refus:
             sys.stdout.flush()  # les deux flux restent dans l'ordre des fichiers
             print(f"{repere} refusé : {refus}", file=sys.stderr)
@@ -317,6 +332,14 @@ def _analyser(
         for phrase in textes()["avertissement"]:
             print(phrase)
     return code
+
+
+def _lire_entree() -> bytes:
+    """Octets de l'entrée standard, un de plus que la limite pour qu'un texte trop long soit
+    refusé sans être lu en entier (ADR-0233)."""
+    if sys.stdin.isatty():
+        print(texte("terminal.coller"), file=sys.stderr)
+    return sys.stdin.buffer.read(TAILLE_MAX_TEXTE + 1)
 
 
 def lignes_comparaison(resultat: comparaison.Comparaison) -> list[str]:
@@ -388,13 +411,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     analyseur = construire_analyseur()
     arguments = analyseur.parse_args(argv)
     if arguments.comparer is not None:
-        if arguments.fichiers or arguments.modules or arguments.regles:
+        if arguments.fichiers or arguments.modules or arguments.regles or arguments.texte:
             analyseur.error("--comparer s'emploie seule, sans fichier à analyser")
         return _comparer(arguments.comparer)
     if arguments.modules:
         _lister_modules()
         return 0
-    if not (arguments.fichiers or arguments.regles):
+    if arguments.texte and arguments.fichiers:
+        analyseur.error("--texte s'emploie sans fichier : le texte est lu sur l'entrée standard")
+    if not (arguments.fichiers or arguments.regles or arguments.texte):
         analyseur.print_help()
         return 0
     livres = manifestes.decouvrir()
@@ -418,11 +443,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     dossier = None
     if arguments.rapport is not None:
         try:
-            dossier = _preparer(arguments.rapport, len(arguments.fichiers))
+            dossier = _preparer(arguments.rapport, max(len(arguments.fichiers), 1))
         except ValueError as erreur:
             analyseur.error(f"--rapport : {erreur}")
     return _analyser(
-        arguments.fichiers,
+        [None] if arguments.texte else arguments.fichiers,
         arguments.desactiver,
         arguments.catalogue,
         arguments.confiance,

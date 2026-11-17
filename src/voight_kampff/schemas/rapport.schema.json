@@ -18,7 +18,7 @@
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.10.0" },
+    "version_schema": { "const": "0.11.0" },
     "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
@@ -36,8 +36,8 @@
   },
   "allOf": [
     {
-      "description": "Nom du fichier : absent si et seulement si le masquage de l'export le cache (ES-13).",
-      "if": { "$ref": "#/$defs/nom_masque" },
+      "description": "Nom du fichier : absent si et seulement si le masquage de l'export le cache (ES-13), ou si un texte collé a été soumis (ADR-0233).",
+      "if": { "anyOf": [{ "$ref": "#/$defs/nom_masque" }, { "$ref": "#/$defs/texte_colle" }] },
       "then": { "properties": { "identification": { "not": { "required": ["nom"] } } } },
       "else": { "properties": { "identification": { "required": ["nom"] } } }
     },
@@ -67,6 +67,11 @@
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/categorie_identifiante" }
         }
+      }
+    },
+    "texte_colle": {
+      "properties": {
+        "identification": { "properties": { "saisie": { "const": "texte_colle" } } }
       }
     },
     "nom_masque": {
@@ -624,8 +629,9 @@
     "identification": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Nom et empreinte sont exigés par le schéma racine, sauf masquage (ADR-0095).",
+      "description": "Nom et empreinte sont exigés par le schéma racine, sauf masquage (ADR-0095) ; un texte collé n'a pas de nom (ADR-0233).",
       "required": [
+        "saisie",
         "format_reel",
         "taille",
         "date_analyse",
@@ -638,6 +644,7 @@
         "extension_concordante": ["extension"]
       },
       "properties": {
+        "saisie": { "enum": ["fichier", "texte_colle"] },
         "nom": { "$ref": "#/$defs/texte", "minLength": 1, "pattern": "^[^/\\\\\u0000]+$" },
         "format_reel": { "$ref": "#/$defs/format" },
         "taille": { "$ref": "#/$defs/entier_positif" },

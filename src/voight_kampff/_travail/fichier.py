@@ -1,4 +1,5 @@
-"""Accès du processus de travail au fichier analysé, par le descripteur hérité (ADR-0036)."""
+"""Accès du processus de travail au fichier analysé, par le descripteur hérité (ADR-0036), ou
+au texte collé, gardé en mémoire (ADR-0233)."""
 
 import hashlib
 import os
@@ -6,7 +7,7 @@ import sys
 
 from voight_kampff._protocole import TAILLE_MAX_LECTURE
 
-__all__ = ["Fichier", "ouvrir_herite"]
+__all__ = ["Fichier", "FichierEnMemoire", "ouvrir_herite"]
 
 _BLOC = 1 << 20
 
@@ -66,3 +67,20 @@ class Fichier:
             condensat.update(morceau)
             position += len(morceau)
         return condensat.hexdigest(), position
+
+
+class FichierEnMemoire(Fichier):
+    """Texte collé, reçu par l'entrée standard et gardé en mémoire (ADR-0233) : il se lit comme
+    un fichier, par position."""
+
+    __slots__ = ("_octets",)
+
+    def __init__(self, octets: bytes) -> None:
+        super().__init__(-1)
+        self._octets = octets
+
+    def _lire_a(self, position: int, taille: int) -> bytes:
+        return self._octets[position : position + taille]
+
+    def taille(self) -> int:
+        return len(self._octets)

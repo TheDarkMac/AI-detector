@@ -16,6 +16,10 @@ l'analyse (ADR-0171). Les techniques hors de cette version sont inscrites non me
 chaque partie d'un de leurs formats (ADR-0087). Les marquages du catalogue qui pourraient se
 trouver dans le fichier sont inscrits à la couverture, recherchés ou non, et joints à l'analyse
 (ADR-0178).
+
+Un texte collé (ADR-0233) suit le même chemin, sans fichier : le principal le hache, le
+transmet au processus de travail par son entrée standard, après la configuration, et compare
+l'empreinte que le travail lui rend. Il n'a ni nom ni extension.
 """
 
 import hashlib
@@ -25,7 +29,7 @@ from collections.abc import Callable, Collection, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 
-from voight_kampff._limites import TAILLE_MAX_FICHIER
+from voight_kampff._limites import TAILLE_MAX_FICHIER, TAILLE_MAX_TEXTE
 from voight_kampff._marquages import couvrir
 from voight_kampff._orchestration import catalogue as catalogues
 from voight_kampff._orchestration import confiance as listes
@@ -43,10 +47,11 @@ from voight_kampff.rapport.modele import (
     NonMenee,
     Partie,
     RaisonNonMenee,
+    Saisie,
     TechniqueCouverte,
 )
 
-__all__ = ["empreinte", "nom_affichable", "ouvrir", "soumettre"]
+__all__ = ["empreinte", "nom_affichable", "ouvrir", "soumettre", "soumettre_texte"]
 
 _DRAPEAUX = (
     os.O_RDONLY
@@ -158,6 +163,69 @@ def soumettre(
     identification = _identification(
         resultat, nom_affichable(chemin), taille, initiale, date_analyse
     )
+    return _analyse(resultat, identification, catalogue, confiance, techniques_hors_v1)
+
+
+def soumettre_texte(
+    texte: bytes,
+    desactives: Collection[str] = (),
+    *,
+    catalogue: Catalogue | str | os.PathLike[str] | None = None,
+    confiance: ListeDeConfiance | str | os.PathLike[str] | None = None,
+    manifestes: Sequence[Manifeste] | None = None,
+    hors_v1: Sequence[TechniqueHorsV1] | None = None,
+    delai: float = DELAI,
+    commande: Callable[[int], Sequence[str]] = commande_travail,
+) -> Analyse:
+    """Analyse un texte collé, en octets UTF-8 (ADR-0233) ; mêmes paramètres que
+    :func:`soumettre`.
+
+    Vide ou de plus de 16 Mio, il est refusé avant le lancement du travail ; s'il n'est pas de
+    l'UTF-8, le travail ne reconnaît aucune partie et il est refusé comme illisible.
+    """
+    modules = livres.decouvrir() if manifestes is None else tuple(manifestes)
+    selectionner(modules, desactives)
+    if not isinstance(catalogue, Catalogue):
+        catalogue = catalogues.charger(modules, catalogue)
+    if not isinstance(confiance, ListeDeConfiance):
+        confiance = listes.charger(confiance)
+    techniques_hors_v1 = livres.hors_v1(modules) if hors_v1 is None else tuple(hors_v1)
+    date_analyse = datetime.now(UTC).replace(microsecond=0)
+    if not texte:
+        raise AnalyseRefusee(MotifRefus.TEXTE_VIDE)
+    if len(texte) > TAILLE_MAX_TEXTE:
+        raise AnalyseRefusee(MotifRefus.TEXTE_HORS_LIMITES)
+    initiale = hashlib.sha256(texte).hexdigest()
+    resultat = executer(
+        None,
+        modules,
+        desactives,
+        catalogue=catalogue,
+        confiance=confiance,
+        texte=texte,
+        delai=delai,
+        commande=commande,
+    )
+    if resultat.empreinte is not None and resultat.empreinte != initiale:
+        # Le texte est en mémoire : seul un défaut de la transmission le changerait.
+        raise AnalyseRefusee(MotifRefus.FICHIER_MODIFIE, detail="texte reçu différent")
+    if resultat.parties == ():
+        raise AnalyseRefusee(MotifRefus.TEXTE_ILLISIBLE)
+    identification = _identification(
+        resultat, None, len(texte), initiale, date_analyse, Saisie.TEXTE_COLLE
+    )
+    return _analyse(resultat, identification, catalogue, confiance, techniques_hors_v1)
+
+
+def _analyse(
+    resultat: ResultatTravail,
+    identification: Identification,
+    catalogue: Catalogue,
+    confiance: ListeDeConfiance,
+    techniques_hors_v1: Sequence[TechniqueHorsV1],
+) -> Analyse:
+    """Analyse livrée : couverture complétée des techniques hors de cette version et des
+    marquages, règles et marquages cités joints (ADR-0087, ADR-0097, ADR-0178)."""
     techniques, non_menees = _hors_v1(identification.toutes, techniques_hors_v1)
     techniques = resultat.couverture.techniques + techniques
     recherches, non_recherches = couvrir(catalogue.marquages, identification.toutes, techniques)
@@ -211,7 +279,12 @@ def _hors_v1(
 
 
 def _identification(
-    resultat: ResultatTravail, nom: str, taille: int, empreinte_: str, date_analyse: datetime
+    resultat: ResultatTravail,
+    nom: str | None,
+    taille: int,
+    empreinte_: str,
+    date_analyse: datetime,
+    saisie: Saisie = Saisie.FICHIER,
 ) -> Identification:
     if resultat.parties is None:
         arret = next(n.raison for n in resultat.non_menees if n.raison in RAISONS_D_INTERRUPTION)
@@ -229,4 +302,5 @@ def _identification(
         date_analyse=date_analyse,
         parties=resultat.parties,
         extraites=resultat.extraites,
+        saisie=saisie,
     )

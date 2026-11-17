@@ -69,7 +69,7 @@ glossaire = "Glossaire"
 # de l'image, texte de remplacement, couverture.
 [visualisations]
 aucune = "Aucune visualisation : aucune technique appliquée n'en produit pour ce fichier."
-masquee = "L'image montre le contenu du fichier, réduit : elle est masquée (catégorie « contenu de l'image »). Pour l'afficher, relancez l'analyse avec --reveler contenu."
+masquee = "L'image montre le contenu du fichier, réduit : elle est masquée (catégorie « contenu du fichier »). Pour l'afficher, relancez l'analyse avec --reveler contenu."
 empreinte = "Empreinte SHA-256 de l'image : {empreinte}"
 couverture_entiere = "La carte couvre toute l'image : {blocs} blocs de 8 × 8 pixels de la luminance."
 couverture_partielle = "La carte ne couvre que le haut de l'image : {blocs} blocs de 8 × 8 pixels sur {blocs_image}, au-delà de la limite de 65 536 blocs que l'outil lit."
@@ -215,6 +215,7 @@ octets = "Octets"
 [formes]
 marquage = "{nom} ({identifiant})"
 taille = "{octets} octets"
+texte_colle = "aucun : texte collé"
 octets = "octets {debut} à {fin}"
 catalogue = "{version} du {date}, empreinte {empreinte}"
 catalogue_fourni = "{version} du {date}, empreinte {empreinte}, fourni par l'utilisateur"
@@ -243,6 +244,7 @@ lever = "Pour lever le masquage d'une catégorie : vk --reveler CATEGORIE (optio
 format_reel = "format réel : {format}"
 alerte = "attention : {alerte}"
 nom = "nom : {nom}"
+coller = "Collez le texte à analyser, puis Ctrl-D (Ctrl-Z et Entrée sous Windows)."
 empreinte = "empreinte : {empreinte}"
 partie = "partie {rang} : {format}, {octets}, {etat}"
 extraite = "partie {rang} : {format}, {octets}, {etat}, {origine}"
@@ -285,6 +287,7 @@ resultat = "résultat"
 
 [signalements]
 extension_absente = "Le nom du fichier n'a pas d'extension."
+texte_colle = "Texte collé : il n'a ni nom ni extension ; son empreinte est celle de ses octets en UTF-8."
 extension_concordante = "L'extension « {extension} » correspond au format réel."
 extension_discordante = "L'extension « {extension} » ne correspond pas au format réel ({format}) : le fichier a pu être renommé."
 polyglotte = "Le fichier est reconnu dans {nombre} formats : chaque partie du périmètre est analysée séparément."
@@ -346,7 +349,7 @@ lieu = "lieux nommés"
 texte_libre = "textes libres"
 nom_de_fichier = "nom du fichier"
 empreinte = "empreinte du fichier"
-contenu = "contenu de l'image"
+contenu = "contenu du fichier"
 
 [raisons]
 hors_v1 = "Technique non livrée dans cette version de l'outil."

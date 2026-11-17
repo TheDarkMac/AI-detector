@@ -73,6 +73,7 @@ __all__ = [
     "RaisonNonRecherche",
     "Rapport",
     "ReferenceRegle",
+    "Saisie",
     "Scalaire",
     "TechniqueCouverte",
     "Valeur",
@@ -88,7 +89,7 @@ __all__ = [
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.10.0"
+VERSION_SCHEMA = "0.11.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -177,6 +178,13 @@ class CategorieIdentifiante(StrEnum):
     EMPREINTE = "empreinte"
     CONTENU = "contenu"
     """Image tirée du contenu du fichier, même réduite : carte ELA (ADR-0200)."""
+
+
+class Saisie(StrEnum):
+    """Ce qui a été soumis à l'analyse (A-29, ADR-0233)."""
+
+    FICHIER = "fichier"
+    TEXTE_COLLE = "texte_colle"
 
 
 class RaisonNonMenee(StrEnum):
@@ -1230,11 +1238,13 @@ class Identification:
     """Rubrique « Identification » ; nom et empreinte sont identifiants (ADR-0014, ADR-0031).
 
     Les signalements de F-03 et ES-07 en sont tirés (ADR-0072) : extension et concordance,
-    parties reconnues, octets qu'aucune ne couvre, dont ceux qui suivent la fin logique.
+    parties reconnues, octets qu'aucune ne couvre, dont ceux qui suivent la fin logique. Un
+    texte collé n'a ni nom ni extension ; son empreinte est celle de ses octets en UTF-8
+    (ADR-0233).
     """
 
-    nom: str
-    """Nom du fichier seul, sans chemin (ES-14)."""
+    nom: str | None
+    """Nom du fichier seul, sans chemin (ES-14) ; aucun pour un texte collé."""
     format_reel: str
     """Format identifié par le contenu (F-02) : celui de la partie 1."""
     taille: int
@@ -1248,11 +1258,19 @@ class Identification:
     extraites: tuple[Partie, ...] = ()
     """Parties extraites d'une partie reconnue, numérotées à leur suite (F-63, ADR-0224) ; elles
     n'entrent ni dans les polyglottes ni dans les octets non reconnus."""
+    saisie: Saisie = Saisie.FICHIER
+    """Ce qui a été soumis : un fichier, ou un texte collé (ADR-0233)."""
 
     def __post_init__(self) -> None:
-        if not self.nom or "/" in self.nom or "\\" in self.nom or "\x00" in self.nom:
+        if self.saisie is Saisie.TEXTE_COLLE:
+            if self.nom is not None:
+                raise ValueError("identification.nom : aucun nom pour un texte collé")
+            if [partie.format for partie in self.parties] != ["texte"] or self.extraites:
+                raise ValueError("identification.parties : un texte collé est une partie texte")
+        elif not self.nom or "/" in self.nom or "\\" in self.nom or "\x00" in self.nom:
             raise ValueError("identification.nom : nom de fichier sans chemin attendu")
-        _texte(self.nom, "identification.nom")
+        else:
+            _texte(self.nom, "identification.nom")
         _entier(self.taille, "identification.taille", minimum=0)
         _empreinte(self.empreinte, "identification.empreinte")
         if self.date_analyse.utcoffset() != timedelta(0):
@@ -1281,7 +1299,7 @@ class Identification:
     @property
     def extension(self) -> str | None:
         """Extension du nom, en minuscules ; elle n'est pas identifiante, le nom l'est."""
-        return formats.extension(self.nom)
+        return None if self.nom is None else formats.extension(self.nom)
 
     @property
     def extension_concordante(self) -> bool | None:
@@ -1297,6 +1315,7 @@ class Identification:
     def vers_dict(self) -> Document:
         return _sans_none(
             {
+                "saisie": self.saisie,
                 "nom": self.nom,
                 "format_reel": self.format_reel,
                 "taille": self.taille,
@@ -1314,13 +1333,14 @@ class Identification:
     def depuis_dict(cls, document: Mapping[str, Any]) -> "Identification":
         date_analyse = datetime.strptime(document["date_analyse"], _FORMAT_DATE_HEURE)
         identification = cls(
-            nom=document["nom"],
+            nom=document.get("nom"),
             format_reel=document["format_reel"],
             taille=document["taille"],
             empreinte=document["empreinte"],
             date_analyse=date_analyse.replace(tzinfo=UTC),
             parties=tuple(Partie.depuis_dict(partie) for partie in document["parties"]),
             extraites=tuple(Partie.depuis_dict(partie) for partie in document["extraites"]),
+            saisie=Saisie(document["saisie"]),
         )
         # Champs déduits : présents pour le lecteur du JSON, vérifiés à la relecture.
         deduits = identification.vers_dict()
