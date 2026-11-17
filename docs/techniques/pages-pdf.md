@@ -117,3 +117,4 @@ Mêmes protections que le lecteur PDF du projet : lecture stricte, aucune exécu
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-11-17 | 0.1.0 | Création |
+| 2026-11-17 | 0.1.0 | Parcours de l'arbre des pages déplacé dans le lecteur PDF, partagé avec `actifspdf` (T52, ADR-0221) ; rien ne change de ce que le module lit ni observe |

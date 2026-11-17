@@ -310,9 +310,10 @@ note = "Module pagespdf (T51) : contenus des pages de la dernière version inter
 
 [[exigence]]
 id = "F-62"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T52"]
 methodes = ["test"]
+note = "PDF (T52, ADR-0219) : module actifspdf, éléments cherchés depuis le catalogue de la dernière version, actions et leurs chaînes, scripts du document, formulaire XFA, fichiers incorporés, document chiffré lu par sa structure (ADR-0221) ; nature, déclencheur et pages de chaque action, ni adresse, ni nom, ni code (ADR-0220) ; informations neutres R-ACTIFSPDF-001 à R-ACTIFSPDF-005 (ADR-0222). Vérifié contre pdfinfo et pdfdetach sur les échantillons de tests/donnees/actifs. Macros et modèle distant des documents bureautiques : complément bureautique de T52."
 
 [[exigence]]
 id = "F-63"
@@ -411,9 +412,9 @@ note = "Candidate V2, sans attribution à un destinataire (ADR-0032)."
 [[exigence]]
 id = "NF-01"
 etat = "realisee"
-taches = ["T12", "T14"]
+taches = ["T12", "T14", "T52"]
 methodes = ["test"]
-note = "Reformulée : un processus restreint par fichier ; isolation réduite signalée au rapport, toujours sous Windows (ADR-0028, ADR-0081)."
+note = "Reformulée : un processus restreint par fichier ; isolation réduite signalée au rapport, toujours sous Windows (ADR-0028, ADR-0081). Contenu embarqué d'un PDF (scripts, actions, fichiers incorporés) signalé, jamais exécuté (T52, ADR-0220)."
 
 [[exigence]]
 id = "NF-02"
@@ -593,10 +594,10 @@ note = "XML de XMP lu par expat, DOCTYPE et entités refusés (T20, ADR-0116), y
 
 [[exigence]]
 id = "ES-06"
-etat = "partielle"
+etat = "realisee"
 taches = ["T21", "T30", "T52"]
 methodes = ["test"]
-note = "DOCX et ODT : aucune relation ni référence lue ou suivie, modèle distant compris (complément bureautique de T21, ADR-0138) ; manifestes C2PA distants jamais récupérés, hôte seul au rapport du module c2pa (T30, ADR-0166) ; liens et actions des PDF à T52."
+note = "DOCX et ODT : aucune relation ni référence lue ou suivie, modèle distant compris (complément bureautique de T21, ADR-0138) ; manifestes C2PA distants jamais récupérés, hôte seul au rapport du module c2pa (T30, ADR-0166) ; actions et liens des PDF signalés par leur nature, ni adresse ni code lus, aucune connexion (T52, ADR-0220). RS-02, sur confirmation, reste au complément de T30."
 
 [[exigence]]
 id = "ES-07"

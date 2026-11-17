@@ -104,7 +104,7 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 - Lecture bornée par le contexte : fenêtres de 4 Kio, 64 Kio, 1 Mio puis 16 Mio au plus ; un objet plus grand n'est pas lu (format partiel).
 - Chaque objet lu et chaque section comptent un objet ; chaque tableau, dictionnaire et résolution de référence, un niveau d'imbrication (64 au plus, ADR-0078). Références circulaires, sections en boucle et dictionnaire qui se contient : non menés.
 - Flux `FlateDecode` décompressés par `Contexte.decompresser`, donc comptés dans le budget de décompression.
-- Rien n'est exécuté (JavaScript, actions) ni suivi hors du fichier : un flux dont les données sont dans un autre fichier (`/F`) n'est pas lu.
+- Rien n'est exécuté (JavaScript, actions) ni suivi hors du fichier : un flux dont les données sont dans un autre fichier (`/F`) n'est pas lu. Les éléments actifs sont signalés par le module `actifspdf` (T52, fiche [`actifs-pdf`](actifs-pdf.md)).
 - Le codec UTF-16BE est chargé à l'import du lecteur, avant les restrictions du processus de travail (ADR-0079, ERR-0009).
 
 ## Historique
@@ -115,3 +115,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
 | 2026-11-14 | 0.3.0 | `Title`, `Subject`, `Keywords` marqués `texte_libre` ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |
+| 2026-11-17 | 0.3.0 | Renvoi aux éléments actifs signalés par `actifspdf` (T52) ; module inchangé |

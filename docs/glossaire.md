@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 proposée dans la PR de T51. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 proposée dans la PR de T52. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -105,6 +105,8 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Texte superposé | Texte posé sur un texte différent déjà posé, dont les boîtes se recouvrent au moins pour moitié de la plus petite. | F-61, ADR-0214 |
 | Cache | Rectangle plein et opaque peint sur un texte déjà posé, qu'il recouvre au moins pour moitié : le texte reste dans le fichier, invisible à l'affichage. | F-61, ADR-0214 |
 | Incorporation d'une police | Façon dont un PDF porte une police : programme incorporé ou non, de quel type, en sous-ensemble (préfixe `ABCDEF+`) ou entier. | F-61, ADR-0216 |
+| Élément actif (PDF) | Ce qu'un lecteur de PDF exécuterait ou ouvrirait : action (script, lancement d'un programme, ouverture d'un autre fichier, envoi d'un formulaire, adresse), formulaire XFA, fichier incorporé. L'outil le signale, jamais ne l'exécute. | F-62, ADR-0220 |
+| Déclencheur (d'une action PDF) | Ce qui fait exécuter une action par un lecteur : ouverture du document, événement du document (fermeture, enregistrement, impression), affichage d'une page, calcul ou mise en forme d'un champ, geste de l'utilisateur. Les quatre premiers sont automatiques. | F-62, ADR-0220 |
 
 ## Historique
 
@@ -124,3 +126,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-11-14 | 1.11 | Marquage, filigrane invisible ajoutés ; couverture complétée | T31 |
 | 2026-11-16 | 1.12 | Version d'un PDF, ajout permis ajoutés ; statut corrigé, il annonçait encore la v1.10 | T50 |
 | 2026-11-17 | 1.13 | Boîte d'un texte, texte superposé, cache, incorporation d'une police ajoutés | T51 |
+| 2026-11-17 | 1.14 | Élément actif (PDF), déclencheur d'une action PDF ajoutés | T52 |

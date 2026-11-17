@@ -64,3 +64,4 @@ Option A.
 | 2026-11-16 | Création, statut « Proposé » |
 | 2026-11-16 | Validé par TheDarkMac pendant la revue de la PR (« Oui, valide les deux ») : statut « Accepté » |
 | 2026-11-17 | Renvoi : objets changés décrits un par un, avec leur nature, dans le tableau `objets_revisions` (T51, ADR-0217) ; une apparence d'annotation qui recouvre le contenu est désormais relevée par `pagespdf` (ADR-0214) |
+| 2026-11-17 | Renvoi : les actions d'une annotation ajoutée, rangée parmi les ajouts permis, sont signalées par `actifspdf` (T52, ADR-0221) |

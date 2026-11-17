@@ -44,3 +44,4 @@ Option A : un document chiffré est reconnu ; ses chaînes ne sont pas lues ; le
 | --- | --- |
 | 2026-11-12 | Création ; option choisie par TheDarkMac au début de T21 |
 | 2026-11-16 | Renvoi : T50 ne déchiffre pas non plus les versions d'un document chiffré ; question close pour la V1 ([ADR-0210](ADR-0210-versions-d-un-pdf-chiffre.md)) |
+| 2026-11-17 | Renvoi : T52 parcourt un document chiffré par sa structure, sans rien déchiffrer ([ADR-0221](ADR-0221-elements-actifs-depuis-le-catalogue.md)) |

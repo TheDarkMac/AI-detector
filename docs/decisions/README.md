@@ -233,3 +233,7 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0216](ADR-0216-polices-incoherentes.md) | Polices incohérentes : même police en plusieurs incorporations sur une page, codes hors de la plage déclarée | Accepté | 2026-11-17 |
 | [ADR-0217](ADR-0217-objets-changes-un-par-un.md) | Objets changés par les versions d'un PDF : un par un, en tableau ; `revisionspdf` 0.2.0, schéma 0.9.0 | Accepté | 2026-11-17 |
 | [ADR-0218](ADR-0218-constats-et-versions-de-t51.md) | Constats des pages d'un PDF : quatre indices faibles vers la retouche ; module `pagespdf` et versions de T51 | Accepté | 2026-11-17 |
+| [ADR-0219](ADR-0219-perimetre-de-t52.md) | Périmètre de T52 : éléments actifs du PDF ; bureautique renvoyée à un complément | Accepté | 2026-11-17 |
+| [ADR-0220](ADR-0220-nature-et-declencheur.md) | Éléments actifs d'un PDF décrits par leur nature et leur déclencheur, sans adresse, nom ni code | Accepté | 2026-11-17 |
+| [ADR-0221](ADR-0221-elements-actifs-depuis-le-catalogue.md) | Éléments actifs d'un PDF cherchés depuis le catalogue de la dernière version ; document chiffré lu par sa structure | Accepté | 2026-11-17 |
+| [ADR-0222](ADR-0222-constats-et-versions-de-t52.md) | Constats des éléments actifs d'un PDF : cinq informations neutres par famille ; module `actifspdf` et versions de T52 | Accepté | 2026-11-17 |
