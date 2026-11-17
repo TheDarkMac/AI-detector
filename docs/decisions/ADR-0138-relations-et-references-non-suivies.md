@@ -49,3 +49,4 @@ Option A :
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création ; option choisie par TheDarkMac au début du complément |
+| 2026-11-17 | Renvoi : T52 traite le PDF seul ; le signalement du modèle distant d'un DOCX et des macros revient au complément bureautique de T52 (ADR-0219) |

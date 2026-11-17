@@ -1,0 +1,76 @@
+{
+ "echantillons": {
+  "balise": {
+   "formulaire": "none",
+   "javascript": "no",
+   "chiffre": "no",
+   "scripts": [],
+   "fichiers": 0
+  },
+  "calcul": {
+   "formulaire": "AcroForm",
+   "javascript": "yes",
+   "chiffre": "no",
+   "scripts": [
+    "Format Field",
+    "Calculate Field"
+   ],
+   "fichiers": 0
+  },
+  "chiffre": {
+   "formulaire": "none",
+   "javascript": "yes",
+   "chiffre": "yes",
+   "scripts": [
+    "Open Document Action"
+   ],
+   "fichiers": 1
+  },
+  "formulaire": {
+   "formulaire": "AcroForm",
+   "javascript": "no",
+   "chiffre": "no",
+   "scripts": [],
+   "fichiers": 0
+  },
+  "ghostscript": {
+   "formulaire": "none",
+   "javascript": "yes",
+   "chiffre": "no",
+   "scripts": [
+    "Open Document Action"
+   ],
+   "fichiers": 1
+  },
+  "javascript": {
+   "formulaire": "none",
+   "javascript": "yes",
+   "chiffre": "no",
+   "scripts": [
+    "Name Dictionary \"4f624c7e-3fed-4b51-910b-d102fefe3656\""
+   ],
+   "fichiers": 0
+  },
+  "liens": {
+   "formulaire": "none",
+   "javascript": "no",
+   "chiffre": "no",
+   "scripts": [],
+   "fichiers": 0
+  },
+  "piece_jointe": {
+   "formulaire": "none",
+   "javascript": "no",
+   "chiffre": "no",
+   "scripts": [],
+   "fichiers": 1
+  },
+  "xfa": {
+   "formulaire": "XFA",
+   "javascript": "no",
+   "chiffre": "no",
+   "scripts": [],
+   "fichiers": 0
+  }
+ }
+}

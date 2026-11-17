@@ -1,0 +1,12 @@
+# Module actifspdf : éléments actifs d'un PDF, signalés, jamais exécutés (ADR-0219 à ADR-0222). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "actifspdf"
+version = "0.1.0"
+formats = ["pdf"]
+exigences = ["F-62", "NF-01", "ES-06"]
+regles = []
+fiche = "actifs-pdf"
+# Direction des règles du catalogue sur ses observations (ADR-0222) ; le module lui-même n'émet aucun constat.
+directions = ["rien_de_particulier"]
+requiert = []
+bibliotheques = []

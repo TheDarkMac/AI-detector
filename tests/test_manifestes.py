@@ -180,6 +180,7 @@ def test_modules_de_metadonnees_livres() -> None:
     # qui lit les manifestes C2PA par c2pa-python (ADR-0164).
     livres = {manifeste.identifiant: manifeste for manifeste in decouvrir()}
     assert sorted(livres) == [
+        "actifspdf",
         "c2pa",
         "doublejpeg",
         "dwtdct",
@@ -221,9 +222,9 @@ def test_modules_de_metadonnees_livres() -> None:
     for identifiant, manifeste in livres.items():
         if identifiant == "c2pa":
             continue  # règles « module » et cinq directions : tests/test_c2pa.py
-        if identifiant in {"doublejpeg", "dwtdct", "ela", "pagespdf", "revisionspdf"}:
-            # tests/test_double_compression.py, test_dwtdct.py, test_ela.py, test_pages_pdf.py,
-            # test_revisions_pdf.py
+        if identifiant in {"actifspdf", "doublejpeg", "dwtdct", "ela", "pagespdf", "revisionspdf"}:
+            # tests/test_actifs_pdf.py, test_double_compression.py, test_dwtdct.py, test_ela.py,
+            # test_pages_pdf.py, test_revisions_pdf.py
             continue
         assert manifeste.regles == ()
         if identifiant == "image":

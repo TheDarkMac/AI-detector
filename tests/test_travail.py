@@ -520,6 +520,7 @@ def test_configuration_avec_ses_regles() -> None:
 def test_import_des_modules_livres() -> None:
     analyseurs, echecs = principal.importer()
     assert sorted(analyseurs) == [
+        "actifspdf",
         "c2pa",
         "doublejpeg",
         "dwtdct",

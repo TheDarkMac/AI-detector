@@ -44,6 +44,7 @@ from voight_kampff.modules._lecture.pdf import (
     Ref,
     entier,
     operations,
+    pages,
 )
 from voight_kampff.modules.pagespdf import _polices14
 from voight_kampff.rapport.modele import Localisation, RaisonNonMenee
@@ -895,34 +896,9 @@ def _pages(
     contexte: Contexte, document: Document
 ) -> tuple[list[tuple[dict[str, Objet], Objet]], int]:
     """Pages, dans l'ordre, avec leurs ressources héritées (§7.7.3.4), au plus
-    :data:`PAGES_MAX` ; et le nombre de pages trouvées."""
-    catalogue = _dico(document.resoudre(document.trailer.get("Root"))) or {}
-    pile: list[tuple[Objet, Objet]] = [(catalogue.get("Pages"), None)]
-    vues: set[Ref] = set()
-    pages: list[tuple[dict[str, Objet], Objet]] = []
-    trouvees = 0
-    while pile:
-        designe, heritees = pile.pop()
-        if isinstance(designe, Ref):
-            if designe in vues:
-                continue
-            vues.add(designe)
-        contexte.compter_objets()
-        noeud = _dico(document.resoudre(designe))
-        if noeud is None:
-            continue
-        ressources = noeud.get("Resources", heritees)
-        enfants = document.resoudre(noeud.get("Kids"))
-        if _nom(noeud.get("Type")) == "Pages" or (
-            isinstance(enfants, list) and _nom(noeud.get("Type")) != "Page"
-        ):
-            if isinstance(enfants, list):
-                pile.extend((enfant, ressources) for enfant in reversed(enfants))
-            continue
-        trouvees += 1
-        if len(pages) < PAGES_MAX:
-            pages.append((noeud, ressources))
-    return pages, trouvees
+    :data:`PAGES_MAX` ; et le nombre de pages trouvées (parcours du lecteur, partagé avec
+    ``actifspdf``)."""
+    return pages(contexte, document, PAGES_MAX)
 
 
 # Analyse

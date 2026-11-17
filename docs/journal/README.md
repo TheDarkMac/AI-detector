@@ -46,3 +46,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T32](T32-lecteur-dwtdct.md) | Lecteur du filigrane dwtDct d'invisible-watermark | `tache/T32-dwtdct` | [#33](https://github.com/TheDarkMac/AI-detector/pull/33) |
 | [T50](T50-revisions-pdf.md) | Révisions incrémentales d'un PDF et leur chronologie | `tache/T50-revisions-pdf` | [#34](https://github.com/TheDarkMac/AI-detector/pull/34) |
 | [T51](T51-objets-pdf.md) | Objets changés, textes superposés et polices incohérentes d'un PDF | `tache/T51-objets-pdf` | [#35](https://github.com/TheDarkMac/AI-detector/pull/35) |
+| [T52](T52-elements-actifs-pdf.md) | Éléments actifs d'un PDF, signalés, jamais exécutés | `tache/T52-elements-actifs-pdf` | [#36](https://github.com/TheDarkMac/AI-detector/pull/36) |

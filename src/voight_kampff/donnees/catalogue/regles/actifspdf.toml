@@ -1,0 +1,163 @@
+# Règles du module actifspdf (T52) : éléments actifs d'un PDF, signalés, jamais exécutés (F-62,
+# NF-01, ES-06 ; ADR-0219 à ADR-0222). Actions : ISO 32000-2, §12.6 ; scripts du document :
+# §7.7.4 et §12.6.4.17 ; fichiers incorporés : §7.11 ; fiche actifs-pdf.
+
+[[regle]]
+identifiant = "R-ACTIFSPDF-001"
+version = "1"
+module = "actifspdf"
+titre = "Scripts dans le document"
+description = "La dernière version du PDF porte au moins un script qu'un lecteur peut exécuter : une action JavaScript (déclenchée à l'ouverture, par une page, un champ, une annotation ou un signet), une action Rendition qui porte un script, ou un formulaire XFA, dont les scripts ne sont pas lus (ADR-0221, ADR-0222). Information neutre : un formulaire qui calcule ses totaux ou vérifie sa saisie emploie des scripts ; l'outil n'en lit ni n'en exécute aucun."
+gabarit = "actifspdf.scripts"
+phrase = { fr = "Le document porte {scripts} script(s) qu'un lecteur PDF peut exécuter ({natures}) : l'outil ne les a ni lus ni exécutés." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Le code des scripts n'est pas lu : le constat ne dit pas ce qu'ils font, ni s'ils sont malveillants.",
+  "Seuls les scripts reliés au catalogue de la dernière version sont cherchés (ADR-0221) : un script d'une version antérieure, retiré depuis, ou d'un objet qu'aucun autre ne désigne n'est pas compté ; aucun lecteur conforme ne l'exécute.",
+  "Un formulaire XFA est compté comme un script, qu'il en porte ou non : ses scripts sont dans un paquet XML que l'outil ne lit pas.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul script suffit à le signaler (F-62). Vérifié sur les échantillons de tests/donnees/actifs, comparés à pdfinfo -js de Poppler 25.03.0."
+
+[[regle.condition]]
+observation = "actifspdf.scripts"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "scripts"
+
+[[regle.condition]]
+observation = "actifspdf.scripts.natures"
+presente = true
+parametre = "natures"
+
+[[regle]]
+identifiant = "R-ACTIFSPDF-002"
+version = "1"
+module = "actifspdf"
+titre = "Actions déclenchées sans geste de l'utilisateur"
+description = "La dernière version du PDF porte au moins une action qu'un lecteur déclenche de lui-même : à l'ouverture du document (/OpenAction, scripts de l'arbre de noms JavaScript), à un événement du document (fermeture, enregistrement, impression), à l'ouverture d'une page ou quand une annotation devient visible, au calcul ou à la mise en forme d'un champ (ADR-0220). Les actions qui ne changent que l'affichage (aller à une page, changer de calque, cacher une annotation, vider un formulaire) ne sont pas comptées (ADR-0222). Information neutre : l'outil n'en exécute aucune."
+gabarit = "actifspdf.automatiques"
+phrase = { fr = "Le document porte {automatiques} action(s) qu'un lecteur PDF déclenche sans geste de l'utilisateur (déclencheurs : {declencheurs} ; natures : {natures}) : l'outil n'en a exécuté aucune." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Un lecteur peut refuser d'exécuter une action, ou demander à l'utilisateur de la permettre : le constat dit ce que le document demande, pas ce qu'un lecteur fera.",
+  "Les déclencheurs sont lus d'après la clé qui désigne l'action ; une clé que la norme ne définit pas n'est pas lue, aucun lecteur conforme ne l'exécutant.",
+  "Mêmes limites de recherche que R-ACTIFSPDF-001 : seule la dernière version, depuis son catalogue.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule action automatique suffit à la signaler (F-62). Vérifié sur les échantillons de tests/donnees/actifs."
+
+[[regle.condition]]
+observation = "actifspdf.automatiques"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "automatiques"
+
+[[regle.condition]]
+observation = "actifspdf.automatiques.declencheurs"
+presente = true
+parametre = "declencheurs"
+
+[[regle.condition]]
+observation = "actifspdf.automatiques.natures"
+presente = true
+parametre = "natures"
+
+[[regle]]
+identifiant = "R-ACTIFSPDF-003"
+version = "1"
+module = "actifspdf"
+titre = "Actions qui ouvrent un programme ou un autre fichier"
+description = "La dernière version du PDF porte au moins une action qui lance un programme ou ouvre un fichier hors du document (Launch), ouvre un autre PDF (GoToR) ou un document incorporé (GoToE), ou importe les données d'un autre fichier dans le formulaire (ImportData) (ADR-0222). Information neutre : l'outil n'en exécute aucune et n'ouvre aucun fichier."
+gabarit = "actifspdf.ouvertures"
+phrase = { fr = "Le document porte {ouvertures} action(s) qui lancent un programme ou ouvrent un autre fichier ({natures}) : l'outil n'en a exécuté aucune ni n'a ouvert de fichier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Le programme ou le fichier désigné n'est pas lu (ADR-0220) : le constat ne dit pas ce qui serait ouvert, ni si c'est sur le poste, sur un partage réseau ou dans le document lui-même (GoToE).",
+  "Un renvoi vers un autre PDF d'un même ensemble (GoToR entre les tomes d'un manuel) est ordinaire.",
+  "Mêmes limites de recherche que R-ACTIFSPDF-001 : seule la dernière version, depuis son catalogue.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule action suffit à la signaler (F-62). Vérifié sur les échantillons de tests/donnees/actifs."
+
+[[regle.condition]]
+observation = "actifspdf.ouvertures"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "ouvertures"
+
+[[regle.condition]]
+observation = "actifspdf.ouvertures.natures"
+presente = true
+parametre = "natures"
+
+[[regle]]
+identifiant = "R-ACTIFSPDF-004"
+version = "1"
+module = "actifspdf"
+titre = "Envois de formulaire et liens vers une adresse"
+description = "La dernière version du PDF porte au moins une action qui envoie le contenu du formulaire à une adresse (SubmitForm) ou ouvre une adresse (URI), le plus souvent un lien sur lequel cliquer (ADR-0222). L'adresse n'est pas lue (ADR-0220). Information neutre : l'outil ne résout aucune adresse écrite dans un fichier (ES-06, ADR-0033)."
+gabarit = "actifspdf.envois"
+phrase = { fr = "Le document porte {envois} action(s) qui envoient le formulaire ou ouvrent une adresse ({natures}) : l'outil n'a consulté aucune adresse écrite dans le fichier." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Un document ordinaire qui a des liens vers une adresse la déclenche (un renvoi à une autre page du document n'est pas une action). R-ACTIFSPDF-002 dit si l'une de ces actions part sans geste de l'utilisateur, ce qui peut révéler à l'auteur du fichier qu'il a été ouvert (M-14).",
+  "Ni l'adresse ni son hôte ne figurent au rapport (ADR-0220) : le constat ne distingue pas un lien vers un site connu d'une balise de pistage.",
+  "Mêmes limites de recherche que R-ACTIFSPDF-001 : seule la dernière version, depuis son catalogue.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule action suffit à la signaler (F-62). Vérifié sur les échantillons de tests/donnees/actifs : les liens d'un document de LibreOffice 25.2.3.2 la déclenchent."
+
+[[regle.condition]]
+observation = "actifspdf.envois"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "envois"
+
+[[regle.condition]]
+observation = "actifspdf.envois.natures"
+presente = true
+parametre = "natures"
+
+[[regle]]
+identifiant = "R-ACTIFSPDF-005"
+version = "1"
+module = "actifspdf"
+titre = "Fichiers incorporés au document"
+description = "La dernière version du PDF incorpore au moins un fichier : pièce jointe du document (arbre de noms EmbeddedFiles), annotation de fichier joint (FileAttachment) ou fichier associé (/AF) dont les données sont dans le PDF (/EF) (ADR-0222). Information neutre : le fichier n'est ni ouvert ni analysé par l'outil."
+gabarit = "actifspdf.fichiers"
+phrase = { fr = "Le document incorpore {fichiers} fichier(s) : ils ne sont ni ouverts ni analysés par l'outil." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Ni le nom ni le contenu des fichiers incorporés ne sont lus (ADR-0220) : un fichier incorporé peut porter ses propres métadonnées, ses propres éléments actifs, ou être un exécutable.",
+  "Une facture électronique (Factur-X, ZUGFeRD) ou un PDF/A-3 incorpore un fichier XML par construction.",
+  "Mêmes limites de recherche que R-ACTIFSPDF-001 : seule la dernière version, depuis son catalogue.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul fichier incorporé suffit à le signaler. Vérifié sur les échantillons de tests/donnees/actifs, comparés à pdfdetach -list de Poppler 25.03.0."
+
+[[regle.condition]]
+observation = "actifspdf.fichiers"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "fichiers"
