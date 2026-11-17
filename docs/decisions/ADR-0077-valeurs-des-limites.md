@@ -84,3 +84,4 @@ Un fichier de plus de 1 Gio est refusé avec le motif `hors_limites` : « fichie
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création |
+| 2026-11-17 | Renvoi : borne des parties extraites d'un fichier, seize au plus jusqu'à 2 Mio, pour tenir le délai (ADR-0226, T53) |

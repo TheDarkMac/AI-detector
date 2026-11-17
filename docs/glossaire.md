@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 proposée dans la PR de T52. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 proposée dans la PR de T53. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -42,6 +42,7 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Neutralisation | Écriture visible (`⟨U+XXXX⟩`, ou échappement `\uXXXX` en JSON) des caractères de contrôle, de mise en forme et des séparateurs de ligne, au moment d'écrire une sortie. | ES-12, ADR-0096 |
 | Format réel | Format identifié par le contenu du fichier, non par son extension : celui de la partie 1. | F-02, ADR-0070 |
 | Partie (d'un fichier) | Format reconnu dans le fichier et plage d'octets qu'il occupe, du début à sa fin logique. Un fichier en a une ou plusieurs ; chaque partie du périmètre est analysée. | ADR-0071 |
+| Partie extraite | Contenu qu'un module a trouvé dans une partie (image JPEG d'un PDF), reconnu par l'identification et analysé par les modules de son format comme une partie ; numérotée à la suite des parties, avec son origine : partie qui la contient, module, page et objet. | F-63, ADR-0224 |
 | Fichier polyglotte | Fichier reconnu dans plusieurs formats à la fois : un JPEG suivi d'une archive ZIP, un PDF caché dans un JPEG. | A-31, ES-07 |
 | Fin logique | Position où s'achève la structure d'un format (EOI d'un JPEG, IEND d'un PNG, dernier `%%EOF` d'un PDF). Elle est établie, non établie (structure non parcourue ou de taille inconnue) ou tronquée (structure interrompue). | ES-07, ADR-0070 |
 | Octets non reconnus | Plages du fichier qu'aucune partie ne couvre, dont les données après la fin logique ; déclarées non menées (`format_partiel`). | ES-07, ADR-0072 |
@@ -107,6 +108,7 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Incorporation d'une police | Façon dont un PDF porte une police : programme incorporé ou non, de quel type, en sous-ensemble (préfixe `ABCDEF+`) ou entier. | F-61, ADR-0216 |
 | Élément actif (PDF) | Ce qu'un lecteur de PDF exécuterait ou ouvrirait : action (script, lancement d'un programme, ouverture d'un autre fichier, envoi d'un formulaire, adresse), formulaire XFA, fichier incorporé. L'outil le signale, jamais ne l'exécute. | F-62, ADR-0220 |
 | Déclencheur (d'une action PDF) | Ce qui fait exécuter une action par un lecteur : ouverture du document, événement du document (fermeture, enregistrement, impression), affichage d'une page, calcul ou mise en forme d'un champ, geste de l'utilisateur. Les quatre premiers sont automatiques. | F-62, ADR-0220 |
+| Filtre (d'un flux PDF) | Compression ou codage des données d'un flux (ISO 32000-2, §7.4) : `FlateDecode` pour des pixels compressés, `DCTDecode` pour un JPEG écrit tel quel, `JPXDecode` pour un JPEG 2000. Seule une image au seul filtre `DCTDecode` est analysée par les modules d'image. | F-63, ADR-0225 |
 
 ## Historique
 
@@ -127,3 +129,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-11-16 | 1.12 | Version d'un PDF, ajout permis ajoutés ; statut corrigé, il annonçait encore la v1.10 | T50 |
 | 2026-11-17 | 1.13 | Boîte d'un texte, texte superposé, cache, incorporation d'une police ajoutés | T51 |
 | 2026-11-17 | 1.14 | Élément actif (PDF), déclencheur d'une action PDF ajoutés | T52 |
+| 2026-11-17 | 1.15 | Partie extraite, filtre d'un flux PDF ajoutés | T53 |

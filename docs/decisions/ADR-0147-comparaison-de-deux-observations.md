@@ -67,3 +67,4 @@ Option A.
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création |
+| 2026-11-17 | Renvoi : l'acheminement d'un module vers un autre est fixé (ADR-0224, T53) ; la comparaison des observations de deux modules attend la première règle qui en a besoin (ADR-0223) |

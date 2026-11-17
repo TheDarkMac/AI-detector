@@ -51,3 +51,4 @@ Option A. Modules et versions : `infopdf` 0.1.0 (nouveau, format `pdf`), `xmp` 0
 | --- | --- |
 | 2026-11-12 | Création, statut « Proposé » |
 | 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR de T21 : statut « Accepté » |
+| 2026-11-17 | Renvoi : images d'un PDF analysées comme des parties extraites (ADR-0224, ADR-0225, T53) ; le paquet XMP attaché à une image (`/Metadata` de son flux) n'est toujours pas lu |

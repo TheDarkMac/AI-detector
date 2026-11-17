@@ -55,3 +55,4 @@ Le principe de modularité et NF-10 demandent qu'une technique ou un format s'aj
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : forme de l'observation (ADR-0058) ; états des techniques dans la couverture (ADR-0059) (T11) |
 | 2026-10-26 | Renvoi : réalisé en T12 ; résultats d'un module en erreur (ADR-0060), interface (ADR-0061), désactivation (ADR-0063), manifeste (ADR-0064) |
+| 2026-11-17 | Renvoi : un module qui a besoin du résultat d'un autre l'obtient comme une partie extraite, déclarée par le champ `extrait` du manifeste (ADR-0224, T53) |

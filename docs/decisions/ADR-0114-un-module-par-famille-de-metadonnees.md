@@ -63,3 +63,4 @@ Option A.
 | 2026-11-12 | Renvoi : PDF ajouté aux formats de `xmp`, module `infopdf` pour le dictionnaire d'information (ADR-0127) (T21) |
 | 2026-11-13 | Renvoi : modules `id3`, `infowav`, `vorbis`, `quicktime`, `matroska` pour les balises audio et vidéo, `xmp` étendu à WAV, M4A, MP4 et MOV (ADR-0131, ADR-0134) (T21, complément audio et vidéo) |
 | 2026-11-13 | Renvoi : modules `ooxml` et `odf` pour les propriétés bureautiques (ADR-0136) (T21, complément bureautique) |
+| 2026-11-17 | Renvoi : l'acheminement d'un module vers un autre existe depuis T53, par les parties extraites (ADR-0224) ; chaque module reste seul à parcourir sa partie |

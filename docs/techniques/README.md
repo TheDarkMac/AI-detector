@@ -9,6 +9,7 @@ Une fiche par module d'analyse (NF-09, livrable 4), livrée avec son code, ses t
 - La rubrique « Hypothèses distinguées » est obligatoire ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : une technique ne produit la direction « origine IA » que si elle distingue la génération des transformations banales sur la partie évaluation du corpus.
 - La fiche liste les noms d'observation du module (ADR-0058) et les champs qu'il marque comme identifiants (ADR-0057).
 - Un module qui décompresse autrement que par `Contexte.decompresser` le dit, et déclare ses octets par `compter_decompression` (ADR-0078).
+- Un module qui extrait un contenu de sa partie (`extrait` au manifeste) le dit dans l'en-tête de sa fiche, champ « Contenus extraits » ; les autres n'ont pas ce champ (ADR-0224).
 
 ## Index
 
@@ -24,6 +25,9 @@ Une fiche par module d'analyse (NF-09, livrable 4), livrée avec son code, ses t
 | [Filigrane dwtDct d'invisible-watermark](filigrane-dwtdct.md) | `dwtdct` | T32 | JPEG, PNG (WebP, HEIC non lus) |
 | [Dictionnaire d'information PDF](metadonnees-info-pdf.md) | `infopdf` | T21, T22, T23, T25 | PDF |
 | [Versions successives d'un PDF](revisions-pdf.md) | `revisionspdf` | T50 | PDF |
+| [Pages d'un PDF : textes superposés, caches, polices](pages-pdf.md) | `pagespdf` | T51 | PDF |
+| [Éléments actifs d'un PDF](actifs-pdf.md) | `actifspdf` | T52 | PDF |
+| [Images d'un PDF, analysées comme des parties extraites](images-pdf.md) | `imagespdf` | T53 | PDF (JPEG écrits tels quels, analysés par les modules d'image) |
 | [Balises ID3](metadonnees-id3.md) | `id3` | T21, T22, T23, T25 | MP3, AAC, FLAC, WAV |
 | [Liste INFO et bloc bext d'un WAV](metadonnees-info-wav.md) | `infowav` | T21, T22, T23, T25 | WAV |
 | [Commentaires Vorbis](metadonnees-vorbis.md) | `vorbis` | T21, T22, T23, T25 | FLAC, Ogg |
