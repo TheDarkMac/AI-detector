@@ -20,6 +20,7 @@ from typing import Any, cast
 from xml.parsers import expat
 
 import pytest
+from bureautique import core, docx_
 from catalogues import CATALOGUE, CONFIANCE
 from echantillons import boite
 from medias import (
@@ -290,9 +291,29 @@ def test_vrai_processus_extrait_les_proprietes_d_un_document(
     assert {cle: valeurs.get(cle) for cle in attendus} == attendus
     etats = {t.module: t.etat for t in resultat.couverture.techniques if t.version is not None}
     assert etats.pop(module) is etats.pop("c2pa") is EtatTechnique.APPLIQUEE
+    # Complément bureautique de T52 : rien d'actif dans ces documents, mais le module est appliqué.
+    assert etats.pop("actifsbureau") is EtatTechnique.APPLIQUEE
+    assert valeurs["actifsbureau.macros"] == valeurs["actifsbureau.externes"] == 0
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(contenu))
+
+
+@pytest.mark.exigence("F-10", "ES-05")
+def test_vrai_processus_encodage_qu_expat_ne_lit_pas(tmp_path: Path) -> None:
+    # Codec que le processus restreint ne peut plus charger (windows-1252), encodage inconnu :
+    # lecture partielle, jamais une erreur du module (ERR-0012).
+    for encodage in ("windows-1252", "UTF-C"):
+        declaration = f'<?xml version="1.0" encoding="{encodage}"?>'.encode()
+        contenu = docx_(declaration + core("<dc:title>T</dc:title>"))
+        ouvert = ouvrir(tmp_path / f"{encodage}.docx", contenu)
+        try:
+            resultat = executer(ouvert, manifestes.decouvrir())
+        finally:
+            os.close(ouvert)
+        raisons = {n.raison for n in resultat.non_menees if n.module == "ooxml"}
+        assert raisons == {RaisonNonMenee.FORMAT_PARTIEL}, encodage
+        assert not resultat.interrompue
 
 
 @pytest.mark.exigence("F-10")
@@ -354,9 +375,9 @@ def test_vrai_processus_bibliotheques_des_seuls_modules_actifs(tmp_path: Path) -
     contenu = (Path(__file__).parent / "donnees" / "metadonnees" / "photo.jpg").read_bytes()
     ouvert = ouvrir(tmp_path / "photo.jpg", contenu)
     try:
-        # expat sert à xmp, ooxml et odf, c2pa-python à c2pa, numpy à doublejpeg, dwtdct et
-        # ela : désactivés, ils ne sont plus cités (ADR-0120).
-        desactives = {"xmp", "ooxml", "odf", "c2pa", "doublejpeg", "dwtdct", "ela"}
+        # expat sert à xmp, ooxml, odf et actifsbureau, c2pa-python à c2pa, numpy à doublejpeg,
+        # dwtdct et ela : désactivés, ils ne sont plus cités (ADR-0120).
+        desactives = {"xmp", "ooxml", "odf", "actifsbureau", "c2pa", "doublejpeg", "dwtdct", "ela"}
         resultat = executer(ouvert, manifestes.decouvrir(), desactives=desactives)
     finally:
         os.close(ouvert)
