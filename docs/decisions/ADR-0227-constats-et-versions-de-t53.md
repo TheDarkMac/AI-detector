@@ -1,6 +1,6 @@
 # ADR-0227 — Constats des images d'un PDF : quatre informations neutres ; module `imagespdf` et versions de T53
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-17
 - **Décideur** : TheDarkMac, sur proposition de l'assistant, dans le cadre fixé par ADR-0223 à ADR-0226 et sur le modèle d'ADR-0222
 - **Tâche** : T53
@@ -48,7 +48,7 @@ Observations du module : `pages`, `pages_lues`, `images`, `jpeg`, `acheminees` e
 
 ## Raisons
 
-- Option A proposée par l'assistant pour les raisons d'ADR-0222, que TheDarkMac a retenues pour `actifspdf` ; à valider par TheDarkMac.
+- Option A proposée par l'assistant pour les raisons d'ADR-0222, que TheDarkMac a retenues pour `actifspdf` ; validée par TheDarkMac pendant la revue de la PR de T53 (« valide ces adr »), sans raison supplémentaire.
 - Option B écartée : F-82 demande de dire ce qui n'est pas analysé ; une partie extraite sans phrase qui la présente se lit mal.
 
 ## Conséquences
@@ -61,3 +61,4 @@ Observations du module : `pages`, `pages_lues`, `images`, `jpeg`, `acheminees` e
 | Date | Modification |
 | --- | --- |
 | 2026-11-17 | Création, statut « Proposé » |
+| 2026-11-17 | Validé par TheDarkMac pendant la revue de la PR de T53 : statut « Accepté » |

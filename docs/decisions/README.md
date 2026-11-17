@@ -241,4 +241,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0224](ADR-0224-parties-extraites.md) | Contenu extrait d'un fichier : une partie extraite, analysée comme une partie, numérotée à la suite | Accepté | 2026-11-17 |
 | [ADR-0225](ADR-0225-images-jpeg-intactes.md) | Images d'un PDF acheminées : les JPEG écrits tels quels ; les autres comptées par filtre | Accepté | 2026-11-17 |
 | [ADR-0226](ADR-0226-borne-des-images-extraites.md) | Borne des images extraites d'un fichier : seize au plus, dans l'ordre des pages, jusqu'à 2 Mio | Accepté | 2026-11-17 |
-| [ADR-0227](ADR-0227-constats-et-versions-de-t53.md) | Constats des images d'un PDF : quatre informations neutres ; module `imagespdf` et versions de T53 | Proposé | 2026-11-17 |
+| [ADR-0227](ADR-0227-constats-et-versions-de-t53.md) | Constats des images d'un PDF : quatre informations neutres ; module `imagespdf` et versions de T53 | Accepté | 2026-11-17 |
