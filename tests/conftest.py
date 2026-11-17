@@ -60,29 +60,17 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
             inconnues = sorted(set(marqueur.args) - connues) if marqueur.args else ["(aucune)"]
             if inconnues:
                 raise pytest.UsageError(f"{item.nodeid} : exigence inconnue {', '.join(inconnues)}")
-    _diagnostic_windows(items)
 
 
-def _diagnostic_windows(items: list[pytest.Item]) -> None:  # pragma: no cover - diagnostic
-    """DIAGNOSTIC TEMPORAIRE (T80) : recherche des tests qui bloquent la CI Windows, à retirer.
-
-    3.12 : test_fuzzing.py seul ; 3.13 : fichiers test_a à test_l ; 3.14 : test_m à test_z.
-    """
+def pytest_configure(config: pytest.Config) -> None:  # pragma: no cover - diagnostic
+    """DIAGNOSTIC TEMPORAIRE (T80), à retirer : sous Windows, chaque test est nommé, et la
+    session s'arrête au bout de 20 minutes avec la pile de tous ses fils."""
+    import faulthandler
     import sys
 
-    if sys.platform != "win32":
-        return
-    version = sys.version_info[:2]
-    for item in items:
-        fichier = item.nodeid.split("::", 1)[0].rsplit("/", 1)[-1]
-        if version == (3, 12):
-            garde = fichier == "test_fuzzing.py"
-        elif version == (3, 13):
-            garde = fichier < "test_m" and fichier != "test_fuzzing.py"
-        else:
-            garde = fichier >= "test_m"
-        if not garde:
-            item.add_marker(pytest.mark.skip(reason="diagnostic Windows T80"))
+    if sys.platform == "win32":
+        config.option.verbose = max(config.option.verbose, 1)
+        faulthandler.dump_traceback_later(1200, exit=True, file=sys.__stderr__)
 
 EMPREINTE = "3f" * 32
 TAILLE = 2_048_576
