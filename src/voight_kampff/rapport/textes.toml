@@ -42,7 +42,7 @@ informations = "{nombre} information(s) neutre(s)."
 techniques = "Techniques : {appliquees} appliquée(s), {partielles} partielle(s), {non_menees} non menée(s), {non_applicables} non applicable(s)."
 non_menees = "{nombre} analyse(s) non menée(s)."
 non_menees_aucune = "Toutes les analyses prévues ont été menées."
-visualisations = "{nombre} visualisation(s) au rapport HTML et JSON : {natures}. Lisez son avertissement d'interprétation avant de l'utiliser."
+visualisations = "{nombre} visualisation(s) au rapport HTML et JSON : {natures}. Lisez l'avertissement d'interprétation de chacune avant de l'utiliser."
 publication = "Contrôle avant publication : {nombre} donnée(s) des métadonnées peuvent identifier la source ({categories}). L'outil ne les retire pas : retirez-les avant de publier le fichier."
 publication_aucune = "Contrôle avant publication : aucune donnée identifiante relevée dans les métadonnées lues."
 publication_incomplete = "Contrôle avant publication incomplet : des parties du fichier n'ont pas été lues (analyses non menées) et peuvent porter d'autres marques."
@@ -89,7 +89,7 @@ avertissement = [
 [visualisations.chronologie_revisions]
 titre = "Chronologie des versions du PDF"
 legende = "Versions du document, de la première à la dernière enregistrée"
-couverture_partielle = "Le tableau ne montre que les {lignes} premières versions sur {versions} ; les observations du module revisionspdf les décrivent toutes."
+couverture_partielle = "Le tableau ne montre que les {lignes} premières versions sur {total} ; les observations du module revisionspdf les décrivent toutes."
 avertissement = [
     "Ce tableau n'est ni une preuve ni un indice : c'est une aide à la lecture. Les constats du module revisionspdf, s'il y en a, figurent plus haut.",
     "Chaque ligne est une version que le fichier garde : la version n est faite des premiers octets du fichier, jusqu'à la fin indiquée. Pour la retrouver, copiez ce début du fichier.",
@@ -117,6 +117,40 @@ annotation = "annotations"
 metadonnees = "métadonnées"
 non_reconnue = "non reconnue"
 non_lue = "objets non lus"
+
+[visualisations.objets_revisions]
+titre = "Objets changés par les versions du PDF"
+legende = "Objets ajoutés, remplacés ou supprimés par chaque version postérieure à la première"
+couverture_partielle = "Le tableau ne montre que les {lignes} premiers objets changés sur {total} ; l'observation revisionspdf.objets les compte tous."
+avertissement = [
+    "Ce tableau n'est ni une preuve ni un indice : c'est une aide à la lecture de la chronologie. Les constats du module revisionspdf, s'il y en a, figurent plus haut.",
+    "Chaque ligne est un objet du PDF qu'une version ajoute, remplace ou supprime par rapport à la précédente : son numéro et sa génération le désignent dans le fichier.",
+    "Le type est celui que l'objet déclare (/Type et /Subtype), à défaut sa forme ; la nature est le rangement de la chronologie : « non reconnue » veut dire que l'outil ne sait pas ranger l'objet, pas qu'il a été falsifié.",
+    "La page est la première qui désigne l'objet dans la version : la page elle-même, ses flux de contenu, ses annotations, ses ressources, ses polices ou ses objets externes ; un tiret si aucune page ne le désigne directement.",
+]
+
+[visualisations.objets_revisions.colonnes]
+version = "Version"
+objet = "Objet"
+generation = "Génération"
+etat = "État"
+type = "Type"
+nature = "Nature"
+page = "Page"
+
+[visualisations.objets_revisions.etats]
+ajoute = "ajouté"
+remplace = "remplacé"
+supprime = "supprimé"
+
+[visualisations.objets_revisions.natures]
+structure = "structure"
+signature = "signature"
+formulaire = "formulaire"
+annotation = "annotation"
+metadonnees = "métadonnées"
+non_reconnue = "non reconnue"
+non_lue = "non lu"
 
 # Introductions et légendes des tableaux.
 [intros]

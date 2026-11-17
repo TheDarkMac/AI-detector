@@ -43,6 +43,7 @@ pytestmark = pytest.mark.exigence("F-60")
 ECHANTILLONS = Path(__file__).parent / "donnees" / "revisions"
 ORACLE: dict[str, Any] = json.loads((ECHANTILLONS / "oracle.json").read_text(encoding="utf-8"))
 CHRONOLOGIE = NatureVisualisation.CHRONOLOGIE_REVISIONS
+OBJETS = NatureVisualisation.OBJETS_REVISIONS
 PARTIEL = "format_partiel"
 FINE = "\N{NARROW NO-BREAK SPACE}"
 """Séparateur des milliers des nombres du rapport."""
@@ -127,12 +128,19 @@ def derniere(contenu: bytes) -> str:
     return natures(contenu)[-1]
 
 
-def tableau(contenu: bytes) -> list[list[Any]]:
+def tableau(contenu: bytes, nature: str = CHRONOLOGIE) -> list[list[Any]]:
     (visualisation,) = [
-        ligne["visualisation"] for ligne in lignes(contenu) if ligne["type"] == "visualisation"
+        ligne["visualisation"]
+        for ligne in lignes(contenu)
+        if ligne["type"] == "visualisation" and ligne["visualisation"]["nature"] == nature
     ]
     resultat: list[list[Any]] = visualisation["lignes"]
     return resultat
+
+
+def objets(contenu: bytes) -> list[list[Any]]:
+    """Lignes du tableau des objets changés (T51, ADR-0217)."""
+    return tableau(contenu, OBJETS)
 
 
 @pytest.fixture
@@ -270,6 +278,7 @@ def test_une_seule_version() -> None:
         "revisionspdf.octets_apres_fin": 0,
         "revisionspdf.versions_non_reconnues": 0,
         "revisionspdf.signatures": 0,
+        "revisionspdf.objets": 0,
     }
     assert not [ligne for ligne in resultat if ligne["type"] == "visualisation"]
 
@@ -865,10 +874,12 @@ def test_tableau_relu_avec_d_autres_colonnes() -> None:
 def test_message_du_tableau_conforme() -> None:
     from voight_kampff import schemas
 
-    (message,) = [
+    messages = [
         ligne for ligne in lignes(maj(base(), {6: b"<<>>"})) if ligne["type"] == "visualisation"
     ]
-    schemas.valider("messages", message)
+    assert [m["visualisation"]["nature"] for m in messages] == [CHRONOLOGIE, OBJETS]
+    for message in messages:
+        schemas.valider("messages", message)
 
 
 # Rapport : règles du catalogue, exports, résumé (ADR-0211, ADR-0212)
@@ -959,7 +970,7 @@ def test_html_chronologie_partielle(analyses: dict[str, Analyse]) -> None:
     )
     page = export.exporter_html(dataclasses.replace(analyse, observations=observations))
     attendu = texte(
-        "visualisations.chronologie_revisions.couverture_partielle", lignes="4", versions="300"
+        "visualisations.chronologie_revisions.couverture_partielle", lignes="4", total="300"
     )
     assert escape(attendu) in page
     assert "Le tableau ne montre" not in export.exporter_html(analyse)
@@ -977,9 +988,10 @@ def test_json_chronologie_jamais_masquee(analyses: dict[str, Analyse]) -> None:
     analyse = analyses["signe_modifie.pdf"]
     masque = json.loads(export.exporter_json(analyse))
     assert "contenu" in masque["masquage"]["masquees"]
-    (chronologie,) = masque["visualisations"]
+    chronologie, objets_ = masque["visualisations"]
     assert chronologie["nature"] == "chronologie_revisions"
     assert len(chronologie["lignes"]) == 6
+    assert objets_["nature"] == "objets_revisions"
     revele = json.loads(export.exporter_json(analyse, reveler=["contenu"]))
     assert revele["visualisations"] == masque["visualisations"]
     assert comparaison.comparer(masque, revele).identiques
@@ -989,7 +1001,8 @@ def test_json_chronologie_jamais_masquee(analyses: dict[str, Analyse]) -> None:
 
 def test_resume_annonce_la_chronologie(analyses: dict[str, Analyse]) -> None:
     lignes_ = Presentation(analyses["signe_modifie.pdf"], ()).resume()
-    attendu = texte("resume.visualisations", nombre=1, natures="Chronologie des versions du PDF")
+    natures = "Chronologie des versions du PDF, Objets changés par les versions du PDF"
+    attendu = texte("resume.visualisations", nombre=2, natures=natures)
     assert attendu in lignes_
 
 
@@ -1001,3 +1014,137 @@ def test_controle_avant_publication_complet(analyses: dict[str, Analyse]) -> Non
     non_menees = {n.module for n in analyse.non_menees if n.raison.value != "hors_v1"}
     assert non_menees == {"revisionspdf"}
     assert texte("resume.publication_incomplete") not in Presentation(analyse, ()).publication()
+
+
+# Objets changés, un par un (T51, ADR-0217)
+
+
+@pytest.mark.exigence("F-61")
+def test_objets_un_par_un() -> None:
+    page = b"<</Type/Page/Parent 2 0 R/Contents[4 0 R 6 0 R]/Resources<</Font<</F 7 0 R>>>>>>"
+    police = b"<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>"
+    contenu = maj(base(), {3: page, 6: flux_pdf("", b"BT ET"), 7: police})
+    assert objets(contenu) == [
+        [2, 3, 0, "remplace", "Page", "non_reconnue", 1],
+        [2, 6, 0, "ajoute", "flux", "non_reconnue", 1],
+        [2, 7, 0, "ajoute", "Font/Type1", "non_reconnue", 1],
+    ]
+    assert obs(contenu)["revisionspdf.objets"] == 3
+
+
+@pytest.mark.exigence("F-61")
+def test_objet_supprime_et_page_de_la_version_precedente() -> None:
+    contenu = maj(base(), {3: b"<</Type/Page/Parent 2 0 R>>"}, libres={4: 1})
+    assert objets(contenu) == [
+        [2, 3, 0, "remplace", "Page", "non_reconnue", 1],
+        [2, 4, 0, "supprime", "flux", "non_reconnue", 1],
+    ]
+
+
+@pytest.mark.parametrize(
+    ("corps", "genre"),
+    [
+        pytest.param(b"[1 2]", "tableau", id="tableau"),
+        pytest.param(b"42", "valeur", id="valeur"),
+        pytest.param(b"<</A 1>>", "dictionnaire", id="dictionnaire"),
+        pytest.param(b"<</Subtype/Text>>", "Text", id="sous-type-seul"),
+        pytest.param(b"null", "", id="nul"),
+        pytest.param(b"<</Type/" + b"N" * 80 + b">>", "N" * 64, id="type-coupe"),
+    ],
+)
+def test_type_d_un_objet(corps: bytes, genre: str) -> None:
+    ((*_, type_, _, page),) = objets(maj(base(), {6: corps}))
+    assert (type_, page) == (genre, 0)
+
+
+def test_objet_non_lu() -> None:
+    ((*_, type_, nature, _),) = objets(abimer(maj(base(), {6: b"<<>>"}), 6))
+    assert (type_, nature) == ("", "non_lue")
+
+
+def test_pages_des_objets_designes() -> None:
+    # Deuxième page sous un nœud intermédiaire : ses annotations, ses ressources, ses polices et
+    # ses objets externes ; une page vue deux fois n'est comptée qu'une fois.
+    pages = b"<</Type/Pages/Kids[3 0 R 8 0 R 3 0 R]/Count 2>>"
+    noeud = b"<</Type/Pages/Kids[9 0 R]/Count 1>>"
+    seconde = b"<</Type/Page/Parent 8 0 R/Contents 10 0 R/Annots 11 0 R/Resources 12 0 R>>"
+    premiere = base(
+        {
+            2: pages,
+            8: noeud,
+            9: seconde,
+            10: CONTENU,
+            11: b"[13 0 R]",
+            12: b"<</Font 14 0 R/XObject<</X 15 0 R>>>>",
+            13: b"<</Subtype/Text/Rect[0 0 1 1]>>",
+            14: b"<</F 16 0 R>>",
+            15: flux_pdf("/Subtype/Form", b""),
+            16: b"<</Type/Font>>",
+        }
+    )
+    changes = {
+        10: flux_pdf("", b"BT ET"),
+        11: b"[13 0 R 13 0 R]",
+        12: b"<</Font 14 0 R/XObject<</X 15 0 R>>/A 1>>",
+        13: b"<</Subtype/Text/Rect[0 0 2 2]>>",
+        14: b"<</F 16 0 R/G 1>>",
+        15: flux_pdf("/Subtype/Form/A 1", b""),
+        16: b"<</Type/Font/A 1>>",
+    }
+    lignes_ = objets(maj(premiere, changes))
+    assert {ligne[1]: ligne[6] for ligne in lignes_} == dict.fromkeys(range(10, 17), 2)
+
+
+def test_page_directe_dans_l_arbre() -> None:
+    # Une page écrite directement dans /Kids : ses objets sont désignés, elle-même ne l'est pas.
+    pages = b"<</Type/Pages/Kids[<</Type/Page/Contents 4 0 R>>]/Count 1>>"
+    ((*_, page),) = objets(maj(base({2: pages}), {4: flux_pdf("", b"BT ET")}))
+    assert page == 1
+
+
+def test_pages_des_objets_illisibles() -> None:
+    # L'arbre des pages ne se lit plus : le relevé s'arrête, aucune page n'est désignée.
+    pages = b"<</Type/Pages/Kids[3 0 R 8 0 R]/Count 2>>"
+    premiere = abimer(base({2: pages, 8: b"<</Type/Page>>"}), 8)
+    ((*_, page),) = objets(maj(premiere, {4: CONTENU + b" "}))
+    assert page == 1  # le contenu de la première page, lue avant l'objet illisible
+    contenu = maj(abimer(base({2: b"<</Type/Pages/Kids 8 0 R>>", 8: b"[3 0 R]"}), 8), {6: b"1"})
+    ((*_, page),) = objets(contenu)
+    assert page == 0
+
+
+def test_objets_coupes(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(revisionspdf, "OBJETS_MAX", 2)
+    contenu = maj(maj(base(), {6: b"1", 7: b"2"}), {8: b"3"})
+    assert [ligne[1] for ligne in objets(contenu)] == [6, 7]
+    assert obs(contenu)["revisionspdf.objets"] == 3
+
+
+@pytest.mark.exigence("F-61", "F-84")
+def test_html_objets(analyses: dict[str, Analyse]) -> None:
+    page = export.exporter_html(analyses["modifie.pdf"])
+    debut = page.index(f"<h3>{escape(texte('visualisations.objets_revisions.titre'))}</h3>")
+    tableau_ = page.index("<table>", debut)
+    for paragraphe in textes()["visualisations"]["objets_revisions"]["avertissement"]:
+        assert debut < page.index(escape(paragraphe)) < tableau_
+    for colonne in textes()["visualisations"]["objets_revisions"]["colonnes"].values():
+        assert escape(colonne) in page[tableau_:]
+    corps = page[tableau_ : page.index("</table>", tableau_)]
+    assert "<td>remplacé</td>" in corps
+    assert "<td>ajouté</td>" in corps
+    assert "<td>non reconnue</td>" in corps
+    assert "<td>métadonnées</td>" in corps
+    assert "<td>Font/Type1</td>" in corps
+    assert "<td>—</td>" in corps  # objet qu'aucune page ne désigne
+
+
+@pytest.mark.exigence("F-61", "F-84")
+def test_html_objets_partiel(analyses: dict[str, Analyse]) -> None:
+    analyse = analyses["modifie.pdf"]
+    observations = tuple(
+        dataclasses.replace(o, valeur=900) if o.nom == "revisionspdf.objets" else o
+        for o in analyse.observations
+    )
+    page = export.exporter_html(dataclasses.replace(analyse, observations=observations))
+    attendu = texte("visualisations.objets_revisions.couverture_partielle", lignes="6", total="900")
+    assert escape(attendu) in page

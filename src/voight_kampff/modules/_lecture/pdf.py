@@ -20,7 +20,7 @@ section déclare (T50, ADR-0207).
 
 import codecs
 import zlib
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 
 from voight_kampff._protocole import TAILLE_MAX_LECTURE
@@ -37,6 +37,7 @@ __all__ = [
     "Ref",
     "Section",
     "entier",
+    "operations",
     "texte",
 ]
 
@@ -417,6 +418,67 @@ class _Analyseur:
 def _est(jeton: Objet | _Mot, mot: bytes) -> bool:
     """Vrai si le jeton est ce mot-clé ou ce délimiteur ; une chaîne de ces octets ne l'est pas."""
     return isinstance(jeton, _Mot) and jeton == mot
+
+
+# Flux de contenu (§7.8.2, §8.9.7 ; T51, ADR-0213)
+
+_DEBUTS_D_OBJET = frozenset({b"[", b"<<", b"true", b"false", b"null"})
+"""Mots qui commencent un opérande ; tout autre mot-clé d'un flux de contenu est un opérateur."""
+_FERMANTS = frozenset({b"]", b">>", b"{", b"}"})
+"""Délimiteurs qu'aucun opérande n'ouvre : un flux qui en contient est mal formé."""
+
+
+def operations(
+    contexte: Contexte, donnees: bytes, position: int = 0
+) -> Iterator[tuple[str, list[Objet]]]:
+    """Opérations d'un flux de contenu décodé : l'opérateur et ses opérandes, dans l'ordre.
+
+    Une image en ligne (``BI`` … ``ID`` … ``EI``) donne l'opération ``BI``, son dictionnaire
+    pour seul opérande ; ses données sont passées. Un flux mal formé lève :class:`Illisible`
+    à ``position``, celle du flux dans la partie. Chaque opérande compte un objet, chaque
+    opération aussi (ES-03).
+    """
+    analyseur = _Analyseur(contexte, donnees, 0, complet=True)
+    operandes: list[Objet] = []
+    try:
+        while True:
+            analyseur.blancs()
+            if analyseur.position >= len(donnees):
+                return
+            jeton = analyseur.jeton()
+            if isinstance(jeton, _Mot) and bytes(jeton) not in _DEBUTS_D_OBJET:
+                if bytes(jeton) in _FERMANTS:
+                    raise _Fin
+                contexte.compter_objets()
+                operateur = bytes(jeton).decode("latin-1")
+                if operateur == "BI":
+                    operandes = [_image_en_ligne(analyseur, donnees)]
+                yield operateur, operandes
+                operandes = []
+                continue
+            operandes.append(analyseur._objet(jeton))
+    except (_Fin, Illisible):
+        raise _partiel(position, "flux de contenu") from None
+
+
+def _image_en_ligne(analyseur: _Analyseur, donnees: bytes) -> dict[str, Objet]:
+    """Dictionnaire d'une image en ligne ; ses données passées jusqu'au ``EI`` qui suit un blanc
+    et précède un blanc, un délimiteur ou la fin du flux (§8.9.7)."""
+    dico: dict[str, Objet] = {}
+    while not _est(cle := analyseur.jeton(), b"ID"):
+        if not isinstance(cle, Nom):
+            raise _Fin
+        dico[str(cle)] = analyseur.objet()
+    debut = analyseur.position + 1  # un blanc après « ID »
+    cherche = debut
+    while (fin := donnees.find(b"EI", cherche)) != -1:
+        apres = donnees[fin + 2 : fin + 3]
+        avant_blanc = fin == debut or donnees[fin - 1] in _BLANCS
+        if avant_blanc and (not apres or apres[0] in _BLANCS or apres[0] in _DELIMITEURS):
+            analyseur.position = fin + 2
+            return dico
+        cherche = fin + 1
+    raise _Fin
 
 
 def _nombre(mot: bytes) -> Objet | _Mot:

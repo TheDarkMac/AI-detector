@@ -336,6 +336,7 @@ _XMP = xmp(
 )
 _ORACLE = Path(__file__).parent / "donnees" / "metadonnees"
 _REVISIONS = Path(__file__).parent / "donnees" / "revisions"
+_PAGES = Path(__file__).parent / "donnees" / "pages"
 _INFO = (
     b"<</Title(Titre \\(entre parenth\\350ses\\))/Author<FEFF004A0065>/Trapped/False"
     b"/Pages 3/Liste[(a) 1]/Sous<</A(b)>>/Creator 2 0 R>>"
@@ -420,6 +421,8 @@ ECHANTILLONS_METADONNEES = (
     ("pdf", (_ORACLE / "chiffre.pdf").read_bytes()),
     ("pdf", (_REVISIONS / "signe_modifie.pdf").read_bytes()),
     ("pdf", (_REVISIONS / "lineaire_maj.pdf").read_bytes()),
+    ("pdf", (_PAGES / "annotation.pdf").read_bytes()),
+    ("pdf", (_PAGES / "fusion.pdf").read_bytes()),
     (
         "mp3",
         mp3(
@@ -541,7 +544,7 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "png": ("exif", "xmp", "textepng", "image", "dwtdct"),
     "webp": ("exif", "xmp", "image", "dwtdct"),
     "heic": ("exif", "xmp", "dwtdct"),
-    "pdf": ("infopdf", "xmp", "revisionspdf"),
+    "pdf": ("infopdf", "xmp", "revisionspdf", "pagespdf"),
     "mp3": ("id3",),
     "aac": ("id3",),
     "wav": ("id3", "infowav", "xmp"),

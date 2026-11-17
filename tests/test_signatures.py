@@ -79,6 +79,7 @@ REGLES_T22 = tuple(
     and regle.module != "image"  # tables d'appareils : tests/test_tables_relevees.py
     and regle.module != "dwtdct"  # filigrane dwtDct de T32 : tests/test_dwtdct.py
     and regle.module != "revisionspdf"  # versions d'un PDF, T50 : tests/test_revisions_pdf.py
+    and regle.module != "pagespdf"  # pages d'un PDF, T51 : tests/test_pages_pdf.py
 )
 """Règles de T22 : les indices du catalogue, hors indices de transfert de T24 (vers la
 transformation, ``test_transfert.py``) ; celles de T23 sont des informations neutres

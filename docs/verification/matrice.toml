@@ -303,9 +303,10 @@ note = "Module revisionspdf (T50) : versions de la chaîne des sections, linéar
 
 [[exigence]]
 id = "F-61"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T51"]
 methodes = ["test"]
+note = "Module pagespdf (T51) : contenus des pages de la dernière version interprétés par le lecteur du projet, apparences des annotations visibles comprises (ADR-0213, ADR-0214) ; boîtes des textes par les largeurs déclarées, 14 polices standard par les AFM d'Adobe (ADR-0215) ; textes superposés, caches, polices en plusieurs incorporations, codes hors plage (ADR-0216) ; règles R-PAGESPDF-001 à R-PAGESPDF-004 (ADR-0218). Objets ajoutés, remplacés ou supprimés décrits un par un par revisionspdf 0.2.0 (ADR-0217). Boîtes et polices vérifiées contre pdftotext et pdffonts sur les échantillons de tests/donnees/pages."
 
 [[exigence]]
 id = "F-62"
@@ -387,7 +388,7 @@ etat = "partielle"
 taches = ["T42", "T50"]
 methodes = ["test", "inspection"]
 justification = "La lisibilité d'une visualisation se juge à la relecture ; sa présence et sa description textuelle se testent."
-note = "Visualisations au rapport (objet, message, rubrique HTML, image data:, masquage par la catégorie « contenu », ADR-0200) ; carte ELA (T42), rapport HTML relu dans un navigateur pendant T42. Chronologie des révisions PDF (T50) : visualisation en tableau, non masquée, schéma 0.8.0 (ADR-0212), rapport HTML relu dans un navigateur pendant T50. Spectre et spectrogramme avec leurs techniques, candidates V2."
+note = "Visualisations au rapport (objet, message, rubrique HTML, image data:, masquage par la catégorie « contenu », ADR-0200) ; carte ELA (T42), rapport HTML relu dans un navigateur pendant T42. Chronologie des révisions PDF (T50) : visualisation en tableau, non masquée, schéma 0.8.0 (ADR-0212), rapport HTML relu dans un navigateur pendant T50. Objets changés par les versions d'un PDF (T51) : second tableau, schéma 0.9.0 (ADR-0217). Spectre et spectrogramme avec leurs techniques, candidates V2."
 
 # 5.6 Contrôle avant publication
 

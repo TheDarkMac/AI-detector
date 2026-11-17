@@ -495,7 +495,7 @@ def test_empreinte(descripteur: int) -> None:
     "ligne",
     [
         pytest.param(b"", id="absente"),
-        pytest.param(b'{"version_schema":"0.8.0","modules":[]}', id="sans-fin-de-ligne"),
+        pytest.param(b'{"version_schema":"0.9.0","modules":[]}', id="sans-fin-de-ligne"),
         pytest.param(b'{"version_schema":"9.9.9","modules":[]}\n', id="autre-version"),
     ],
 )
@@ -533,6 +533,7 @@ def test_import_des_modules_livres() -> None:
         "matroska",
         "odf",
         "ooxml",
+        "pagespdf",
         "quicktime",
         "revisionspdf",
         "textepng",

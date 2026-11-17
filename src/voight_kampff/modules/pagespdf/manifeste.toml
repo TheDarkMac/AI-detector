@@ -1,0 +1,12 @@
+# Module pagespdf : textes superposés, caches et polices incohérentes des pages d'un PDF (ADR-0213 à ADR-0216, ADR-0218). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "pagespdf"
+version = "0.1.0"
+formats = ["pdf"]
+exigences = ["F-61"]
+regles = []
+fiche = "pages-pdf"
+# Directions des règles du catalogue sur ses observations (ADR-0218) ; le module lui-même n'émet aucun constat.
+directions = ["retouche", "rien_de_particulier"]
+requiert = []
+bibliotheques = []

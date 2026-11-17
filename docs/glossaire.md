@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 proposée dans la PR de T50. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 proposée dans la PR de T51. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -101,6 +101,10 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Matrice de vérification | Tableau qui relie chaque exigence à son état, à ses méthodes de vérification et à leur résultat. | ADR-0024, ADR-0102 |
 | Version d'un PDF | Début du fichier jusqu'à la marque `%%EOF` d'une section de la chaîne des références croisées : la première écriture, puis une par mise à jour incrémentale ; la linéarisation n'en fait qu'une. | F-60, ADR-0207 |
 | Ajout permis | Changement d'une version d'un PDF que la norme prévoit sans changer le contenu affiché : signature, remplissage de formulaire, annotation, métadonnées ; tout autre objet changé est « non reconnu ». | F-60, ADR-0208 |
+| Boîte d'un texte | Rectangle qu'occupe un texte posé sur une page d'un PDF, dans l'espace de la page : de son point de départ à la somme des avancées de ses glyphes, de la descente à la montée de sa police. | F-61, ADR-0215 |
+| Texte superposé | Texte posé sur un texte différent déjà posé, dont les boîtes se recouvrent au moins pour moitié de la plus petite. | F-61, ADR-0214 |
+| Cache | Rectangle plein et opaque peint sur un texte déjà posé, qu'il recouvre au moins pour moitié : le texte reste dans le fichier, invisible à l'affichage. | F-61, ADR-0214 |
+| Incorporation d'une police | Façon dont un PDF porte une police : programme incorporé ou non, de quel type, en sous-ensemble (préfixe `ABCDEF+`) ou entier. | F-61, ADR-0216 |
 
 ## Historique
 
@@ -119,3 +123,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-11-14 | 1.10 | Liste de confiance, signataire reconnu ajoutés ; manifeste C2PA et ingrédient complétés | T30 |
 | 2026-11-14 | 1.11 | Marquage, filigrane invisible ajoutés ; couverture complétée | T31 |
 | 2026-11-16 | 1.12 | Version d'un PDF, ajout permis ajoutés ; statut corrigé, il annonçait encore la v1.10 | T50 |
+| 2026-11-17 | 1.13 | Boîte d'un texte, texte superposé, cache, incorporation d'une police ajoutés | T51 |

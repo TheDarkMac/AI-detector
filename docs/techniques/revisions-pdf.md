@@ -1,8 +1,8 @@
 # Fiche technique — Versions successives d'un PDF
 
-- **Module** : `revisionspdf` (version 0.1.0)
-- **Tâche** : T50
-- **Exigences** : F-60, F-84
+- **Module** : `revisionspdf` (version 0.2.0)
+- **Tâche** : T50 ; objets un par un : T51
+- **Exigences** : F-60, F-61, F-84
 - **Formats** : `pdf`
 - **Directions permises** : `retouche`, `rien_de_particulier`
 - **Règles** : aucune
@@ -10,7 +10,7 @@
 
 ## Question
 
-Combien de versions successives le PDF garde-t-il, que change chacune, et quelle version une signature couvre-t-elle ?
+Combien de versions successives le PDF garde-t-il, que change chacune, objet par objet, et quelle version une signature couvre-t-elle ?
 
 ## Principe
 
@@ -22,6 +22,7 @@ Le module :
 2. **Nature** ([ADR-0208](../decisions/ADR-0208-nature-d-une-version.md)) : il compare les entrées de chaque version à celles de la précédente (objets ajoutés, remplacés, supprimés), range chaque objet changé d'après son type, les clés du catalogue qui changent, les annotations d'une page et ce qui désigne l'objet, et en tire la nature de la version : signature, formulaire, annotation, métadonnées, non reconnue, non lue, ou structure seulement.
 3. **Signatures** ([ADR-0209](../decisions/ADR-0209-signatures-pdf-par-leur-structure.md)) : pour chaque champ de signature du formulaire, la version dont la fin est celle de la plage signée (`/ByteRange`), et si cette plage est complète : elle part du début du fichier, ne laisse de côté qu'une chaîne hexadécimale (la valeur `/Contents`) et finit à la fin d'une version. La signature n'est pas vérifiée cryptographiquement.
 4. **Chronologie** ([ADR-0212](../decisions/ADR-0212-chronologie-en-tableau.md)) : un tableau, une ligne par version.
+5. **Objets un par un** ([ADR-0217](../decisions/ADR-0217-objets-changes-un-par-un.md), T51) : un second tableau, une ligne par objet que change une version postérieure à la première : son numéro, sa génération, son état (ajouté, remplacé, supprimé), son type (`/Type` et `/Subtype`, à défaut sa forme), sa nature au sens du point 2 et la première page qui le désigne (la page elle-même, ses flux de contenu, ses annotations, ses ressources, ses polices, ses objets externes).
 
 Sur les échantillons de `tests/donnees/revisions` (`generer_revisions.py`) :
 
@@ -66,10 +67,13 @@ Aucune donnée de référence.
 | `revisionspdf.signature.<n>.version`, `.plage_complete`, `.sous_filtre`, `.date` | Pour les 32 premières : version couverte (0 si aucune), plage complète, `/SubFilter`, `/M` |
 | `revisionspdf.docmdp` | Droits d'une signature de certification : 1, 2 ou 3 |
 | `revisionspdf.derniere_version_signee`, `revisionspdf.non_reconnues_apres_signature` | Dernière version couverte par une plage complète ; versions suivantes qui changent des objets non reconnus |
+| `revisionspdf.objets` | Objets changés par les versions postérieures à la première, tous comptés |
 
 Les listes ont une valeur par version, coupées au besoin, leur longueur entière observée à part (`<nom>.longueur`).
 
 Visualisation `chronologie_revisions`, dès deux versions : une ligne par version (256 au plus) avec sa fin, sa nature, ses objets ajoutés, remplacés et supprimés, sa date déclarée (`/ModDate` du dictionnaire Info quand elle change, `/CreationDate` à défaut pour la première) et ses signatures. Elle est rendue en tableau dans la rubrique « Visualisations », sous son avertissement, et n'est pas masquée.
+
+Visualisation `objets_revisions`, dès qu'une version postérieure change un objet : une ligne par objet changé (256 au plus, dans l'ordre des versions puis des numéros), colonnes `version`, `objet`, `generation`, `etat`, `type`, `nature`, `page` (0 si aucune page ne le désigne). Rendue en tableau sous la chronologie, avec son avertissement, non masquée.
 
 ## Données identifiantes
 
@@ -110,10 +114,11 @@ Non mesurés : le corpus de référence n'existe pas encore (T100). Le classemen
 
 ## Sécurité
 
-Mêmes protections que le lecteur PDF du projet : lecture stricte, aucune exécution, aucun flux d'un autre fichier, `FlateDecode` seul par `Contexte.decompresser`. Chaque entrée énumérée, chaque objet lu et chaque objet parcouru comptent dans le budget du module (ES-03) ; imbrication bornée. Chaque version est relue dans une vue distincte, objets relus à la demande. Rien n'est écrit : la reconstitution d'une version est une plage d'octets au rapport.
+Mêmes protections que le lecteur PDF du projet : lecture stricte, aucune exécution, aucun flux d'un autre fichier, `FlateDecode` seul par `Contexte.decompresser`. Chaque entrée énumérée, chaque objet lu et chaque objet parcouru comptent dans le budget du module (ES-03) ; imbrication bornée. Chaque version est relue dans une vue distincte, objets relus à la demande. Le relevé des pages qui désignent les objets changés parcourt au plus 65 536 objets de l'arbre des pages par version, et seulement pour les versions dont des objets figurent au tableau. Rien n'est écrit : la reconstitution d'une version est une plage d'octets au rapport.
 
 ## Historique
 
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-11-16 | 0.1.0 | Création |
+| 2026-11-17 | 0.2.0 | Objets changés un par un, en tableau (T51, ADR-0217) ; F-61 |
