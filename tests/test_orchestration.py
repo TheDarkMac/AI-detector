@@ -301,9 +301,13 @@ def test_vrai_processus_extrait_les_proprietes_d_un_document(
 
 @pytest.mark.exigence("F-10", "ES-05")
 def test_vrai_processus_encodage_qu_expat_ne_lit_pas(tmp_path: Path) -> None:
-    # Codec que le processus restreint ne peut plus charger (windows-1252), encodage inconnu :
-    # lecture partielle, jamais une erreur du module (ERR-0012).
-    for encodage in ("windows-1252", "UTF-C"):
+    # Codec que le processus restreint ne peut plus charger sous Linux (windows-1252 : seccomp
+    # refuse d'ouvrir son fichier ; sous macOS et Windows, il se charge et le document se lit en
+    # entier), encodage inconnu : jamais une erreur du module (ERR-0012).
+    for encodage, attendues in (
+        ("windows-1252", ({RaisonNonMenee.FORMAT_PARTIEL}, set())),
+        ("UTF-C", ({RaisonNonMenee.FORMAT_PARTIEL},)),
+    ):
         declaration = f'<?xml version="1.0" encoding="{encodage}"?>'.encode()
         contenu = docx_(declaration + core("<dc:title>T</dc:title>"))
         ouvert = ouvrir(tmp_path / f"{encodage}.docx", contenu)
@@ -312,7 +316,7 @@ def test_vrai_processus_encodage_qu_expat_ne_lit_pas(tmp_path: Path) -> None:
         finally:
             os.close(ouvert)
         raisons = {n.raison for n in resultat.non_menees if n.module == "ooxml"}
-        assert raisons == {RaisonNonMenee.FORMAT_PARTIEL}, encodage
+        assert raisons in attendues, encodage
         assert not resultat.interrompue
 
 

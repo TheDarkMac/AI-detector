@@ -35,6 +35,8 @@ Signaler les éléments actifs des documents bureautiques (macros, événements 
 
 13. PR [#38](https://github.com/TheDarkMac/AI-detector/pull/38) ouverte vers `detector` (commits `cc6221c`, `158e117`, `6decc21`).
 
+14. CI de la PR sur `3e749e8` : code 44084064704 en échec sur macOS et Windows (six jobs), Linux vert ; seule cause, `test_vrai_processus_encodage_qu_expat_ne_lit_pas` : sous macOS et Windows, le processus restreint charge encore le codec `windows-1252`, et le document se lit en entier. Le test attend désormais, pour `windows-1252`, une lecture entière ou partielle, jamais une erreur du module ; ERR-0012 précise que le cas est propre à Linux.
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |
@@ -45,6 +47,7 @@ Signaler les éléments actifs des documents bureautiques (macros, événements 
 | Cible vide résolue en dossier | Cible relative à la partie source, jointe à son dossier | Une cible qui ne nomme aucune partie est illisible (OPC) |
 | Six échecs de la campagne de fuzzing | Exceptions de codec non attrapées par le lecteur XML (ERR-0012) | Lecture partielle, rappels mis à part |
 | Description du catalogue trop longue (1 062 caractères) | Limite de 1 024 du schéma | Formulations resserrées |
+| Test du vrai processus en échec sous macOS et Windows | `windows-1252` illisible sous restrictions sous Linux seulement | Lecture entière ou partielle admise pour ce codec, jamais une erreur du module |
 | Index du journal sans T53 | Oubli dans la PR de T53 | Ligne ajoutée |
 
 ## Écarts par rapport au découpage
