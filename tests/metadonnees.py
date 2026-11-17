@@ -16,9 +16,10 @@ from typing import Any
 
 from echantillons import bloc_png, boite, ftyp, segment
 
+from voight_kampff._limites import OCTETS_EXTRAITS_MAX
 from voight_kampff._travail.contexte import Contexte
 from voight_kampff._travail.fichier import Fichier
-from voight_kampff.rapport.modele import Direction, Partie, Plage
+from voight_kampff.rapport.modele import NOMBRE_MAX_EXTRAITES, Direction, Partie, Plage
 
 type Entree = tuple[int, int, int, bytes]
 """Étiquette, type, nombre d'éléments, octets de la valeur."""
@@ -476,7 +477,17 @@ def contexte(fichier: Any, contenu: bytes, format_: str, module: str) -> Context
     fichier.flush()
     partie = Partie(1, format_, Plage(0, len(contenu)), fin_connue=True)
     directions = {Direction.RIEN_DE_PARTICULIER}
-    return Contexte(module, directions, Fichier(fichier.fileno()), partie, 64 << 20)
+    # Les places d'un fichier : seul imagespdf extrait un contenu (ADR-0224, ADR-0226).
+    return Contexte(
+        module,
+        directions,
+        Fichier(fichier.fileno()),
+        partie,
+        64 << 20,
+        extrait={"jpeg"},
+        places=NOMBRE_MAX_EXTRAITES,
+        octets_restants=OCTETS_EXTRAITS_MAX,
+    )
 
 
 def resultats(module: str, contenu: bytes, format_: str) -> list[dict[str, Any]]:

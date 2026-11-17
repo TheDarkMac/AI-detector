@@ -165,7 +165,7 @@ def sans_restriction() -> EtatIsolation:
 
 ISOLATION = {
     "type": "isolation",
-    "version_schema": "0.9.0",
+    "version_schema": "0.10.0",
     "isolation": {"niveau": "reduite", "manques": ["reseau"]},
 }
 
@@ -242,10 +242,28 @@ def module(identifiant: str = "alpha", applicable: bool = True, partie: int = 1)
     return {"type": "module", "module": identifiant, "partie": partie, "applicable": applicable}
 
 
+def extraite(rang: int = 2, contenant: int = 1, module_: str = "alpha") -> dict[str, Any]:
+    """Partie extraite des quatre premiers octets de la partie 1 (ADR-0224)."""
+    return {
+        "rang": rang,
+        "format": "jpeg",
+        "octets": {"debut": 0, "longueur": 4},
+        "fin_connue": True,
+        "tronquee": False,
+        "origine": {"contenant": contenant, "module": module_, "localisation": {"page": 1}},
+    }
+
+
+def extraction(*parties: dict[str, Any]) -> dict[str, Any]:
+    return {"type": "extraction", "parties": list(parties)}
+
+
 type Ligne = dict[str, Any] | bytes
 
 # Les tests configurent deux modules actifs, alpha puis beta : une suite complète les termine.
 FINS = [module("alpha"), module("beta", applicable=False), VERSIONS, FIN]
+# Après une extraction, les deux modules sur la partie extraite (ADR-0224).
+EXTRAITE = [module("alpha", applicable=False, partie=2), module("beta", partie=2)]
 
 # Ces scénarios envoient eux-mêmes leur identification, ou l'omettent.
 AVEC_IDENTIFICATION = {
@@ -332,6 +350,34 @@ HOSTILES: dict[str, list[Ligne]] = {
         {"type": "versions", "dependances": [{"nom": "expat", "version": "2.9.0"}]},
     ],
     "ligne_apres_fin": [*FINS, VERSIONS],
+    # Parties extraites (ADR-0224) ; alpha extrait des JPEG dans ces scénarios.
+    "extraction_valide": [
+        *FINS[:2],
+        extraction(extraite()),
+        module("alpha", applicable=False, partie=2),
+        observation("beta/1", module="beta", partie=2),
+        module("beta", partie=2),
+        VERSIONS,
+        FIN,
+    ],
+    "extraction_double": [*FINS[:2], extraction(extraite()), *EXTRAITE, extraction(extraite(3))],
+    "extraction_trop_tot": [extraction(extraite())],
+    "extraction_apres_versions": [*FINS[:2], VERSIONS, extraction(extraite())],
+    "extraction_rangs": [*FINS[:2], extraction(extraite(3))],
+    "extraction_contenant_absent": [*FINS[:2], extraction(extraite(contenant=2))],
+    "extraction_module_inconnu": [*FINS[:2], extraction(extraite(module_="intrus"))],
+    "extraction_sans_extrait": [*FINS[:2], extraction(extraite(module_="beta"))],
+    "extraction_apres_erreur": [
+        non_menee("erreur_module"),
+        *FINS[:2],
+        extraction(extraite()),
+    ],
+    "extraction_non_applicable": [
+        module("alpha", applicable=False),
+        module("beta", applicable=False),
+        extraction(extraite()),
+    ],
+    "extraction_sans_ses_modules": [*FINS[:2], extraction(extraite()), VERSIONS, FIN],
     "ligne_trop_longue": [b" " * (1 << 20) + b"\n"],
 }
 

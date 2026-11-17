@@ -104,6 +104,7 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
         ("revisionspdf", EtatTechnique.NON_MENEE, "0.2.0"),
         ("pagespdf", EtatTechnique.NON_MENEE, "0.1.0"),
         ("actifspdf", EtatTechnique.NON_MENEE, "0.1.0"),
+        ("imagespdf", EtatTechnique.NON_MENEE, "0.1.0"),
         # c2pa-rs ne lit pas un PDF sans table de références : recherche non menée (ADR-0169).
         ("c2pa", EtatTechnique.NON_MENEE, "0.1.0"),
     }

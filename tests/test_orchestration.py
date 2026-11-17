@@ -68,6 +68,7 @@ def manifeste(
     identifiant: str,
     formats: Sequence[str] = ("jpeg",),
     requiert: Sequence[str] = (),
+    extrait: Sequence[str] = (),
 ) -> Manifeste:
     return Manifeste(
         identifiant=identifiant,
@@ -78,6 +79,7 @@ def manifeste(
         fiche="test",
         directions=(Direction.RIEN_DE_PARTICULIER,),
         requiert=tuple(requiert),
+        extrait=tuple(extrait),
     )
 
 
@@ -144,6 +146,7 @@ def analyse_de(resultat: ResultatTravail, taille: int = len(CONTENU)) -> Analyse
             empreinte=resultat.empreinte or "0" * 64,
             date_analyse=datetime(2026, 10, 26, tzinfo=UTC),
             parties=resultat.parties,
+            extraites=resultat.extraites,
         ),
         isolation=resultat.isolation,
         couverture=resultat.couverture,
@@ -183,6 +186,7 @@ def test_vrai_processus_identifie_le_format(pdf: int) -> None:
     # Sans table de références croisées, aucune version ne se lit (ADR-0207).
     assert etats.pop("c2pa") is etats.pop("revisionspdf") is EtatTechnique.NON_MENEE
     assert etats.pop("pagespdf") is etats.pop("actifspdf") is EtatTechnique.NON_MENEE
+    assert etats.pop("imagespdf") is EtatTechnique.NON_MENEE
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(PDF))
@@ -228,7 +232,7 @@ def test_vrai_processus_extrait_les_metadonnees_d_un_pdf(tmp_path: Path) -> None
     assert valeurs["infopdf.chiffre"] is False
     assert str(valeurs["xmp.Iptc4xmpExt:DigitalSourceType"]).endswith("trainedAlgorithmicMedia")
     etats = {t.module: t.etat for t in resultat.couverture.techniques if t.version is not None}
-    for module in ("infopdf", "xmp", "c2pa", "revisionspdf", "pagespdf", "actifspdf"):
+    for module in ("infopdf", "xmp", "c2pa", "revisionspdf", "pagespdf", "actifspdf", "imagespdf"):
         assert etats.pop(module) is EtatTechnique.APPLIQUEE, module
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
@@ -626,6 +630,47 @@ def test_factice_seulement_hors_perimetre(descripteur: int) -> None:
     assert [p.format for p in resultat.parties or ()] == ["gif"]
     assert resultat.couverture.techniques == ()
     assert [n.raison for n in resultat.non_menees] == [RaisonNonMenee.HORS_PERIMETRE]
+
+
+def test_factice_extraction_valide(descripteur: int) -> None:
+    # ADR-0224 : la partie extraite est annoncée, puis analysée comme une partie.
+    livres = (manifeste("alpha", extrait=("jpeg",)), manifeste("beta"))
+    resultat = executer(
+        descripteur, livres, commande=factice("extraction_valide", mesure_couverture=True)
+    )
+    assert [(p.rang, p.format, p.origine and p.origine.module) for p in resultat.extraites] == [
+        (2, "jpeg", "alpha")
+    ]
+    assert {(t.module, t.partie): t.etat for t in resultat.couverture.techniques} == {
+        ("alpha", 1): EtatTechnique.APPLIQUEE,
+        ("beta", 1): EtatTechnique.NON_APPLICABLE,
+        ("alpha", 2): EtatTechnique.NON_APPLICABLE,
+        ("beta", 2): EtatTechnique.APPLIQUEE,
+    }
+    assert [(o.module, o.partie) for o in resultat.observations] == [("beta", 2)]
+    assert analyse_de(resultat).identification.extraites == resultat.extraites
+
+
+EXTRACTION_INVALIDE = [
+    "extraction_double",
+    "extraction_trop_tot",
+    "extraction_apres_versions",
+    "extraction_rangs",
+    "extraction_contenant_absent",
+    "extraction_module_inconnu",
+    "extraction_sans_extrait",
+    "extraction_apres_erreur",
+    "extraction_non_applicable",
+    "extraction_sans_ses_modules",
+]
+
+
+@pytest.mark.parametrize("scenario", EXTRACTION_INVALIDE)
+def test_factice_extraction_refusee(descripteur: int, scenario: str) -> None:
+    livres = (manifeste("alpha", extrait=("jpeg",)), manifeste("beta"))
+    resultat = executer(descripteur, livres, commande=factice(scenario))
+    assert NonMenee(RaisonNonMenee.MESSAGE_INVALIDE) in resultat.non_menees
+    assert resultat.interrompue
 
 
 MESSAGE_INVALIDE = [

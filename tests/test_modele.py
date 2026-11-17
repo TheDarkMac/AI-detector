@@ -13,6 +13,7 @@ from voight_kampff.rapport.modele import (
     LONGUEUR_MAX_IDENTIFIANT,
     LONGUEUR_MAX_TEXTE,
     NOMBRE_MAX_ELEMENTS,
+    NOMBRE_MAX_EXTRAITES,
     NOMBRE_MAX_PARTIES,
     RAISONS_D_INTERRUPTION,
     RAISONS_D_UNE_PARTIE,
@@ -35,6 +36,7 @@ from voight_kampff.rapport.modele import (
     NiveauIsolation,
     NonMenee,
     Observation,
+    Origine,
     Partie,
     Phrase,
     Plage,
@@ -810,3 +812,139 @@ def test_rapport_minimal(rapport: Rapport) -> None:
     )
     assert aller_retour(minimal) == minimal
     assert minimal.interrompue is False
+
+
+# Parties extraites (ADR-0224)
+
+LIEU = Localisation(chemin="image (objet 4 0)", page=1)
+EXTRAITE = Partie(3, "jpeg", Plage(1_000, 500), fin_connue=True, origine=Origine(1, "pdf", LIEU))
+"""Image extraite de la partie 1 (JPEG du rapport de référence) : le modèle n'exige pas que le
+contenant soit un PDF, seulement qu'il soit reconnu et analysé."""
+
+
+def avec_extraite(
+    rapport: Rapport, *extraites: Partie, non_menees: tuple[NonMenee, ...] = ()
+) -> Rapport:
+    """Le rapport de référence, avec ses parties extraites et leur couverture."""
+    extraites = extraites or (EXTRAITE,)
+    techniques = rapport.couverture.techniques
+    ajoutees = tuple(
+        dataclasses.replace(t, partie=p.rang, etat=EtatTechnique.NON_APPLICABLE, version="0.1.0")
+        for p in extraites
+        for t in techniques
+        if t.partie == 1
+    )
+    return dataclasses.replace(
+        rapport,
+        identification=dataclasses.replace(rapport.identification, extraites=extraites),
+        couverture=dataclasses.replace(rapport.couverture, techniques=techniques + ajoutees),
+        non_menees=rapport.non_menees + non_menees,
+    )
+
+
+def test_partie_extraite_relue(rapport: Rapport) -> None:
+    avec = avec_extraite(rapport)
+    document = json.loads(json.dumps(avec.vers_dict()))
+    assert document["identification"]["extraites"] == [
+        {
+            "rang": 3,
+            "format": "jpeg",
+            "octets": {"debut": 1_000, "longueur": 500},
+            "fin_connue": True,
+            "tronquee": False,
+            "origine": {
+                "contenant": 1,
+                "module": "pdf",
+                "localisation": {"chemin": "image (objet 4 0)", "page": 1},
+            },
+        }
+    ]
+    assert "origine" not in document["identification"]["parties"][0]
+    assert Rapport.depuis_dict(document) == avec
+    identification = avec.identification
+    assert [p.rang for p in identification.toutes] == [1, 2, 3]
+    assert [p.rang for p in identification.analysees] == [1, 3]
+    # Ni polyglotte ni octets non reconnus : ce sont ceux des parties reconnues.
+    assert identification.octets_non_reconnus == rapport.identification.octets_non_reconnus
+
+
+@pytest.mark.parametrize(
+    ("extraites", "motif"),
+    [
+        pytest.param((dataclasses.replace(EXTRAITE, origine=None),), "origine", id="sans-origine"),
+        pytest.param((dataclasses.replace(EXTRAITE, rang=4),), "consécutifs", id="rang"),
+        pytest.param(
+            (dataclasses.replace(EXTRAITE, format="zip"),), "hors périmètre", id="hors-perimetre"
+        ),
+        pytest.param(
+            (dataclasses.replace(EXTRAITE, origine=Origine(2, "pdf", LIEU)),),
+            "contenant",
+            id="contenant-non-analyse",
+        ),
+        pytest.param(
+            (dataclasses.replace(EXTRAITE, origine=Origine(5, "pdf", LIEU)),),
+            "contenant",
+            id="contenant-absent",
+        ),
+        pytest.param(
+            (dataclasses.replace(EXTRAITE, octets=Plage(1_999_999, 2)),),
+            "hors de son contenant",
+            id="hors-du-contenant",
+        ),
+        pytest.param(
+            tuple(
+                dataclasses.replace(EXTRAITE, rang=rang)
+                for rang in range(3, 3 + NOMBRE_MAX_EXTRAITES + 1)
+            ),
+            "trop de parties extraites",
+            id="trop",
+        ),
+    ],
+)
+def test_partie_extraite_refusee(
+    rapport: Rapport, extraites: tuple[Partie, ...], motif: str
+) -> None:
+    with pytest.raises(ValueError, match=motif):
+        dataclasses.replace(rapport.identification, extraites=extraites)
+
+
+def test_partie_reconnue_sans_origine(rapport: Rapport) -> None:
+    premiere = dataclasses.replace(rapport.identification.parties[0], origine=EXTRAITE.origine)
+    with pytest.raises(ValueError, match="pas d'origine"):
+        dataclasses.replace(rapport.identification, parties=(premiere,))
+
+
+@pytest.mark.parametrize(
+    ("fabrique", "motif"),
+    [
+        pytest.param(lambda: Origine(0, "pdf", LIEU), "hors bornes", id="contenant-zero"),
+        pytest.param(lambda: Origine(1, "", LIEU), "origine.module", id="module-vide"),
+        pytest.param(
+            lambda: Origine(1, "pdf", Localisation(octets=Plage(0, 1))),
+            "la plage est celle de la partie",
+            id="plage",
+        ),
+    ],
+)
+def test_origine_invalide(fabrique: Any, motif: str) -> None:
+    with pytest.raises(ValueError, match=motif):
+        fabrique()
+
+
+def test_couverture_et_non_menees_des_parties_extraites(rapport: Rapport) -> None:
+    # Chaque technique figure aussi pour la partie extraite ; une partie extraite tronquée est
+    # déclarée non menée comme une partie reconnue (ADR-0224).
+    with pytest.raises(ValueError, match="une entrée par technique"):
+        dataclasses.replace(
+            rapport,
+            identification=dataclasses.replace(rapport.identification, extraites=(EXTRAITE,)),
+        )
+    tronquee = dataclasses.replace(EXTRAITE, fin_connue=False, tronquee=True)
+    with pytest.raises(ValueError, match="fichier_tronque"):
+        avec_extraite(rapport, tronquee)
+    declaree = NonMenee(RaisonNonMenee.FICHIER_TRONQUE, localisation=LIEU, partie=3)
+    avec = avec_extraite(rapport, tronquee, non_menees=(declaree,))
+    assert avec.identification.extraites == (tronquee,)
+    # Une non menée ne peut porter que sur une partie reconnue ou extraite.
+    with pytest.raises(ValueError, match="absente de l'identification"):
+        avec_extraite(rapport, non_menees=(dataclasses.replace(declaree, partie=4),))

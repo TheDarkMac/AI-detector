@@ -1,0 +1,195 @@
+{
+ "outil": "pdfimages 25.03.0",
+ "echantillons": {
+  "imagemagick": [
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "8",
+    "sha256": "4a9d6d986e0972064f0ffc7083ce7d1842dfb79f7e2905db2c62d93f4f291ca7"
+   }
+  ],
+  "libreoffice": [
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "8",
+    "sha256": "f5cbfc5318b82e82dc263e03813bc533eae845c406996afa6f95932744145554"
+   },
+   {
+    "page": 1,
+    "codage": "image",
+    "objet": "11"
+   }
+  ],
+  "ghostscript": [
+   {
+    "page": 1,
+    "codage": "image",
+    "objet": "[inline]"
+   },
+   {
+    "page": 2,
+    "codage": "jpeg",
+    "objet": "11",
+    "sha256": "159cfd6ea091c9cb17ea407938106896000b43c316d86169e575f686d4ea0c51"
+   }
+  ],
+  "formes": [
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "10",
+    "sha256": "32685043dbd51c02e184a300647e9d0576e2cc2ace26e17ae4ea8ec781bc2adc"
+   },
+   {
+    "page": 1,
+    "codage": "image",
+    "objet": "11"
+   },
+   {
+    "page": 1,
+    "codage": "image",
+    "objet": "12"
+   },
+   {
+    "page": 2,
+    "codage": "jpeg",
+    "objet": "14",
+    "sha256": "94094e2ff9c358190c054c10775cf614d631c5662b1fd752887e55fcca1d8102"
+   },
+   {
+    "page": 2,
+    "codage": "jpeg",
+    "objet": "10",
+    "sha256": "32685043dbd51c02e184a300647e9d0576e2cc2ace26e17ae4ea8ec781bc2adc"
+   },
+   {
+    "page": 2,
+    "codage": "jpeg",
+    "objet": "15",
+    "sha256": "32685043dbd51c02e184a300647e9d0576e2cc2ace26e17ae4ea8ec781bc2adc"
+   },
+   {
+    "page": 2,
+    "codage": "jpx",
+    "objet": "16"
+   },
+   {
+    "page": 2,
+    "codage": "image",
+    "objet": "18"
+   }
+  ],
+  "nombreuses": [
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "10",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "11",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "12",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "13",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "14",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "15",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "16",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "17",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "18",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "19",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "20",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "21",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "22",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "23",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "24",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "25",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "26",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   },
+   {
+    "page": 1,
+    "codage": "jpeg",
+    "objet": "27",
+    "sha256": "87661da0ab182032ecfaa6ada7123fa9b7d42684b97060250ddab1a4ceff59f2"
+   }
+  ]
+ }
+}

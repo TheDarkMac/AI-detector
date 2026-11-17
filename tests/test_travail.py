@@ -25,17 +25,19 @@ from catalogues import moteur, regle, regle_dict
 from voight_kampff import modules, schemas
 from voight_kampff._protocole import TAILLE_MAX_LECTURE
 from voight_kampff._regles import Regle
-from voight_kampff._travail import garde, principal
-from voight_kampff._travail.contexte import Contexte, LimiteDepassee
+from voight_kampff._travail import garde, identification, principal
+from voight_kampff._travail.contexte import Contexte, Extraction, LimiteDepassee
 from voight_kampff._travail.fichier import Fichier
 from voight_kampff._travail.principal import Analyseur, lire_configuration
 from voight_kampff.rapport.modele import (
+    NOMBRE_MAX_EXTRAITES,
     VERSION_SCHEMA,
     Direction,
     EtatIsolation,
     Localisation,
     ManqueIsolation,
     NiveauIsolation,
+    Origine,
     Partie,
     Plage,
     RaisonNonMenee,
@@ -89,6 +91,7 @@ def configuration(
     formats: tuple[str, ...] = ("jpeg", "pdf"),
     regles: Sequence[dict[str, Any]] = (),
     bibliotheques: Sequence[str] = (),
+    extrait: Mapping[str, Sequence[str]] | None = None,
 ) -> io.BytesIO:
     modules_actifs = [
         {
@@ -96,6 +99,7 @@ def configuration(
             "formats": list(formats),
             "directions": ["rien_de_particulier"],
             "bibliotheques": list(bibliotheques),
+            "extrait": list((extrait or {}).get(i, ())),
         }
         for i in identifiants
     ]
@@ -114,14 +118,17 @@ def derouler(
     analyseurs: Mapping[str, Analyseur] | None = None,
     parties: tuple[Partie, ...] = (PARTIE,),
     regles: Sequence[dict[str, Any]] = (),
+    extrait: Mapping[str, Sequence[str]] | None = None,
+    reconnaitre: principal.Reconnaisseur = lambda _f, _d, longueur: ("jpeg", longueur, False),
 ) -> list[dict[str, Any]]:
     sortie = io.BytesIO()
     code = principal.principal(
         ["--descripteur", transmis(descripteur)],
-        configuration(*identifiants, regles=regles),
+        configuration(*identifiants, regles=regles, extrait=extrait),
         sortie,
         analyseurs=analyseurs,
         identifier=lambda _fichier, _taille: parties,
+        reconnaitre=reconnaitre,
         restreindre=sans_restriction,
     )
     assert code == 0
@@ -464,6 +471,235 @@ def test_contexte_lit_sa_partie_seulement(descripteur: int) -> None:
     assert c.numero == 9
 
 
+# Parties extraites (ADR-0224, ADR-0226)
+
+PDF = (Partie(1, "pdf", Plage(0, len(CONTENU)), fin_connue=True),)
+LIEU = Localisation(chemin="image (objet 4 0)", page=1)
+
+
+def lecteur(contexte: Contexte) -> None:
+    contexte.observer("lu", contexte.lire(0, contexte.taille).decode("ascii"))
+
+
+def extrayant(*plages: Plage) -> Analyseur:
+    """Module qui déclare, dans un PDF, chaque plage comme un JPEG, et observe ce que le contexte
+    répond ; il lit une partie d'un autre format."""
+
+    def module(contexte: Contexte) -> None:
+        if contexte.format_reel != "pdf":
+            lecteur(contexte)
+            return
+        for plage in plages:
+            contexte.observer("acceptee", contexte.extraire("jpeg", plage, LIEU))
+
+    return module
+
+
+def acceptees(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Réponses du contexte aux extractions, dans l'ordre."""
+    observations = (m["observation"] for m in messages if m["type"] == "observation")
+    return [o for o in observations if o["nom"] == "acceptee"]
+
+
+def test_extraction_acheminee(descripteur: int) -> None:
+    analyseurs = {"alpha": extrayant(Plage(2, 4)), "beta": lecteur}
+    messages = derouler(
+        descripteur,
+        "alpha",
+        "beta",
+        analyseurs=analyseurs,
+        parties=PDF,
+        extrait={"alpha": ["jpeg"]},
+    )
+    assert types(messages) == [
+        "isolation",
+        "identification",
+        "observation",
+        "module",
+        "observation",
+        "module",
+        "extraction",
+        "observation",
+        "module",
+        "observation",
+        "module",
+        "versions",
+        "fin",
+    ]
+    (extraite,) = messages[6]["parties"]
+    assert extraite == {
+        "rang": 2,
+        "format": "jpeg",
+        "octets": {"debut": 2, "longueur": 4},
+        "fin_connue": True,
+        "tronquee": False,
+        "origine": {
+            "contenant": 1,
+            "module": "alpha",
+            "localisation": {"chemin": "image (objet 4 0)", "page": 1},
+        },
+    }
+    # Chaque module s'applique à la partie extraite comme à une partie : alpha la lit aussi,
+    # sans pouvoir l'extraire à son tour ; beta la lit comme un fichier autonome.
+    lues = [(m["observation"]["module"], m["observation"]["partie"]) for m in messages[7:10:2]]
+    assert lues == [("alpha", 2), ("beta", 2)]
+    assert messages[9]["observation"]["valeur"] == "2345"
+
+
+def test_extraction_reconnue_par_l_identification(chemin: Path, descripteur: int) -> None:
+    # Le vrai reconnaisseur : la fin logique est cherchée dans la plage donnée par le module.
+    jpeg = b"\xff\xd8\xff\xe0\x00\x02\xff\xd9"
+    chemin.write_bytes(b"%PDF-" + jpeg + b"suite")
+    analyseurs = {"alpha": extrayant(Plage(5, len(jpeg) + 5))}
+    messages = derouler(
+        descripteur,
+        "alpha",
+        analyseurs=analyseurs,
+        parties=(Partie(1, "pdf", Plage(0, 18), fin_connue=True),),
+        extrait={"alpha": ["jpeg"]},
+        reconnaitre=identification.reconnaitre,
+    )
+    (extraite,) = next(m for m in messages if m["type"] == "extraction")["parties"]
+    assert extraite["octets"] == {"debut": 5, "longueur": len(jpeg)}
+    assert extraite["fin_connue"]
+    assert not extraite["tronquee"]
+
+
+@pytest.mark.parametrize(
+    "reconnu",
+    [None, ("png", 4, False)],
+    ids=["non-reconnu", "autre-format"],
+)
+def test_extraction_d_un_autre_format(
+    descripteur: int, reconnu: tuple[str, int, bool] | None
+) -> None:
+    messages = derouler(
+        descripteur,
+        "alpha",
+        analyseurs={"alpha": extrayant(Plage(2, 4))},
+        parties=PDF,
+        extrait={"alpha": ["jpeg"]},
+        reconnaitre=lambda _f, _d, _l: reconnu,
+    )
+    assert "extraction" not in types(messages)
+    non_menees = [m["non_menee"] for m in messages if m["type"] == "non_menee"]
+    assert non_menees == [
+        {"raison": "format_partiel", "localisation": LIEU.vers_dict(), "partie": 1}
+    ]
+
+
+def test_extraction_tronquee_ou_sans_fin(descripteur: int) -> None:
+    messages = derouler(
+        descripteur,
+        "alpha",
+        analyseurs={"alpha": extrayant(Plage(0, 5))},
+        parties=PDF,
+        extrait={"alpha": ["jpeg"]},
+        reconnaitre=lambda _f, _d, _l: ("jpeg", None, True),
+    )
+    (extraite,) = next(m for m in messages if m["type"] == "extraction")["parties"]
+    assert (extraite["octets"], extraite["fin_connue"], extraite["tronquee"]) == (
+        {"debut": 0, "longueur": 5},
+        False,
+        True,
+    )
+
+
+def test_extractions_bornees_en_nombre(descripteur: int) -> None:
+    plages = [Plage(0, 1)] * (NOMBRE_MAX_EXTRAITES + 2)
+    messages = derouler(
+        descripteur,
+        "alpha",
+        analyseurs={"alpha": extrayant(*plages)},
+        parties=PDF,
+        extrait={"alpha": ["jpeg"]},
+    )
+    reponses = [o["valeur"] for o in acceptees(messages)]
+    assert reponses == [True] * NOMBRE_MAX_EXTRAITES + [False, False]
+    extraction = next(m for m in messages if m["type"] == "extraction")
+    assert [p["rang"] for p in extraction["parties"]] == list(range(2, 18))
+    # La première refusée seulement, déclarée par le moteur, sans module (ADR-0226).
+    non_menees = [m["non_menee"] for m in messages if m["type"] == "non_menee"]
+    assert non_menees == [
+        {"raison": "limite_depassee", "localisation": LIEU.vers_dict(), "partie": 1}
+    ]
+
+
+def test_extractions_bornees_en_octets(descripteur: int, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Celle qui atteint le seuil est encore acheminée ; le compte vaut pour tout le fichier.
+    monkeypatch.setattr(principal, "OCTETS_EXTRAITS_MAX", 5)
+    parties = (*PDF, Partie(2, "pdf", Plage(5, 5), fin_connue=True))
+    messages = derouler(
+        descripteur,
+        "alpha",
+        analyseurs={"alpha": extrayant(Plage(0, 3), Plage(0, 3), Plage(0, 1))},
+        parties=parties,
+        extrait={"alpha": ["jpeg"]},
+    )
+    reponses = [(o["partie"], o["valeur"]) for o in acceptees(messages)]
+    assert reponses == [(1, True), (1, True), (1, False), (2, False), (2, False), (2, False)]
+    extraction = next(m for m in messages if m["type"] == "extraction")
+    assert [p["octets"]["longueur"] for p in extraction["parties"]] == [3, 3]
+    assert [m["non_menee"]["partie"] for m in messages if m["type"] == "non_menee"] == [1, 2]
+
+
+def test_extraction_ecartee_avec_les_resultats(descripteur: int) -> None:
+    def fautif(contexte: Contexte) -> None:
+        contexte.extraire("jpeg", Plage(0, 4), LIEU)
+        raise ValueError
+
+    messages = derouler(
+        descripteur, "alpha", analyseurs={"alpha": fautif}, parties=PDF, extrait={"alpha": ["jpeg"]}
+    )
+    assert "extraction" not in types(messages)
+    assert messages[2]["non_menee"] == {"raison": "erreur_module", "module": "alpha", "partie": 1}
+
+
+@pytest.mark.parametrize(
+    ("format_", "plage", "lieu", "attendu"),
+    [
+        ("png", Plage(0, 1), LIEU, "format absent"),
+        ("jpeg", Plage(0, 11), LIEU, "hors de la partie"),
+        ("jpeg", Plage(0, 1), Localisation(octets=Plage(0, 1)), "la plage est donnée à part"),
+    ],
+)
+def test_extraction_refusee_par_le_contexte(
+    descripteur: int, format_: str, plage: Plage, lieu: Localisation, attendu: str
+) -> None:
+    garde.verrouiller()
+    c = Contexte("alpha", (), Fichier(descripteur), PDF[0], 1 << 20, extrait={"jpeg"}, places=1)
+    with pytest.raises(ValueError, match=attendu):
+        c.extraire(format_, plage, lieu)
+    assert c.extractions == ()
+
+
+def test_partie_extraite_non_extraite_a_son_tour(descripteur: int) -> None:
+    garde.verrouiller()
+    origine = Origine(1, "alpha", LIEU)
+    extraite = Partie(2, "jpeg", Plage(2, 4), fin_connue=True, origine=origine)
+    c = Contexte("alpha", (), Fichier(descripteur), extraite, 1 << 20, extrait={"jpeg"}, places=4)
+    with pytest.raises(ValueError, match="partie extraite"):
+        c.extraire("jpeg", Plage(0, 1), LIEU)
+
+
+def test_extraction_ramenee_au_fichier(descripteur: int) -> None:
+    garde.verrouiller()
+    partie = Partie(2, "pdf", Plage(4, 6), fin_connue=True)
+    c = Contexte(
+        "alpha",
+        (),
+        Fichier(descripteur),
+        partie,
+        1 << 20,
+        extrait={"jpeg"},
+        places=2,
+        octets_restants=100,
+    )
+    assert c.extraire("jpeg", Plage(1, 2), LIEU)
+    assert c.extractions == (Extraction("jpeg", Plage(5, 2), LIEU),)
+    assert c.refusee is None
+
+
 # Fichier
 
 
@@ -495,7 +731,7 @@ def test_empreinte(descripteur: int) -> None:
     "ligne",
     [
         pytest.param(b"", id="absente"),
-        pytest.param(b'{"version_schema":"0.9.0","modules":[]}', id="sans-fin-de-ligne"),
+        pytest.param(b'{"version_schema":"0.10.0","modules":[]}', id="sans-fin-de-ligne"),
         pytest.param(b'{"version_schema":"9.9.9","modules":[]}\n', id="autre-version"),
     ],
 )
@@ -528,6 +764,7 @@ def test_import_des_modules_livres() -> None:
         "exif",
         "id3",
         "image",
+        "imagespdf",
         "infopdf",
         "infowav",
         "iptc",
