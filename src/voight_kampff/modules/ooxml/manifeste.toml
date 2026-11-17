@@ -1,7 +1,7 @@
 # Module ooxml : propriétés d'un document DOCX (ADR-0136 à ADR-0140). Validé par schemas/manifeste.schema.json (ADR-0064).
 
 identifiant = "ooxml"
-version = "0.3.0"
+version = "0.3.1"
 formats = ["docx"]
 exigences = ["F-10", "F-12", "F-90", "ES-05", "ES-06", "ES-13"]
 regles = []

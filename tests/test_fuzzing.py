@@ -338,6 +338,7 @@ _ORACLE = Path(__file__).parent / "donnees" / "metadonnees"
 _REVISIONS = Path(__file__).parent / "donnees" / "revisions"
 _PAGES = Path(__file__).parent / "donnees" / "pages"
 _ACTIFS = Path(__file__).parent / "donnees" / "actifs"
+_ACTIFS_BUREAU = Path(__file__).parent / "donnees" / "actifsbureau"
 _IMAGES = Path(__file__).parent / "donnees" / "images"
 _INFO = (
     b"<</Title(Titre \\(entre parenth\\350ses\\))/Author<FEFF004A0065>/Trapped/False"
@@ -511,6 +512,11 @@ ECHANTILLONS_METADONNEES = (
             ("document.odt", "odt"),
         )
     ),
+    # Complément bureautique de T52 : macros, événements, objets et références externes.
+    *(
+        (format_, (_ACTIFS_BUREAU / nom).read_bytes())
+        for nom, format_ in (("macros.odt", "odt"), ("liens.odt", "odt"), ("objet.docx", "docx"))
+    ),
     (
         "docx",
         docx_(
@@ -560,8 +566,8 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "mp4": ("quicktime", "xmp"),
     "mov": ("quicktime", "xmp"),
     "webm": ("matroska",),
-    "docx": ("ooxml",),
-    "odt": ("odf",),
+    "docx": ("ooxml", "actifsbureau"),
+    "odt": ("odf", "actifsbureau"),
 }
 
 
@@ -610,4 +616,23 @@ def test_modules_de_metadonnees_echantillons_mutes(echantillon: tuple[str, bytes
 @given(st.sampled_from(sorted(_MODULES)), st.binary(min_size=1, max_size=2048))
 def test_modules_de_metadonnees_octets_quelconques(format_: str, contenu: bytes) -> None:
     for module in _MODULES[format_]:
+        executer_module(module, format_, contenu)
+
+
+_NOM_D_ENCODAGE = st.text(
+    st.characters(min_codepoint=0x21, max_codepoint=0x7E, exclude_characters="\"'<>&?"),
+    max_size=16,
+) | st.sampled_from(["UTF-8", "utf-16", "latin-9", "shift_jis", "utf-32", "rot13", "idna"])
+
+
+@given(_NOM_D_ENCODAGE)
+def test_lecteur_xml_encodage_declare_quelconque(encodage: str) -> None:
+    # ERR-0012 : quel que soit l'encodage déclaré, le lecteur XML rend une lecture, au pire
+    # partielle ; les modules qui le partagent ne tombent jamais en erreur.
+    declaration = f'<?xml version="1.0" encoding="{encodage}"?>'.encode()
+    for module, format_, contenu in (
+        ("ooxml", "docx", docx_(declaration + core("<dc:title>T</dc:title>"))),
+        ("odf", "odt", odt_(declaration + meta("<dc:title>T</dc:title>"))),
+        ("actifsbureau", "odt", odt_(None, ("content.xml", declaration + b"<a/>"))),
+    ):
         executer_module(module, format_, contenu)

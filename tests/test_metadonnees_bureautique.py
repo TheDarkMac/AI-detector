@@ -6,6 +6,7 @@ suivies), ADR-0139 (parties lues), ADR-0140 (noms et valeurs). Les archives bien
 écrites par ``zipfile`` ; les autres, octet par octet (``bureautique.archive_brute``).
 """
 
+import codecs
 import io
 import socket
 import zipfile
@@ -348,6 +349,34 @@ def test_ooxml_relations_externes_jamais_suivies(monkeypatch: pytest.MonkeyPatch
         "_rels/.rels / core (relation non lue)",
         "_rels/.rels / custom (relation non lue)",
     ]
+
+
+@pytest.mark.parametrize("encodage", ["UTF-C", "latin-9", "shift_jis", "utf-32", "rot13"])
+def test_encodage_qu_expat_ne_lit_pas(encodage: str) -> None:
+    # Encodage inconnu, codec absent, multioctet, codec qui n'est pas de texte : expat demande
+    # le codec à Python, qui lève LookupError ou ValueError ; la partie est lue en partie, et
+    # le module ne tombe pas en erreur (ERR-0012).
+    declaration = f'<?xml version="1.0" encoding="{encodage}"?>'.encode()
+    lignes = ooxml(docx_(declaration + core("<dc:title>T</dc:title>")))
+    assert (raisons(lignes), proprietes_de(lignes)) == ([PARTIEL], {})
+    lignes = odf(odt_(declaration + meta("<dc:title>T</dc:title>")))
+    assert (raisons(lignes), proprietes_de(lignes)) == ([PARTIEL], {})
+
+
+def test_encodage_au_codec_illisible() -> None:
+    # Dans le processus restreint, le fichier d'un codec ne s'ouvre plus : l'import lève
+    # PermissionError, qu'encodings ne change pas en LookupError (ERR-0012).
+    def interdit(nom: str) -> None:
+        if nom == "vk_interdit":
+            raise PermissionError(nom)
+
+    codecs.register(interdit)
+    try:
+        declaration = b'<?xml version="1.0" encoding="vk-interdit"?>'
+        lignes = ooxml(docx_(declaration + core("<dc:title>T</dc:title>")))
+    finally:
+        codecs.unregister(interdit)
+    assert (raisons(lignes), proprietes_de(lignes)) == ([PARTIEL], {})
 
 
 def test_ooxml_texte_vide_non_observe() -> None:

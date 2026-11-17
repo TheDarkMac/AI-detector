@@ -1,0 +1,13 @@
+# Module actifsbureau : éléments actifs d'un DOCX ou d'un ODT, signalés, jamais exécutés (complément bureautique de T52, ADR-0228 à ADR-0231). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "actifsbureau"
+version = "0.1.0"
+formats = ["docx", "odt"]
+exigences = ["F-62", "NF-01", "ES-06"]
+regles = []
+fiche = "actifs-bureau"
+# Direction des règles du catalogue sur ses observations (ADR-0231) ; le module lui-même n'émet aucun constat.
+directions = ["rien_de_particulier"]
+requiert = []
+bibliotheques = ["expat"]
+extrait = []

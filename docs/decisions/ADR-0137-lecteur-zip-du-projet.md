@@ -52,3 +52,4 @@ Option A. Le lecteur :
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création ; option choisie par TheDarkMac au début du complément |
+| 2026-11-17 | Renvoi : lecteur ZIP employé aussi par `actifsbureau`, qui lit les noms de toutes les entrées et, par un index, les parties qu'il suit (ADR-0229) (T52, complément bureautique) |

@@ -242,3 +242,7 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0225](ADR-0225-images-jpeg-intactes.md) | Images d'un PDF acheminées : les JPEG écrits tels quels ; les autres comptées par filtre | Accepté | 2026-11-17 |
 | [ADR-0226](ADR-0226-borne-des-images-extraites.md) | Borne des images extraites d'un fichier : seize au plus, dans l'ordre des pages, jusqu'à 2 Mio | Accepté | 2026-11-17 |
 | [ADR-0227](ADR-0227-constats-et-versions-de-t53.md) | Constats des images d'un PDF : quatre informations neutres ; module `imagespdf` et versions de T53 | Accepté | 2026-11-17 |
+| [ADR-0228](ADR-0228-module-actifsbureau.md) | Éléments actifs des documents bureautiques : un module `actifsbureau` pour DOCX et ODT | Accepté | 2026-11-17 |
+| [ADR-0229](ADR-0229-elements-actifs-cherches-dans-un-docx-et-un-odt.md) | Éléments actifs cherchés dans un DOCX et un ODT : macros, événements, objets, références hors de l'archive | Accepté | 2026-11-17 |
+| [ADR-0230](ADR-0230-nature-et-declencheur-des-elements-bureautiques.md) | Éléments actifs d'un DOCX ou d'un ODT décrits par leur nature et leur déclencheur, sans adresse, nom ni code | Accepté | 2026-11-17 |
+| [ADR-0231](ADR-0231-constats-et-versions-du-complement-bureautique-de-t52.md) | Constats des éléments actifs bureautiques : quatre informations neutres par famille ; module `actifsbureau` et versions du complément | Accepté | 2026-11-17 |

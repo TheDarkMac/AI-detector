@@ -50,3 +50,4 @@ Option A :
 | --- | --- |
 | 2026-11-13 | Création ; option choisie par TheDarkMac au début du complément |
 | 2026-11-17 | Renvoi : T52 traite le PDF seul ; le signalement du modèle distant d'un DOCX et des macros revient au complément bureautique de T52 (ADR-0219) |
+| 2026-11-17 | Renvoi : modèle distant d'un DOCX et autres relations externes signalés par `actifsbureau` par leur nature, sans leur cible (ADR-0229, ADR-0230) ; `ooxml` ne change pas (T52, complément bureautique) |

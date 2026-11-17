@@ -82,6 +82,7 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
     } | {
         (module, EtatTechnique.NON_APPLICABLE, version)
         for module, version in (
+            ("actifsbureau", "0.1.0"),
             ("doublejpeg", "0.1.0"),
             ("dwtdct", "0.1.0"),
             ("ela", "0.1.0"),
@@ -91,15 +92,15 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
             ("infowav", "0.3.0"),
             ("iptc", "0.4.0"),
             ("matroska", "0.3.0"),
-            ("odf", "0.3.0"),
-            ("ooxml", "0.3.0"),
+            ("odf", "0.3.1"),
+            ("ooxml", "0.3.1"),
             ("quicktime", "0.3.0"),
             ("textepng", "0.4.0"),
             ("vorbis", "0.3.0"),
         )
     } | {
         ("infopdf", EtatTechnique.PARTIELLE, "0.3.0"),
-        ("xmp", EtatTechnique.PARTIELLE, "0.7.0"),
+        ("xmp", EtatTechnique.PARTIELLE, "0.7.1"),
         # Sans table de références croisées, aucune version ne se lit (ADR-0207).
         ("revisionspdf", EtatTechnique.NON_MENEE, "0.2.0"),
         ("pagespdf", EtatTechnique.NON_MENEE, "0.1.0"),

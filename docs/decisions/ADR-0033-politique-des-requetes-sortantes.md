@@ -58,3 +58,4 @@ Ce point n'a pas été posé en question : il a été identifié en rédigeant l
 | 2026-10-26 | Validé par TheDarkMac pendant la revue de la PR de T03 : statut « Accepté » |
 | 2026-11-13 | Renvoi : relations et références des DOCX et ODT ni lues ni suivies, garantie testée (ADR-0138) (T21, complément bureautique) |
 | 2026-11-17 | Renvoi : actions et liens des PDF ni lus ni suivis, signalés par leur nature, garantie testée (ADR-0220, ADR-0221) (T52) |
+| 2026-11-17 | Renvoi : macros, objets et références hors de l'archive des DOCX et ODT signalés par `actifsbureau`, jamais suivis ni résolus (ADR-0229, ADR-0230) (T52, complément bureautique) |

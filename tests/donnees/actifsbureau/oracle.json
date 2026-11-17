@@ -1,0 +1,63 @@
+{
+  "liens.docx": {
+    "bibliotheques_basic": 0,
+    "evenements_des_controles": 0,
+    "evenements_du_document": [],
+    "images_liees": 1,
+    "liens": 1,
+    "modele": false,
+    "objets_incorpores": 0,
+    "rechargement": false,
+    "sections_liees": 0
+  },
+  "liens.odt": {
+    "bibliotheques_basic": 0,
+    "evenements_des_controles": 0,
+    "evenements_du_document": [],
+    "images_liees": 1,
+    "liens": 1,
+    "modele": true,
+    "objets_incorpores": 0,
+    "rechargement": true,
+    "sections_liees": 1
+  },
+  "macros.odt": {
+    "bibliotheques_basic": 1,
+    "evenements_des_controles": 1,
+    "evenements_du_document": [
+      "OnLoad",
+      "OnSave"
+    ],
+    "images_liees": 0,
+    "liens": 0,
+    "modele": false,
+    "objets_incorpores": 0,
+    "rechargement": false,
+    "sections_liees": 0
+  },
+  "objet.docx": {
+    "bibliotheques_basic": 0,
+    "evenements_des_controles": 0,
+    "evenements_du_document": [],
+    "images_liees": 0,
+    "liens": 0,
+    "modele": false,
+    "objets_incorpores": 1,
+    "rechargement": false,
+    "sections_liees": 0
+  },
+  "objet.odt": {
+    "bibliotheques_basic": 0,
+    "evenements_des_controles": 0,
+    "evenements_du_document": [],
+    "images_liees": 0,
+    "liens": 0,
+    "modele": false,
+    "objets_incorpores": 1,
+    "rechargement": false,
+    "sections_liees": 0
+  },
+  "outils": {
+    "LibreOffice": "25.2.3.2"
+  }
+}

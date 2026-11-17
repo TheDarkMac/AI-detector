@@ -1,6 +1,6 @@
 # Fiche technique — Propriétés d'un document DOCX
 
-- **Module** : `ooxml` (version 0.3.0)
+- **Module** : `ooxml` (version 0.3.1)
 - **Tâche** : T21 (complément bureautique), T22, T23, T25
 - **Exigences** : F-10, F-12, F-90, ES-05, ES-06, ES-13
 - **Formats** : `docx`
@@ -26,7 +26,7 @@ Un DOCX est un paquet OPC (ECMA-376, partie 2) : une archive ZIP dont les partie
 
 - La cible d'une relation est résolue depuis la racine du paquet (`/`, `.`, `..`, encodage `%xx`) ; les noms de parties sont comparés sans la casse des lettres ASCII, comme le veut OPC.
 - Le type de relation des premières versions d'Office 2007 (`…/officedocument/2006/relationships/metadata/core-properties`) est accepté.
-- Ne sont pas lus : le document (`word/document.xml`) et toutes ses relations, dont le modèle (`attachedTemplate`), les liens et les objets incorporés ; la liste des liens des propriétés étendues (`HLinks`) ; la vignette ; les signatures numériques (T52) ; les identifiants de révision et les modifications suivies (T81).
+- Ne sont pas lus : le document (`word/document.xml`) et toutes ses relations, dont le modèle (`attachedTemplate`), les liens et les objets incorporés, que signale le module `actifsbureau` sans leur cible (fiche [`actifs-bureau`](actifs-bureau.md), ADR-0229) ; la liste des liens des propriétés étendues (`HLinks`) ; la vignette ; les signatures numériques (T52) ; les identifiants de révision et les modifications suivies (T81).
 
 Aucune donnée de référence.
 
@@ -122,3 +122,5 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
 | 2026-11-14 | 0.3.0 | Titres, sujet, mots-clés et propriétés personnalisées marqués ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |
+| 2026-11-17 | 0.3.0 | Renvoi : macros, objets et relations externes du document signalés par `actifsbureau` (T52, complément bureautique, ADR-0228, ADR-0229) ; module inchangé |
+| 2026-11-17 | 0.3.1 | Encodage déclaré qu'expat ne lit pas : lecture partielle au lieu d'une erreur du module (ERR-0012, T52, complément bureautique) |

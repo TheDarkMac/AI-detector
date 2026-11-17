@@ -58,3 +58,4 @@ Option A. Précisions de l'assistant :
 | Date | Modification |
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début de T52 |
+| 2026-11-17 | Renvoi : mêmes principes pour les éléments actifs d'un DOCX ou d'un ODT (ADR-0230) (T52, complément bureautique) |
