@@ -10,3 +10,4 @@ fiche = "metadonnees-xmp"
 directions = ["origine_ia", "retouche", "transformation", "rien_de_particulier"]
 requiert = []
 bibliotheques = ["expat"]
+extrait = []

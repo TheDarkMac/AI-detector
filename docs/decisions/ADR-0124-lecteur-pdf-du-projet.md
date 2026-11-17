@@ -47,3 +47,4 @@ Option A : la structure du PDF est lue par un lecteur écrit par le projet. `pyp
 | 2026-11-12 | Création ; option choisie par TheDarkMac au début de T21 |
 | 2026-11-17 | Renvoi : contenus de pages et polices lus par le lecteur du projet en T51, `pypdf` écartée pour T51 (ADR-0213) |
 | 2026-11-17 | Renvoi : parcours de l'arbre des pages dans le lecteur, partagé par `pagespdf` et `actifspdf` ; actions et fichiers incorporés lus par le lecteur du projet (T52, ADR-0221) |
+| 2026-11-17 | Renvoi : images d'un PDF trouvées par le lecteur du projet, JPEG analysés en place par leur plage (ADR-0225, T53) ; `pypdf` non employée |

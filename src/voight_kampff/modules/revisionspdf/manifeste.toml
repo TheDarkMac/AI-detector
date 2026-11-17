@@ -10,3 +10,4 @@ fiche = "revisions-pdf"
 directions = ["retouche", "rien_de_particulier"]
 requiert = []
 bibliotheques = []
+extrait = []

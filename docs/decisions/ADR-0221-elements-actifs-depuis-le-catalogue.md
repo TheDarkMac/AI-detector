@@ -56,3 +56,4 @@ Option A. Précisions de l'assistant :
 | Date | Modification |
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début de T52 |
+| 2026-11-17 | Renvoi : parcours de l'arbre des pages partagé aussi avec `imagespdf` (ADR-0225, T53) |

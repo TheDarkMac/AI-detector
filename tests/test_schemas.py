@@ -208,6 +208,50 @@ def test_bornes_identiques() -> None:
     assert defs["nombre"]["maximum"] == 2**63 - 1
 
 
+def test_parties_extraites_conformes(rapport: Rapport) -> None:
+    # ADR-0224 : une partie extraite au rapport et dans le message « extraction ».
+    origine = modele.Origine(1, "pdf", modele.Localisation(chemin="image (objet 4 0)", page=1))
+    extraite = modele.Partie(
+        3, "jpeg", modele.Plage(1_000, 500), fin_connue=True, origine=origine
+    ).vers_dict()
+    document = document_de(rapport)
+    document["identification"]["extraites"] = [extraite]
+    schemas.valider("rapport", document)
+    schemas.valider("messages", {"type": "extraction", "parties": [extraite]})
+    # Une partie reconnue n'a pas d'origine ; une partie extraite en a une, à partir du rang 2.
+    refuses = [
+        {"type": "extraction", "parties": []},
+        {"type": "extraction", "parties": [extraite | {"rang": 1}]},
+        {"type": "extraction", "parties": [{k: v for k, v in extraite.items() if k != "origine"}]},
+        {"type": "extraction", "parties": [extraite | {"rang": 33}]},
+        {"type": "identification", "parties": [extraite]},
+    ]
+    for message in refuses:
+        with pytest.raises(schemas.DocumentInvalide):
+            schemas.valider("messages", message)
+    avec_plage = copy.deepcopy(extraite)
+    avec_plage["origine"]["localisation"]["octets"] = {"debut": 0, "longueur": 1}
+    with pytest.raises(schemas.DocumentInvalide):
+        schemas.valider("messages", {"type": "extraction", "parties": [avec_plage]})
+    document["identification"]["extraites"] = [extraite] * (modele.NOMBRE_MAX_EXTRAITES + 1)
+    with pytest.raises(schemas.DocumentInvalide):
+        schemas.valider("rapport", document)
+
+
+def test_bornes_des_parties_extraites_identiques() -> None:
+    defs = definitions()
+    extraites = defs["identification"]["properties"]["extraites"]["maxItems"]
+    assert extraites == modele.NOMBRE_MAX_EXTRAITES
+    rang = defs["partie_extraite"]["properties"]["rang"]["maximum"]
+    assert rang == modele.NOMBRE_MAX_PARTIES + modele.NOMBRE_MAX_EXTRAITES
+    contenant = defs["origine"]["properties"]["contenant"]["maximum"]
+    assert contenant == modele.NOMBRE_MAX_PARTIES
+    messages = schemas.charger("messages")["$defs"]["extraction"]["properties"]
+    assert messages["parties"]["maxItems"] == modele.NOMBRE_MAX_EXTRAITES
+    manifeste = schemas.charger("manifeste")["properties"]["extrait"]["items"]["$ref"]
+    assert manifeste.endswith("format_du_perimetre")
+
+
 def premier_constat(categorie: str) -> Callable[[Document], Document]:
     def trouver(document: Document) -> Document:
         constat: Document = next(c for c in document["constats"] if c["categorie"] == categorie)

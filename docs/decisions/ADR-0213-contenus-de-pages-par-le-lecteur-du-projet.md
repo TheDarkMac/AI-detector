@@ -53,3 +53,4 @@ Option A. Précisions de l'assistant :
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début de T51 |
 | 2026-11-17 | Renvoi : arrêt avant le budget repris par `actifspdf` ; parcours de l'arbre des pages déplacé dans le lecteur (T52, ADR-0221) |
+| 2026-11-17 | Renvoi : `pypdf` non employée par T53 (ADR-0225) |

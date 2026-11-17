@@ -10,3 +10,4 @@ fiche = "metadonnees-matroska"
 directions = ["origine_ia", "rien_de_particulier"]
 requiert = []
 bibliotheques = []
+extrait = []

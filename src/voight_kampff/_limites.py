@@ -22,6 +22,7 @@ __all__ = [
     "MEMOIRE_MAX",
     "MEMOIRE_MAX_MOTIF",
     "OBJETS_MAX",
+    "OCTETS_EXTRAITS_MAX",
     "PIXELS_MAX",
     "PROFONDEUR_MAX",
     "PROGRAMME_MAX_MOTIF",
@@ -85,6 +86,15 @@ OBJETS_MAX = 1 << 20
 RESULTATS_MAX = 1 << 12
 """Résultats envoyés (observations, constats, analyses non menées) : chacun coûte au
 processus principal sa validation et son export (ADR-0121)."""
+
+# Parties extraites d'un fichier : comptées, déterministes (ADR-0226)
+
+OCTETS_EXTRAITS_MAX = 2 << 20
+"""Octets des parties extraites d'un fichier (images d'un PDF), cumulés dans l'ordre où elles
+sont trouvées : celle qui atteint ce seuil est encore acheminée, les suivantes ne le sont pas.
+Leur analyse coûte surtout le décodage entropique, environ 20 ms par Kio jusqu'à 2 Mo sur le
+poste de développement (mesure de T53) : le seuil garde l'analyse d'un document illustré dans
+son délai. Le nombre de parties extraites est borné à part (``NOMBRE_MAX_EXTRAITES``, 16)."""
 
 # Catalogue de règles : comptées, contrôlées au chargement (ES-09, ADR-0088, ADR-0089)
 

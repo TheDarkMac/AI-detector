@@ -10,3 +10,4 @@ fiche = "metadonnees-info-pdf"
 directions = ["origine_ia", "rien_de_particulier"]
 requiert = []
 bibliotheques = []
+extrait = []

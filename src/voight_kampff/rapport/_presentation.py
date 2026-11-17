@@ -45,6 +45,7 @@ __all__ = [
     "neutraliser",
     "nombre",
     "octets",
+    "origine_partie",
     "texte",
     "textes",
 ]
@@ -163,12 +164,26 @@ def etat_partie(partie: Partie) -> str:
     return ", ".join(etats)
 
 
+def origine_partie(partie: Partie) -> str:
+    """D'où vient une partie extraite : contenant, module, lieu (ADR-0224) ; vide sinon."""
+    origine = partie.origine
+    if origine is None:
+        return ""
+    return texte(
+        "formes.origine",
+        contenant=origine.contenant,
+        module=origine.module,
+        lieu=localisation(origine.localisation),
+    )
+
+
 _NIVEAUX_DECROISSANTS = (Niveau.FORT, Niveau.MODERE, Niveau.FAIBLE)
 _SANS_METADONNEES = frozenset(
-    {"actifspdf", "doublejpeg", "dwtdct", "ela", "pagespdf", "revisionspdf"}
+    {"actifspdf", "doublejpeg", "dwtdct", "ela", "imagespdf", "pagespdf", "revisionspdf"}
 )
 """Modules qui ne lisent aucune métadonnée identifiante : leur analyse non menée ne laisse
-aucune marque non lue (ADR-0158, ADR-0190, ADR-0201, ADR-0206, ADR-0211, ADR-0218, ADR-0222)."""
+aucune marque non lue (ADR-0158, ADR-0190, ADR-0201, ADR-0206, ADR-0211, ADR-0218, ADR-0222,
+ADR-0227). Une image extraite qui n'est pas lue l'est pour une raison sans module, qui compte."""
 
 
 class Presentation:
@@ -306,7 +321,16 @@ class Presentation:
             )
         if len(identification.parties) > 1:
             lignes.append(texte("signalements.polyglotte", nombre=len(identification.parties)))
-        for partie in identification.parties:
+        if extraites := identification.extraites:
+            lignes.append(
+                texte(
+                    "signalements.extraite" if len(extraites) == 1 else "signalements.extraites",
+                    nombre=len(extraites),
+                    premiere=extraites[0].rang,
+                    derniere=extraites[-1].rang,
+                )
+            )
+        for partie in identification.toutes:
             if partie.tronquee:
                 cle = "signalements.tronquee"
             elif not partie.fin_connue:

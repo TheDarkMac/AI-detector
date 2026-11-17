@@ -237,3 +237,8 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0220](ADR-0220-nature-et-declencheur.md) | Éléments actifs d'un PDF décrits par leur nature et leur déclencheur, sans adresse, nom ni code | Accepté | 2026-11-17 |
 | [ADR-0221](ADR-0221-elements-actifs-depuis-le-catalogue.md) | Éléments actifs d'un PDF cherchés depuis le catalogue de la dernière version ; document chiffré lu par sa structure | Accepté | 2026-11-17 |
 | [ADR-0222](ADR-0222-constats-et-versions-de-t52.md) | Constats des éléments actifs d'un PDF : cinq informations neutres par famille ; module `actifspdf` et versions de T52 | Accepté | 2026-11-17 |
+| [ADR-0223](ADR-0223-perimetre-de-t53.md) | Périmètre de T53 : images d'un PDF et leur acheminement ; couche texte renvoyée à un complément après T80 | Accepté | 2026-11-17 |
+| [ADR-0224](ADR-0224-parties-extraites.md) | Contenu extrait d'un fichier : une partie extraite, analysée comme une partie, numérotée à la suite | Accepté | 2026-11-17 |
+| [ADR-0225](ADR-0225-images-jpeg-intactes.md) | Images d'un PDF acheminées : les JPEG écrits tels quels ; les autres comptées par filtre | Accepté | 2026-11-17 |
+| [ADR-0226](ADR-0226-borne-des-images-extraites.md) | Borne des images extraites d'un fichier : seize au plus, dans l'ordre des pages, jusqu'à 2 Mio | Accepté | 2026-11-17 |
+| [ADR-0227](ADR-0227-constats-et-versions-de-t53.md) | Constats des images d'un PDF : quatre informations neutres ; module `imagespdf` et versions de T53 | Accepté | 2026-11-17 |

@@ -11,3 +11,4 @@ directions = ["transformation"]
 requiert = []
 # numpy ne lit pas le fichier : il calcule sur les coefficients que lit le décodage du projet ; sa version figure au rapport (ADR-0185).
 bibliotheques = ["numpy"]
+extrait = []

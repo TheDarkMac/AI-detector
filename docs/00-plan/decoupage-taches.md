@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.33** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 avec T40, v0.29 avec T41, v0.30 avec T42, v0.31 avec le complément de T40, v0.32 avec T32, v0.33 avec T50, v0.34 avec T51, v0.35 proposée dans la PR de T52. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.33** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 avec T40, v0.29 avec T41, v0.30 avec T42, v0.31 avec le complément de T40, v0.32 avec T32, v0.33 avec T50, v0.34 avec T51, v0.35 avec T52, v0.36 proposée dans la PR de T53. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -99,7 +99,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 | T50 | Révisions incrémentales, reconstitution des versions, distinction des ajouts légitimes ; chronologie ; versions de la chaîne des sections, linéarisation regroupée, fin de chaque version au rapport, objets changés rangés par leur type, signatures lues par leur structure, rien déchiffré, chronologie en tableau (schéma 0.8.0), une information neutre et deux indices faibles vers la retouche, catalogue 0.11.0 (ADR-0207 à ADR-0212) | F-60, F-84 |
 | T51 | Objets ajoutés/remplacés, textes superposés, polices incohérentes ; contenus des pages par le lecteur du projet, apparences des annotations comprises, boîtes par les largeurs déclarées (AFM d'Adobe pour les 14 polices standard), texte sur texte, caches, police en plusieurs incorporations, codes hors plage, objets changés un par un en tableau (schéma 0.9.0), quatre indices faibles vers la retouche, catalogue 0.12.0 (ADR-0213 à ADR-0218) | F-61 |
 | T52 | Éléments actifs signalés, jamais exécutés ; PDF seul, bureautique renvoyée à un complément ; recherche depuis le catalogue de la dernière version, actions et leurs chaînes, scripts du document, formulaire XFA, fichiers incorporés ; nature et déclencheur de chaque action, sans adresse ni nom ni code ; document chiffré lu par sa structure ; cinq informations neutres, catalogue 0.13.0 (ADR-0219 à ADR-0222) | F-62, NF-01, ES-06 |
-| T53 | Extraction images + couche texte native, routage vers modules image et texte | F-63 |
+| T53 | Extraction images + couche texte native, routage vers modules image et texte ; images seules, texte renvoyé à un complément de T53 après T80 ; parties extraites numérotées à la suite des parties, champ `extrait` du manifeste, message `extraction` ; JPEG écrits tels quels, analysés par les modules d'image, autres images comptées par filtre ; seize au plus, jusqu'à 2 Mio ; quatre informations neutres, schéma 0.10.0, catalogue 0.14.0 (ADR-0223 à ADR-0227). Complément, sur sa propre branche et sa propre PR, après T80 : couche texte native, acheminée vers les modules texte (ADR-0223) | F-63 |
 | T54 | Comparaison à des documents de référence | F-64, CU-4 |
 
 ### P6 — Audio
@@ -159,7 +159,7 @@ Fixé par [ADR-0012](../decisions/ADR-0012-perimetre-v1.md), provisoire jusqu'au
 
 | Statut | Tâches |
 | --- | --- |
-| **V1**, dans l'ordre | T00 → T04 ; T10 → T18 ; T20 → T25 (T25 limitée aux métadonnées, ADR-0014) ; T30 ; T105 ; T31 ; T40 et son complément, T41 ; T42 (ADR-0197) ; T32 ; T50 → T53 ; T80, T81 ; T90 → T92, T95 ; T100 → T103 |
+| **V1**, dans l'ordre | T00 → T04 ; T10 → T18 ; T20 → T25 (T25 limitée aux métadonnées, ADR-0014) ; T30 ; T105 ; T31 ; T40 et son complément, T41 ; T42 (ADR-0197) ; T32 ; T50 → T53 ; T80 ; complément de T53 (texte) ; T81 ; T90 → T92, T95 ; T100 → T103 |
 | **Candidates V2** (ordre non fixé) | T43, T44, T45, T54, T60, T61, T63, T70 → T73, T93, T94 (garde-fous d'ADR-0032), analyse groupée (ADR-0015) |
 | **Hors V1, sans engagement** | T62 (ENF), T82 (stylométrie), T83 (références), T104 (étude d'usage) |
 
@@ -216,3 +216,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-11-16 | 0.33 | T50 renvoyée à ses décisions (ADR-0207 à ADR-0212) (§3) | T50 |
 | 2026-11-17 | 0.34 | T51 renvoyée à ses décisions (ADR-0213 à ADR-0218) (§3) | T51 |
 | 2026-11-17 | 0.35 | T52 renvoyée à ses décisions (ADR-0219 à ADR-0222), ES-06 ajoutée à ses exigences (§3) | T52 |
+| 2026-11-17 | 0.36 | T53 renvoyée à ses décisions (ADR-0223 à ADR-0227) ; couche texte renvoyée à un complément de T53, placé après T80 dans l'ordre de la V1 (§3, §4) | T53 |

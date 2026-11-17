@@ -10,3 +10,4 @@ fiche = "metadonnees-id3"
 directions = ["origine_ia", "rien_de_particulier"]
 requiert = []
 bibliotheques = []
+extrait = []

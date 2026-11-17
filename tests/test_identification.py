@@ -451,3 +451,17 @@ def test_vue_lit_au_dela_du_cache(tmp_path: Path) -> None:
         assert vue.octets(0, (1 << 20) + 1)[-1] == 0
         assert vue.octets(-1, 4) == b""
         assert vue.octets(5, 0) == b""
+
+
+@pytest.mark.exigence("F-63")
+def test_format_d_une_plage(tmp_path: Path) -> None:
+    # Contenu extrait d'une partie (ADR-0224) : reconnu dans la seule plage donnée, fin logique
+    # comprise ; une plage qui ne commence par aucun format n'est pas reconnue.
+    jpeg = b"\xff\xd8\xff\xe0\x00\x02\xff\xd9"
+    chemin = tmp_path / "echantillon"
+    chemin.write_bytes(b"%PDF-" + jpeg + b"suite" + jpeg[:5])
+    with chemin.open("rb") as fichier:
+        lu = Fichier(fichier.fileno())
+        assert identification.reconnaitre(lu, 5, len(jpeg) + 5) == ("jpeg", len(jpeg), False)
+        assert identification.reconnaitre(lu, 6, 10) is None
+        assert identification.reconnaitre(lu, 18, 5) == ("jpeg", None, True)

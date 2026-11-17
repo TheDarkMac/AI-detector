@@ -10,3 +10,4 @@ fiche = "actifs-pdf"
 directions = ["rien_de_particulier"]
 requiert = []
 bibliotheques = []
+extrait = []

@@ -20,7 +20,7 @@ from voight_kampff._travail import garde
 from voight_kampff._travail.fichier import Fichier
 from voight_kampff.rapport.modele import NOMBRE_MAX_PARTIES, Partie, Plage
 
-__all__ = ["identifier"]
+__all__ = ["identifier", "reconnaitre"]
 
 _BLOC = 1 << 20
 _PAS_MAX = 1 << 20
@@ -629,3 +629,14 @@ def identifier(fichier: Fichier, taille: int) -> tuple[Partie, ...]:
             )
         )
     return tuple(parties)
+
+
+def reconnaitre(fichier: Fichier, debut: int, longueur: int) -> tuple[str, int | None, bool] | None:
+    """Format qui commence à ``debut``, cherché dans les ``longueur`` octets qui suivent : son
+    nom, sa longueur jusqu'à sa fin logique (``None`` si elle n'est pas connue), et s'il est
+    tronqué ; ``None`` si rien n'est reconnu (ADR-0224)."""
+    garde.exiger()
+    reconnu = _reconnaitre(_Vue(fichier, debut, longueur))
+    if reconnu is None:
+        return None
+    return reconnu.format, reconnu.longueur, reconnu.tronque

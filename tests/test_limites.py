@@ -195,6 +195,7 @@ def deroule(descripteur: int, analyseur: Callable[[Contexte], None]) -> list[str
                 "formats": ["jpeg"],
                 "directions": [Direction.RIEN_DE_PARTICULIER],
                 "bibliotheques": [],
+                "extrait": [],
             }
         ],
         "regles": [],

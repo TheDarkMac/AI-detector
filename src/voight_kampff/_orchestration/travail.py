@@ -6,7 +6,9 @@ reçue, dans cet ordre : taille, JSON strict, schéma, modèle, place dans le pr
 
 Après l'isolation vient l'identification : les parties reconnues (ADR-0071). Les résultats
 arrivent ensuite partie par partie, chaque module actif dans l'ordre pour chaque partie du
-périmètre ; une partie hors périmètre est déclarée non analysée ici, pas par le travail.
+périmètre ; une partie hors périmètre est déclarée non analysée ici, pas par le travail. Viennent
+enfin, s'il y en a, les parties extraites par un module : un message « extraction » les annonce,
+puis leurs résultats arrivent de la même façon (ADR-0224).
 
 Chaque constat doit dire ce que fixe sa règle du catalogue : gabarit, catégorie, direction,
 fondement, niveau (ADR-0090). Tout écart arrête le processus de travail. Les modules terminés
@@ -62,6 +64,7 @@ from voight_kampff.rapport.modele import (
     TechniqueCouverte,
     Visualisation,
     plages_non_reconnues,
+    verifier_extraites,
     verifier_parties,
 )
 
@@ -135,6 +138,8 @@ class ResultatTravail:
     empreinte: str | None
     """Empreinte recalculée en fin d'analyse ; comparée à celle du principal (ES-08)."""
     visualisations: tuple[Visualisation, ...] = ()
+    extraites: tuple[Partie, ...] = ()
+    """Parties extraites par un module, à la suite des parties reconnues (ADR-0224)."""
 
     @property
     def interrompue(self) -> bool:
@@ -194,6 +199,7 @@ def executer(
                     "formats": list(manifeste.formats),
                     "directions": list(manifeste.directions),
                     "bibliotheques": list(manifeste.bibliotheques),
+                    "extrait": list(manifeste.extrait),
                 }
                 for manifeste in actifs
             ],
@@ -354,6 +360,8 @@ class _Reception:
         """Règles des modules actifs, par identifiant : chaque constat doit suivre la sienne."""
         self._taille = taille
         self._parties: tuple[Partie, ...] | None = None
+        self._extraites: tuple[Partie, ...] | None = None
+        """Parties extraites, une fois le message « extraction » reçu."""
         self._modules: list[_Module] = []
         """Modules attendus, partie par partie ; connus à la réception de l'identification."""
         self._rang = 0
@@ -444,6 +452,8 @@ class _Reception:
                 case "identification":
                     _invalide(self._parties is None)
                     self._identification(message["parties"])
+                case "extraction":
+                    self._extraction(message["parties"])
                 case "observation":
                     self._observation(Observation.depuis_dict(message["observation"]))
                 case "constat":
@@ -477,6 +487,28 @@ class _Reception:
             if partie.dans_perimetre
             for manifeste in self._actifs
         ]
+
+    def _extraction(self, documents: list[dict[str, Any]]) -> None:
+        """Parties extraites : une fois, après les modules des parties reconnues (ADR-0224).
+
+        Chacune vient d'un module actif qui a fini sur son contenant sans que ses résultats
+        soient écartés, et dont le manifeste permet d'extraire son format.
+        """
+        _invalide(self._parties is not None and self._extraites is None)
+        _invalide(self._rang == len(self._modules) and self._dependances is None)
+        parties = self._parties or ()
+        extraites = tuple(Partie.depuis_dict(document) for document in documents)
+        verifier_extraites(extraites, parties)
+        executes = {(m.manifeste.identifiant, m.partie): m for m in self._modules}
+        for extraite in extraites:
+            origine = extraite.origine
+            module = executes.get((origine.module, origine.contenant)) if origine else None
+            _invalide(module is not None and bool(module.applicable) and not module.remplace)
+            _invalide(module is not None and extraite.format in module.manifeste.extrait)
+        self._extraites = extraites
+        self._modules.extend(
+            _Module(manifeste, partie.rang) for partie in extraites for manifeste in self._actifs
+        )
 
     def _courant(self, identifiant: str | None, partie: int | None) -> _Module:
         """Module en cours : les modules rendent leurs résultats un par un, dans l'ordre."""
@@ -550,7 +582,7 @@ class _Reception:
         constats: list[Constat] = []
         non_menees: list[NonMenee] = []
         visualisations: list[Visualisation] = []
-        for partie in self._parties or ():
+        for partie in (*(self._parties or ()), *(self._extraites or ())):
             # Ce que l'identification n'a pas pu analyser est déclaré ici (ADR-0056, ADR-0071).
             localisation = Localisation(octets=partie.octets)
             if partie.tronquee:
@@ -595,6 +627,7 @@ class _Reception:
             non_menees.append(NonMenee(self._interruption))
         return ResultatTravail(
             parties=self._parties,
+            extraites=self._extraites or (),
             isolation=self._isolation or _ISOLATION_INCONNUE,
             couverture=Couverture(tuple(techniques), ()),
             observations=tuple(observations),

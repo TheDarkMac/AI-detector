@@ -65,3 +65,4 @@ Option B.
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création |
+| 2026-11-17 | Précisé par ADR-0224 (T53) : partie extraite, numérotée à la suite des parties, avec son origine ; hors des polyglottes et des octets non reconnus |

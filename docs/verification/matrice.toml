@@ -317,10 +317,10 @@ note = "PDF (T52, ADR-0219) : module actifspdf, éléments cherchés depuis le c
 
 [[exigence]]
 id = "F-63"
-etat = "a_venir"
+etat = "partielle"
 taches = ["T53"]
 methodes = ["test"]
-note = "Reformulée : couche texte native seulement, document numérisé non analysé (ADR-0017)."
+note = "Reformulée : couche texte native seulement, document numérisé non analysé (ADR-0017). Images (T53, ADR-0223) : module imagespdf, JPEG écrits tels quels (seul filtre DCTDecode) des ressources des pages et de leurs formes, reconnus par l'identification et analysés par les modules d'image comme des parties extraites, numérotées à la suite des parties (ADR-0224, ADR-0225) ; seize au plus, jusqu'à 2 Mio, dans l'ordre des pages (ADR-0226) ; autres images comptées par filtre ; informations neutres R-IMAGESPDF-001 à R-IMAGESPDF-004 (ADR-0227). Vérifié contre pdfimages -list et -j sur les échantillons de tests/donnees/images. Couche texte native : complément de T53, après T80."
 
 [[exigence]]
 id = "F-64"

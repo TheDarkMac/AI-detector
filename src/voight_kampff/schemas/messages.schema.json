@@ -2,10 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:voight-kampff:schema:messages",
   "title": "Messages du processus de travail Voight-Kampff",
-  "description": "Une ligne JSON envoyée par le processus de travail au processus principal (ADR-0036, ES-04). Le premier message est l'état de l'isolation, le deuxième l'identification, le dernier la fin ; pour chaque partie du périmètre, les résultats de chaque module actif sont suivis de son message « module » (ADR-0062, ADR-0071). Les objets transportés sont ceux du schéma du rapport, de même version.",
+  "description": "Une ligne JSON envoyée par le processus de travail au processus principal (ADR-0036, ES-04). Le premier message est l'état de l'isolation, le deuxième l'identification, le dernier la fin ; pour chaque partie du périmètre, les résultats de chaque module actif sont suivis de son message « module » (ADR-0062, ADR-0071). Les parties extraites viennent ensuite, annoncées par un message « extraction » (ADR-0224). Les objets transportés sont ceux du schéma du rapport, de même version.",
   "oneOf": [
     { "$ref": "#/$defs/isolation" },
     { "$ref": "#/$defs/identification" },
+    { "$ref": "#/$defs/extraction" },
     { "$ref": "#/$defs/observation" },
     { "$ref": "#/$defs/constat" },
     { "$ref": "#/$defs/non_menee" },
@@ -21,7 +22,7 @@
       "required": ["type", "version_schema", "isolation"],
       "properties": {
         "type": { "const": "isolation" },
-        "version_schema": { "const": "0.9.0" },
+        "version_schema": { "const": "0.10.0" },
         "isolation": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/isolation" }
       }
     },
@@ -35,6 +36,21 @@
           "type": "array",
           "maxItems": 16,
           "items": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/partie" }
+        }
+      }
+    },
+    "extraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Parties extraites, envoyées une fois après les modules des parties reconnues, avant leurs propres résultats (ADR-0224).",
+      "required": ["type", "parties"],
+      "properties": {
+        "type": { "const": "extraction" },
+        "parties": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/partie_extraite" }
         }
       }
     },

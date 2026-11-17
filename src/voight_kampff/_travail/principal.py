@@ -8,7 +8,10 @@
 4. Identifier les formats et envoyer les parties reconnues (ADR-0070, ADR-0071).
 5. Pour chaque partie du périmètre, exécuter chaque module actif, lui appliquer ses règles
    « moteur », envoyer ses résultats puis son message « module » (ADR-0062).
-6. Envoyer les versions des bibliothèques des modules actifs, puis l'empreinte du fichier
+6. Reconnaître les contenus que des modules ont extraits de ces parties, envoyer les parties
+   extraites, puis les analyser de la même façon (ADR-0224). Une partie extraite ne l'est pas
+   à son tour.
+7. Envoyer les versions des bibliothèques des modules actifs, puis l'empreinte du fichier
    recalculée en fin d'analyse (ES-08).
 
 Une exception dans un module ne touche que ce module (NF-03, ADR-0060) ; une limite comptée
@@ -29,6 +32,7 @@ from typing import BinaryIO
 from xml.parsers import expat
 
 from voight_kampff import modules
+from voight_kampff._limites import OCTETS_EXTRAITS_MAX
 from voight_kampff._protocole import (
     TAILLE_MAX_CONFIGURATION,
     TAILLE_MAX_SORTIE,
@@ -36,14 +40,18 @@ from voight_kampff._protocole import (
 )
 from voight_kampff._regles import Regle
 from voight_kampff._travail import garde, identification, restrictions
-from voight_kampff._travail.contexte import Ancres, Contexte, LimiteDepassee
+from voight_kampff._travail.contexte import Ancres, Contexte, Extraction, LimiteDepassee
 from voight_kampff._travail.fichier import Fichier, ouvrir_herite
 from voight_kampff.rapport.modele import (
+    NOMBRE_MAX_EXTRAITES,
     VERSION_SCHEMA,
     Direction,
     EtatIsolation,
+    Localisation,
     NonMenee,
+    Origine,
     Partie,
+    Plage,
     RaisonNonMenee,
 )
 
@@ -52,6 +60,7 @@ __all__ = [
     "Configuration",
     "Identifieur",
     "ModuleConfigure",
+    "Reconnaisseur",
     "Restricteur",
     "canal_du_protocole",
     "importer",
@@ -63,6 +72,7 @@ __all__ = [
 type Analyseur = Callable[[Contexte], None]
 type Identifieur = Callable[[Fichier, int], tuple[Partie, ...]]
 type Restricteur = Callable[[], EtatIsolation]
+type Reconnaisseur = Callable[[Fichier, int, int], tuple[str, int | None, bool] | None]
 
 _RESERVE = 64 << 10
 """Part de la sortie gardée pour les messages du moteur après le dernier module."""
@@ -79,6 +89,8 @@ class ModuleConfigure:
     """Règles du catalogue qui relèvent du module, dans l'ordre de leurs identifiants."""
     bibliotheques: frozenset[str] = frozenset()
     """Bibliothèques qui lisent le fichier pour le module (ADR-0120)."""
+    extrait: frozenset[str] = frozenset()
+    """Formats des contenus qu'il peut extraire de sa partie (ADR-0224)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -162,6 +174,7 @@ def lire_configuration(entree: BinaryIO) -> Configuration:
             directions=frozenset(Direction(d) for d in module["directions"]),
             regles=tuple(regles.get(str(module["identifiant"]), ())),
             bibliotheques=frozenset(str(b) for b in module["bibliotheques"]),
+            extrait=frozenset(str(f) for f in module["extrait"]),
         )
         for module in document["modules"]
     )
@@ -189,6 +202,18 @@ class _Canal:
         self.envoyer((encoder(message),))
 
 
+@dataclass(frozen=True, slots=True)
+class _Execution:
+    """Ce que le moteur garde d'un module exécuté sur une partie."""
+
+    numero: int
+    """Numéro de sa dernière observation ; la partie suivante continue à partir de lui."""
+    extractions: tuple[Extraction, ...] = ()
+    """Contenus à acheminer ; aucun si ses résultats ont été écartés (ADR-0060)."""
+    refusee: Localisation | None = None
+    """Première extraction refusée faute de place (ADR-0226)."""
+
+
 def _executer(
     module: ModuleConfigure,
     analyseur: Analyseur | None,
@@ -197,8 +222,13 @@ def _executer(
     canal: _Canal,
     numero: int,
     ancres: Ancres,
-) -> int:
-    """Exécute le module sur une partie ; renvoie le numéro de sa dernière observation."""
+    places: tuple[int, int],
+) -> _Execution:
+    """Exécute le module sur une partie ; renvoie ce qu'il laisse au moteur.
+
+    ``places`` : parties extraites que le fichier peut encore recevoir, et octets avant leur
+    seuil (ADR-0226).
+    """
     raison: RaisonNonMenee | None = RaisonNonMenee.ERREUR_MODULE
     contexte: Contexte | None = None
     if analyseur is not None:
@@ -212,6 +242,8 @@ def _executer(
             numero,
             module.regles,
             ancres,
+            module.extrait,
+            *places,
         )
         try:
             analyseur(contexte)
@@ -226,12 +258,112 @@ def _executer(
             raison = RaisonNonMenee.LIMITE_DEPASSEE if contexte.depasse else None
     if raison is None and contexte is not None:
         canal.envoyer(contexte.lignes)
-    else:
-        # Résultats écartés (ADR-0060) : rien de ce que le module a produit n'est envoyé.
-        raison = raison or RaisonNonMenee.ERREUR_MODULE
-        non_menee = NonMenee(raison, module.identifiant, partie=partie.rang)
-        canal.message({"type": "non_menee", "non_menee": non_menee.vers_dict()})
-    return numero if contexte is None else contexte.numero
+        return _Execution(contexte.numero, contexte.extractions, contexte.refusee)
+    # Résultats écartés (ADR-0060) : rien de ce que le module a produit n'est envoyé.
+    raison = raison or RaisonNonMenee.ERREUR_MODULE
+    non_menee = NonMenee(raison, module.identifiant, partie=partie.rang)
+    canal.message({"type": "non_menee", "non_menee": non_menee.vers_dict()})
+    return _Execution(numero if contexte is None else contexte.numero)
+
+
+class _Deroule:
+    """Exécution des modules actifs, partie par partie, et acheminement des extractions."""
+
+    def __init__(
+        self,
+        configuration: Configuration,
+        analyseurs: Mapping[str, Analyseur],
+        echecs: frozenset[str],
+        fichier: Fichier,
+        canal: _Canal,
+        reconnaitre: Reconnaisseur,
+        premier_rang: int,
+    ) -> None:
+        self._configuration = configuration
+        self._analyseurs = analyseurs
+        self._echecs = echecs
+        self._fichier = fichier
+        self._canal = canal
+        self._reconnaitre = reconnaitre
+        self._premier_rang = premier_rang
+        """Rang de la première partie extraite : à la suite des parties reconnues."""
+        self._numeros = dict.fromkeys((m.identifiant for m in configuration.modules), 0)
+        self.extraites: list[Partie] = []
+        self._declarees = 0
+        """Contenus acceptés par un contexte, reconnus ou non : ils comptent contre les places."""
+        self._octets = 0
+        """Leurs octets, cumulés contre ``OCTETS_EXTRAITS_MAX``."""
+
+    def partie(self, partie: Partie) -> None:
+        """Chaque module actif sur une partie du périmètre ; les contenus extraits d'une partie
+        reconnue sont reconnus aussitôt, et rangés pour être analysés après toutes les autres."""
+        for module in self._configuration.modules:
+            applicable = partie.format in module.formats
+            if applicable:
+                analyseur = (
+                    None
+                    if module.identifiant in self._echecs
+                    else self._analyseurs.get(module.identifiant)
+                )
+                places = (
+                    (0, 0)
+                    if partie.origine
+                    else (
+                        NOMBRE_MAX_EXTRAITES - self._declarees,
+                        OCTETS_EXTRAITS_MAX - self._octets,
+                    )
+                )
+                execution = _executer(
+                    module,
+                    analyseur,
+                    self._fichier,
+                    partie,
+                    self._canal,
+                    self._numeros[module.identifiant],
+                    self._configuration.ancres,
+                    places,
+                )
+                self._numeros[module.identifiant] = execution.numero
+                self._acheminer(module.identifiant, partie, execution)
+            self._canal.message(
+                {
+                    "type": "module",
+                    "module": module.identifiant,
+                    "partie": partie.rang,
+                    "applicable": applicable,
+                }
+            )
+
+    def _acheminer(self, module: str, contenant: Partie, execution: _Execution) -> None:
+        """Reconnaît chaque contenu extrait dans sa plage ; ceux qui ne sont pas du format
+        attendu sont déclarés non menés pour format partiel (ADR-0224)."""
+        for extraction in execution.extractions:
+            plage = extraction.octets
+            self._declarees += 1
+            self._octets += plage.longueur
+            reconnu = self._reconnaitre(self._fichier, plage.debut, plage.longueur)
+            if reconnu is None or reconnu[0] != extraction.format:
+                self._non_mener(RaisonNonMenee.FORMAT_PARTIEL, extraction.localisation, contenant)
+                continue
+            nature, longueur, tronquee = reconnu
+            self.extraites.append(
+                Partie(
+                    self._premier_rang + len(self.extraites),
+                    nature,
+                    Plage(plage.debut, plage.longueur if longueur is None else longueur),
+                    fin_connue=longueur is not None,
+                    tronquee=tronquee,
+                    origine=Origine(contenant.rang, module, extraction.localisation),
+                )
+            )
+        if execution.refusee is not None:
+            self._non_mener(RaisonNonMenee.LIMITE_DEPASSEE, execution.refusee, contenant)
+
+    def _non_mener(
+        self, raison: RaisonNonMenee, localisation: Localisation, contenant: Partie
+    ) -> None:
+        non_menee = NonMenee(raison, None, localisation, contenant.rang)
+        self._canal.message({"type": "non_menee", "non_menee": non_menee.vers_dict()})
 
 
 def principal(
@@ -241,13 +373,14 @@ def principal(
     *,
     analyseurs: Mapping[str, Analyseur] | None = None,
     identifier: Identifieur = identification.identifier,
+    reconnaitre: Reconnaisseur = identification.reconnaitre,
     restreindre: Restricteur = restrictions.appliquer,
 ) -> int:
     """Analyse le fichier transmis par le processus principal ; renvoie le code de sortie.
 
-    ``analyseurs`` et ``identifier`` remplacent, pour les tests, les modules livrés et
-    l'identification du format ; ``restreindre``, les restrictions, que les tests du
-    déroulé ne peuvent pas appliquer à leur propre processus.
+    ``analyseurs``, ``identifier`` et ``reconnaitre`` remplacent, pour les tests, les modules
+    livrés, l'identification du format et celle d'un contenu extrait ; ``restreindre``, les
+    restrictions, que les tests du déroulé ne peuvent pas appliquer à leur propre processus.
     """
     arguments = argparse.ArgumentParser(prog="voight_kampff._travail")
     arguments.add_argument("--descripteur", type=int, required=True)
@@ -266,39 +399,22 @@ def principal(
     )
 
     configuration = lire_configuration(entree)
-    configures = configuration.modules
     fichier = Fichier(ouvrir_herite(descripteur))
     parties = identifier(fichier, fichier.taille())
     canal.message({"type": "identification", "parties": [p.vers_dict() for p in parties]})
-    numeros = dict.fromkeys((module.identifiant for module in configures), 0)
+    deroule = _Deroule(
+        configuration, analyseurs, echecs, fichier, canal, reconnaitre, len(parties) + 1
+    )
     for partie in parties:
-        if not partie.dans_perimetre:
-            continue  # déclarée non analysée par le processus principal
-        for module in configures:
-            applicable = partie.format in module.formats
-            if applicable:
-                analyseur = (
-                    None if module.identifiant in echecs else analyseurs.get(module.identifiant)
-                )
-                numeros[module.identifiant] = _executer(
-                    module,
-                    analyseur,
-                    fichier,
-                    partie,
-                    canal,
-                    numeros[module.identifiant],
-                    configuration.ancres,
-                )
-            canal.message(
-                {
-                    "type": "module",
-                    "module": module.identifiant,
-                    "partie": partie.rang,
-                    "applicable": applicable,
-                }
-            )
+        if partie.dans_perimetre:  # sinon déclarée non analysée par le processus principal
+            deroule.partie(partie)
+    extraites = tuple(deroule.extraites)
+    if extraites:
+        canal.message({"type": "extraction", "parties": [p.vers_dict() for p in extraites]})
+        for extraite in extraites:
+            deroule.partie(extraite)
     # Versions des bibliothèques des modules actifs, dans l'ordre de leurs noms (ADR-0120).
-    noms = sorted({nom for module in configures for nom in module.bibliotheques})
+    noms = sorted({nom for module in configuration.modules for nom in module.bibliotheques})
     dependances = [{"nom": nom, "version": bibliotheques[nom]} for nom in noms]
     canal.message({"type": "versions", "dependances": dependances})
     # Empreinte de ce qui a été analysé, recalculée après les modules (ES-08).

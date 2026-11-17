@@ -11,3 +11,4 @@ fiche = "structure-image"
 directions = ["transformation", "authenticite"]
 requiert = []
 bibliotheques = []
+extrait = []

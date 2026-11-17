@@ -18,7 +18,7 @@
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.9.0" },
+    "version_schema": { "const": "0.10.0" },
     "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
@@ -595,6 +595,32 @@
       "if": { "properties": { "tronquee": { "const": true } } },
       "then": { "properties": { "fin_connue": { "const": false } } }
     },
+    "origine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contenant", "module", "localisation"],
+      "properties": {
+        "contenant": { "$ref": "#/$defs/entier_strictement_positif", "maximum": 16 },
+        "module": { "$ref": "#/$defs/identifiant" },
+        "localisation": { "$ref": "#/$defs/localisation", "not": { "required": ["octets"] } }
+      }
+    },
+    "partie_extraite": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Partie extraite d'une partie reconnue, numérotée à la suite des parties (ADR-0224).",
+      "required": ["rang", "format", "octets", "fin_connue", "tronquee", "origine"],
+      "properties": {
+        "rang": { "$ref": "#/$defs/entier_strictement_positif", "minimum": 2, "maximum": 32 },
+        "format": { "$ref": "#/$defs/format" },
+        "octets": { "$ref": "#/$defs/plage" },
+        "fin_connue": { "type": "boolean" },
+        "tronquee": { "type": "boolean" },
+        "origine": { "$ref": "#/$defs/origine" }
+      },
+      "if": { "properties": { "tronquee": { "const": true } } },
+      "then": { "properties": { "fin_connue": { "const": false } } }
+    },
     "identification": {
       "type": "object",
       "additionalProperties": false,
@@ -604,6 +630,7 @@
         "taille",
         "date_analyse",
         "parties",
+        "extraites",
         "octets_non_reconnus"
       ],
       "dependentRequired": {
@@ -626,6 +653,11 @@
           "minItems": 1,
           "maxItems": 16,
           "items": { "$ref": "#/$defs/partie" }
+        },
+        "extraites": {
+          "type": "array",
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/partie_extraite" }
         },
         "extension": { "type": "string", "minLength": 1, "maxLength": 32 },
         "extension_concordante": { "type": "boolean" },

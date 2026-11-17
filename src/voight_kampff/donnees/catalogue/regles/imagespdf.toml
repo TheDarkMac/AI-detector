@@ -1,0 +1,130 @@
+# Règles du module imagespdf (T53) : images d'un PDF, acheminées vers les modules d'image (F-63 ;
+# ADR-0223 à ADR-0227). Images : ISO 32000-2, §8.9.5 ; filtre DCTDecode : §7.4.8 ; formes :
+# §8.10 ; fiche images-pdf.
+
+[[regle]]
+identifiant = "R-IMAGESPDF-001"
+version = "1"
+module = "imagespdf"
+titre = "Images JPEG du document analysées comme des parties extraites"
+description = "La dernière version du PDF porte au moins une image dont le seul filtre est DCTDecode : un JPEG complet, écrit tel quel dans le fichier. Dans l'ordre des pages, seize au plus, tant que leur taille cumulée n'a pas atteint 2 Mio, elles sont reconnues par l'identification et analysées chacune comme une partie extraite par les modules d'image : métadonnées, C2PA, tables de quantification, double compression, ELA, filigrane dwtDct (ADR-0224 à ADR-0226). Information neutre : elle dit où chercher leurs résultats, qui suivent ceux du document."
+gabarit = "imagespdf.acheminees"
+phrase = { fr = "Le document porte {jpeg} image(s) JPEG écrite(s) telle(s) quelle(s) (pages {pages}) : {acheminees} sont analysée(s) chacune comme une partie extraite, par les modules d'image." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Seules les images listées dans les ressources des pages de la dernière version, et des formes qu'elles listent sur huit niveaux, sont cherchées : une image d'une version antérieure, d'une annotation, d'un motif ou d'une police Type 3 ne l'est pas ; une image listée est analysée, qu'elle soit dessinée ou non.",
+  "Le logiciel qui écrit un PDF peut réencoder une image ou en retirer les métadonnées : leur absence dans une partie extraite ne dit rien de l'image d'origine.",
+  "Une image que l'identification ne reconnaît pas comme un JPEG n'est pas analysée ; le rapport le dit par une analyse non menée, pour format partiel.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule image acheminée suffit à le dire (F-63). Vérifié sur les échantillons de tests/donnees/images, comparés à pdfimages -list de Poppler 25.03.0."
+
+[[regle.condition]]
+observation = "imagespdf.acheminees"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "acheminees"
+
+[[regle.condition]]
+observation = "imagespdf.jpeg"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "jpeg"
+
+[[regle.condition]]
+observation = "imagespdf.acheminees.pages"
+presente = true
+parametre = "pages"
+
+[[regle]]
+identifiant = "R-IMAGESPDF-002"
+version = "1"
+module = "imagespdf"
+titre = "Images du document non analysées"
+description = "La dernière version du PDF porte au moins une image qui n'est pas un JPEG écrit tel quel : pixels compressés (FlateDecode, LZWDecode, RunLengthDecode) ou en clair, JPEG 2000 (JPXDecode), télécopie (CCITTFaxDecode), JBIG2, JPEG compressé une seconde fois. L'outil ne décode pas leurs pixels : aucun module d'image ne les analyse (ADR-0225). Information neutre : la plupart des images d'un document (captures, schémas, logos) sont écrites ainsi."
+gabarit = "imagespdf.non-acheminees"
+phrase = { fr = "{non_acheminees} image(s) du document (pages {pages}) ne sont pas des JPEG écrits tels quels (filtres : {filtres}) : l'outil ne décode pas leurs pixels, aucun module d'image ne les a analysées." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Mêmes limites de recherche que R-IMAGESPDF-001 : images des ressources des pages de la dernière version et de leurs formes.",
+  "Les images en ligne (BI … EI), écrites dans les flux de contenu, ne sont ni cherchées ni comptées.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule image non analysée suffit à le dire (F-82). Vérifié sur les échantillons de tests/donnees/images, comparés à pdfimages -list de Poppler 25.03.0."
+
+[[regle.condition]]
+observation = "imagespdf.non_acheminees"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "non_acheminees"
+
+[[regle.condition]]
+observation = "imagespdf.non_acheminees.filtres"
+presente = true
+parametre = "filtres"
+
+[[regle.condition]]
+observation = "imagespdf.non_acheminees.pages"
+presente = true
+parametre = "pages"
+
+[[regle]]
+identifiant = "R-IMAGESPDF-003"
+version = "1"
+module = "imagespdf"
+titre = "Images JPEG au-delà de celles qu'un fichier peut faire analyser"
+description = "Le PDF porte plus d'images JPEG écrites telles quelles que l'outil n'en analyse pour un fichier : dans l'ordre des pages, seize au plus, tant que leur taille cumulée n'a pas atteint 2 Mio (celle qui franchit ce seuil est encore analysée). La borne garde l'analyse d'un document illustré dans son délai, avec le même résultat sur toutes les machines (ADR-0226). Les suivantes sont comptées ; le rapport déclare non menée, pour limite dépassée, la première d'entre elles. Information neutre."
+gabarit = "imagespdf.au-dela"
+phrase = { fr = "{au_dela} image(s) JPEG du document ne sont pas analysées : l'outil analyse, dans l'ordre des pages, seize images au plus, jusqu'à 2 Mio de données." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "L'ordre est celui des pages, puis celui des ressources de chaque page : une image retouchée placée loin dans le document peut rester hors des seize.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule image laissée de côté suffit à le dire (F-82). Vérifié sur les échantillons de tests/donnees/images au-delà du nombre et des octets."
+
+[[regle.condition]]
+observation = "imagespdf.au_dela"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "au_dela"
+
+[[regle]]
+identifiant = "R-IMAGESPDF-004"
+version = "1"
+module = "imagespdf"
+titre = "Images d'un document chiffré non analysées"
+description = "Le PDF est chiffré et porte au moins une image : les données de ses flux le sont aussi, et l'outil ne déchiffre rien (ADR-0126). Ses images sont comptées par la structure du document, qui n'est pas chiffrée ; aucune n'est analysée. Information neutre : un document peut être chiffré pour en restreindre l'impression ou la copie, sans mot de passe à l'ouverture."
+gabarit = "imagespdf.chiffre"
+phrase = { fr = "Le document est chiffré : ses {images} image(s) ne sont pas analysées, l'outil ne déchiffrant rien." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Mêmes limites de recherche que R-IMAGESPDF-001.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule image d'un document chiffré suffit à le dire (F-82). Vérifié sur l'échantillon chiffré de tests/donnees/images."
+
+[[regle.condition]]
+observation = "imagespdf.chiffre"
+egal = true
+
+[[regle.condition]]
+observation = "imagespdf.images"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "images"

@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 avec T42, v1.12 avec T50, v1.13 proposée dans la PR de T51. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 avec T42, v1.12 avec T50, v1.13 avec T51, v1.14 proposée dans la PR de T53. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, F-84, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -51,6 +51,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0200](../decisions/ADR-0200-visualisations-au-rapport.md) | Objet `Visualisation`, message `visualisation`, catégorie identifiante `contenu` ; `VERSION_SCHEMA` 0.7.0 (T42, ADR-0201) |
 | [ADR-0212](../decisions/ADR-0212-chronologie-en-tableau.md) | Visualisation en tableau, nature `chronologie_revisions`, non masquée ; `VERSION_SCHEMA` 0.8.0 (T50) |
 | [ADR-0217](../decisions/ADR-0217-objets-changes-un-par-un.md) | Nature de tableau `objets_revisions` ; `VERSION_SCHEMA` 0.9.0 (T51) |
+| [ADR-0224](../decisions/ADR-0224-parties-extraites.md), [ADR-0226](../decisions/ADR-0226-borne-des-images-extraites.md) | Partie extraite et son `Origine`, `Identification.extraites` (au plus 16), message `extraction` ; `VERSION_SCHEMA` 0.10.0 (T53, ADR-0227) |
 
 ### Où se trouve le code
 
@@ -68,7 +69,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Exports JSON et HTML, masquage (T16) | `src/voight_kampff/rapport/export.py`, `rapport/_html.py`, `rapport/_presentation.py`, `rapport/textes.toml` |
 | Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py` |
 
-Version commune : `0.9.0` (`VERSION_SCHEMA`, ADR-0217 ; 0.8.0 depuis ADR-0212, 0.7.0 depuis ADR-0201, 0.6.0 depuis ADR-0179, 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
+Version commune : `0.10.0` (`VERSION_SCHEMA`, ADR-0224 ; 0.9.0 depuis ADR-0217, 0.8.0 depuis ADR-0212, 0.7.0 depuis ADR-0201, 0.6.0 depuis ADR-0179, 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
 
 ## 2. Vue d'ensemble
 
@@ -93,6 +94,11 @@ classDiagram
     octets
     fin_connue
     tronquee
+  }
+  class Origine {
+    contenant
+    module
+    localisation
   }
   class Versions {
     outil
@@ -178,6 +184,8 @@ classDiagram
   }
   Rapport *-- Identification
   Identification *-- "1..16" Partie
+  Identification *-- "0..16" Partie : extraites
+  Partie *-- "0..1" Origine
   Rapport *-- Versions
   Versions *-- VersionCatalogue
   Versions *-- "0..*" Dependance
@@ -305,9 +313,11 @@ Le processus principal tire de l'identification trois sortes d'analyses non men�
 | `zone` | Rectangle `x`, `y`, `largeur`, `hauteur` en pixels |
 | `intervalle` | `debut` ≤ `fin`, en secondes, pour l'audio et la vidéo (hors V1, prévu par A-46) |
 
-**Identification** : `nom` (sans `/`, `\` ni caractère nul : aucun chemin, ES-14), `format_reel` (celui de la partie 1), `taille` en octets, `empreinte` SHA-256 en hexadécimal minuscule, `date_analyse` au format `AAAA-MM-JJTHH:MM:SSZ` (UTC, ES-14), `parties`. Nom et empreinte sont identifiants d'office (ADR-0014, ADR-0031). Champs déduits, écrits pour le lecteur et vérifiés à la relecture (ADR-0072) : `extension` (minuscules, au plus 32 caractères ; absente sans extension), `extension_concordante` (absente sans extension), `octets_non_reconnus` (plages qu'aucune partie ne couvre).
+**Identification** : `nom` (sans `/`, `\` ni caractère nul : aucun chemin, ES-14), `format_reel` (celui de la partie 1), `taille` en octets, `empreinte` SHA-256 en hexadécimal minuscule, `date_analyse` au format `AAAA-MM-JJTHH:MM:SSZ` (UTC, ES-14), `parties`, `extraites` (ADR-0224). Nom et empreinte sont identifiants d'office (ADR-0014, ADR-0031). Champs déduits, écrits pour le lecteur et vérifiés à la relecture (ADR-0072) : `extension` (minuscules, au plus 32 caractères ; absente sans extension), `extension_concordante` (absente sans extension), `octets_non_reconnus` (plages qu'aucune partie ne couvre).
 
 **Partie** (ADR-0070, ADR-0071) : `rang` de 1 à 16, dans l'ordre des débuts ; `format`, pris dans le vocabulaire de `formats.py` ; `octets`, du début à la fin logique, ou à la fin du fichier si elle n'est pas connue ; `fin_connue` ; `tronquee` (structure interrompue avant sa fin, jamais avec une fin connue). Les plages peuvent se chevaucher. Au moins une partie est dans le périmètre : sinon le fichier est refusé, sans rapport (ADR-0075).
+
+**Partie extraite** (ADR-0224) : contenu qu'un module a trouvé dans une partie reconnue et que les modules de son format analysent comme une partie ; mêmes champs, et une `origine` : `contenant` (rang d'une partie reconnue du périmètre), `module` (celui qui l'a extraite), `localisation` (page, objet ; sans plage d'octets, qui est celle de la partie). Rangs à la suite des parties reconnues, de 2 à 32 ; au plus 16 (ADR-0226) ; format du périmètre ; plage dans celle du contenant, fin logique cherchée dans la plage donnée par le module. Une partie reconnue n'a pas d'origine. Les parties extraites n'entrent ni dans les polyglottes ni dans les octets non reconnus ; la couverture, les non menées tirées de l'identification (`fichier_tronque`) et les techniques hors V1 les comptent comme des parties analysées.
 
 **Versions** : `outil` ; `interpreteur` (`nom`, `version` : implémentation et version de Python, lues dans P1, qui lance P2 par le même interpréteur, ADR-0111) ; `catalogue` (`version`, `date`, `empreinte`, `fourni_par_utilisateur`, ADR-0029) ; `confiance` (`nom`, `version`, `date`, `empreinte`, `fourni_par_utilisateur` : liste de confiance C2PA employée, ADR-0171) ; `dependances` (`nom`, `version`, sans doublon, ADR-0023 ; bibliothèques des modules actifs, ADR-0120).
 
@@ -321,7 +331,7 @@ Le processus principal applique toujours, dans cet ordre : décodage JSON strict
 | --- | --- |
 | Schéma **et** modèle | Types, champs obligatoires, énumérations, bornes de longueur et de nombre, syntaxe des identifiants, des versions, des empreintes et des dates, combinaisons du §4, raisons qui exigent un module, isolation, version de technique absente seulement pour une technique non menée ou non applicable (ADR-0087) |
 | Schéma seul | Champ inconnu : le modèle lit un document déjà validé et l'ignore |
-| Modèle seul | Paramètres de phrase pris parmi les données du constat ; observations citées présentes dans le rapport, de la même technique et de la même partie ; unicité des identifiants d'observation et des couples technique-partie de la couverture ; une entrée de couverture par technique et par partie du périmètre ; cohérence de la couverture avec les résultats et les non menées ; non menées tirées de l'identification présentes (`hors_perimetre`, `fichier_tronque`, `format_partiel`) ; rangs consécutifs, débuts ordonnés et plages dans le fichier ; format réel égal à celui de la partie 1 ; champs déduits de l'identification égaux à leur calcul ; `debut` ≤ `fin` d'un intervalle ; texte encodable en UTF-8 (substitut isolé) ; date réelle (pas de 30 février) ; `interrompue` égal à la valeur calculée |
+| Modèle seul | Paramètres de phrase pris parmi les données du constat ; observations citées présentes dans le rapport, de la même technique et de la même partie ; unicité des identifiants d'observation et des couples technique-partie de la couverture ; une entrée de couverture par technique et par partie du périmètre ; cohérence de la couverture avec les résultats et les non menées ; non menées tirées de l'identification présentes (`hors_perimetre`, `fichier_tronque`, `format_partiel`) ; rangs consécutifs, débuts ordonnés et plages dans le fichier ; parties extraites à la suite, dans leur contenant, contenant reconnu et analysé, format du périmètre ; format réel égal à celui de la partie 1 ; champs déduits de l'identification égaux à leur calcul ; `debut` ≤ `fin` d'un intervalle ; texte encodable en UTF-8 (substitut isolé) ; date réelle (pas de 30 février) ; `interrompue` égal à la valeur calculée |
 
 Chaque ligne est couverte par `tests/test_schemas.py` : une liste d'altérations refusées par les deux, une liste refusée par le modèle seul, un test pour le champ inconnu. D'autres tests garantissent que les énumérations, les bornes et la version sont identiques dans le code et le schéma.
 
@@ -339,11 +349,12 @@ Une ligne JSON par message (ADR-0036), validée par `messages.schema.json` :
 | --- | --- | --- |
 | `isolation` | `version_schema`, `isolation` | Premier message, avant toute lecture du fichier |
 | `identification` | `parties` (0 à 16) | Deuxième message ; parties contrôlées contre la taille hachée par le principal (ADR-0071) |
+| `extraction` | `parties` extraites (1 à 16) | Une fois au plus, après les messages « module » des parties reconnues et avant `versions` ; chaque partie vient d'un module actif terminé sur son contenant sans résultats écartés, dont le manifeste cite le format dans `extrait` ; leurs résultats suivent, module par module (ADR-0224) |
 | `observation` | `observation` | Pendant l'analyse |
 | `constat` | `constat` | Pendant l'analyse |
 | `non_menee` | `non_menee` | Pendant l'analyse |
 | `visualisation` | `visualisation` : une image avec ses `donnees` et son `empreinte`, recalculée à la réception (ADR-0200), ou un tableau (ADR-0212) | Pendant l'analyse |
-| `module` | `module`, `partie`, `applicable` | Après les résultats de chaque module actif, dans l'ordre de la configuration, pour chaque partie du périmètre (ADR-0062, ADR-0071) |
+| `module` | `module`, `partie`, `applicable` | Après les résultats de chaque module actif, dans l'ordre de la configuration, pour chaque partie du périmètre, extraite comprise (ADR-0062, ADR-0071, ADR-0224) |
 | `versions` | `dependances` | Versions réelles des bibliothèques des modules actifs, celles que citent leurs manifestes, une fois chacune, dans l'ordre de leurs noms ; P1 refuse toute autre liste (ADR-0120) |
 | `fin` | `empreinte` recalculée par P2 après les modules (ES-08, ADR-0075) | Dernier message |
 
@@ -383,3 +394,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-11-15 | 1.11 | Visualisations : objet, catégorie identifiante `contenu`, message, export masqué, `VERSION_SCHEMA` 0.7.0 (§1 à §5, §7 à §9, ADR-0200, ADR-0201) | T42 |
 | 2026-11-16 | 1.12 | Visualisation en tableau, nature `chronologie_revisions`, `VERSION_SCHEMA` 0.8.0 (§1, §2, §5, §7 à §9, ADR-0212) ; statut corrigé, il annonçait encore la v1.10 | T50 |
 | 2026-11-17 | 1.13 | Nature de tableau `objets_revisions`, `VERSION_SCHEMA` 0.9.0 (§1, §2, §7, ADR-0217) | T51 |
+| 2026-11-17 | 1.14 | Partie extraite et `Origine`, `Identification.extraites`, message `extraction`, `VERSION_SCHEMA` 0.10.0 (§1, §2, §6, §7, §8, ADR-0224) | T53 |

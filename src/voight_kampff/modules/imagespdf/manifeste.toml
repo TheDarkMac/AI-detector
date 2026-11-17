@@ -1,0 +1,14 @@
+# Module imagespdf : images d'un PDF, acheminées vers les modules d'image (ADR-0223 à ADR-0227). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "imagespdf"
+version = "0.1.0"
+formats = ["pdf"]
+exigences = ["F-63"]
+regles = []
+fiche = "images-pdf"
+# Direction des règles du catalogue sur ses observations (ADR-0227) ; le module lui-même n'émet aucun constat.
+directions = ["rien_de_particulier"]
+requiert = []
+bibliotheques = []
+# JPEG intacts du document, analysés comme des parties extraites par les modules d'image (ADR-0224, ADR-0225).
+extrait = ["jpeg"]

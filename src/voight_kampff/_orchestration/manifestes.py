@@ -57,6 +57,8 @@ class Manifeste:
     """Modules exécutés avant celui-ci, dans le même processus de travail."""
     bibliotheques: tuple[str, ...] = ()
     """Bibliothèques qui lisent le fichier pour lui, inscrites aux versions (ADR-0120)."""
+    extrait: tuple[str, ...] = ()
+    """Formats des contenus qu'il peut extraire de sa partie et faire analyser (ADR-0224)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -95,6 +97,7 @@ def lire(dossier: Traversable) -> Manifeste:
         directions=tuple(Direction(direction) for direction in document["directions"]),
         requiert=tuple(document["requiert"]),
         bibliotheques=tuple(document["bibliotheques"]),
+        extrait=tuple(document["extrait"]),
     )
 
 

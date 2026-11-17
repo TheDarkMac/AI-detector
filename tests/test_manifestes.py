@@ -33,6 +33,7 @@ def toml(nom: str, requiert: tuple[str, ...] = (), **remplacements: str) -> str:
         "directions": '["origine_ia", "rien_de_particulier"]',
         "requiert": "[" + ", ".join(f'"{r}"' for r in requiert) + "]",
         "bibliotheques": "[]",
+        "extrait": "[]",
     } | remplacements
     return "".join(f"{cle} = {valeur}\n" for cle, valeur in champs.items() if valeur)
 
@@ -93,6 +94,8 @@ def test_ordre_d_execution(tmp_path: Path) -> None:
         pytest.param(toml("m", directions='["inconnue"]'), "enum", id="direction"),
         pytest.param(toml("m", fiche='"Fiche/../x"'), "pattern", id="fiche"),
         pytest.param(toml("m", bibliotheques='["zlib"]'), "enum", id="bibliotheque"),
+        pytest.param(toml("m", extrait='["zip"]'), "extrait", id="extrait-hors-perimetre"),
+        pytest.param(toml("m", extrait='["jpeg", "jpeg"]'), "uniqueItems", id="extrait-doublon"),
         pytest.param(toml("m", formats='["a", "a"]'), "uniqueItems", id="doublon"),
         pytest.param(toml("m", identifiant='"autre"'), "nom du dossier", id="identifiant"),
         pytest.param(toml("m", requiert=("m",)), "requis", id="se-requiert"),
@@ -172,6 +175,8 @@ def test_fiche_et_manifeste_concordent() -> None:
         assert liste(entete["Directions permises"]) == manifeste.directions
         assert liste(entete["Règles"]) == manifeste.regles
         assert liste(entete["Bibliothèques"]) == manifeste.bibliotheques
+        # ADR-0224 : seules les fiches d'un module qui extrait un contenu le disent.
+        assert liste(entete.get("Contenus extraits", "aucune")) == manifeste.extrait
 
 
 def test_modules_de_metadonnees_livres() -> None:
@@ -188,6 +193,7 @@ def test_modules_de_metadonnees_livres() -> None:
         "exif",
         "id3",
         "image",
+        "imagespdf",
         "infopdf",
         "infowav",
         "iptc",
@@ -222,9 +228,17 @@ def test_modules_de_metadonnees_livres() -> None:
     for identifiant, manifeste in livres.items():
         if identifiant == "c2pa":
             continue  # règles « module » et cinq directions : tests/test_c2pa.py
-        if identifiant in {"actifspdf", "doublejpeg", "dwtdct", "ela", "pagespdf", "revisionspdf"}:
+        if identifiant in {
+            "actifspdf",
+            "doublejpeg",
+            "dwtdct",
+            "ela",
+            "imagespdf",
+            "pagespdf",
+            "revisionspdf",
+        }:
             # tests/test_actifs_pdf.py, test_double_compression.py, test_dwtdct.py, test_ela.py,
-            # test_pages_pdf.py, test_revisions_pdf.py
+            # test_images_pdf.py, test_pages_pdf.py, test_revisions_pdf.py
             continue
         assert manifeste.regles == ()
         if identifiant == "image":
@@ -240,6 +254,8 @@ def test_modules_de_metadonnees_livres() -> None:
             attendues.insert(1, Direction.RETOUCHE)
         assert manifeste.directions == tuple(attendues)
     assert "F-11" in livres["xmp"].exigences
+    # T53 : seul imagespdf extrait un contenu, les JPEG d'un PDF (ADR-0224, ADR-0225).
+    assert {i: m.extrait for i, m in livres.items() if m.extrait} == {"imagespdf": ("jpeg",)}
 
 
 # Techniques hors de cette version (T15, ADR-0087)

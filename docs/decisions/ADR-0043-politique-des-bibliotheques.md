@@ -76,3 +76,4 @@ Chaque bibliothèque qui lit le fichier est une surface d'attaque (M-01), une so
 | 2026-11-15 | Renvoi : coefficients DCT lus par un décodage entropique écrit par le projet, en Python pur ; `numpy` ajouté, critères vérifiés dans ADR-0185 (T41) |
 | 2026-11-17 | Renvoi : `pypdf` écartée pour T51, contenus de pages lus par le projet ; reste candidate pour T52 et T53 (ADR-0213) |
 | 2026-11-17 | Renvoi : `pypdf` non employée par T52, éléments actifs lus par le projet ; reste candidate pour T53 (ADR-0221) |
+| 2026-11-17 | Renvoi : `pypdf` non employée par T53, images lues par le projet et échantillons écrits par ImageMagick, LibreOffice, Ghostscript ou objet par objet (ADR-0225) |
