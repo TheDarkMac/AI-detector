@@ -114,6 +114,10 @@ pythonpath = ["tests", "."]
 # Exigences vérifiées par un test : matrice de vérification (ADR-0102, docs/verification/).
 markers = ["exigence(*identifiants): exigences du cahier, de sécurité ou principes que vérifie le test"]
 xfail_strict = true
+# Un test bloqué affiche la pile de tous ses fils et arrête la suite au-delà de 15 minutes : la CI
+# échoue avec la cause au lieu de tourner jusqu'à la limite de GitHub (T80, blocage sous Windows).
+faulthandler_timeout = 900
+faulthandler_exit_on_timeout = true
 
 [tool.coverage.run]
 branch = true
