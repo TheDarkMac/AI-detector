@@ -60,6 +60,27 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
             inconnues = sorted(set(marqueur.args) - connues) if marqueur.args else ["(aucune)"]
             if inconnues:
                 raise pytest.UsageError(f"{item.nodeid} : exigence inconnue {', '.join(inconnues)}")
+    _diagnostic_windows(items)
+
+
+_PROCESSUS = ("regles_du_catalogue", "phrases", "masque", "neutralise", "texte_colle", "cli_", "vrai_", "schema")
+
+
+def _diagnostic_windows(items: list[pytest.Item]) -> None:  # pragma: no cover - diagnostic
+    """DIAGNOSTIC TEMPORAIRE (T80) : recherche du test qui bloque la CI Windows, à retirer."""
+    import sys
+
+    if sys.platform != "win32":
+        return
+    version = sys.version_info[:2]
+    for item in items:
+        if "test_caracteres" not in item.nodeid:
+            continue
+        processus = any(mot in item.name for mot in _PROCESSUS)
+        if version == (3, 12) or (version == (3, 13) and processus) or (
+            version == (3, 14) and not processus
+        ):
+            item.add_marker(pytest.mark.skip(reason="diagnostic Windows T80"))
 
 
 EMPREINTE = "3f" * 32
