@@ -3,7 +3,7 @@
 - **Branche** : `tache/T51-objets-pdf`
 - **Dates** : 2026-11-17
 - **Exigences couvertes** : F-61 (réalisée) ; F-84 (second tableau des révisions PDF)
-- **Décisions** : ADR-0213 à ADR-0218 ; ADR-0213, ADR-0214, ADR-0216 à ADR-0218 acceptés au début de T51, ADR-0215 proposé (à valider pendant la revue de la PR)
+- **Décisions** : ADR-0213 à ADR-0218, tous acceptés (ADR-0213, ADR-0214, ADR-0216 à ADR-0218 au début de T51, ADR-0215 pendant la revue de la PR)
 - **Errata** : aucun
 
 ## Objectif
@@ -33,7 +33,7 @@ Décrire un par un les objets qu'ajoute ou remplace chaque version d'un PDF, rel
 12. Rapport de `annotation.pdf` relu dans le navigateur, servi par un serveur local : constats R-PAGESPDF-001, R-PAGESPDF-002 et R-REVISIONSPDF-002, chronologie, puis tableau des objets (page remplacée, police, apparence et annotation ajoutées).
 13. Documentation : ADR-0213 à ADR-0218, renvois dans ADR-0043, ADR-0124, ADR-0208 et ADR-0212 ; fiche [`pages-pdf`](../techniques/pages-pdf.md), fiche [`revisions-pdf`](../techniques/revisions-pdf.md) (0.2.0) ; modèle de données (v1.13), architecture (v1.26), découpage (v0.34), guide du catalogue (v1.13), glossaire (v1.13), matrice (F-61 réalisée, F-84 complétée), ce journal.
 
-14. PR [#35](https://github.com/TheDarkMac/AI-detector/pull/35) ouverte (commits `f783665`, `f048a6d`, puis la documentation) ; ADR-0215 reste à valider pendant la revue.
+14. PR [#35](https://github.com/TheDarkMac/AI-detector/pull/35) ouverte (commits `f783665`, `f048a6d`, `0053e03`, `488ac75`). CI : docs 43966169623 en échec, comme prévu (ADR-0215 au statut Proposé, ADR-0129). ADR-0215 validé par TheDarkMac pendant la revue (« Oui, valide ADR-0215 ») : statut « Accepté ».
 
 ## Problèmes rencontrés
 

@@ -1,8 +1,8 @@
 # ADR-0215 — Mesure des textes d'une page : largeurs déclarées, montée et descente de la police ; 14 polices standard par les fichiers AFM d'Adobe
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-17
-- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T51
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T51, validée pendant la revue de la PR
 - **Tâche** : T51
 - **Exigences liées** : F-61, NF-06, ES-15 ; ADR-0079, ADR-0213, ADR-0214
 
@@ -33,7 +33,7 @@ Un demi-cadratin par glyphe, ou la largeur moyenne de la police.
 
 ## Décision
 
-Option A, proposée par l'assistant, à valider par TheDarkMac.
+Option A, proposée par l'assistant, validée par TheDarkMac pendant la revue de la PR.
 
 - `modules/pagespdf/_polices14.py`, écrit par `tests/donnees/pages/generer_polices14.py` à partir des fichiers AFM du paquet Debian `python-matplotlib-data` (téléchargés chez Adobe par Matplotlib) et de la liste des glyphes d'Adobe de fontTools 4.57.0 ; il garde les mentions de copyright des AFM et reproduit sans changement les conditions d'Adobe, qui permettent d'employer, copier et distribuer ces fichiers, modifiés ou non, si les mentions sont gardées et les modifications signalées (seuls la montée, la descente et la largeur arrondie de chaque glyphe sont gardés, ce que le fichier dit en tête).
 - Codes d'une police simple sur un octet ; d'une police composite sur deux, avec le CMap Identity-H seul ; un autre CMap ou l'écriture verticale laissent le texte non mesuré.
@@ -58,4 +58,5 @@ Option A, proposée par l'assistant, à valider par TheDarkMac.
 
 | Date | Modification |
 | --- | --- |
-| 2026-11-17 | Création ; proposée par l'assistant pendant T51 |
+| 2026-11-17 | Création, statut « Proposé » ; proposée par l'assistant pendant T51 |
+| 2026-11-17 | Validé par TheDarkMac pendant la revue de la PR (« Oui, valide ADR-0215 ») : statut « Accepté » |
