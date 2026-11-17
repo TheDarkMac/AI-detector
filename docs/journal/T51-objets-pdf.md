@@ -33,7 +33,7 @@ Décrire un par un les objets qu'ajoute ou remplace chaque version d'un PDF, rel
 12. Rapport de `annotation.pdf` relu dans le navigateur, servi par un serveur local : constats R-PAGESPDF-001, R-PAGESPDF-002 et R-REVISIONSPDF-002, chronologie, puis tableau des objets (page remplacée, police, apparence et annotation ajoutées).
 13. Documentation : ADR-0213 à ADR-0218, renvois dans ADR-0043, ADR-0124, ADR-0208 et ADR-0212 ; fiche [`pages-pdf`](../techniques/pages-pdf.md), fiche [`revisions-pdf`](../techniques/revisions-pdf.md) (0.2.0) ; modèle de données (v1.13), architecture (v1.26), découpage (v0.34), guide du catalogue (v1.13), glossaire (v1.13), matrice (F-61 réalisée, F-84 complétée), ce journal.
 
-14. PR [#35](https://github.com/TheDarkMac/AI-detector/pull/35) ouverte (commits `f783665`, `f048a6d`, `0053e03`, `488ac75`). CI : docs 43966169623 en échec, comme prévu (ADR-0215 au statut Proposé, ADR-0129). ADR-0215 validé par TheDarkMac pendant la revue (« Oui, valide ADR-0215 ») : statut « Accepté ».
+14. PR [#35](https://github.com/TheDarkMac/AI-detector/pull/35) ouverte (commits `f783665`, `f048a6d`, `0053e03`, `488ac75`). CI : docs 43966169623 en échec, comme prévu (ADR-0215 au statut Proposé, ADR-0129). Code 43966234988 : tous les tests verts, job `qualite` en échec sur mypy (voir les problèmes rencontrés). ADR-0215 validé par TheDarkMac pendant la revue (« Oui, valide ADR-0215 ») : statut « Accepté ».
 
 ## Problèmes rencontrés
 
@@ -45,6 +45,7 @@ Décrire un par un les objets qu'ajoute ou remplace chaque version d'un PDF, rel
 | Fichier de largeurs différent après `ruff format` | Guillemets simples écrits par le générateur | Le générateur écrit des guillemets doubles ; sortie identique à celle du formateur |
 | Tableau des objets avant la chronologie dans le rapport | Ordre d'émission des visualisations | Tableau des objets émis après la chronologie |
 | `version_schema` 0.8.0 dans le travail factice des tests | Version écrite en dur | Passée à 0.9.0 |
+| Job `qualite` de la CI en échec sur la PR (code 43966234988) | mypy strict : un test atteignait `Contexte` par le module `pagespdf`, qui ne l'exporte pas ; mypy n'avait été lancé localement que sur `src` après l'écriture des tests | Classe importée de `_travail.contexte` ; mypy relancé sur tout le dépôt |
 | Page de `annotation.pdf` rangée « non reconnue » par `revisionspdf` | pypdf réécrit `/MediaBox` en arrondissant ses réels à six décimales : la page change ailleurs que dans `/Annots` | Comportement attendu d'ADR-0208, qui compare les valeurs exactement ; constat R-REVISIONSPDF-002 sur cet échantillon, noté au reste à faire |
 
 ## Écarts par rapport au découpage

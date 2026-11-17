@@ -22,6 +22,7 @@ from metadonnees import CATALOGUE_PDF, contexte, flux_pdf, pdf, raisons, resulta
 
 from voight_kampff._limites import OBJETS_MAX
 from voight_kampff._travail import garde
+from voight_kampff._travail.contexte import Contexte
 from voight_kampff.analyse import Analyse, analyser
 from voight_kampff.modules import pagespdf
 from voight_kampff.modules._lecture import pdf as lecteur
@@ -783,7 +784,7 @@ def test_arret_dans_une_forme(monkeypatch: pytest.MonkeyPatch) -> None:
         appels["n"] += 1
         return OBJETS_MAX if appels["n"] > 2 else 0
 
-    monkeypatch.setattr(pagespdf.Contexte, "objets", property(objets_))
+    monkeypatch.setattr(Contexte, "objets", property(objets_))
     contenu = b"/X Do " + TEXTE
     valeurs_ = obs(document(contenu, ressources=b"/XObject<</X 7 0 R>>", objets={7: forme}))
     assert valeurs_["pagespdf.arret_avant_budget"] is True
