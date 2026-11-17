@@ -134,3 +134,4 @@ Le module lit la structure du document et rien d'autre : aucune chaîne n'est d�
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-11-17 | 0.1.0 | Création |
+| 2026-11-17 | 0.1.0 | Renvoi : éléments actifs des DOCX et ODT dans la fiche [`actifs-bureau`](actifs-bureau.md) (complément bureautique, ADR-0228) ; module inchangé |

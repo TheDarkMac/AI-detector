@@ -1,6 +1,6 @@
 # Fiche technique — Métadonnées d'un document ODT
 
-- **Module** : `odf` (version 0.3.0)
+- **Module** : `odf` (version 0.3.1)
 - **Tâche** : T21 (complément bureautique), T22, T23, T25
 - **Exigences** : F-10, F-12, F-90, ES-05, ES-06, ES-13
 - **Formats** : `odt`
@@ -23,7 +23,7 @@ Un ODT est un paquet OpenDocument (OASIS) : une archive ZIP dont l'entrée `meta
 | `meta.xml` | `office:document-meta`, sa version (`office:version`), et les enfants d'`office:meta` |
 
 - Le nom `meta.xml` est fixé par OpenDocument et comparé avec sa casse : `META.XML` n'est pas cette entrée.
-- Ne sont pas lus : le contenu et les styles (`content.xml`, `styles.xml`), les réglages (`settings.xml`), le manifeste et les métadonnées RDF (`META-INF/manifest.xml`, `manifest.rdf`), la vignette, les signatures (T52), les modifications suivies (T81) ; les attributs `xlink` des métadonnées (modèle, rechargement automatique : adresses, ADR-0138) ; la langue d'un élément (`xml:lang`).
+- Ne sont pas lus : le contenu et les styles (`content.xml`, `styles.xml`), les réglages (`settings.xml`), le manifeste et les métadonnées RDF (`META-INF/manifest.xml`, `manifest.rdf`), la vignette, les signatures (T52), les modifications suivies (T81) ; les attributs `xlink` des métadonnées (modèle, rechargement automatique : adresses, ADR-0138), que signale le module `actifsbureau` sans leur cible, avec les macros, événements, objets et références du contenu (fiche [`actifs-bureau`](actifs-bureau.md), ADR-0229) ; la langue d'un élément (`xml:lang`).
 
 Aucune donnée de référence.
 
@@ -114,3 +114,5 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-13 | 0.2.0 | Directions origine IA permises : règles du catalogue sur ses observations (T22, ADR-0142, ADR-0146) |
 | 2026-11-13 | 0.2.0 | Règles du catalogue sur ses observations : incohérences internes et absence, informations neutres (T23, ADR-0147 à ADR-0152) ; module inchangé |
 | 2026-11-14 | 0.3.0 | Titre, sujet, mots-clés et propriétés utilisateur marqués ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |
+| 2026-11-17 | 0.3.0 | Renvoi : macros, événements, objets et références hors de l'archive signalés par `actifsbureau` (T52, complément bureautique, ADR-0228, ADR-0229) ; module inchangé |
+| 2026-11-17 | 0.3.1 | Encodage déclaré qu'expat ne lit pas : lecture partielle au lieu d'une erreur du module (ERR-0012, T52, complément bureautique) |

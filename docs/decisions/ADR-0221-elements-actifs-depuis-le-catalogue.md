@@ -57,3 +57,4 @@ Option A. Précisions de l'assistant :
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début de T52 |
 | 2026-11-17 | Renvoi : parcours de l'arbre des pages partagé aussi avec `imagespdf` (ADR-0225, T53) |
+| 2026-11-17 | Renvoi : même arrêt avant le budget pour `actifsbureau` (ADR-0229) (T52, complément bureautique) |

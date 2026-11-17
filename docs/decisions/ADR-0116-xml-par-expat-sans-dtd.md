@@ -53,3 +53,5 @@ Option A, dans `modules/_lecture/xmp.py` :
 | --- | --- |
 | 2026-10-28 | Création |
 | 2026-11-13 | Renvoi : XML de DOCX et d'ODT lu de la même façon ; lecture du XML déplacée dans `modules/_lecture/arbre.py`, commune à `xmp`, `ooxml` et `odf`, sans changement de comportement (ADR-0136) (T21, complément bureautique) |
+| 2026-11-17 | Renvoi : parcours élément par élément (`parcourir`), sans garder l'arbre, ajouté au lecteur XML pour `actifsbureau` ; `lire_arbre` réécrit sur lui, sans changement de comportement (ADR-0229) (T52, complément bureautique) |
+| 2026-11-17 | Erratum [ERR-0012](../errata/ERR-0012-encodage-xml-que-expat-ne-lit-pas.md) : un encodage déclaré qu'expat ne lit pas (inconnu, multioctet, codec illisible dans le processus restreint) arrête la lecture comme un XML mal formé, au lieu de mettre le module en erreur (T52, complément bureautique) |

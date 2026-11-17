@@ -44,3 +44,4 @@ Option A : T52 signale les éléments actifs d'un PDF ; ceux des documents burea
 | Date | Modification |
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début de T52 |
+| 2026-11-17 | Renvoi : complément bureautique réalisé, module `actifsbureau` (ADR-0228 à ADR-0231) ; F-62 réalisée pour le PDF, le DOCX et l'ODT |

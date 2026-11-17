@@ -53,3 +53,4 @@ Option A : modules `ooxml` et `odf`, version 0.1.0, sans dépendance entre eux (
 | Date | Modification |
 | --- | --- |
 | 2026-11-13 | Création ; découpage choisi par TheDarkMac au début du complément |
+| 2026-11-17 | Renvoi : éléments actifs des DOCX et ODT dans un module à part, `actifsbureau` ; `ooxml` et `odf` inchangés (ADR-0228) (T52, complément bureautique) |

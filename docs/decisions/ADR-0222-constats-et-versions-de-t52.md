@@ -72,3 +72,4 @@ Option A, direction « rien de particulier » pour les cinq. Précisions de l'as
 | Date | Modification |
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début de T52 |
+| 2026-11-17 | Renvoi : quatre informations neutres pour les documents bureautiques, R-ACTIFSBUREAU-001 à R-ACTIFSBUREAU-004 (ADR-0231) (T52, complément bureautique) |

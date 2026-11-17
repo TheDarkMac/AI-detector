@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.12** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 proposée dans la PR de T53. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.16** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 proposée dans la PR du complément bureautique de T52. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -108,6 +108,8 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Incorporation d'une police | Façon dont un PDF porte une police : programme incorporé ou non, de quel type, en sous-ensemble (préfixe `ABCDEF+`) ou entier. | F-61, ADR-0216 |
 | Élément actif (PDF) | Ce qu'un lecteur de PDF exécuterait ou ouvrirait : action (script, lancement d'un programme, ouverture d'un autre fichier, envoi d'un formulaire, adresse), formulaire XFA, fichier incorporé. L'outil le signale, jamais ne l'exécute. | F-62, ADR-0220 |
 | Déclencheur (d'une action PDF) | Ce qui fait exécuter une action par un lecteur : ouverture du document, événement du document (fermeture, enregistrement, impression), affichage d'une page, calcul ou mise en forme d'un champ, geste de l'utilisateur. Les quatre premiers sont automatiques. | F-62, ADR-0220 |
+| Élément actif (DOCX, ODT) | Ce qu'un traitement de texte exécuterait, activerait ou irait chercher hors du document : macros (projet VBA, bibliothèque Basic, scripts), événement lié à une macro, objet incorporé (OLE, ActiveX, document), ressource hors de l'archive (modèle, image, cadre, section, lien). L'outil le signale, jamais ne l'exécute ni ne le suit. | F-62, ADR-0229, ADR-0230 |
+| Relation (d'un paquet OPC) | Lien qu'une partie d'un DOCX déclare vers une autre partie de l'archive, ou vers une cible hors de l'archive (`TargetMode="External"`), avec un type qui dit son rôle (ECMA-376, partie 2, §9). | ADR-0139, ADR-0229 |
 | Filtre (d'un flux PDF) | Compression ou codage des données d'un flux (ISO 32000-2, §7.4) : `FlateDecode` pour des pixels compressés, `DCTDecode` pour un JPEG écrit tel quel, `JPXDecode` pour un JPEG 2000. Seule une image au seul filtre `DCTDecode` est analysée par les modules d'image. | F-63, ADR-0225 |
 
 ## Historique
@@ -130,3 +132,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-11-17 | 1.13 | Boîte d'un texte, texte superposé, cache, incorporation d'une police ajoutés | T51 |
 | 2026-11-17 | 1.14 | Élément actif (PDF), déclencheur d'une action PDF ajoutés | T52 |
 | 2026-11-17 | 1.15 | Partie extraite, filtre d'un flux PDF ajoutés | T53 |
+| 2026-11-17 | 1.16 | Élément actif (DOCX, ODT), relation d'un paquet OPC ajoutés ; statut corrigé, il annonçait encore la v1.12 | T52 (complément bureautique) |

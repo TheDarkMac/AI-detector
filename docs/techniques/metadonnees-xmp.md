@@ -1,6 +1,6 @@
 # Fiche technique — Métadonnées XMP
 
-- **Module** : `xmp` (version 0.7.0)
+- **Module** : `xmp` (version 0.7.1)
 - **Tâche** : T20, T21, T22, T23, T24, T25, T30
 - **Exigences** : F-10, F-11, F-12, F-90, ES-05, ES-13
 - **Formats** : `jpeg`, `png`, `webp`, `heic`, `pdf`, `wav`, `m4a`, `mp4`, `mov`
@@ -141,3 +141,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-14 | 0.5.0 | Direction transformation permise : indice de transfert du catalogue sur ses observations, `R-XMP-013` (T24, ADR-0153 à ADR-0157) ; code du module inchangé |
 | 2026-11-14 | 0.6.0 | Lieux nommés et textes libres marqués `lieu` et `texte_libre` ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |
 | 2026-11-14 | 0.7.0 | `dcterms:provenance`, adresse d'un manifeste C2PA distant, marquée `numero_de_serie` (T30, ADR-0173) |
+| 2026-11-17 | 0.7.1 | Encodage déclaré qu'expat ne lit pas : lecture partielle au lieu d'une erreur du module (ERR-0012, T52, complément bureautique) |
