@@ -23,3 +23,4 @@ fiche = "provenance-c2pa"
 directions = ["origine_ia", "retouche", "transformation", "authenticite", "rien_de_particulier"]
 requiert = []
 bibliotheques = ["c2pa-python"]
+extrait = []

@@ -37,6 +37,7 @@ __all__ = [
     "LONGUEUR_MAX_VERSION",
     "NOMBRE_MAX_DONNEES",
     "NOMBRE_MAX_ELEMENTS",
+    "NOMBRE_MAX_EXTRAITES",
     "NOMBRE_MAX_PARAMETRES",
     "NOMBRE_MAX_PARTIES",
     "RAISONS_D_INTERRUPTION",
@@ -64,6 +65,7 @@ __all__ = [
     "NiveauIsolation",
     "NonMenee",
     "Observation",
+    "Origine",
     "Partie",
     "Phrase",
     "Plage",
@@ -80,12 +82,13 @@ __all__ = [
     "Visualisation",
     "Zone",
     "plages_non_reconnues",
+    "verifier_extraites",
     "verifier_masquage",
     "verifier_parties",
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.9.0"
+VERSION_SCHEMA = "0.10.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -98,6 +101,9 @@ NOMBRE_MAX_ELEMENTS = 4096
 NOMBRE_MAX_DONNEES = 256
 NOMBRE_MAX_PARAMETRES = 32
 NOMBRE_MAX_PARTIES = 16
+NOMBRE_MAX_EXTRAITES = 16
+"""Parties extraites au plus d'un fichier : images d'un PDF acheminées vers les modules d'image,
+numérotées à la suite des parties reconnues (ADR-0224, ADR-0226)."""
 LONGUEUR_MAX_IMAGE = 768 << 10
 """Octets au plus d'une image de visualisation : son écriture en base64 tient dans un message
 du processus de travail (1 Mio, ADR-0200)."""
@@ -1065,8 +1071,46 @@ class Couverture:
 
 
 @dataclass(frozen=True, slots=True)
+class Origine:
+    """D'où vient une partie extraite : la partie qui la contient, le module qui l'a trouvée, et
+    où elle est dans cette partie (F-63, ADR-0224)."""
+
+    contenant: int
+    """Rang de la partie reconnue qui la contient."""
+    module: str
+    """Module qui l'a extraite ; son manifeste cite son format dans ``extrait`` (ADR-0064)."""
+    localisation: Localisation
+    """Où elle se trouve dans le contenant : page d'un PDF, objet."""
+
+    def __post_init__(self) -> None:
+        _entier(self.contenant, "origine.contenant", minimum=1)
+        _identifiant(self.module, "origine.module")
+        if self.localisation.octets is not None:
+            raise ValueError("origine.localisation : la plage est celle de la partie")
+
+    def vers_dict(self) -> Document:
+        return {
+            "contenant": self.contenant,
+            "module": self.module,
+            "localisation": self.localisation.vers_dict(),
+        }
+
+    @classmethod
+    def depuis_dict(cls, document: Mapping[str, Any]) -> "Origine":
+        return cls(
+            contenant=document["contenant"],
+            module=document["module"],
+            localisation=Localisation.depuis_dict(document["localisation"]),
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class Partie:
-    """Format reconnu dans le fichier et plage d'octets qu'il occupe (F-02, ES-07, ADR-0071)."""
+    """Format reconnu dans le fichier et plage d'octets qu'il occupe (F-02, ES-07, ADR-0071).
+
+    Une partie extraite (ADR-0224) a une origine : elle est contenue dans une partie reconnue, où
+    un module l'a trouvée ; sa fin est cherchée dans la plage que ce module lui donne.
+    """
 
     rang: int
     """À partir de 1, dans l'ordre des débuts ; la partie 1 donne le format réel."""
@@ -1077,6 +1121,8 @@ class Partie:
     """Faux si la fin logique n'a pas pu être établie (structure non parcourue ou tronquée)."""
     tronquee: bool = False
     """Vrai si la structure s'interrompt avant sa fin : fichier tronqué ou corrompu (ADR-0071)."""
+    origine: Origine | None = None
+    """Pour une partie extraite seulement (ADR-0224)."""
 
     def __post_init__(self) -> None:
         _entier(self.rang, "partie.rang", minimum=1)
@@ -1096,22 +1142,27 @@ class Partie:
         return self.octets.debut + self.octets.longueur
 
     def vers_dict(self) -> Document:
-        return {
-            "rang": self.rang,
-            "format": self.format,
-            "octets": self.octets.vers_dict(),
-            "fin_connue": self.fin_connue,
-            "tronquee": self.tronquee,
-        }
+        return _sans_none(
+            {
+                "rang": self.rang,
+                "format": self.format,
+                "octets": self.octets.vers_dict(),
+                "fin_connue": self.fin_connue,
+                "tronquee": self.tronquee,
+                "origine": self.origine.vers_dict() if self.origine else None,
+            }
+        )
 
     @classmethod
     def depuis_dict(cls, document: Mapping[str, Any]) -> "Partie":
+        origine = document.get("origine")
         return cls(
             rang=document["rang"],
             format=document["format"],
             octets=Plage.depuis_dict(document["octets"]),
             fin_connue=document["fin_connue"],
             tronquee=document["tronquee"],
+            origine=Origine.depuis_dict(origine) if origine is not None else None,
         )
 
 
@@ -1125,6 +1176,8 @@ def verifier_parties(parties: tuple[Partie, ...], taille: int) -> None:
         raise ValueError("parties : trop de parties")
     debut_precedent = 0
     for numero, partie in enumerate(parties, start=1):
+        if partie.origine is not None:
+            raise ValueError("parties : une partie reconnue n'a pas d'origine")
         if partie.rang != numero:
             raise ValueError("parties : rangs non consécutifs")
         if partie.octets.debut < debut_precedent:
@@ -1132,6 +1185,31 @@ def verifier_parties(parties: tuple[Partie, ...], taille: int) -> None:
         if partie.fin > taille or (not partie.fin_connue and partie.fin != taille):
             raise ValueError("parties : plage hors du fichier")
         debut_precedent = partie.octets.debut
+
+
+def verifier_extraites(extraites: tuple[Partie, ...], parties: tuple[Partie, ...]) -> None:
+    """Parties extraites (ADR-0224) : rangs à la suite des parties reconnues, dans l'ordre ;
+    chacune dans une partie reconnue du périmètre, format du périmètre.
+
+    La fin d'une partie extraite est cherchée dans la plage que son module lui a donnée : elle
+    n'atteint pas forcément la fin de son contenant, même quand elle n'est pas connue.
+    """
+    if len(extraites) > NOMBRE_MAX_EXTRAITES:
+        raise ValueError("extraites : trop de parties extraites")
+    contenants = {partie.rang: partie for partie in parties if partie.dans_perimetre}
+    for numero, extraite in enumerate(extraites, start=len(parties) + 1):
+        origine = extraite.origine
+        if origine is None:
+            raise ValueError("extraites : origine attendue")
+        if extraite.rang != numero:
+            raise ValueError("extraites : rangs non consécutifs à la suite des parties")
+        if not extraite.dans_perimetre:
+            raise ValueError("extraites : format hors périmètre")
+        contenant = contenants.get(origine.contenant)
+        if contenant is None:
+            raise ValueError("extraites : contenant absent ou non analysé")
+        if extraite.octets.debut < contenant.octets.debut or extraite.fin > contenant.fin:
+            raise ValueError("extraites : plage hors de son contenant")
 
 
 def plages_non_reconnues(parties: tuple[Partie, ...], taille: int) -> tuple[Plage, ...]:
@@ -1167,6 +1245,9 @@ class Identification:
     """En UTC, à la seconde (ES-14)."""
     parties: tuple[Partie, ...]
     """Formats reconnus, au moins un du périmètre ; plusieurs pour un polyglotte (ADR-0071)."""
+    extraites: tuple[Partie, ...] = ()
+    """Parties extraites d'une partie reconnue, numérotées à leur suite (F-63, ADR-0224) ; elles
+    n'entrent ni dans les polyglottes ni dans les octets non reconnus."""
 
     def __post_init__(self) -> None:
         if not self.nom or "/" in self.nom or "\\" in self.nom or "\x00" in self.nom:
@@ -1185,6 +1266,17 @@ class Identification:
             raise ValueError("identification.format_reel : format de la partie 1 attendu")
         if not any(partie.dans_perimetre for partie in self.parties):
             raise ValueError("identification.parties : aucun format du périmètre")
+        verifier_extraites(self.extraites, self.parties)
+
+    @property
+    def toutes(self) -> tuple[Partie, ...]:
+        """Parties reconnues puis parties extraites, dans l'ordre de leurs rangs."""
+        return self.parties + self.extraites
+
+    @property
+    def analysees(self) -> tuple[Partie, ...]:
+        """Parties du périmètre, reconnues ou extraites : chaque technique y figure (ADR-0071)."""
+        return tuple(partie for partie in self.toutes if partie.dans_perimetre)
 
     @property
     def extension(self) -> str | None:
@@ -1211,6 +1303,7 @@ class Identification:
                 "empreinte": self.empreinte,
                 "date_analyse": self.date_analyse.strftime(_FORMAT_DATE_HEURE),
                 "parties": [partie.vers_dict() for partie in self.parties],
+                "extraites": [partie.vers_dict() for partie in self.extraites],
                 "extension": self.extension,
                 "extension_concordante": self.extension_concordante,
                 "octets_non_reconnus": [plage.vers_dict() for plage in self.octets_non_reconnus],
@@ -1227,6 +1320,7 @@ class Identification:
             empreinte=document["empreinte"],
             date_analyse=date_analyse.replace(tzinfo=UTC),
             parties=tuple(Partie.depuis_dict(partie) for partie in document["parties"]),
+            extraites=tuple(Partie.depuis_dict(partie) for partie in document["extraites"]),
         )
         # Champs déduits : présents pour le lecteur du JSON, vérifiés à la relecture.
         deduits = identification.vers_dict()
@@ -1415,14 +1509,15 @@ def verifier_resultats(
 ) -> None:
     """Renvois entre les objets d'une analyse, que les schémas ne vérifient pas.
 
-    Une technique figure une fois pour chaque partie du périmètre. Ce que l'identification n'a
-    pas pu analyser est déclaré non mené : partie hors périmètre (``hors_perimetre``), partie
-    tronquée (``fichier_tronque``), plage non reconnue (``format_partiel``) (ADR-0071). Les
+    Une technique figure une fois pour chaque partie du périmètre, reconnue ou extraite
+    (ADR-0224). Ce que l'identification n'a pas pu analyser est déclaré non mené : partie hors
+    périmètre (``hors_perimetre``), partie tronquée (``fichier_tronque``), plage non reconnue
+    (``format_partiel``) (ADR-0071). Les
     résultats d'une technique portent sur une partie où elle est appliquée ou partielle ; un
     constat ne cite que des observations de sa technique et de sa partie.
     """
-    rangs = {partie.rang for partie in identification.parties}
-    analysees = {partie.rang for partie in identification.parties if partie.dans_perimetre}
+    rangs = {partie.rang for partie in identification.toutes}
+    analysees = {partie.rang for partie in identification.analysees}
 
     par_identifiant = {observation.identifiant: observation for observation in observations}
     _uniques((observation.identifiant for observation in observations), "observations")
@@ -1472,7 +1567,7 @@ def verifier_resultats(
         for n in non_menees
         if n.module is None
     }
-    for partie in identification.parties:
+    for partie in identification.toutes:
         if partie.tronquee and not any(
             (RaisonNonMenee.FICHIER_TRONQUE, partie.rang) == cle[:2] for cle in du_fichier
         ):

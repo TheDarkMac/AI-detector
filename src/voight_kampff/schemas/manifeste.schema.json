@@ -5,7 +5,7 @@
   "description": "Fichier manifeste.toml d'un sous-paquet de voight_kampff.modules, lu par le processus principal sans importer le code du module (ADR-0042, ADR-0064). Le code vérifie en plus que l'identifiant est le nom du dossier et que les modules requis existent, sans cycle.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["identifiant", "version", "formats", "exigences", "regles", "fiche", "directions", "requiert", "bibliotheques"],
+  "required": ["identifiant", "version", "formats", "exigences", "regles", "fiche", "directions", "requiert", "bibliotheques", "extrait"],
   "properties": {
     "identifiant": {
       "description": "Nom du dossier du module, donc nom d'import : minuscules et chiffres seulement.",
@@ -65,6 +65,13 @@
       "maxItems": 8,
       "uniqueItems": true,
       "items": { "enum": ["c2pa-python", "expat", "numpy"] }
+    },
+    "extrait": {
+      "description": "Formats des contenus que le module peut extraire de sa partie et faire analyser comme des parties extraites par les modules de ces formats (ADR-0224).",
+      "type": "array",
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/format_du_perimetre" }
     }
   }
 }

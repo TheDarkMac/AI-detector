@@ -10,3 +10,4 @@ fiche = "metadonnees-iptc"
 directions = ["origine_ia", "transformation", "rien_de_particulier"]
 requiert = []
 bibliotheques = []
+extrait = []

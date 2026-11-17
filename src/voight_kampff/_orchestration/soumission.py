@@ -158,9 +158,9 @@ def soumettre(
     identification = _identification(
         resultat, nom_affichable(chemin), taille, initiale, date_analyse
     )
-    techniques, non_menees = _hors_v1(identification.parties, techniques_hors_v1)
+    techniques, non_menees = _hors_v1(identification.toutes, techniques_hors_v1)
     techniques = resultat.couverture.techniques + techniques
-    recherches, non_recherches = couvrir(catalogue.marquages, identification.parties, techniques)
+    recherches, non_recherches = couvrir(catalogue.marquages, identification.toutes, techniques)
     cites = set(recherches) | {marquage.identifiant for marquage in non_recherches}
     return Analyse(
         identification=identification,
@@ -189,7 +189,8 @@ def _hors_v1(
 
     Seules figurent celles qui s'appliqueraient à au moins une partie analysée : non menées
     sur les parties de leurs formats, non applicables sur les autres d'un polyglotte, puisque
-    chaque technique figure une fois par partie analysée (ADR-0071).
+    chaque technique figure une fois par partie analysée (ADR-0071), extraite comprise
+    (ADR-0224).
     """
     analysees = [partie for partie in parties if partie.dans_perimetre]
     couverture: list[TechniqueCouverte] = []
@@ -227,4 +228,5 @@ def _identification(
         empreinte=empreinte_,
         date_analyse=date_analyse,
         parties=resultat.parties,
+        extraites=resultat.extraites,
     )

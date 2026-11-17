@@ -29,6 +29,7 @@ from voight_kampff.rapport._presentation import (
     neutraliser,
     nombre,
     octets,
+    origine_partie,
     texte,
     textes,
 )
@@ -197,6 +198,27 @@ def _identification(vue: Presentation) -> str:
             for partie in identification.parties
         ),
     )
+    if identification.extraites:
+        parties += _tableau(
+            texte("champs.extraites"),
+            [
+                texte("champs.partie"),
+                texte("champs.format"),
+                texte("champs.octets"),
+                texte("champs.etat"),
+                texte("champs.origine"),
+            ],
+            (
+                [
+                    str(partie.rang),
+                    partie.format,
+                    octets(partie.octets),
+                    etat_partie(partie),
+                    origine_partie(partie),
+                ]
+                for partie in identification.extraites
+            ),
+        )
     return _definitions(couples) + _liste(vue.signalements()) + parties
 
 

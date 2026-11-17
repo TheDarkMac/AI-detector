@@ -40,6 +40,7 @@ from voight_kampff.rapport._presentation import (
     localisation,
     neutraliser,
     octets,
+    origine_partie,
     texte,
     textes,
 )
@@ -185,6 +186,17 @@ def resume(analyse: Analyse, reveler: Sequence[str] = ()) -> list[str]:
             etat=etat_partie(partie),
         )
         for partie in identification.parties
+    ]
+    lignes += [
+        texte(
+            "terminal.extraite",
+            rang=partie.rang,
+            format=partie.format,
+            octets=octets(partie.octets),
+            etat=etat_partie(partie),
+            origine=origine_partie(partie),
+        )
+        for partie in identification.extraites
     ]
     lignes.append(
         texte("terminal.isolation", niveau=libelle("isolation", analyse.isolation.niveau))

@@ -13,6 +13,10 @@ décompressés, objets parcourus, dimensions déclarées, imbrication, nombre de
 (ADR-0121). Ces limites sont comptées, pas chronométrées : un même fichier les dépasse ou non
 sur toutes les machines.
 
+Un module dont le manifeste le permet (``extrait``) y déclare enfin les contenus de sa partie à
+faire analyser comme des parties extraites, par les modules de leur format (ADR-0224) : le moteur
+les reconnaît et les achemine une fois le module terminé, s'il n'a pas levé d'exception.
+
 Il porte enfin les règles du catalogue qui relèvent du module (ADR-0084, ADR-0090) : le module
 cite une règle « module » par son identifiant, et le catalogue fixe ce que dit le constat ; après
 lui, le moteur applique les règles « moteur » aux observations qu'il a produites. Il porte aussi
@@ -54,7 +58,14 @@ from voight_kampff.rapport.modele import (
     Visualisation,
 )
 
-__all__ = ["RAISONS_D_UN_MODULE", "Ancres", "Compression", "Contexte", "LimiteDepassee"]
+__all__ = [
+    "RAISONS_D_UN_MODULE",
+    "Ancres",
+    "Compression",
+    "Contexte",
+    "Extraction",
+    "LimiteDepassee",
+]
 
 type Compression = Literal["zlib", "deflate", "gzip"]
 """Flux que :meth:`Contexte.decompresser` sait lire : zlib, deflate brut (ZIP), gzip."""
@@ -86,6 +97,18 @@ class Ancres:
 _SANS_ANCRES = Ancres()
 
 
+@dataclass(frozen=True, slots=True)
+class Extraction:
+    """Contenu qu'un module fait analyser comme une partie extraite (ADR-0224)."""
+
+    format: str
+    """Format attendu ; le moteur le vérifie par l'identification avant de l'acheminer."""
+    octets: Plage
+    """Plage du contenu dans le fichier entier."""
+    localisation: Localisation
+    """Où il est dans la partie : page, objet ; sans plage d'octets."""
+
+
 class LimiteDepassee(Exception):
     """Module au-delà d'une limite comptée : taille des résultats ou budget (ES-03)."""
 
@@ -100,12 +123,17 @@ class Contexte:
         "_decompresses",
         "_depasse",
         "_directions",
+        "_extractions",
+        "_extrait",
         "_fichier",
         "_lignes",
         "_numero",
         "_objets",
         "_observations",
+        "_octets_restants",
+        "_places",
         "_profondeur",
+        "_refusee",
         "_regles",
         "_releves",
         "_taille_lignes",
@@ -126,6 +154,9 @@ class Contexte:
         numero: int = 0,
         regles: Sequence[Regle] = (),
         ancres: Ancres = _SANS_ANCRES,
+        extrait: Collection[str] = (),
+        places: int = 0,
+        octets_restants: int = 0,
     ) -> None:
         garde.exiger()
         self.module = module
@@ -149,6 +180,14 @@ class Contexte:
         """Règles du catalogue qui relèvent de ce module, par identifiant."""
         self.ancres = ancres
         """Ancres de la liste de confiance C2PA (ADR-0171)."""
+        self._extrait = frozenset(extrait) if partie.origine is None else frozenset()
+        """Formats que le module peut extraire ; aucun d'une partie elle-même extraite."""
+        self._places = places
+        """Parties extraites que le fichier peut encore recevoir (``NOMBRE_MAX_EXTRAITES``)."""
+        self._octets_restants = octets_restants
+        """Octets avant le seuil des parties extraites (``OCTETS_EXTRAITS_MAX``, ADR-0226)."""
+        self._extractions: list[Extraction] = []
+        self._refusee: Localisation | None = None
         self._depasse = False
         self._compresses = 0
         self._decompresses = 0
@@ -355,6 +394,29 @@ class Contexte:
         )
         self._ajouter({"type": "visualisation", "visualisation": visualisation.vers_dict()})
 
+    def extraire(self, format_: str, plage: Plage, localisation: Localisation) -> bool:
+        """Déclare un contenu de la partie à analyser comme une partie extraite (ADR-0224).
+
+        ``plage`` est relative à la partie ; ``localisation`` dit où est le contenu, sans plage.
+        Faux si le fichier n'a plus de place, ou si les contenus déjà déclarés ont atteint le
+        seuil d'octets : le contenu n'est pas acheminé, et le moteur déclare non menée, pour
+        limite dépassée, la première extraction refusée (ADR-0226). Le contenu qui franchit le
+        seuil est encore acheminé.
+        """
+        if format_ not in self._extrait:
+            raise ValueError("extraction : format absent du manifeste, ou partie extraite")
+        if localisation.octets is not None:
+            raise ValueError("extraction.localisation : la plage est donnée à part")
+        if plage.debut + plage.longueur > self.taille:
+            raise ValueError("extraction : plage hors de la partie")
+        if len(self._extractions) >= self._places or self._octets_restants <= 0:
+            self._refusee = self._refusee or localisation
+            return False
+        self._octets_restants -= plage.longueur
+        octets = Plage(self._debut + plage.debut, plage.longueur)
+        self._extractions.append(Extraction(format_, octets, localisation))
+        return True
+
     def _dans_le_fichier(self, localisation: Localisation | None) -> Localisation | None:
         """Plage d'octets relative à la partie ramenée à une position dans le fichier."""
         if localisation is None or localisation.octets is None or not self._debut:
@@ -372,6 +434,16 @@ class Contexte:
         """
         for regle, donnees, parametres in appliquer(self._regles.values(), self._releves):
             self._constater(regle, donnees, parametres, None)
+
+    @property
+    def extractions(self) -> tuple[Extraction, ...]:
+        """Contenus déclarés par le module, dans l'ordre de ses appels."""
+        return tuple(self._extractions)
+
+    @property
+    def refusee(self) -> Localisation | None:
+        """Première extraction refusée faute de place, s'il y en a une."""
+        return self._refusee
 
     @property
     def numero(self) -> int:
