@@ -63,25 +63,26 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
     _diagnostic_windows(items)
 
 
-_PROCESSUS = ("regles_du_catalogue", "phrases", "masque", "neutralise", "texte_colle", "cli_", "vrai_", "schema")
-
-
 def _diagnostic_windows(items: list[pytest.Item]) -> None:  # pragma: no cover - diagnostic
-    """DIAGNOSTIC TEMPORAIRE (T80) : recherche du test qui bloque la CI Windows, à retirer."""
+    """DIAGNOSTIC TEMPORAIRE (T80) : recherche des tests qui bloquent la CI Windows, à retirer.
+
+    3.12 : test_fuzzing.py seul ; 3.13 : fichiers test_a à test_l ; 3.14 : test_m à test_z.
+    """
     import sys
 
     if sys.platform != "win32":
         return
     version = sys.version_info[:2]
     for item in items:
-        if "test_caracteres" not in item.nodeid:
-            continue
-        processus = any(mot in item.name for mot in _PROCESSUS)
-        if version == (3, 12) or (version == (3, 13) and processus) or (
-            version == (3, 14) and not processus
-        ):
+        fichier = item.nodeid.split("::", 1)[0].rsplit("/", 1)[-1]
+        if version == (3, 12):
+            garde = fichier == "test_fuzzing.py"
+        elif version == (3, 13):
+            garde = fichier < "test_m" and fichier != "test_fuzzing.py"
+        else:
+            garde = fichier >= "test_m"
+        if not garde:
             item.add_marker(pytest.mark.skip(reason="diagnostic Windows T80"))
-
 
 EMPREINTE = "3f" * 32
 TAILLE = 2_048_576
