@@ -179,11 +179,21 @@ def origine_partie(partie: Partie) -> str:
 
 _NIVEAUX_DECROISSANTS = (Niveau.FORT, Niveau.MODERE, Niveau.FAIBLE)
 _SANS_METADONNEES = frozenset(
-    {"actifspdf", "doublejpeg", "dwtdct", "ela", "imagespdf", "pagespdf", "revisionspdf"}
+    {
+        "actifsbureau",
+        "actifspdf",
+        "doublejpeg",
+        "dwtdct",
+        "ela",
+        "imagespdf",
+        "pagespdf",
+        "revisionspdf",
+    }
 )
 """Modules qui ne lisent aucune métadonnée identifiante : leur analyse non menée ne laisse
 aucune marque non lue (ADR-0158, ADR-0190, ADR-0201, ADR-0206, ADR-0211, ADR-0218, ADR-0222,
-ADR-0227). Une image extraite qui n'est pas lue l'est pour une raison sans module, qui compte."""
+ADR-0227, ADR-0231). Une image extraite qui n'est pas lue l'est pour une raison sans module, qui
+compte."""
 
 
 class Presentation:

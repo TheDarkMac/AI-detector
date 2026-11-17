@@ -1,0 +1,137 @@
+# Règles du module actifsbureau (complément bureautique de T52) : éléments actifs d'un DOCX ou
+# d'un ODT, signalés, jamais exécutés (F-62, NF-01, ES-06 ; ADR-0228 à ADR-0231). Relations :
+# ECMA-376, partie 2, §9 ; macros VBA : [MS-OFFMACRO] ; événements et références : OpenDocument
+# 1.3, parties 3 et 4 ; fiche actifs-bureau.
+
+[[regle]]
+identifiant = "R-ACTIFSBUREAU-001"
+version = "1"
+module = "actifsbureau"
+titre = "Macros dans le document"
+description = "Le DOCX ou l'ODT porte au moins un ensemble de macros qu'un traitement de texte peut exécuter : un projet VBA, une extension du ruban qui appelle des macros, une bibliothèque Basic qui a un module, des scripts Python, JavaScript, BeanShell ou Java rangés dans le document (ADR-0229, ADR-0231). Information neutre : des modèles de lettres ou de formulaires emploient des macros ; l'outil n'en lit ni n'en exécute aucune."
+gabarit = "actifsbureau.macros"
+phrase = { fr = "Le document porte {macros} ensemble(s) de macros ({natures}) : l'outil ne les a ni lus ni exécutés." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Le code n'est pas lu, ni le projet VBA ouvert (ADR-0230) : le constat ne dit pas ce que font les macros, ni si elles se lancent seules ; R-ACTIFSBUREAU-002 dit les événements d'un ODT qui en appellent une.",
+  "Un ensemble est un projet VBA, une bibliothèque Basic ou les scripts d'un langage, quel que soit le nombre de leurs modules.",
+  "Seules les macros rangées dans le document sont comptées : une macro installée dans le traitement de texte, qu'un événement du document appelle, ne l'est pas.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul ensemble de macros suffit à le signaler (F-62). Vérifié sur les échantillons de tests/donnees/actifsbureau, comparés à ce qu'en relit LibreOffice 25.2.3.2."
+
+[[regle.condition]]
+observation = "actifsbureau.macros"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "macros"
+
+[[regle.condition]]
+observation = "actifsbureau.macros.natures"
+presente = true
+parametre = "natures"
+
+[[regle]]
+identifiant = "R-ACTIFSBUREAU-002"
+version = "1"
+module = "actifsbureau"
+titre = "Éléments déclenchés ou chargés sans geste de l'utilisateur"
+description = "Le DOCX ou l'ODT porte au moins un élément qu'un traitement de texte déclenche ou charge de lui-même : un événement du document lié à une macro (ouverture, enregistrement, impression, fermeture), une ressource hors de l'archive chargée à l'ouverture (modèle distant, image liée, cadre, objet lié, section liée, source de données, rechargement automatique), une connexion DDE mise à jour automatiquement (ADR-0230). Information neutre : l'outil n'en exécute ni n'en charge aucun."
+gabarit = "actifsbureau.automatiques"
+phrase = { fr = "Le document porte {automatiques} élément(s) qu'un traitement de texte déclenche ou charge sans geste de l'utilisateur (déclencheurs : {declencheurs} ; natures : {natures}) : l'outil n'en a exécuté ni chargé aucun." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Un traitement de texte peut refuser d'exécuter une macro, ou demander à l'utilisateur de mettre à jour les liens : le constat dit ce que le document demande, pas ce que fera le logiciel.",
+  "Ni l'adresse ni le chemin ne figurent au rapport (ADR-0230) : le constat ne distingue pas un modèle d'entreprise sur un partage réseau d'une balise de pistage (M-14).",
+  "Les macros d'un projet VBA qui se lancent seules (AutoOpen, Document_Open) se reconnaissent à leur nom, dans le code, que l'outil ne lit pas : elles ne sont pas comptées ici.",
+  "Les codes de champ du corps d'un DOCX (DDEAUTO, INCLUDEPICTURE) ne sont pas lus (ADR-0229).",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul élément suffit à le signaler (F-62). Vérifié sur les échantillons de tests/donnees/actifsbureau."
+
+[[regle.condition]]
+observation = "actifsbureau.automatiques"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "automatiques"
+
+[[regle.condition]]
+observation = "actifsbureau.automatiques.declencheurs"
+presente = true
+parametre = "declencheurs"
+
+[[regle.condition]]
+observation = "actifsbureau.automatiques.natures"
+presente = true
+parametre = "natures"
+
+[[regle]]
+identifiant = "R-ACTIFSBUREAU-003"
+version = "1"
+module = "actifsbureau"
+titre = "Objets incorporés qu'un autre programme ouvre"
+description = "Le DOCX ou l'ODT porte au moins un objet qu'un traitement de texte active ou ouvre dans un autre programme : un objet OLE, un contrôle ActiveX, un document incorporé (un tableur dans un texte), une applet ou un module externe (ADR-0229, ADR-0231). Le graphique d'un document et une formule ne sont pas comptés. Information neutre : l'outil n'en ouvre aucun."
+gabarit = "actifsbureau.objets"
+phrase = { fr = "Le document porte {objets} objet(s) incorporé(s) qu'un autre programme active ou ouvre ({natures}) : l'outil n'en a ouvert aucun." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Le contenu de l'objet n'est pas lu (ADR-0230) : le constat ne dit pas quel programme l'ouvrirait, ni ce qu'il contient.",
+  "Un tableau de tableur collé dans un texte est un document incorporé ordinaire.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : un seul objet suffit à le signaler (F-62). Vérifié sur les échantillons de tests/donnees/actifsbureau."
+
+[[regle.condition]]
+observation = "actifsbureau.objets"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "objets"
+
+[[regle.condition]]
+observation = "actifsbureau.objets.natures"
+presente = true
+parametre = "natures"
+
+[[regle]]
+identifiant = "R-ACTIFSBUREAU-004"
+version = "1"
+module = "actifsbureau"
+titre = "Références hors du document"
+description = "Le DOCX ou l'ODT désigne au moins une ressource hors de son archive : un modèle, une image, un cadre, un objet, une section ou une source de données liés, un rechargement automatique, une connexion DDE, un sous-document, un lien vers une adresse (ADR-0229). Ni l'adresse ni le chemin ne sont lus (ADR-0230). Information neutre : l'outil ne suit aucune référence écrite dans un fichier (ES-06, ADR-0033)."
+gabarit = "actifsbureau.externes"
+phrase = { fr = "Le document désigne {externes} ressource(s) hors de son archive ({natures}) : l'outil n'en a suivi aucune." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Un document ordinaire qui a des liens vers une adresse la déclenche. R-ACTIFSBUREAU-002 dit si l'une de ces ressources est chargée sans geste de l'utilisateur, ce qui peut révéler à l'auteur du fichier qu'il a été ouvert (M-14).",
+  "Ni l'adresse, ni son hôte, ni le chemin ne figurent au rapport (ADR-0230) : le constat ne distingue pas un fichier voisin d'un serveur distant.",
+  "Les codes de champ du corps d'un DOCX ne sont pas lus (ADR-0229) : une image ou un texte inclus par un champ n'est pas compté.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-17 par définition : une seule référence suffit à la signaler (F-62). Vérifié sur les échantillons de tests/donnees/actifsbureau."
+
+[[regle.condition]]
+observation = "actifsbureau.externes"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "externes"
+
+[[regle.condition]]
+observation = "actifsbureau.externes.natures"
+presente = true
+parametre = "natures"
