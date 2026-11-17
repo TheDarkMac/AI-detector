@@ -31,6 +31,7 @@ Signaler les éléments actifs d'un PDF (scripts, actions automatiques, lancemen
 10. Suite complète sous coverage, en 14 minutes : 2 749 tests verts, 4 ignorés (lanceur de l'environnement virtuel, cjpeg de mozjpeg absent) ; une ligne du parcours des pages restait non couverte (nœud de l'arbre écrit en flux, cas que `pagespdf` acceptait déjà) : test ajouté, couverture du lecteur PDF, de `pagespdf` et d'`actifspdf` à 100 %.
 11. Rapports de `ghostscript.pdf` et `balise.pdf` relus dans le navigateur, servis par un serveur local : informations neutres R-ACTIFSPDF-001, 002, 003 et 005 pour le premier, 002 (« déclencheurs : page ; natures : URI ») et 004 pour le second, avec leurs limites ; aucune adresse dans le HTML ni le JSON (le mot « pistage » n'y vient que de la limite de R-ACTIFSPDF-004).
 12. Documentation : ADR-0219 à ADR-0222, renvois dans ADR-0033, ADR-0043, ADR-0124, ADR-0126, ADR-0138, ADR-0208 et ADR-0213 ; fiche [`actifs-pdf`](../techniques/actifs-pdf.md), fiches `pages-pdf` et `metadonnees-info-pdf` (historique, renvoi) ; architecture (v1.27), découpage (v0.35), guide du catalogue (v1.14), glossaire (v1.14), matrice (F-62 et ES-06 réalisées, T52 à NF-01), ce journal. Modèle de données inchangé : aucun schéma ne change.
+13. PR [#36](https://github.com/TheDarkMac/AI-detector/pull/36) ouverte vers `detector` (commits `028d4ef`, `ae3a66b`, `04d1e77`).
 
 ## Problèmes rencontrés
 
