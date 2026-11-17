@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.37** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 avec T40, v0.29 avec T41, v0.30 avec T42, v0.31 avec le complément de T40, v0.32 avec T32, v0.33 avec T50, v0.34 avec T51, v0.35 avec T52, v0.36 avec T53, v0.37 proposée dans la PR du complément bureautique de T52. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.38** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 avec T40, v0.29 avec T41, v0.30 avec T42, v0.31 avec le complément de T40, v0.32 avec T32, v0.33 avec T50, v0.34 avec T51, v0.35 avec T52, v0.36 avec T53, v0.37 avec le complément bureautique de T52, v0.38 proposée dans la PR de T80. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -124,7 +124,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 
 | ID | Tâche | Exigences |
 | --- | --- | --- |
-| T80 | Caractères invisibles et homoglyphes ; saisie du texte collé et analyses qui s'y appliquent (A-29, ADR-0074) | F-73 |
+| T80 | Caractères invisibles et homoglyphes ; saisie du texte collé et analyses qui s'y appliquent (A-29, ADR-0074) ; texte brut et texte collé, module `caracteres` ; table Unicode 18.0 du projet, sept familles d'invisibles, emplois ordinaires reconnus à leurs voisins, texte des étiquettes masqué par défaut ; homoglyphes d'après UTS #39, lettres de compatibilité ; manifeste C2PA d'un texte trouvé et décrit, non vérifié ; `vk --texte` et `analyser_texte`, octets transmis au travail après la configuration, ni nom ni extension ; douze informations neutres, schéma 0.11.0, catalogue 0.16.0 (ADR-0232 à ADR-0237). Complément, sur sa propre branche et sa propre PR : corps des DOCX et des ODT (ADR-0232) | F-73, F-01, F-24 |
 | T81 | Historique d'édition DOCX/ODT (absence = neutre) | F-71 |
 | T82 | Stylométrie | F-70 |
 | T83 | Existence des références (DOI, titres) dans des bases publiques | F-72, NF-16 |
@@ -159,7 +159,7 @@ Fixé par [ADR-0012](../decisions/ADR-0012-perimetre-v1.md), provisoire jusqu'au
 
 | Statut | Tâches |
 | --- | --- |
-| **V1**, dans l'ordre | T00 → T04 ; T10 → T18 ; T20 → T25 (T25 limitée aux métadonnées, ADR-0014) ; T30 ; T105 ; T31 ; T40 et son complément, T41 ; T42 (ADR-0197) ; T32 ; T50 → T53 ; complément bureautique de T52 ; T80 ; complément de T53 (texte) ; T81 ; T90 → T92, T95 ; T100 → T103 |
+| **V1**, dans l'ordre | T00 → T04 ; T10 → T18 ; T20 → T25 (T25 limitée aux métadonnées, ADR-0014) ; T30 ; T105 ; T31 ; T40 et son complément, T41 ; T42 (ADR-0197) ; T32 ; T50 → T53 ; complément bureautique de T52 ; T80 ; complément de T80 (DOCX, ODT) ; complément de T53 (texte) ; T81 ; T90 → T92, T95 ; T100 → T103 |
 | **Candidates V2** (ordre non fixé) | T43, T44, T45, T54, T60, T61, T63, T70 → T73, T93, T94 (garde-fous d'ADR-0032), analyse groupée (ADR-0015) |
 | **Hors V1, sans engagement** | T62 (ENF), T82 (stylométrie), T83 (références), T104 (étude d'usage) |
 
@@ -218,3 +218,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-11-17 | 0.35 | T52 renvoyée à ses décisions (ADR-0219 à ADR-0222), ES-06 ajoutée à ses exigences (§3) | T52 |
 | 2026-11-17 | 0.36 | T53 renvoyée à ses décisions (ADR-0223 à ADR-0227) ; couche texte renvoyée à un complément de T53, placé après T80 dans l'ordre de la V1 (§3, §4) | T53 |
 | 2026-11-17 | 0.37 | Complément bureautique de T52 renvoyé à ses décisions (ADR-0228 à ADR-0231) et placé après T53 dans l'ordre de la V1, où il manquait (§3, §4) ; statut corrigé, il annonçait encore la v0.33 | T52 (complément bureautique) |
+| 2026-11-17 | 0.38 | T80 renvoyée à ses décisions (ADR-0232 à ADR-0237), F-01 et F-24 ajoutées à ses exigences ; corps des DOCX et ODT renvoyé à un complément de T80, placé après T80 dans l'ordre de la V1 (§3, §4) | T80 |

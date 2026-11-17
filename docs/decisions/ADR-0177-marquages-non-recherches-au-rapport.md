@@ -43,3 +43,4 @@ Option A. Un marquage non recherché porte une raison du catalogue : `lecteur_ne
 | Date | Modification |
 | --- | --- |
 | 2026-11-14 | Création, statut « Accepté » (réponse de TheDarkMac à la question posée pendant T31) |
+| 2026-11-17 | Renvoi : `M-C2PA-TEXTE` recherché par le module `caracteres` ; plus aucun marquage livré n'a la raison `lecteur_a_venir` ([ADR-0236](ADR-0236-manifeste-c2pa-dans-un-texte.md)) (T80) |

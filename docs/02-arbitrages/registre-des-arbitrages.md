@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.10** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 avec T17, v1.10 proposée dans la PR de T18. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.11** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 avec T17, v1.10 avec T18, v1.11 proposée dans la PR de T80. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -117,7 +117,7 @@ Constats de l'analyse adressés à T13 :
 | Constat | Traitement |
 | --- | --- |
 | A-25 Fichiers à contenus multiples | Formats mis bout à bout (photo animée, JPEG à plusieurs images) : parties analysées chacune (ADR-0071). Contenus internes à un format (images d'un HEIC, pistes) : à chaque module, `format_partiel` avec localisation |
-| A-29 Texte collé | Reporté à T80, avec une exigence de saisie de texte (§4, ADR-0074) |
+| A-29 Texte collé | Reporté à T80, avec une exigence de saisie de texte (§4, ADR-0074) ; réalisé en T80 : entrée standard, ni nom ni extension, empreinte des octets (ADR-0233) |
 | A-31 Fichiers polyglottes | Traité en T03 par ES-07 ; réalisé en T13 : chaque format reconnu du périmètre analysé, les autres déclarés non analysés (ADR-0070, ADR-0071) |
 
 Constats de l'analyse adressés à T14 :
@@ -163,6 +163,13 @@ Constats de l'analyse adressés à T18 :
 | --- | --- |
 | A-05 Reproductibilité : vérification | Rapport entier comparé à la date et au nom près (ADR-0108) ; conditions variées sur un poste, et comparaison entre trois systèmes et trois versions de Python en CI (ADR-0110) ; interpréteur au rapport, condition de la garantie (ADR-0111) ; comparaison classée en conditions, environnement et résultats, `vk --comparer` (ADR-0109, ADR-0112) ; double analyse au banc (ADR-0113) |
 
+Constats de l'analyse adressés à T80 :
+
+| Constat | Traitement |
+| --- | --- |
+| A-29 Texte collé | Saisie par l'entrée standard (`vk --texte`, `analyser_texte`), transmise au processus de travail après la configuration ; une partie `texte` sans identification par signature ; ni nom ni extension, empreinte des octets (ADR-0233) |
+| A-43 Direction des caractères invisibles et des homoglyphes | Une direction par cas, « rien de particulier » pour chacun, information neutre ; emplois ordinaires reconnus à leurs voisins et mis à part (ADR-0234, ADR-0235, ADR-0237) |
+
 ## 4. Exigences du cahier reformulées pour le projet
 
 Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent au projet et sont soumises à l'auteur du cahier.
@@ -186,7 +193,7 @@ Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent 
 | §8, couverture | Chaque exigence couverte par un test | Chaque exigence a une méthode de vérification et un résultat consigné | ADR-0024 |
 | §8, étude d'usage | Critère d'acceptation | Hors V1 | ADR-0026 |
 | §8, ajout | — | Taux de faux positifs par fichier mesuré et publié | ADR-0018 |
-| F-01, texte collé (§3) | Soumettre un fichier ; le texte collé est un média du périmètre | Ajout : une exigence de saisie de texte, rédigée avec T80 ; d'ici là, seul un fichier est soumis (un texte enregistré dans un fichier est identifié comme texte) | ADR-0074 |
+| F-01, texte collé (§3) | Soumettre un fichier ; le texte collé est un média du périmètre | Ajout : une exigence de saisie de texte, rédigée avec T80 ; d'ici là, seul un fichier est soumis (un texte enregistré dans un fichier est identifié comme texte). Réalisée en T80 : un texte lu sur l'entrée standard, jusqu'à 16 Mio d'UTF-8, analysé comme un texte brut | ADR-0074, ADR-0233 |
 | ES-07, fichiers polyglottes | Chaque format reconnu est analysé, ou déclaré non analysé avec la raison | Chaque format du périmètre est analysé ; un format hors périmètre est déclaré non analysé (`hors_perimetre`) | ADR-0071 |
 
 ## 5. En attente de l'auteur du cahier
@@ -215,6 +222,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 - T15 : constats A-23, A-32, A-37, A-47 (§3), question 5 (§5) ; [guide du catalogue](../catalogue/README.md) créé ; architecture v1.8, modèle de données v1.4, glossaire v1.4, découpage v0.14.
 - T16 : constats A-44, A-48, A-49 et « absence ≠ authenticité » (§3) ; architecture v1.9, modèle de données v1.5, glossaire v1.5, découpage v0.15, guide du catalogue v1.1.
 - T18 : constat A-05 (§3) ; reformulation de NF-06 complétée par l'interpréteur (§4) ; architecture v1.11, modèle de données v1.6, glossaire v1.7, découpage v0.17, vérification v1.1.
+- T80 : constats A-29 et A-43 (§3) ; saisie de texte réalisée (§4) ; architecture v1.30, modèle de données v1.29, glossaire v1.17, découpage v0.38.
 
 ## 7. Historique
 
@@ -231,3 +239,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-10-28 | 1.8 | Constats adressés à T16 (§3) ; effets (§6) | T16 |
 | 2026-10-28 | 1.9 | Seuils d'acceptation tranchés (§2) ; constats adressés à T17 (§3) | T17 |
 | 2026-10-28 | 1.10 | Constat A-05 adressé à T18 (§3) ; NF-06 : interpréteur parmi les versions (§4) ; effets (§6) | T18 |
+| 2026-11-17 | 1.11 | Constats adressés à T80 (§3) ; saisie de texte réalisée (§4, ADR-0233) ; effets (§6) | T80 |

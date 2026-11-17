@@ -97,3 +97,4 @@ La fin d'une partie a trois états : **établie** ; **non établie** (structure 
 | --- | --- |
 | 2026-10-27 | Création, statut « Proposé » |
 | 2026-10-27 | Validé par TheDarkMac pendant la revue de la PR de T13 : statut « Accepté » |
+| 2026-11-17 | Renvoi : un texte collé n'est pas identifié par signature ; une seule partie `texte` s'il est de l'UTF-8 ([ADR-0233](ADR-0233-saisie-du-texte-colle.md)) (T80) |

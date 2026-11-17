@@ -43,3 +43,4 @@ Option A. T13 ne traite que des fichiers. Une exigence de saisie de texte est aj
 | Date | Modification |
 | --- | --- |
 | 2026-10-27 | Création |
+| 2026-11-17 | Réalisé en T80 : saisie par l'entrée standard, transmise au processus de travail après la configuration, ni nom ni extension, empreinte des octets ([ADR-0233](ADR-0233-saisie-du-texte-colle.md)) |

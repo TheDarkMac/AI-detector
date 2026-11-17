@@ -28,6 +28,7 @@ Une fiche par module d'analyse (NF-09, livrable 4), livrée avec son code, ses t
 | [Pages d'un PDF : textes superposés, caches, polices](pages-pdf.md) | `pagespdf` | T51 | PDF |
 | [Éléments actifs d'un PDF](actifs-pdf.md) | `actifspdf` | T52 | PDF |
 | [Images d'un PDF, analysées comme des parties extraites](images-pdf.md) | `imagespdf` | T53 | PDF (JPEG écrits tels quels, analysés par les modules d'image) |
+| [Éléments actifs d'un DOCX ou d'un ODT](actifs-bureau.md) | `actifsbureau` | T52 (complément bureautique) | DOCX, ODT |
 | [Balises ID3](metadonnees-id3.md) | `id3` | T21, T22, T23, T25 | MP3, AAC, FLAC, WAV |
 | [Liste INFO et bloc bext d'un WAV](metadonnees-info-wav.md) | `infowav` | T21, T22, T23, T25 | WAV |
 | [Commentaires Vorbis](metadonnees-vorbis.md) | `vorbis` | T21, T22, T23, T25 | FLAC, Ogg |
@@ -36,5 +37,6 @@ Une fiche par module d'analyse (NF-09, livrable 4), livrée avec son code, ses t
 | [Propriétés d'un document DOCX](metadonnees-ooxml.md) | `ooxml` | T21, T22, T23, T25 | DOCX |
 | [Métadonnées d'un document ODT](metadonnees-odf.md) | `odf` | T21, T22, T23, T25 | ODT |
 | [Manifeste C2PA](provenance-c2pa.md) | `c2pa` | T30 | JPEG, PNG, WebP, HEIC, PDF, WAV, MP3, M4A, FLAC, MP4, MOV, DOCX, ODT |
+| [Caractères invisibles ou substitués d'un texte](caracteres-invisibles.md) | `caracteres` | T80 | Texte brut, enregistré ou collé |
 
 Les modules de métadonnées partagent leurs lecteurs de structure (`voight_kampff/modules/_lecture/`, [ADR-0114](../decisions/ADR-0114-un-module-par-famille-de-metadonnees.md)) : conteneurs, TIFF, XMP, ressources Photoshop et IIM, valeurs (T20) ; structure PDF (T21, [ADR-0124](../decisions/ADR-0124-lecteur-pdf-du-projet.md) ; chaîne des sections et vues par version depuis T50, [ADR-0207](../decisions/ADR-0207-versions-d-un-pdf.md)) ; conteneurs audio et vidéo et éléments EBML (T21, [ADR-0131](../decisions/ADR-0131-un-module-par-famille-de-balises.md)) ; archives ZIP, XML et propriétés bureautiques (T21, [ADR-0136](../decisions/ADR-0136-un-module-par-famille-de-proprietes-bureautiques.md), [ADR-0137](../decisions/ADR-0137-lecteur-zip-du-projet.md)). Le module `image` reprend le lecteur de conteneurs, qui relève aussi depuis T24 les en-têtes d'image et les tables de quantification ([ADR-0154](../decisions/ADR-0154-module-image.md)).

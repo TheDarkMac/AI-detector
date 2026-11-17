@@ -54,3 +54,4 @@ Option A.
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T16 : statut « Accepté » |
+| 2026-11-17 | Renvoi : les constats de T80 sur ces caractères suivent une table Unicode 18.0 du projet, pas la base de l'interpréteur ([ADR-0234](ADR-0234-caracteres-invisibles.md)) ; l'affichage reste celui-ci (T80) |

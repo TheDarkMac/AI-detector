@@ -53,3 +53,4 @@ Option A dans les deux cas. Précisions de l'assistant :
 | --- | --- |
 | 2026-11-15 | Création |
 | 2026-11-16 | Renvoi : la chronologie des révisions PDF est un tableau, nouvelle forme de visualisation non masquée ; la prévision « sans nouveau mécanisme » ne tient pas pour elle ([ADR-0212](ADR-0212-chronologie-en-tableau.md)) |
+| 2026-11-17 | Renvoi : la catégorie `contenu` couvre aussi le texte écrit par des étiquettes Unicode ; son libellé devient « contenu du fichier » ([ADR-0234](ADR-0234-caracteres-invisibles.md)) (T80) |

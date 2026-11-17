@@ -54,3 +54,4 @@ Option A : T53 achemine les images d'un PDF vers les modules d'image ; la couche
 | Date | Modification |
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début de T53 |
+| 2026-11-17 | Renvoi : T80 livre le module `caracteres` (format `texte`), vers lequel le complément de T53 pourra acheminer la couche texte ([ADR-0232](ADR-0232-perimetre-de-t80.md)) (T80) |
