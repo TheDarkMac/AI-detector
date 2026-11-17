@@ -49,4 +49,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T52](T52-elements-actifs-pdf.md) | Éléments actifs d'un PDF, signalés, jamais exécutés | `tache/T52-elements-actifs-pdf` | [#36](https://github.com/TheDarkMac/AI-detector/pull/36) |
 | [T53](T53-images-extraites-pdf.md) | Images d'un PDF, analysées comme des parties extraites | `tache/T53-images-extraites-pdf` | [#37](https://github.com/TheDarkMac/AI-detector/pull/37) |
 | [T52 (complément bureautique)](T52-complement-bureautique.md) | Éléments actifs d'un DOCX ou d'un ODT, signalés, jamais exécutés | `tache/T52-complement-bureautique` | [#38](https://github.com/TheDarkMac/AI-detector/pull/38) |
-| [T80](T80-caracteres-invisibles.md) | Caractères invisibles ou substitués d'un texte, et saisie du texte collé | `tache/T80-caracteres-invisibles` | à venir |
+| [T80](T80-caracteres-invisibles.md) | Caractères invisibles ou substitués d'un texte, et saisie du texte collé | `tache/T80-caracteres-invisibles` | [#39](https://github.com/TheDarkMac/AI-detector/pull/39) |
