@@ -3,7 +3,7 @@
 - **Branche** : `tache/T80-caracteres-invisibles`
 - **Dates** : 2026-11-17
 - **Exigences couvertes** : F-73 (réalisée pour le texte brut et le texte collé) ; F-01 (texte collé soumis) ; F-24, F-25 (manifeste C2PA d'un texte recherché) ; ES-12 (caractères relevés, neutralisés à l'affichage) ; A-29, A-43
-- **Décisions** : ADR-0232 à ADR-0237, tous acceptés au début de T80
+- **Décisions** : ADR-0232 à ADR-0237, tous acceptés au début de T80 ; délai de 15 minutes par test (journal, étape 13)
 - **Errata** : aucun
 
 ## Objectif
@@ -32,6 +32,8 @@ Relever les caractères invisibles et les homoglyphes d'un texte (F-73), donner 
 
 12. PR [#39](https://github.com/TheDarkMac/AI-detector/pull/39) ouverte vers `detector` (commits `daa44bd`, `3d14b41`, `f859f0e`).
 
+13. CI de la PR sur `1654239` : Linux et macOS verts (les annulations de macOS 3.12 sans machine attribuée se sont produites aussi sur `detector`, côté GitHub) ; les trois jobs Windows restaient dans « Tests et couverture » pendant des heures, sans aucun journal récupérable, même après une annulation. Contrôle : `code` lancé à la demande sur `detector` dans la même heure, Windows vert en 5 minutes ; le blocage venait donc de la branche. Essais successifs, chacun poussé sur la PR : délai de 15 minutes par test dans `pyproject.toml` (`faulthandler_timeout`, `faulthandler_exit_on_timeout`, gardé : un test bloqué fait désormais échouer la suite avec sa pile) ; sortie du test de `vk --texte` écrite dans un fichier plutôt qu'un tube ; deux commits de diagnostic temporaires qui partageaient la suite entre les trois jobs Windows, puis un minuteur de session (retirés). Tous bloquaient, même sans aucun test de `caracteres` : la cause était commune à la session. Cause : un cas paramétré de `test_texte_colle_refuse` prenait 16 Mio d'octets, d'où pytest tirait un identifiant de 16 777 287 caractères, recopié dans la variable `PYTEST_CURRENT_TEST` à chaque phase de ce test, même sauté ; Windows limite une variable d'environnement à 32 767 caractères. Correction : identifiants explicites ; le plus long identifiant de la suite fait 5 077 caractères. La suite a alors tourné sous Windows en 4 à 6 minutes, avec un seul échec : la sortie de `vk --texte` redirigée vers un fichier s'y écrit en cp1252, que le test lisait en UTF-8 ; la commande du test passe `-X utf8`. Sur `e61b065`, toutes les vérifications vertes (code 44210495410, docs 44210495366 ; CodeRabbit ignoré). La tentative de modifier `code.yml` pour un diagnostic a été refusée par GitHub (jeton sans droit `workflow`) et n'a pas été poussée.
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |
@@ -42,6 +44,9 @@ Relever les caractères invisibles et les homoglyphes d'un texte (F-73), donner 
 | 64 Mo de texte non ASCII au-delà du délai | Voir l'étape 9 | Voir l'étape 9 |
 | Suite complète arrêtée aussitôt lancée | Motif `.coverage.*` sans correspondance, qui fait échouer la ligne sous zsh | Fichiers retirés par `find -delete` |
 | Fiche `actifs-bureau` absente de l'index des fiches | Oubli dans la PR du complément bureautique de T52 | Ligne ajoutée |
+| CI Windows bloquée des heures, sans journal | Identifiant de test de 16 Mi caractères, recopié dans `PYTEST_CURRENT_TEST` (limite de 32 767 caractères sous Windows) | Identifiants explicites ; délai de 15 minutes par test gardé |
+| Test de `vk --texte` en échec sous Windows | Sortie redirigée écrite en cp1252 | `-X utf8` dans la commande du test |
+| Diagnostic dans `code.yml` refusé au push | Jeton de `gh` sans droit `workflow` | Commit local retiré ; diagnostic par `tests/conftest.py`, retiré ensuite |
 | Valeur par défaut de `$OutputEncoding` sous PowerShell non vérifiée | La page de Microsoft lue ne la donne pas | ADR-0233 ne l'affirme pas, et la renvoie à la documentation utilisateur (T103) |
 
 ## Écarts par rapport au découpage
@@ -62,4 +67,5 @@ Relever les caractères invisibles et les homoglyphes d'un texte (F-73), donner 
 - Vérification de la signature d'un manifeste C2PA d'un texte, quand c2pa-python lira le texte brut (ADR-0236).
 - Inventaire des marquages à refaire en entier avant la prochaine version du catalogue qui touche aux marquages : seule l'entrée du texte a été revue.
 - Valeur par défaut de `$OutputEncoding` sous PowerShell, pour la documentation utilisateur (T103).
+- Sous Windows, une sortie de `vk` redirigée vers un fichier s'écrit dans l'encodage local (cp1252) : une ligne qui porte un caractère neutralisé (`⟨`, ADR-0096) ne peut pas s'y écrire. Défaut présent depuis T16, rendu plus probable par T80 : à corriger par sa propre PR (sortie en UTF-8, ou neutralisation en ASCII hors d'un terminal).
 - Mesure des règles de `caracteres` sur le corpus de référence (T100) : part de textes ordinaires (copier-coller du web, textes bilingues) qui déclenchent chaque règle.
