@@ -20,7 +20,7 @@ from voight_kampff._travail import garde
 from voight_kampff._travail.fichier import Fichier
 from voight_kampff.rapport.modele import NOMBRE_MAX_PARTIES, Partie, Plage
 
-__all__ = ["identifier", "reconnaitre"]
+__all__ = ["identifier", "identifier_texte", "reconnaitre"]
 
 _BLOC = 1 << 20
 _PAS_MAX = 1 << 20
@@ -629,6 +629,26 @@ def identifier(fichier: Fichier, taille: int) -> tuple[Partie, ...]:
             )
         )
     return tuple(parties)
+
+
+def identifier_texte(fichier: Fichier, taille: int) -> tuple[Partie, ...]:
+    """Texte collé (ADR-0233) : une partie « texte » s'il est de l'UTF-8, avec ou sans marque
+    d'ordre, sinon aucune. Aucune signature n'est cherchée (A-29), et les caractères de contrôle
+    sont admis : le module ``caracteres`` les relève."""
+    garde.exiger()
+    decodeur = _DECODEUR_UTF8("strict")
+    position = 0
+    try:
+        # Un texte collé est en mémoire : sa taille ne change pas pendant la lecture.
+        while position < taille and (bloc := fichier.lire(position, _BLOC)):
+            position += len(bloc)
+            decodeur.decode(bloc, final=position >= taille)
+        decodeur.decode(b"", final=True)
+    except UnicodeDecodeError:
+        return ()
+    if not position:
+        return ()
+    return (Partie(1, "texte", Plage(0, position), fin_connue=True),)
 
 
 def reconnaitre(fichier: Fichier, debut: int, longueur: int) -> tuple[str, int | None, bool] | None:

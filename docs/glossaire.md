@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.16** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 proposée dans la PR du complément bureautique de T52. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.17** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 avec le complément bureautique de T52, v1.17 proposée dans la PR de T80. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -48,6 +48,14 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Octets non reconnus | Plages du fichier qu'aucune partie ne couvre, dont les données après la fin logique ; déclarées non menées (`format_partiel`). | ES-07, ADR-0072 |
 | Format du périmètre, hors périmètre | Les formats du §3 du cahier sont analysés ; d'autres sont reconnus pour être nommés, jamais analysés. Un fichier sans format du périmètre est refusé. | F-04, ADR-0070 |
 | Concordance de l'extension | L'extension du nom est l'une de celles du format réel ; sinon, elle est discordante (F-03). | ADR-0072 |
+| Texte collé | Texte lu sur l'entrée standard (`vk --texte`) ou passé à `analyser_texte`, sans fichier : une seule partie `texte`, ni nom ni extension, empreinte de ses octets en UTF-8 ; `saisie` vaut `texte_colle`. | A-29, ADR-0233 |
+| Caractère invisible | Caractère qui ne s'affiche pas, ou pas comme un caractère : contrôle, marque ou forçage bidirectionnel, étiquette, sélecteur de variante, caractère sans chasse, espace inhabituelle, caractère à usage privé ; rangé dans l'une de ces sept familles d'après les tables Unicode 18.0 du projet. | F-73, ADR-0234 |
+| Emploi ordinaire, inhabituel | Un caractère invisible est ordinaire quand son usage se reconnaît à ses voisins (liant d'un émoji composé, antiliant du persan, insécable du français, marque d'ordre en tête) ; inhabituel sinon. Seuls les inhabituels font un constat. | ADR-0234 |
+| Étiquette (Unicode) | Caractère U+E0000 à U+E007F, invisible ; de U+E0020 à U+E007E, chacune porte un caractère ASCII : une suite d'étiquettes écrit un texte caché. Ordinaire dans un drapeau de subdivision. | ADR-0234 |
+| Sélecteur de variante | Caractère invisible (U+FE00 à U+FE0F, U+E0100 à U+E01EF) qui choisit la forme du caractère qui le précède ; une suite de sélecteurs peut écrire des octets, comme l'enveloppe d'un manifeste C2PA. | ADR-0234, ADR-0236 |
+| Homoglyphe, mot mêlé | Lettre d'une écriture qui se confond avec une lettre d'une autre (même squelette, UTS #39) ; un mot mêlé a, dans son écriture dominante, une telle lettre d'une autre écriture. | F-73, ADR-0235 |
+| Lettre de compatibilité | Lettre ou chiffre qui n'est qu'une variante d'affichage d'un autre (gras mathématique, pleine chasse) : décomposition de compatibilité `<font>` ou `<wide>`. | ADR-0235 |
+| Enveloppe C2PATXT | Manifeste C2PA écrit dans un texte : en-tête `C2PATXT`, version, longueur et boîte JUMBF, en sélecteurs de variante après U+FEFF (C2PA 2.3, annexe A.7) ; trouvée et décrite par l'outil, non vérifiée. | ADR-0236 |
 
 ## Termes de l'architecture
 
@@ -133,3 +141,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-11-17 | 1.14 | Élément actif (PDF), déclencheur d'une action PDF ajoutés | T52 |
 | 2026-11-17 | 1.15 | Partie extraite, filtre d'un flux PDF ajoutés | T53 |
 | 2026-11-17 | 1.16 | Élément actif (DOCX, ODT), relation d'un paquet OPC ajoutés ; statut corrigé, il annonçait encore la v1.12 | T52 (complément bureautique) |
+| 2026-11-17 | 1.17 | Texte collé, caractère invisible, emploi ordinaire ou inhabituel, étiquette, sélecteur de variante, homoglyphe et mot mêlé, lettre de compatibilité, enveloppe C2PATXT ajoutés | T80 |

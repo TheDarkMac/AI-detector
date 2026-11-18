@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from importlib.metadata import version
 
-from voight_kampff._limites import TAILLE_MAX_FICHIER
+from voight_kampff._limites import TAILLE_MAX_FICHIER, TAILLE_MAX_TEXTE
 from voight_kampff._marquages import Marquage
 from voight_kampff._regles import Regle, conforme
 from voight_kampff.rapport.modele import (
@@ -38,7 +38,7 @@ from voight_kampff.rapport.modele import (
     verifier_resultats,
 )
 
-__all__ = ["Analyse", "AnalyseRefusee", "MotifRefus", "analyser", "interpreteur"]
+__all__ = ["Analyse", "AnalyseRefusee", "MotifRefus", "analyser", "analyser_texte", "interpreteur"]
 
 
 class MotifRefus(StrEnum):
@@ -52,6 +52,9 @@ class MotifRefus(StrEnum):
     HORS_PERIMETRE = "hors_perimetre"
     FICHIER_MODIFIE = "fichier_modifie"
     ANALYSE_IMPOSSIBLE = "analyse_impossible"
+    TEXTE_VIDE = "texte_vide"
+    TEXTE_HORS_LIMITES = "texte_hors_limites"
+    TEXTE_ILLISIBLE = "texte_illisible"
 
 
 _MESSAGES = {
@@ -71,6 +74,12 @@ _MESSAGES = {
         "résultat n'est livré"
     ),
     MotifRefus.ANALYSE_IMPOSSIBLE: "analyse arrêtée avant l'identification du format",
+    MotifRefus.TEXTE_VIDE: "texte collé vide : rien à analyser",
+    MotifRefus.TEXTE_HORS_LIMITES: (
+        f"texte collé trop long : l'outil en analyse au plus {TAILLE_MAX_TEXTE >> 20} Mio ; "
+        "enregistrez-le dans un fichier"
+    ),
+    MotifRefus.TEXTE_ILLISIBLE: "texte collé illisible : UTF-8 attendu",
 }
 
 
@@ -231,3 +240,29 @@ def analyser(
     from voight_kampff._orchestration import soumission  # importé ici : voir le docstring
 
     return soumission.soumettre(chemin, desactiver, catalogue=catalogue, confiance=confiance)
+
+
+def analyser_texte(
+    texte: str | bytes,
+    *,
+    desactiver: Collection[str] = (),
+    catalogue: str | os.PathLike[str] | None = None,
+    confiance: str | os.PathLike[str] | None = None,
+) -> Analyse:
+    """Analyse un texte collé, sans fichier, dans un processus de travail neuf (ADR-0233).
+
+    ``texte`` est une chaîne, encodée en UTF-8, ou ses octets en UTF-8. Il est transmis au
+    processus de travail par son entrée standard, sans fichier temporaire (ES-15) ; il est
+    analysé comme un texte brut, sans identification par signature (F-02, F-03 ne s'y
+    appliquent pas, A-29). Le rapport n'a ni nom ni extension ; son empreinte est celle des
+    octets. Les autres paramètres sont ceux d':func:`analyser`. Un texte vide, de plus de
+    16 Mio ou qui n'est pas de l'UTF-8 lève :class:`AnalyseRefusee`.
+    """
+    from voight_kampff._orchestration import soumission  # importé ici : voir le docstring
+
+    if isinstance(texte, str):
+        try:
+            texte = texte.encode("utf-8")
+        except UnicodeEncodeError:  # substitut isolé
+            raise AnalyseRefusee(MotifRefus.TEXTE_ILLISIBLE) from None
+    return soumission.soumettre_texte(texte, desactiver, catalogue=catalogue, confiance=confiance)

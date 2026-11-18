@@ -236,6 +236,8 @@ class Presentation:
         return remplir(self.regle(constat).textes["fr"], valeurs)
 
     def nom(self) -> str:
+        if self.analyse.identification.nom is None:
+            return texte("formes.texte_colle")
         if self.masquee(CategorieIdentifiante.NOM_DE_FICHIER):
             return self.mention_masquee(CategorieIdentifiante.NOM_DE_FICHIER)
         return self.analyse.identification.nom
@@ -315,7 +317,9 @@ class Presentation:
         """Signalements de l'identification (F-03, ES-07, ADR-0072)."""
         identification = self.analyse.identification
         lignes = []
-        if identification.extension is None:
+        if identification.nom is None:
+            lignes.append(texte("signalements.texte_colle"))
+        elif identification.extension is None:
             lignes.append(texte("signalements.extension_absente"))
         elif identification.extension_concordante:
             lignes.append(

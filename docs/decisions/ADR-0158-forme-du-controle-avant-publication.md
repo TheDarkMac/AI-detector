@@ -64,3 +64,4 @@ Option A.
 | 2026-11-14 | Création |
 | 2026-11-15 | Renvoi : une analyse non menée du module `doublejpeg`, qui ne lit aucune métadonnée, ne rend pas le contrôle incomplet (ADR-0190, T41) |
 | 2026-11-17 | Renvoi : `actifsbureau` parmi les modules sans métadonnées (ADR-0231) (T52, complément bureautique) |
+| 2026-11-17 | Renvoi : `caracteres` lit un contenu identifiant (texte des étiquettes) et ne rejoint pas les modules sans métadonnées ([ADR-0237](ADR-0237-constats-et-versions-de-t80.md)) (T80) |

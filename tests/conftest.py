@@ -182,7 +182,7 @@ def construire_rapport() -> Rapport:
             ),
             marquages_recherches=("M-C2PA", "M-IPTC-DST"),
             marquages_non_recherches=(
-                MarquageNonRecherche("M-C2PA-TEXTE", RaisonNonRecherche.LECTEUR_A_VENIR),
+                MarquageNonRecherche("M-META-SEAL", RaisonNonRecherche.LECTEUR_NEURONAL),
                 MarquageNonRecherche("M-SYNTHID", RaisonNonRecherche.LECTEUR_PROPRIETAIRE),
             ),
         ),

@@ -246,3 +246,9 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0229](ADR-0229-elements-actifs-cherches-dans-un-docx-et-un-odt.md) | Éléments actifs cherchés dans un DOCX et un ODT : macros, événements, objets, références hors de l'archive | Accepté | 2026-11-17 |
 | [ADR-0230](ADR-0230-nature-et-declencheur-des-elements-bureautiques.md) | Éléments actifs d'un DOCX ou d'un ODT décrits par leur nature et leur déclencheur, sans adresse, nom ni code | Accepté | 2026-11-17 |
 | [ADR-0231](ADR-0231-constats-et-versions-du-complement-bureautique-de-t52.md) | Constats des éléments actifs bureautiques : quatre informations neutres par famille ; module `actifsbureau` et versions du complément | Accepté | 2026-11-17 |
+| [ADR-0232](ADR-0232-perimetre-de-t80.md) | Périmètre de T80 : texte brut et texte collé, module `caracteres` ; corps des DOCX et ODT renvoyé à un complément | Accepté | 2026-11-17 |
+| [ADR-0233](ADR-0233-saisie-du-texte-colle.md) | Saisie du texte collé : entrée standard, transmis au processus de travail après la configuration ; ni nom ni extension, empreinte des octets | Accepté | 2026-11-17 |
+| [ADR-0234](ADR-0234-caracteres-invisibles.md) | Caractères invisibles : table Unicode 18.0 du projet, sept familles, emplois ordinaires reconnus à leurs voisins ; texte des étiquettes masqué par défaut | Accepté | 2026-11-17 |
+| [ADR-0235](ADR-0235-homoglyphes.md) | Homoglyphes : mots mêlés d'écritures confusables, d'après UTS #39 ; lettres de compatibilité à part ; information neutre | Accepté | 2026-11-17 |
+| [ADR-0236](ADR-0236-manifeste-c2pa-dans-un-texte.md) | Manifeste C2PA écrit dans un texte : enveloppe trouvée et décrite, jamais vérifiée ; `M-C2PA-TEXTE` recherché par `caracteres` | Accepté | 2026-11-17 |
+| [ADR-0237](ADR-0237-constats-et-versions-de-t80.md) | Constats des caractères invisibles ou substitués : douze informations neutres ; module `caracteres` et versions de T80 | Accepté | 2026-11-17 |

@@ -70,10 +70,10 @@ exigences = ["F-90", "F-91"]
 
 [[exigence]]
 id = "F-01"
-etat = "partielle"
+etat = "realisee"
 taches = ["T13", "T80"]
 methodes = ["test"]
-note = "Un ou plusieurs fichiers par commande ; la saisie du texte collé est reportée à T80 (ADR-0074)."
+note = "Un ou plusieurs fichiers par commande (T13). Texte collé (T80, ADR-0233) : lu sur l'entrée standard par vk --texte, ou passé à analyser_texte, jusqu'à 16 Mio d'UTF-8, transmis au processus de travail après la configuration, sans fichier ; une partie texte sans identification par signature, ni nom ni extension, empreinte des octets."
 
 [[exigence]]
 id = "F-02"
@@ -177,16 +177,16 @@ note = "Outil d'origine, titre, signataire, actions et source numérique IPTC, i
 [[exigence]]
 id = "F-24"
 etat = "realisee"
-taches = ["T31", "T32"]
+taches = ["T31", "T32", "T80"]
 methodes = ["test"]
-note = "Point d'extension : marquages au catalogue, format 3 (ADR-0175) ; inventaire de T31 : un seul filigrane lisible sans réseau de neurones ni clé, le dwtDct (ADR-0174). Lu par le module dwtdct (T32) dans les JPEG et les PNG, règles R-DWTDCT-001 à R-DWTDCT-003, seuils vérifiés sur un relevé de Commons (ADR-0202 à ADR-0206) ; WebP et HEIC non décodés, signalés non recherchés."
+note = "Point d'extension : marquages au catalogue, format 3 (ADR-0175) ; inventaire de T31 : un seul filigrane lisible sans réseau de neurones ni clé, le dwtDct (ADR-0174). Lu par le module dwtdct (T32) dans les JPEG et les PNG, règles R-DWTDCT-001 à R-DWTDCT-003, seuils vérifiés sur un relevé de Commons (ADR-0202 à ADR-0206) ; WebP et HEIC non décodés, signalés non recherchés. Manifeste C2PA écrit dans un texte (C2PA 2.3, annexe A.7) : enveloppe trouvée et décrite par le module caracteres, signature non vérifiée, règles R-CARACTERES-010 à R-CARACTERES-012 (T80, ADR-0236)."
 
 [[exigence]]
 id = "F-25"
 etat = "realisee"
-taches = ["T11", "T16", "T31"]
+taches = ["T11", "T16", "T31", "T80"]
 methodes = ["test"]
-note = "Couverture au rapport : marquages recherchés (C2PA, type de source IPTC) et marquages connus non recherchés, avec leur raison, d'après les formats du fichier (ADR-0176 à ADR-0178)."
+note = "Couverture au rapport : marquages recherchés (C2PA, type de source IPTC, dwtDct, C2PA d'un texte depuis T80) et marquages connus non recherchés, avec leur raison, d'après les formats du fichier (ADR-0176 à ADR-0178)."
 
 [[exigence]]
 id = "F-26"
@@ -351,10 +351,10 @@ note = "Hors V1 : requête sortante (ADR-0013)."
 
 [[exigence]]
 id = "F-73"
-etat = "a_venir"
+etat = "partielle"
 taches = ["T80"]
 methodes = ["test"]
-note = "Contrôle déterministe : tests de conformité, sans taux sur corpus (A-55)."
+note = "Texte brut et texte collé (T80, ADR-0232) : module caracteres, tables Unicode 18.0 du projet ; sept familles de caractères invisibles, emplois ordinaires reconnus à leurs voisins, texte des étiquettes masqué par défaut (ADR-0234) ; mots mêlés d'écritures confusables d'après UTS #39, lettres de compatibilité (ADR-0235) ; informations neutres R-CARACTERES-001 à R-CARACTERES-009 (ADR-0237). Contrôle déterministe : tests de conformité sur des textes construits, sans taux sur corpus (A-55). Corps des DOCX et ODT : complément de T80 ; couche texte d'un PDF : complément de T53."
 
 # 5.5 Restitution
 

@@ -1,6 +1,6 @@
 # Inventaire des marquages et des filigranes invisibles
 
-> Statut : **v1.1**, proposée dans la PR de T32. Inventaire daté : chaque affirmation a été vérifiée le **2026-11-14** sur la source citée, et vaut à cette date ; le §3 a été revu le **2026-11-16** (T32, [ERR-0011](../errata/ERR-0011-dwtdct-sans-dct.md)). Les marquages évoluent vite : l'inventaire se refait avant chaque version du catalogue qui touche aux marquages.
+> Statut : **v1.2**, v1.1 mergée avec T32, v1.2 proposée dans la PR de T80. Inventaire daté : chaque affirmation a été vérifiée le **2026-11-14** sur la source citée, et vaut à cette date ; le §3 a été revu le **2026-11-16** (T32, [ERR-0011](../errata/ERR-0011-dwtdct-sans-dct.md)) ; l'entrée du manifeste C2PA d'un texte, le **2026-11-17** sur l'annexe A.7 de la spécification C2PA 2.3 (T80), sans refaire le reste de l'inventaire. Les marquages évoluent vite : l'inventaire se refait avant chaque version du catalogue qui touche aux marquages.
 > Exigences : F-24, F-25, F-26 ; A-03, A-21, A-35 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Décisions : [ADR-0012](../decisions/ADR-0012-perimetre-v1.md), [ADR-0016](../decisions/ADR-0016-frontiere-sans-ia.md), [ADR-0174](../decisions/ADR-0174-inventaire-et-lecteur-dwtdct.md) à [ADR-0179](../decisions/ADR-0179-versions-de-t31.md).
 
@@ -21,14 +21,14 @@ Un schéma est **lisible** par l'outil s'il réunit quatre conditions :
 
 ## 2. Résultat
 
-Un seul schéma de filigrane remplit les quatre conditions : le **dwtDct** de la bibliothèque invisible-watermark, posé par les codes de référence de Stable Diffusion 1, de SDXL et de FLUX.1 (§3). Son lecteur demande de décoder les pixels : il a été confié à une tâche à part, T32 ([ADR-0174](../decisions/ADR-0174-inventaire-et-lecteur-dwtdct.md)), qui le livre dans le module `dwtdct` (catalogue 0.10.0, [ADR-0202](../decisions/ADR-0202-decodage-des-pixels.md) à [ADR-0206](../decisions/ADR-0206-constat-et-versions-de-t32.md)). Deux marquages qui ne sont pas des filigranes se lisent sans IA et sont déjà recherchés : le manifeste C2PA (module `c2pa`, T30) et le type de source numérique de l'IPTC (module `xmp`, T22). Un troisième, le manifeste C2PA écrit dans un texte brut, se lit de façon déterministe ; sa lecture relève du module texte (T80).
+Un seul schéma de filigrane remplit les quatre conditions : le **dwtDct** de la bibliothèque invisible-watermark, posé par les codes de référence de Stable Diffusion 1, de SDXL et de FLUX.1 (§3). Son lecteur demande de décoder les pixels : il a été confié à une tâche à part, T32 ([ADR-0174](../decisions/ADR-0174-inventaire-et-lecteur-dwtdct.md)), qui le livre dans le module `dwtdct` (catalogue 0.10.0, [ADR-0202](../decisions/ADR-0202-decodage-des-pixels.md) à [ADR-0206](../decisions/ADR-0206-constat-et-versions-de-t32.md)). Deux marquages qui ne sont pas des filigranes se lisent sans IA et sont déjà recherchés : le manifeste C2PA (module `c2pa`, T30) et le type de source numérique de l'IPTC (module `xmp`, T22). Un troisième, le manifeste C2PA écrit dans un texte brut, se lit de façon déterministe : le module `caracteres` (T80) le recherche depuis le catalogue 0.16.0, et en décrit l'enveloppe sans en vérifier la signature ([ADR-0236](../decisions/ADR-0236-manifeste-c2pa-dans-un-texte.md)).
 
 | Marquage | Médias | Posé par | Lecteur public | Réseau de neurones | Clé du fournisseur | Catalogue |
 | --- | --- | --- | --- | --- | --- | --- |
 | Manifeste C2PA intégré | image, son, vidéo, PDF, bureautique | Générateurs et logiciels qui suivent la C2PA | Oui (c2pa-rs) | Non | Non (signature vérifiée par une liste de confiance) | `M-C2PA`, recherché (`c2pa`) |
 | Type de source IPTC dans XMP | formats qui portent du XMP | Générateurs et logiciels qui suivent l'IPTC | Oui (lecture XMP) | Non | Non | `M-IPTC-DST`, recherché (`xmp`) |
 | Filigrane dwtDct d'invisible-watermark | image | Codes de référence de SD 1, SDXL, FLUX.1 | Oui | Non | Non (message fixe, publié) | `M-DWTDCT`, recherché (`dwtdct`, T32) |
-| Manifeste C2PA dans un texte brut | texte | Spécification C2PA 2.3, annexe A.7 | Algorithme publié | Non | Non | `M-C2PA-TEXTE`, lecteur à venir (T80) |
+| Manifeste C2PA dans un texte brut | texte | Spécification C2PA 2.3, annexe A.7 | Algorithme publié | Non | Non | `M-C2PA-TEXTE`, recherché (`caracteres`, T80), signature non vérifiée |
 | SynthID (images, son, vidéo) | image, son, vidéo | Services de Google ; d'après la presse, aussi d'autres fournisseurs lus par le même portail | Non : portail SynthID Detector | — | — | `M-SYNTHID`, lecteur propriétaire |
 | SynthID Text | texte | Modèles de langage qui l'emploient | Code public | Détecteur entraîné pour chaque clé | Oui | `M-SYNTHID-TEXTE`, clé du fournisseur |
 | Filigranes de texte à liste verte | texte | Modèles qui l'emploient | Code public | Non | Oui | `M-LISTE-VERTE`, clé du fournisseur |
@@ -98,3 +98,4 @@ La [liste des algorithmes de liaison souple](https://github.com/c2pa-org/softbin
 | --- | --- | --- | --- |
 | 2026-11-14 | 1.0 | Création | T31 |
 | 2026-11-16 | 1.1 | §3 : la méthode dwtDct n'emploie aucune DCT ([ERR-0011](../errata/ERR-0011-dwtdct-sans-dct.md)) ; ordre des couleurs de diffusers de 2023 à 2024 ; renvois à la fiche du lecteur ; `M-DWTDCT` recherché par le module `dwtdct` (§2) | T32 |
+| 2026-11-17 | 1.2 | `M-C2PA-TEXTE` recherché par le module `caracteres`, signature non vérifiée (§2, [ADR-0236](../decisions/ADR-0236-manifeste-c2pa-dans-un-texte.md)) ; entrée seule revue, le reste de l'inventaire n'a pas été refait | T80 |

@@ -47,17 +47,15 @@ references = [
 ]
 verifie = "2026-11-14"
 
-# Non recherchés : lecteur public et déterministe, à livrer
-
 [[marquage]]
 identifiant = "M-C2PA-TEXTE"
 nom = "Manifeste C2PA dans un texte brut"
 nature = "manifeste"
-description = "Manifeste C2PA écrit en sélecteurs de variante Unicode, invisibles, au sein d'un texte (annexe A.7 de la spécification C2PA 2.3, en-tête « C2PATXT »). Décodage déterministe ; la lecture des fichiers texte relève du module texte (T80)."
+description = "Manifeste C2PA écrit en sélecteurs de variante Unicode, invisibles, au sein d'un texte (annexe A.7 de la spécification C2PA 2.3, en-tête « C2PATXT » après U+FEFF). Recherché par le module caracteres (T80) dans un texte enregistré ou collé : l'enveloppe est trouvée et décrite ; la signature et l'empreinte du texte ne sont pas vérifiées, la bibliothèque C2PA de l'outil ne lisant pas un texte brut."
 formats = ["texte"]
-raison = "lecteur_a_venir"
+module = "caracteres"
 references = ["https://spec.c2pa.org/specifications/specifications/2.3/specs/C2PA_Specification.html"]
-verifie = "2026-11-14"
+verifie = "2026-11-17"
 
 # Non recherchés : lecteur réservé au fournisseur ou à sa clé
 

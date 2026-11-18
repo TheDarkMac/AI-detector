@@ -1,0 +1,13 @@
+# Module caracteres : caractères invisibles ou substitués d'un texte brut, enregistré ou collé (T80, ADR-0232 à ADR-0237). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "caracteres"
+version = "0.1.0"
+formats = ["texte"]
+exigences = ["F-73", "F-24", "F-25", "ES-12"]
+regles = []
+fiche = "caracteres-invisibles"
+# Direction des règles du catalogue sur ses observations (ADR-0237) ; le module lui-même n'émet aucun constat.
+directions = ["rien_de_particulier"]
+requiert = []
+bibliotheques = []
+extrait = []

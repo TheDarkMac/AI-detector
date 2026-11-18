@@ -64,18 +64,26 @@ def ecrire(dossier: Path, contenu: str, entete: str = FORMAT_3) -> Path:
 def test_catalogue_livre() -> None:
     livre = charger(decouvrir())
     recherches = {m.identifiant: m.module for m in livre.marquages if m.module is not None}
-    assert recherches == {"M-C2PA": "c2pa", "M-DWTDCT": "dwtdct", "M-IPTC-DST": "xmp"}
+    assert recherches == {
+        "M-C2PA": "c2pa",
+        "M-C2PA-TEXTE": "caracteres",
+        "M-DWTDCT": "dwtdct",
+        "M-IPTC-DST": "xmp",
+    }
     assert [m.identifiant for m in livre.marquages] == sorted(MARQUAGES_LIVRES)
-    assert MARQUAGES_LIVRES["M-C2PA-TEXTE"].raison is RaisonNonRecherche.LECTEUR_A_VENIR
+    # Plus aucun marquage livré n'attend son lecteur : celui du texte est livré par T80.
+    assert all(m.raison is not RaisonNonRecherche.LECTEUR_A_VENIR for m in livre.marquages)
     assert MARQUAGES_LIVRES["M-SYNTHID"].raison is RaisonNonRecherche.LECTEUR_PROPRIETAIRE
     # Le marquage C2PA est recherché partout où le module c2pa lit un manifeste.
     par_module = {manifeste.identifiant: manifeste for manifeste in decouvrir()}
     assert MARQUAGES_LIVRES["M-C2PA"].formats == par_module["c2pa"].formats
     assert MARQUAGES_LIVRES["M-IPTC-DST"].formats == par_module["xmp"].formats
     assert MARQUAGES_LIVRES["M-DWTDCT"].formats == par_module["dwtdct"].formats
+    assert MARQUAGES_LIVRES["M-C2PA-TEXTE"].formats == par_module["caracteres"].formats
     for entree in livre.marquages:
-        # Inventaire de T31 ; entrée du dwtDct revue par T32 (ERR-0011).
-        attendue = date(2026, 11, 16) if entree.identifiant == "M-DWTDCT" else date(2026, 11, 14)
+        # Inventaire de T31 ; entrée du dwtDct revue par T32 (ERR-0011), du texte par T80.
+        revues = {"M-DWTDCT": date(2026, 11, 16), "M-C2PA-TEXTE": date(2026, 11, 17)}
+        attendue = revues.get(entree.identifiant, date(2026, 11, 14))
         assert entree.verifie == attendue
         assert all(reference.startswith("https://") for reference in entree.references)
 
@@ -273,7 +281,7 @@ def test_rapport_avec_marquages_valide_et_relu() -> None:
     rapport = construire_rapport()
     document = rapport.vers_dict()
     assert document["couverture"]["marquages_non_recherches"] == [
-        {"identifiant": "M-C2PA-TEXTE", "raison": "lecteur_a_venir"},
+        {"identifiant": "M-META-SEAL", "raison": "lecteur_neuronal"},
         {"identifiant": "M-SYNTHID", "raison": "lecteur_proprietaire"},
     ]
     schemas.valider("rapport", document)

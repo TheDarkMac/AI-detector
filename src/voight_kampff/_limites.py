@@ -38,6 +38,7 @@ __all__ = [
     "TAILLE_MAX_LECTURE",
     "TAILLE_MAX_MESSAGE",
     "TAILLE_MAX_SORTIE",
+    "TAILLE_MAX_TEXTE",
     "TEMPS_PROCESSEUR",
 ]
 
@@ -45,6 +46,9 @@ __all__ = [
 
 TAILLE_MAX_FICHIER = 1 << 30
 """Taille maximale d'un fichier soumis : 1 Gio ; au-delà, refus « hors limites »."""
+TAILLE_MAX_TEXTE = 16 << 20
+"""Taille maximale d'un texte collé, en octets UTF-8 : 16 Mio, gardés en mémoire par les deux
+processus et transmis au processus de travail par son entrée standard (ADR-0233)."""
 
 # Système : garde-fous, non déterministes
 

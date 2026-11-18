@@ -63,3 +63,4 @@ Observations du module : `dwtdct.pixels_image` ; `dwtdct.chrominance` (faux pour
 | --- | --- |
 | 2026-11-16 | Création, statut « Proposé » |
 | 2026-11-16 | Validé par TheDarkMac pendant la revue de la PR (« Oui, valide ADR-0206 ») : statut « Accepté » |
+| 2026-11-17 | Renvoi : `M-C2PA-TEXTE` n'emploie plus la raison `lecteur_a_venir`, recherché par `caracteres` ([ADR-0236](ADR-0236-manifeste-c2pa-dans-un-texte.md)) (T80) |

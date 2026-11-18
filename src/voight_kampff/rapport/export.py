@@ -36,7 +36,7 @@ def document(analyse: Analyse, reveler: Categories = ()) -> dict[str, Any]:
     rapport = analyse.rapport().vers_dict()
     identification = rapport["identification"]
     if CategorieIdentifiante.NOM_DE_FICHIER in caches:
-        del identification["nom"]
+        identification.pop("nom", None)  # un texte collé n'en a pas (ADR-0233)
     if CategorieIdentifiante.EMPREINTE in caches:
         del identification["empreinte"]
     for observation in rapport["observations"]:
