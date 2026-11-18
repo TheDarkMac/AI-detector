@@ -51,4 +51,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T52 (complément bureautique)](T52-complement-bureautique.md) | Éléments actifs d'un DOCX ou d'un ODT, signalés, jamais exécutés | `tache/T52-complement-bureautique` | [#38](https://github.com/TheDarkMac/AI-detector/pull/38) |
 | [T80](T80-caracteres-invisibles.md) | Caractères invisibles ou substitués d'un texte, et saisie du texte collé | `tache/T80-caracteres-invisibles` | [#39](https://github.com/TheDarkMac/AI-detector/pull/39) |
 | [Correctif ERR-0013](ERR-0013-sortie-redirigee-en-cp1252.md) | Sortie de `vk` redirigée sous Windows, écrite en UTF-8 | `correctif/ERR-0013-sortie-redirigee-en-cp1252` | [#40](https://github.com/TheDarkMac/AI-detector/pull/40) |
-| [T80 (complément bureautique)](T80-complement-bureautique.md) | Caractères invisibles ou substitués du texte d'un DOCX ou d'un ODT | `tache/T80-complement-bureautique` | à venir |
+| [T80 (complément bureautique)](T80-complement-bureautique.md) | Caractères invisibles ou substitués du texte d'un DOCX ou d'un ODT | `tache/T80-complement-bureautique` | [#41](https://github.com/TheDarkMac/AI-detector/pull/41) |

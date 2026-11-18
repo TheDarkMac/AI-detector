@@ -29,6 +29,8 @@ Appliquer l'analyse du module `caracteres` (caractères invisibles, homoglyphes,
 8. Suite complète sous coverage, en 11 minutes 46 : 3 080 tests verts, 4 ignorés (lanceur de l'environnement virtuel, cjpeg de mozjpeg absent) ; couverture de tout le paquet et du banc à 100 %.
 9. Documentation : ADR-0239 à ADR-0242 ; renvois dans ADR-0013, ADR-0229, ADR-0232, ADR-0237 ; fiche [`caracteres-invisibles`](../techniques/caracteres-invisibles.md) (version 0.2.0) et index des fiches ; architecture (v1.31), découpage (v0.39), guide du catalogue (v1.18), glossaire (v1.18), matrice (F-73), index du journal, ce journal.
 
+10. PR [#41](https://github.com/TheDarkMac/AI-detector/pull/41) ouverte vers `detector` (commits `ebb7547`, `fd1fa58`, `39d99d7`).
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |
