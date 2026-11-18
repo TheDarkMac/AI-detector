@@ -579,8 +579,8 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "mp4": ("quicktime", "xmp"),
     "mov": ("quicktime", "xmp"),
     "webm": ("matroska",),
-    "docx": ("ooxml", "actifsbureau"),
-    "odt": ("odf", "actifsbureau"),
+    "docx": ("ooxml", "actifsbureau", "caracteres"),
+    "odt": ("odf", "actifsbureau", "caracteres"),
     "texte": ("caracteres",),
 }
 

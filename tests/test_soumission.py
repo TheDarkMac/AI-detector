@@ -83,7 +83,7 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
         (module, EtatTechnique.NON_APPLICABLE, version)
         for module, version in (
             ("actifsbureau", "0.1.0"),
-            ("caracteres", "0.1.0"),
+            ("caracteres", "0.2.0"),
             ("doublejpeg", "0.1.0"),
             ("dwtdct", "0.1.0"),
             ("ela", "0.1.0"),
