@@ -740,7 +740,8 @@ def test_vrai_processus_texte_colle_par_la_commande(tmp_path: Path) -> None:
     # Sortie dans un fichier, pas dans un tube : sous Windows, l'interpréteur lancé par le
     # lanceur de l'environnement virtuel garderait un tube ouvert après l'arrêt du lanceur, et
     # la lecture de la sortie attendrait sans fin (T80).
-    commande = [sys.executable, "-I", "-m", "voight_kampff", "--texte"]
+    # -X utf8 : sous Windows, une sortie redirigée vers un fichier s'écrirait en cp1252.
+    commande = [sys.executable, "-I", "-X", "utf8", "-m", "voight_kampff", "--texte"]
     sortie = tmp_path / "sortie.txt"
     with sortie.open("wb") as flux:
         try:
@@ -754,7 +755,7 @@ def test_vrai_processus_texte_colle_par_la_commande(tmp_path: Path) -> None:
             ).returncode
         except subprocess.TimeoutExpired:
             code = None
-    ecrit = sortie.read_bytes().decode(errors="replace")
+    ecrit = sortie.read_bytes().decode()
     assert code == 0, ecrit
     assert "aucun : texte collé" in ecrit
 
