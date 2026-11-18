@@ -370,3 +370,30 @@ procedure = "Seuil fixé le 2026-11-17 par définition : deux enveloppes suffise
 observation = "caracteres.c2pa"
 seuil = { operateur = ">=", valeur = 2 }
 parametre = "enveloppes"
+
+[[regle]]
+identifiant = "R-CARACTERES-013"
+version = "1"
+module = "caracteres"
+titre = "Texte masqué par la mise en forme"
+description = "Le DOCX ou l'ODT porte du texte que sa mise en forme cache : une course dont les propriétés portent w:vanish, un paragraphe ou une portion dont le style a text:display=\"none\" (complément de T80, ADR-0242). Ce texte est dans le fichier, et un programme qui en lit le texte le lit, sans qu'un lecteur le voie : il peut porter une consigne destinée à un modèle de langage, ou un passage gardé pour soi. Information neutre : des modèles de documents masquent des aides à la saisie."
+gabarit = "caracteres.masque"
+phrase = { fr = "Le document porte {masques} de texte masqué par sa mise en forme, que le logiciel n'affiche pas." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Seule la mise en forme directe d'un DOCX est lue (w:vanish dans les propriétés de la course) : un style qui masque le texte ne l'est pas ; d'un ODT, les styles automatiques et communs, sans leurs styles parents.",
+  "Un texte écrit en blanc sur blanc, en taille minuscule ou hors de la page n'est pas masqué au sens de la mise en forme : il n'est pas compté.",
+  "Le texte masqué est analysé comme le reste : ses caractères invisibles et ses mots mêlés font leurs propres constats, positions marquées « texte masqué ».",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-18 par définition : un seul caractère masqué suffit à le signaler. Vérifié sur tests/donnees/caracteres/texte.odt et texte.docx, écrits et relus par LibreOffice 25.2.3.2, et sur des documents construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.masques"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "masques"
