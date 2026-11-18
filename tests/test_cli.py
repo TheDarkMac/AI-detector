@@ -1,7 +1,8 @@
-"""Tests de la ligne de commande (T10, T12, T13, T15, T16)."""
+"""Tests de la ligne de commande (T10, T12, T13, T15, T16, ERR-0013)."""
 
 import dataclasses
 import hashlib
+import io
 import json
 import os
 import subprocess
@@ -13,7 +14,7 @@ import pytest
 from catalogues import CONFIANCE, VERSION, ecrire_catalogue, moteur, regle_dict, toml_regles
 from echantillons import PDF, archive, jpeg
 
-from voight_kampff import Analyse, __version__
+from voight_kampff import Analyse, __version__, cli
 from voight_kampff._orchestration import catalogue, confiance, manifestes
 from voight_kampff._orchestration.manifestes import Manifeste
 from voight_kampff.cli import main, resume
@@ -480,3 +481,66 @@ def test_sortie_du_terminal_neutralisee(tmp_path: Path, capsys: pytest.CaptureFi
     sortie = capsys.readouterr().out
     assert "  nom : doc⟨U+202E⟩fdp.pdf\n" in sortie
     assert "\u202e" not in sortie
+
+
+# Encodage de la sortie (ADR-0238, ERR-0013)
+
+
+@pytest.mark.exigence("ES-12")
+def test_vrai_processus_sortie_redirigee_sous_un_encodage_sans_chevrons(tmp_path: Path) -> None:
+    # PYTHONIOENCODING donne partout à la sortie redirigée l'encodage local de Windows, cp1252,
+    # qui n'a pas « ⟨ » : sans ADR-0238, la ligne du nom lève UnicodeEncodeError. Pas de -I, qui
+    # ignorerait PYTHONIOENCODING. Sortie dans un fichier, pas dans un tube (T80, étape 13).
+    document = tmp_path / "doc\u202efdp.pdf"
+    document.write_bytes(PDF)
+    environnement = {**os.environ, "PYTHONIOENCODING": "cp1252"}
+    environnement.pop("PYTHONUTF8", None)
+    commande = [sys.executable, "-m", "voight_kampff", "--reveler", "nom_de_fichier"]
+    sortie = tmp_path / "sortie.txt"
+    with sortie.open("wb") as flux:
+        try:
+            code = subprocess.run(
+                [*commande, str(document)],
+                stdout=flux,
+                stderr=subprocess.STDOUT,
+                env=environnement,
+                check=False,
+                timeout=120,
+            ).returncode
+        except subprocess.TimeoutExpired:
+            code = None
+    ecrit = sortie.read_bytes().decode("utf-8", errors="replace")
+    assert code == 0, ecrit
+    assert "  nom : doc⟨U+202E⟩fdp.pdf" in ecrit.splitlines()
+    assert "Masquage levé à la demande de l'utilisateur" in ecrit  # accents en UTF-8
+
+
+class _Terminal(io.TextIOWrapper):
+    def isatty(self) -> bool:
+        return True
+
+
+def test_flux_redirige_reecrit_en_utf8(monkeypatch: pytest.MonkeyPatch) -> None:
+    octets = {nom: io.BytesIO() for nom in ("stdout", "stderr")}
+    for nom, tampon in octets.items():
+        monkeypatch.setattr(sys, nom, io.TextIOWrapper(tampon, encoding="cp1252", newline=""))
+    assert main(["--modules"]) == 0
+    print("⟨\udcff⟩", file=sys.stderr)  # substitut isolé : échappé, jamais d'erreur
+    for flux in (sys.stdout, sys.stderr):
+        assert isinstance(flux, io.TextIOWrapper)
+        assert (flux.encoding, flux.errors) == ("utf-8", "backslashreplace")
+        flux.flush()
+    assert "\n".join(f"{m.identifiant} {m.version}" for m in manifestes.decouvrir()) in (
+        octets["stdout"].getvalue().decode("utf-8")
+    )
+    assert octets["stderr"].getvalue() == "⟨\\udcff⟩\n".encode()
+
+
+def test_terminal_et_flux_quelconque_laisses(monkeypatch: pytest.MonkeyPatch) -> None:
+    terminal = _Terminal(io.BytesIO(), encoding="cp1252")
+    autre = io.StringIO()
+    monkeypatch.setattr(sys, "stdout", terminal)
+    monkeypatch.setattr(sys, "stderr", autre)
+    cli._sortie_en_utf8()
+    assert (terminal.encoding, terminal.errors) == ("cp1252", "strict")
+    assert sys.stderr is autre
