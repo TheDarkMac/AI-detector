@@ -58,3 +58,4 @@ Option A. Précisions de l'assistant :
 | Date | Modification |
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début du complément bureautique de T52 |
+| 2026-11-18 | Renvoi : le module `caracteres` lit les relations d'un DOCX de la même façon, vers le corps, les notes, les en-têtes et pieds de page et les commentaires ([ADR-0239](ADR-0239-parties-lues-d-un-docx-et-d-un-odt.md)) (complément de T80) |

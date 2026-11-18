@@ -53,3 +53,4 @@ En V1, le module texte comprend **F-73** (T80) et **F-71** (T81, absence d'histo
 | 2026-10-27 | Renvoi : texte collé reporté à T80 par ADR-0074 (T13) |
 | 2026-11-13 | Renvoi : propriétés de DOCX et d'ODT lues par les modules `ooxml` et `odf` ; modifications suivies et identifiants de révision laissés à T81 (ADR-0139) (T21, complément bureautique) |
 | 2026-11-17 | Renvoi : F-73 réalisée par le module `caracteres` pour le texte brut et le texte collé ; corps des DOCX et ODT renvoyé à un complément de T80 ([ADR-0232](ADR-0232-perimetre-de-t80.md)) (T80) |
+| 2026-11-18 | Renvoi : F-73 étendue au DOCX et à l'ODT par le complément de T80 ([ADR-0241](ADR-0241-texte-bureautique-dans-le-module-caracteres.md)) ; l'historique des modifications reste à T81 ([ADR-0240](ADR-0240-texte-supprime-d-une-modification-suivie.md)) |

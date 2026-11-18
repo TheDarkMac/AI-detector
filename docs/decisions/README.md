@@ -253,3 +253,7 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0236](ADR-0236-manifeste-c2pa-dans-un-texte.md) | Manifeste C2PA écrit dans un texte : enveloppe trouvée et décrite, jamais vérifiée ; `M-C2PA-TEXTE` recherché par `caracteres` | Accepté | 2026-11-17 |
 | [ADR-0237](ADR-0237-constats-et-versions-de-t80.md) | Constats des caractères invisibles ou substitués : douze informations neutres ; module `caracteres` et versions de T80 | Accepté | 2026-11-17 |
 | [ADR-0238](ADR-0238-sortie-redirigee-en-utf8.md) | Sortie de `vk` redirigée vers un fichier ou un tube : écrite en UTF-8, quel que soit l'encodage local | Accepté | 2026-11-18 |
+| [ADR-0239](ADR-0239-parties-lues-d-un-docx-et-d-un-odt.md) | Texte d'un DOCX ou d'un ODT : corps, notes, en-têtes et pieds de page, commentaires | Accepté | 2026-11-18 |
+| [ADR-0240](ADR-0240-texte-supprime-d-une-modification-suivie.md) | Texte supprimé d'une modification suivie : analysé, ses positions le disent | Accepté | 2026-11-18 |
+| [ADR-0241](ADR-0241-texte-bureautique-dans-le-module-caracteres.md) | Texte d'un DOCX ou d'un ODT analysé par le module `caracteres` ; positions par partie, paragraphe et caractère | Accepté | 2026-11-18 |
+| [ADR-0242](ADR-0242-texte-masque-et-versions-du-complement-de-t80.md) | Texte masqué par la mise en forme : analysé, compté, une information neutre ; versions du complément de T80 | Accepté | 2026-11-18 |

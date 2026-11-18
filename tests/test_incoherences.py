@@ -335,9 +335,9 @@ def test_chaque_regle_de_t23_est_eprouvee() -> None:
     # (test_double_compression.py), les 15 du complément de T40 (test_tables_relevees.py), les 3
     # de T32 (test_dwtdct.py), les 3 de T50 (test_revisions_pdf.py), les 4 de T51
     # (test_pages_pdf.py), les 5 de T52 (test_actifs_pdf.py), les 4 de T53 (test_images_pdf.py),
-    # les 4 du complément bureautique de T52 (test_actifs_bureau.py), les 12 de T80
-    # (test_caracteres.py).
-    assert len(REGLES_T23) + 24 + 8 + 12 + 3 + 1 + 15 + 3 + 3 + 4 + 5 + 4 + 4 + 12 == len(
+    # les 4 du complément bureautique de T52 (test_actifs_bureau.py), les 13 de T80 et de son
+    # complément (test_caracteres.py).
+    assert len(REGLES_T23) + 24 + 8 + 12 + 3 + 1 + 15 + 3 + 3 + 4 + 5 + 4 + 4 + 13 == len(
         CATALOGUE.regles
     )
 

@@ -32,9 +32,10 @@ import re
 from collections import Counter
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
+from typing import Protocol
 
 from voight_kampff._travail.contexte import Contexte
-from voight_kampff.modules.caracteres import _unicode
+from voight_kampff.modules.caracteres import _bureau, _unicode
 from voight_kampff.rapport.modele import CategorieIdentifiante, Localisation, Plage, RaisonNonMenee
 
 __all__ = [
@@ -368,6 +369,36 @@ class _Curseur:
         self.debut_ligne -= len(segment)
 
 
+class _Localisateur(Protocol):
+    def resoudre(self, segment: str, positions: list[_Position]) -> None: ...
+
+
+@dataclass(slots=True)
+class _DansLeParagraphe:
+    """Positions dans un paragraphe d'un DOCX ou d'un ODT : partie, numéro du paragraphe,
+    caractère à partir de 1, et passage supprimé ou masqué (complément de T80, ADR-0241)."""
+
+    partie: str
+    numero: int
+    octets: Plage
+    """Octets de la partie dans l'archive : le texte n'en est pas une plage, il en est décodé."""
+    supprimes: list[tuple[int, int]]
+    masques: list[tuple[int, int]]
+
+    def resoudre(self, segment: str, positions: list[_Position]) -> None:
+        for position in positions:
+            chemin = f"{self.partie}, paragraphe {self.numero}, caractère {position.debut + 1}"
+            if _croise(self.supprimes, position.debut, position.fin):
+                chemin += ", texte supprimé"
+            if _croise(self.masques, position.debut, position.fin):
+                chemin += ", texte masqué"
+            position.localisation = Localisation(chemin=chemin, octets=self.octets)
+
+
+def _croise(passages: list[tuple[int, int]], debut: int, fin: int) -> bool:
+    return any(d < fin and debut < f for d, f in passages)
+
+
 _TRADUCTION = _Traduction()
 
 
@@ -403,8 +434,9 @@ def _mots_meles(texte: str) -> list[tuple[int, int]]:
 class _Analyse:
     """Analyse d'un texte, segment par segment."""
 
-    def __init__(self, encoder: Callable[[str], tuple[bytes, int]]) -> None:
-        self.curseur = _Curseur(encoder)
+    def __init__(self, curseur: _Localisateur) -> None:
+        self.curseur = curseur
+        """Localise les positions d'un segment ; un autre peut être donné à chaque segment."""
         self.familles = {famille: _Releve() for famille in FAMILLES}
         self.cache: list[str] = []
         self.homoglyphes = _Releve()
@@ -423,9 +455,10 @@ class _Analyse:
 
     # Segment
 
-    def segment(self, texte: str) -> None:
+    def segment(self, texte: str, curseur: _Localisateur | None = None) -> None:
         """Analyse un segment : invisibles, mots mêlés, lettres de compatibilité, par ordre de
-        position ; les positions demandées sont localisées à la fin, en une passe."""
+        position ; les positions demandées sont localisées à la fin, en une passe, par
+        ``curseur`` s'il est donné."""
         astral = bool(texte) and max(texte) > "\uffff"
         invisibles = _INVISIBLES if astral else _INVISIBLES_BMP
         evenements: list[tuple[int, int, Callable[[str, int, int], None]]] = [
@@ -441,7 +474,7 @@ class _Analyse:
         evenements.sort(key=lambda evenement: (evenement[0], evenement[1]))
         for debut, fin, traiter in evenements:
             traiter(texte, debut, fin)
-        self.curseur.resoudre(texte, self.demandes)
+        (curseur or self.curseur).resoudre(texte, self.demandes)
         self.demandes = []
         self.longueur += len(texte)
         self.premier = False
@@ -706,10 +739,13 @@ def _coupure(texte: str) -> int:
 
 
 def analyser(contexte: Contexte) -> None:
+    if contexte.format_reel in {"docx", "odt"}:
+        _analyser_document(contexte)
+        return
     nom = _encodage(contexte.lire(0, 2))
     fabrique, encoder = _CODECS[nom]
     decodeur = fabrique("strict")
-    analyse = _Analyse(encoder)
+    analyse = _Analyse(_Curseur(encoder))
     report = ""
     position = 0
     while position < contexte.taille:
@@ -736,6 +772,32 @@ def analyser(contexte: Contexte) -> None:
         encodage += " avec marque d'ordre"
     contexte.observer("caracteres.encodage", encodage)
     contexte.observer("caracteres.longueur", analyse.longueur, unite="caractères")
+    _observer(contexte, analyse)
+
+
+def _analyser_document(contexte: Contexte) -> None:
+    """Texte d'un DOCX ou d'un ODT, paragraphe par paragraphe (complément de T80)."""
+    analyse = _Analyse(_Curseur(_CODECS["utf-8"][1]))
+    analyse.premier = False  # une marque d'ordre n'a pas de raison d'être dans un paragraphe
+    parties: list[str] = []
+    supprimes = masques = 0
+    for partie in _bureau.lire(contexte):
+        parties.append(partie.nom)
+        for paragraphe in partie.paragraphes:
+            curseur = _DansLeParagraphe(
+                partie.nom,
+                paragraphe.numero,
+                partie.octets,
+                paragraphe.supprimes,
+                paragraphe.masques,
+            )
+            analyse.segment(paragraphe.texte, curseur)
+            supprimes += sum(fin - debut for debut, fin in paragraphe.supprimes)
+            masques += sum(fin - debut for debut, fin in paragraphe.masques)
+    contexte.observer("caracteres.parties", parties)
+    contexte.observer("caracteres.longueur", analyse.longueur, unite="caractères")
+    contexte.observer("caracteres.supprimes", supprimes, unite="caractères")
+    contexte.observer("caracteres.masques", masques, unite="caractères")
     _observer(contexte, analyse)
 
 

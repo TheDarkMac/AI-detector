@@ -79,7 +79,10 @@ def test_catalogue_livre() -> None:
     assert MARQUAGES_LIVRES["M-C2PA"].formats == par_module["c2pa"].formats
     assert MARQUAGES_LIVRES["M-IPTC-DST"].formats == par_module["xmp"].formats
     assert MARQUAGES_LIVRES["M-DWTDCT"].formats == par_module["dwtdct"].formats
-    assert MARQUAGES_LIVRES["M-C2PA-TEXTE"].formats == par_module["caracteres"].formats
+    # Le manifeste C2PA d'un texte est cherché dans le texte brut seul ; un DOCX ou un ODT porte
+    # le sien dans son archive (M-C2PA).
+    assert MARQUAGES_LIVRES["M-C2PA-TEXTE"].formats == ("texte",)
+    assert set(par_module["caracteres"].formats) == {"texte", "docx", "odt"}
     for entree in livre.marquages:
         # Inventaire de T31 ; entrée du dwtDct revue par T32 (ERR-0011), du texte par T80.
         revues = {"M-DWTDCT": date(2026, 11, 16), "M-C2PA-TEXTE": date(2026, 11, 17)}

@@ -354,7 +354,7 @@ id = "F-73"
 etat = "partielle"
 taches = ["T80"]
 methodes = ["test"]
-note = "Texte brut et texte collé (T80, ADR-0232) : module caracteres, tables Unicode 18.0 du projet ; sept familles de caractères invisibles, emplois ordinaires reconnus à leurs voisins, texte des étiquettes masqué par défaut (ADR-0234) ; mots mêlés d'écritures confusables d'après UTS #39, lettres de compatibilité (ADR-0235) ; informations neutres R-CARACTERES-001 à R-CARACTERES-009 (ADR-0237). Contrôle déterministe : tests de conformité sur des textes construits, sans taux sur corpus (A-55). Corps des DOCX et ODT : complément de T80 ; couche texte d'un PDF : complément de T53."
+note = "Texte brut et texte collé (T80, ADR-0232) : module caracteres, tables Unicode 18.0 du projet ; sept familles de caractères invisibles, emplois ordinaires reconnus à leurs voisins, texte des étiquettes masqué par défaut (ADR-0234) ; mots mêlés d'écritures confusables d'après UTS #39, lettres de compatibilité (ADR-0235) ; informations neutres R-CARACTERES-001 à R-CARACTERES-009 (ADR-0237). DOCX et ODT (complément de T80, ADR-0239 à ADR-0242) : corps, notes, en-têtes et pieds de page, commentaires, texte supprimé d'une modification suivie et texte masqué par la mise en forme, signalés à leurs positions ; texte masqué R-CARACTERES-013. Vérifié contre LibreOffice sur tests/donnees/caracteres. Contrôle déterministe : tests de conformité sur des textes construits, sans taux sur corpus (A-55). Couche texte d'un PDF : complément de T53."
 
 # 5.5 Restitution
 

@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from bureautique import Brute, archive_brute, odt_, relations, zip_
 from hypothesis import given
 from hypothesis import strategies as st
 from metadonnees import raisons, resultats, valeurs_de
@@ -45,6 +46,7 @@ from voight_kampff.rapport.modele import (
     NiveauIsolation,
     Partie,
     Plage,
+    RaisonNonMenee,
     Rapport,
     Saisie,
 )
@@ -740,7 +742,7 @@ def test_vrai_processus_texte_colle_par_la_commande(tmp_path: Path) -> None:
     # Sortie dans un fichier, pas dans un tube : sous Windows, l'interpréteur lancé par le
     # lanceur de l'environnement virtuel garderait un tube ouvert après l'arrêt du lanceur, et
     # la lecture de la sortie attendrait sans fin (T80).
-    # Sans -X utf8 : la sortie redirigée s'écrit en UTF-8 sous Windows aussi (ADR-0238).
+    # Sans -X utf8 : la sortie redirigée s'écrit en UTF-8 sous Windows aussi (ADR-0239).
     commande = [sys.executable, "-I", "-m", "voight_kampff", "--texte"]
     sortie = tmp_path / "sortie.txt"
     with sortie.open("wb") as flux:
@@ -894,3 +896,497 @@ def test_schema_du_rapport_d_un_texte_colle() -> None:
     document["identification"]["saisie"] = "fichier"
     with pytest.raises(schemas.DocumentInvalide):
         schemas.valider("rapport", document)
+
+
+# DOCX et ODT (complément de T80, ADR-0239 à ADR-0242)
+
+BUREAU = Path(__file__).parent / "donnees" / "caracteres"
+ORACLE_BUREAU: dict[str, Any] = json.loads((BUREAU / "oracle.json").read_text(encoding="utf-8"))
+W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+W_STRICT = "http://purl.oclc.org/ooxml/wordprocessingml/main"
+T_DOC = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/"
+T_STRICT = "http://purl.oclc.org/ooxml/officeDocument/relationships/"
+TEXT = "urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+STYLE = "urn:oasis:names:tc:opendocument:xmlns:style:1.0"
+ESPACES_ODT = (
+    f'xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:text="{TEXT}" '
+    f'xmlns:style="{STYLE}" xmlns:dc="http://purl.org/dc/elements/1.1/" '
+    'xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" '
+    'xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"'
+)
+
+
+def corps_docx(contenu: str, espace: str = W) -> bytes:
+    return f'<w:document xmlns:w="{espace}"><w:body>{contenu}</w:body></w:document>'.encode()
+
+
+def docx_texte(
+    contenu: str,
+    *annexes: tuple[str, str, bytes],
+    principale: str = "word/document.xml",
+    prefixe: str = T_DOC,
+    espace: str = W,
+    paquet: bytes | None = None,
+) -> bytes:
+    """DOCX minimal : la partie principale et ses annexes (type, nom, contenu)."""
+    liens = relations(*((prefixe + type_, nom.removeprefix("word/")) for type_, nom, _ in annexes))
+    entrees = [
+        ("[Content_Types].xml", b"<Types/>"),
+        ("_rels/.rels", paquet or relations((prefixe + "officeDocument", principale))),
+        (principale.lstrip("/"), corps_docx(contenu, espace)),
+        ("word/_rels/document.xml.rels", liens),
+    ]
+    entrees += [(nom, donnees) for _, nom, donnees in annexes]
+    return zip_(*entrees)
+
+
+def p(*courses: str) -> str:
+    return "<w:p>" + "".join(courses) + "</w:p>"
+
+
+def r(texte: str = "", *, proprietes: str = "", autre: str = "") -> str:
+    proprietes_ = f"<w:rPr>{proprietes}</w:rPr>" if proprietes else ""
+    texte_ = f"<w:t>{texte}</w:t>" if texte else ""
+    return f"<w:r>{proprietes_}{texte_}{autre}</w:r>"
+
+
+def contenu_odt(corps: str, styles_auto: str = "") -> bytes:
+    return (
+        f"<office:document-content {ESPACES_ODT}><office:automatic-styles>{styles_auto}"
+        f"</office:automatic-styles><office:body><office:text>{corps}</office:text>"
+        "</office:body></office:document-content>"
+    ).encode()
+
+
+def styles_odt(communs: str = "", automatiques: str = "", pages: str = "") -> bytes:
+    return (
+        f"<office:document-styles {ESPACES_ODT}><office:styles>{communs}</office:styles>"
+        f"<office:automatic-styles>{automatiques}</office:automatic-styles>"
+        f"<office:master-styles>{pages}</office:master-styles></office:document-styles>"
+    ).encode()
+
+
+def style_masque(nom: str, famille: str = "text") -> str:
+    return (
+        f'<style:style style:name="{nom}" style:family="{famille}">'
+        '<style:text-properties text:display="none"/></style:style>'
+    )
+
+
+def odt_texte(corps: str, styles_auto: str = "", styles: bytes | None = None) -> bytes:
+    autres = [("content.xml", contenu_odt(corps, styles_auto))]
+    if styles is not None:
+        autres.append(("styles.xml", styles))
+    return odt_(None, *autres)
+
+
+def bureau(contenu: bytes, format_: str) -> list[dict[str, Any]]:
+    return resultats("caracteres", contenu, format_)
+
+
+def textes(contenu: bytes, format_: str) -> list[tuple[str, int, str]]:
+    """(partie, numéro, texte) de chaque paragraphe lu."""
+    from tempfile import TemporaryFile
+
+    from metadonnees import contexte as construire
+
+    from voight_kampff.modules.caracteres import _bureau
+
+    with TemporaryFile() as fichier:
+        c = construire(fichier, contenu, format_, "caracteres")
+        return [
+            (partie.nom, paragraphe.numero, paragraphe.texte)
+            for partie in _bureau.lire(c)
+            for paragraphe in partie.paragraphes
+        ]
+
+
+def chemins(lignes_: list[dict[str, Any]], nom: str) -> list[str]:
+    return [
+        o["observation"]["localisation"]["chemin"]
+        for o in lignes_
+        if o["type"] == "observation" and o["observation"]["nom"] == nom
+    ]
+
+
+def _chaine(points: list[str]) -> str:
+    return "".join(chr(int(point[2:], 16)) for point in points)
+
+
+@pytest.mark.parametrize("nom", ["texte.odt", "texte.docx"])
+def test_echantillons_bureautiques_compares_a_libreoffice(nom: str) -> None:
+    # Tout ce que LibreOffice relit (paragraphes, note, en-tête, commentaire, suppression) se
+    # retrouve dans le texte lu par le module ; l'appel de note « 1 » n'est pas du texte du DOCX.
+    format_ = nom.rsplit(".", 1)[1]
+    contenu = (BUREAU / nom).read_bytes()
+    lu = "\n".join(texte for _partie, _numero, texte in textes(contenu, format_))
+    attendu = ORACLE_BUREAU[nom]
+    supprime = _chaine(attendu["suppressions"][0])
+    for cle in ("paragraphes", "notes", "commentaires", "suppressions"):
+        for points in attendu[cle]:
+            chaine = _chaine(points).removesuffix("1")
+            # LibreOffice montre la suppression dans son paragraphe ; l'ODT la range à part,
+            # dans la région des modifications, que le module lit comme un paragraphe.
+            assert chaine in lu or chaine.replace(supprime, "") in lu, (cle, points)
+    assert _chaine(attendu["entete"]) in lu
+    resultat = bureau(contenu, format_)
+    v = valeurs_de(resultat)
+    assert raisons(resultat) == []
+    assert (v["caracteres.supprimes"], v["caracteres.masques"]) == (16, 16)
+    assert v["caracteres.homoglyphes.codes"] == ["U+0430 Cyrillic dans Latin (1)"]
+    assert v["caracteres.sans_chasse.codes"] == ["U+200B (2)"]
+    assert v["caracteres.bidirectionnels.codes"] == ["U+202E (1)"]
+    assert v["caracteres.espaces.codes"] == ["U+2003 (1)"]
+    assert v["caracteres.prive.codes"] == ["U+E000 (1)"]
+    assert v["caracteres.etiquettes.texte"] == "cache"
+    assert any(
+        c.endswith(", texte supprimé")
+        for c in chemins(resultat, "caracteres.bidirectionnels.position")
+    )
+    masques = [c for c in chemins(resultat, "caracteres.sans_chasse.position") if "masqué" in c]
+    assert len(masques) == 1
+
+
+def test_parties_lues_d_un_docx() -> None:
+    annexes = (
+        ("header", "word/header2.xml", corps_docx(p(r("H2")))),
+        ("header", "word/header1.xml", corps_docx(p(r("H1")))),
+        ("footer", "word/footer1.xml", corps_docx(p(r("F")))),
+        ("footnotes", "word/footnotes.xml", corps_docx(p(r("N")))),
+        ("endnotes", "word/endnotes.xml", corps_docx(p(r("E")))),
+        ("comments", "word/comments.xml", corps_docx(p(r("C")))),
+        ("styles", "word/styles.xml", corps_docx(p(r("pas lu")))),
+    )
+    contenu = docx_texte(p(r("corps")), *annexes)
+    assert [partie for partie, _n, _t in textes(contenu, "docx")] == [
+        "word/document.xml",
+        "word/header1.xml",
+        "word/header2.xml",
+        "word/footer1.xml",
+        "word/footnotes.xml",
+        "word/endnotes.xml",
+        "word/comments.xml",
+    ]
+    v = valeurs_de(bureau(contenu, "docx"))
+    assert v["caracteres.parties"][0] == "word/document.xml"
+
+
+def test_docx_strict_et_cible_absolue() -> None:
+    contenu = docx_texte(
+        p(r("a\u200bb")), principale="/word/document.xml", prefixe=T_STRICT, espace=W_STRICT
+    )
+    assert textes(contenu, "docx") == [("word/document.xml", 1, "a\u200bb")]
+
+
+def test_texte_d_un_paragraphe_docx() -> None:
+    contenu = docx_texte(
+        p(
+            r("un", autre="<w:tab/><w:t>deux</w:t><w:br/><w:t>trois</w:t><w:cr/>"),
+            r(autre="<w:noBreakHyphen/><w:softHyphen/><w:instrText>HYPERLINK x</w:instrText>"),
+            r("caché", proprietes="<w:vanish/>"),
+            r("visible", proprietes='<w:vanish w:val="false"/>'),
+            r("off", proprietes='<w:vanish w:val="0"/>'),
+            "<w:del><w:r><w:delText>effacé</w:delText></w:r></w:del>",
+            "<w:moveFrom><w:r><w:t>déplacé</w:t></w:r></w:moveFrom>",
+            "<w:pPr><w:rPr><w:vanish/></w:rPr></w:pPr>",
+        )
+        + p(
+            r("avant"),
+            r(autre="<w:pict><w:txbxContent>" + p(r("boîte")) + "</w:txbxContent></w:pict>"),
+        )
+        + p(),
+    )
+    assert textes(contenu, "docx") == [
+        (
+            "word/document.xml",
+            1,
+            "un\tdeux\ntrois\n\u2011\u00adcachévisibleoffeffacédéplacé",
+        ),
+        ("word/document.xml", 2, "avant"),
+        ("word/document.xml", 3, "boîte"),
+    ]
+    v = valeurs_de(bureau(contenu, "docx"))
+    assert v["caracteres.masques"] == len("caché")
+    assert v["caracteres.supprimes"] == len("effacédéplacé")
+
+
+def test_docx_relations_et_parties_manquantes() -> None:
+    # Annexe manquante : non menée, les autres sont lues ; cible externe, cible vide ou qui
+    # remonte au-dessus du paquet : ignorées ou ramenées à la racine.
+    from voight_kampff.modules.caracteres import _bureau
+
+    assert _bureau._cible("word/document.xml", "../../pied.xml") == "pied.xml"
+    assert _bureau._cible("word/document.xml", "/word/x%20y.xml") == "word/x y.xml"
+    assert _bureau._cible("", "word/document.xml") == "word/document.xml"
+    assert _bureau._cible("word/document.xml", "./") is None
+    liens = relations(
+        (T_DOC + "header", "absent.xml"),
+        (T_DOC + "comments", "http://exemple.invalid/c.xml", "External"),
+        (T_DOC + "footnotes", "."),
+        (T_DOC + "autre", "x.xml"),
+        ("http://inconnu/footer", "f.xml"),
+    )
+    contenu = zip_(
+        ("_rels/.rels", relations((T_DOC + "officeDocument", "word/document.xml"))),
+        ("word/document.xml", corps_docx(p(r("corps")))),
+        ("word/_rels/document.xml.rels", liens + b"<"),
+    )
+    resultat = bureau(contenu, "docx")
+    assert raisons(resultat) == ["format_partiel", "reference_manquante"]
+    assert valeurs_de(resultat)["caracteres.parties"] == ["word/document.xml"]
+    # Relations bien formées : externes, inconnues, sans cible, autres éléments ignorés.
+    bien_formees = liens.replace(b"</Relationships>", b"<Autre/></Relationships>")
+    contenu = zip_(
+        ("_rels/.rels", relations((T_DOC + "officeDocument", "word/document.xml"))),
+        ("word/document.xml", corps_docx(r("hors paragraphe") + p(r("corps")))),
+        ("word/_rels/document.xml.rels", bien_formees),
+    )
+    resultat = bureau(contenu, "docx")
+    assert raisons(resultat) == ["reference_manquante"]
+    assert textes(contenu, "docx") == [("word/document.xml", 1, "corps")]
+
+
+@pytest.mark.parametrize(
+    ("entrees", "attendues"),
+    [
+        ((("[Content_Types].xml", b"<Types/>"),), ["reference_manquante"]),
+        ((("_rels/.rels", relations((T_DOC + "styles", "s.xml"))),), ["reference_manquante"]),
+        (
+            (("_rels/.rels", relations((T_DOC + "officeDocument", "word/document.xml"))),),
+            ["reference_manquante"],
+        ),
+        (
+            (
+                ("_rels/.rels", relations((T_DOC + "officeDocument", "word/document.xml"))),
+                ("word/document.xml", corps_docx(p(r("coup")))[:-12]),
+            ),
+            ["format_partiel"],
+        ),
+    ],
+)
+def test_docx_illisible(entrees: tuple[tuple[str, bytes], ...], attendues: list[str]) -> None:
+    resultat = bureau(zip_(*entrees), "docx")
+    assert raisons(resultat) == attendues
+    assert "caracteres.longueur" in valeurs_de(resultat)
+
+
+def test_archive_illisible() -> None:
+    resultat = bureau(b"PK\x03\x04 pas une archive", "docx")
+    assert raisons(resultat) == ["format_partiel"]
+    assert valeurs_de(resultat)["caracteres.parties"] == []
+
+
+def test_entree_illisible(monkeypatch: pytest.MonkeyPatch) -> None:
+    from voight_kampff.modules._lecture import zip as lecteur
+
+    def illisible(self: Any, entree: Any) -> bytes:
+        raise lecteur.Illisible(RaisonNonMenee.FORMAT_PARTIEL, 0, entree.nom)
+
+    lire = lecteur.Archive.lire
+
+    def document_illisible(self: Any, entree: Any) -> bytes:
+        if entree.nom == "word/document.xml":
+            raise lecteur.Illisible(RaisonNonMenee.FORMAT_PARTIEL, 0, entree.nom)
+        return lire(self, entree)
+
+    monkeypatch.setattr(lecteur.Archive, "lire", document_illisible)
+    annexe = ("footnotes", "word/footnotes.xml", corps_docx(p(r("note"))))
+    assert textes(docx_texte(p(r("a")), annexe), "docx") == [("word/footnotes.xml", 1, "note")]
+    monkeypatch.setattr(lecteur.Archive, "lire", illisible)
+    # Relations du paquet illisibles : la partie principale n'est pas connue.
+    assert raisons(bureau(docx_texte(p(r("a"))), "docx")) == [
+        "format_partiel",
+        "reference_manquante",
+    ]
+    assert raisons(bureau(odt_texte("<text:p>a</text:p>", styles=styles_odt()), "odt")) == [
+        "format_partiel",
+        "format_partiel",
+    ]
+
+
+def test_texte_d_un_odt() -> None:
+    corps = (
+        '<text:p>un<text:s text:c="3"/>deux<text:s/><text:s text:c="x"/><text:tab/>'
+        "trois<text:line-break/>quatre</text:p>"
+        '<text:p text:style-name="Pcache">paragraphe caché</text:p>'
+        '<text:p>a<text:span text:style-name="Tcache">masqué<text:span>aussi</text:span>'
+        "</text:span>b</text:p>"
+        "<text:p>note<text:note><text:note-citation>1</text:note-citation><text:note-body>"
+        "<text:p>dans la note</text:p></text:note-body></text:note></text:p>"
+        "<text:p><office:annotation><dc:creator>Auteur</dc:creator><dc:date>2026</dc:date>"
+        "<text:p>avis</text:p></office:annotation>texte</text:p>"
+        "<text:p><draw:frame><svg:desc>description</svg:desc></draw:frame>image</text:p>"
+        "<text:tracked-changes><text:changed-region><text:deletion><office:change-info>"
+        "<dc:creator>R</dc:creator></office:change-info><text:p>retiré</text:p>"
+        "</text:deletion></text:changed-region></text:tracked-changes>"
+        "<text:h>titre</text:h><text:p/>"
+    )
+    styles_auto = style_masque("Pcache", "paragraph") + style_masque("Tcache")
+    contenu = odt_texte(corps, styles_auto)
+    assert textes(contenu, "odt") == [
+        ("content.xml", 1, "un   deux  \ttrois\nquatre"),
+        ("content.xml", 2, "paragraphe caché"),
+        ("content.xml", 3, "amasquéaussib"),
+        ("content.xml", 4, "note1"),
+        ("content.xml", 5, "dans la note"),
+        ("content.xml", 6, "texte"),
+        ("content.xml", 7, "avis"),
+        ("content.xml", 8, "image"),
+        ("content.xml", 9, "retiré"),
+        ("content.xml", 10, "titre"),
+    ]
+    v = valeurs_de(bureau(contenu, "odt"))
+    assert v["caracteres.masques"] == len("paragraphe caché") + len("masquéaussi")
+    assert v["caracteres.supprimes"] == len("retiré")
+    assert v["caracteres.parties"] == ["content.xml"]
+
+
+def test_styles_et_pages_types_d_un_odt() -> None:
+    # Un style commun de styles.xml vaut pour content.xml ; un style automatique de styles.xml
+    # ne vaut que pour lui. Seuls les en-têtes et pieds des pages types sont lus.
+    styles = styles_odt(
+        communs=style_masque("Commun") + "<text:p>hors des pages</text:p>",
+        automatiques=style_masque("P1"),
+        pages=(
+            '<style:master-page style:name="Standard"><style:header><text:p>'
+            '<text:span text:style-name="P1">en-tête masqué</text:span></text:p>'
+            "</style:header><style:footer-left><text:p>pied</text:p></style:footer-left>"
+            "</style:master-page>"
+        ),
+    )
+    corps = (
+        '<text:p><text:span text:style-name="Commun">c</text:span>'
+        '<text:span text:style-name="P1">visible</text:span></text:p>'
+    )
+    contenu = odt_texte(corps, styles=styles)
+    assert textes(contenu, "odt") == [
+        ("content.xml", 1, "cvisible"),
+        ("styles.xml", 1, "en-tête masqué"),
+        ("styles.xml", 2, "pied"),
+    ]
+    assert valeurs_de(bureau(contenu, "odt"))["caracteres.masques"] == 1 + len("en-tête masqué")
+
+
+def test_odt_parties_manquantes_ou_coupees() -> None:
+    sans_contenu = odt_(None, ("styles.xml", styles_odt()))
+    assert raisons(bureau(sans_contenu, "odt")) == ["reference_manquante"]
+    coupe = odt_(None, ("content.xml", contenu_odt("<text:p>a\u200bb</text:p>")[:-30]))
+    resultat = bureau(coupe, "odt")
+    assert raisons(resultat) == ["format_partiel"]
+    assert valeurs_de(resultat)["caracteres.sans_chasse"] == 1  # texte lu avant l'arrêt gardé
+    dans_le_paragraphe = contenu_odt("<text:p>avant\u200b<text:span>coup")
+    dans_le_paragraphe = dans_le_paragraphe[: dans_le_paragraphe.index(b"coup") + 4]
+    resultat = bureau(odt_(None, ("content.xml", dans_le_paragraphe)), "odt")
+    assert raisons(resultat) == ["format_partiel"]
+    # Le dernier morceau de texte, que l'arrêt coupe, n'est pas rendu par expat.
+    assert valeurs_de(resultat)["caracteres.longueur"] == len("avant\u200b")
+    coupe_styles = odt_texte("<text:p>a</text:p>", styles=styles_odt()[:-20])
+    assert raisons(bureau(coupe_styles, "odt")) == ["format_partiel"]
+
+
+def test_positions_dans_un_paragraphe() -> None:
+    contenu = docx_texte(
+        p(r("ab"), r("c\u200bd", proprietes="<w:vanish/>"))
+        + p("<w:del><w:r><w:delText>x\u202ey</w:delText></w:r></w:del>"),
+    )
+    resultat = bureau(contenu, "docx")
+    (sans_chasse,) = [
+        o["observation"]["localisation"]
+        for o in resultat
+        if o["type"] == "observation"
+        and o["observation"]["nom"] == "caracteres.sans_chasse.position"
+    ]
+    assert sans_chasse["chemin"] == "word/document.xml, paragraphe 1, caractère 4, texte masqué"
+    assert chemins(resultat, "caracteres.bidirectionnels.position") == [
+        "word/document.xml, paragraphe 2, caractère 2, texte supprimé"
+    ]
+
+
+@given(st.text(max_size=60))
+def test_docx_texte_quelconque(texte: str) -> None:
+    from xml.sax.saxutils import escape
+
+    propre = "".join(
+        c
+        for c in texte
+        if c in "\t\n\r" or (c >= " " and not "\ud800" <= c <= "\udfff" and c not in "\ufffe\uffff")
+    )
+    contenu = docx_texte(p(r(escape(propre))))
+    for ligne in bureau(contenu, "docx"):
+        schemas.valider("messages", ligne)
+
+
+@pytest.fixture(scope="module")
+def analyses_bureau(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Analyse]:
+    dossier = tmp_path_factory.mktemp("caracteres-bureau")
+    trouvees = {}
+    for nom in ("texte.odt", "texte.docx"):
+        (dossier / nom).write_bytes((BUREAU / nom).read_bytes())
+        trouvees[nom] = analyser(dossier / nom)
+    return trouvees
+
+
+@pytest.mark.parametrize("nom", ["texte.odt", "texte.docx"])
+def test_regles_sur_les_echantillons_bureautiques(
+    analyses_bureau: dict[str, Analyse], nom: str
+) -> None:
+    analyse = analyses_bureau[nom]
+    etats = {t.module: t.etat for t in analyse.couverture.techniques}
+    assert etats["caracteres"] is EtatTechnique.APPLIQUEE
+    assert regles(analyse) == {
+        "R-CARACTERES-002",
+        "R-CARACTERES-003",
+        "R-CARACTERES-005",
+        "R-CARACTERES-006",
+        "R-CARACTERES-007",
+        "R-CARACTERES-008",
+        "R-CARACTERES-013",
+    }
+    vue = Presentation(analyse, export.masquees())
+    assert (
+        "Le document porte 16 caractères de texte masqué par sa mise en forme, que le logiciel "
+        "n'affiche pas." in [vue.phrase(c) for c in analyse.constats]
+    )
+
+
+@pytest.mark.parametrize(
+    ("format_", "doublee"),
+    [
+        ("docx", "_rels/.rels"),
+        ("docx", "word/document.xml"),
+        ("odt", "styles.xml"),
+        ("odt", "content.xml"),
+    ],
+)
+def test_entree_en_double(format_: str, doublee: str) -> None:
+    # Deux entrées du même nom : la partie est illisible (lecteur ZIP), le reste est lu, et le
+    # module ne tombe pas en erreur (défaut trouvé par le fuzzing du complément de T80).
+    import warnings
+    import zipfile
+
+    if format_ == "docx":
+        contenu = docx_texte(p(r("a\u200bb")))
+    else:
+        contenu = odt_texte("<text:p>a\u200bb</text:p>", styles=styles_odt())
+    flux = io.BytesIO(contenu)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")  # zipfile avertit d'un nom en double
+        with zipfile.ZipFile(flux, "a") as archive:
+            archive.writestr(doublee, b"<x/>")
+    resultat = bureau(flux.getvalue(), format_)
+    assert "format_partiel" in raisons(resultat)
+    assert "caracteres.longueur" in valeurs_de(resultat)
+
+
+def test_en_tete_local_illisible() -> None:
+    # En-tête local d'un autre nom que le répertoire central : l'entrée est illisible, et la
+    # localisation de l'arrêt est celle du lecteur, sans relire l'en-tête (fuzzing du
+    # complément de T80).
+    paquet = relations((T_DOC + "officeDocument", "word/document.xml"))
+    contenu = archive_brute(
+        Brute(b"_rels/.rels", paquet),
+        Brute(b"word/document.xml", corps_docx(p(r("a"))), nom_local=b"word/autre___.xml"),
+    )
+    resultat = bureau(contenu, "docx")
+    assert raisons(resultat) == ["format_partiel"]
+    assert valeurs_de(resultat)["caracteres.parties"] == []

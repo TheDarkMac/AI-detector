@@ -53,3 +53,4 @@ Option A. Précision de l'assistant : le module s'appelle **`caracteres`** (cara
 | Date | Modification |
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début de T80 |
+| 2026-11-18 | Réalisé : le complément de T80 lit le corps, les notes, les en-têtes et pieds de page et les commentaires d'un DOCX et d'un ODT ([ADR-0239](ADR-0239-parties-lues-d-un-docx-et-d-un-odt.md) à [ADR-0242](ADR-0242-texte-masque-et-versions-du-complement-de-t80.md)) |
