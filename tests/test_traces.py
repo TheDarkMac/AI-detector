@@ -55,7 +55,7 @@ def test_analyse_sans_trace(tmp_path: Path) -> None:
         cwd=travail,
         env=environnement,
         capture_output=True,
-        text=True,
+        encoding="utf-8",  # hors d'un terminal, vk écrit en UTF-8 sur tout système (ADR-0238)
         check=False,
         timeout=180,
     )

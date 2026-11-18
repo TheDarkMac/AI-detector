@@ -55,3 +55,4 @@ Option A.
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T16 : statut « Accepté » |
 | 2026-11-17 | Renvoi : les constats de T80 sur ces caractères suivent une table Unicode 18.0 du projet, pas la base de l'interpréteur ([ADR-0234](ADR-0234-caracteres-invisibles.md)) ; l'affichage reste celui-ci (T80) |
+| 2026-11-18 | Renvoi : hors d'un terminal, la sortie de `vk` s'écrit en UTF-8, où `⟨U+XXXX⟩` s'écrit toujours ; en cp1252, encodage local de Windows, il levait `UnicodeEncodeError` ([ADR-0238](ADR-0238-sortie-redirigee-en-utf8.md), [ERR-0013](../errata/ERR-0013-sortie-redirigee-en-cp1252.md)) |

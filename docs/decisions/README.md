@@ -252,3 +252,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0235](ADR-0235-homoglyphes.md) | Homoglyphes : mots mêlés d'écritures confusables, d'après UTS #39 ; lettres de compatibilité à part ; information neutre | Accepté | 2026-11-17 |
 | [ADR-0236](ADR-0236-manifeste-c2pa-dans-un-texte.md) | Manifeste C2PA écrit dans un texte : enveloppe trouvée et décrite, jamais vérifiée ; `M-C2PA-TEXTE` recherché par `caracteres` | Accepté | 2026-11-17 |
 | [ADR-0237](ADR-0237-constats-et-versions-de-t80.md) | Constats des caractères invisibles ou substitués : douze informations neutres ; module `caracteres` et versions de T80 | Accepté | 2026-11-17 |
+| [ADR-0238](ADR-0238-sortie-redirigee-en-utf8.md) | Sortie de `vk` redirigée vers un fichier ou un tube : écrite en UTF-8, quel que soit l'encodage local | Accepté | 2026-11-18 |

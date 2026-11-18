@@ -21,9 +21,13 @@ ADR-0092).
 
 ``--comparer A B`` compare deux rapports JSON du même fichier (NF-06, ADR-0112) : 0 si leurs
 résultats sont identiques, 1 s'ils diffèrent, 2 si l'un n'est pas un rapport valide.
+
+Hors d'un terminal, la sortie et l'erreur s'écrivent en UTF-8, quel que soit l'encodage local
+(ADR-0238).
 """
 
 import argparse
+import io
 import os
 import sys
 from collections.abc import Sequence
@@ -406,8 +410,22 @@ def _comparer(chemins: Sequence[str]) -> int:
     return 0 if resultat.identiques else 1
 
 
+def _sortie_en_utf8() -> None:
+    """Écrit en UTF-8 la sortie et l'erreur qui ne sont pas un terminal (ADR-0238, ERR-0013).
+
+    Redirigé vers un fichier ou un tube, un flux s'écrit sinon dans l'encodage local, cp1252
+    sous Windows, qui n'a ni « ⟨ » de la neutralisation (ADR-0096) ni la plupart des écritures.
+    Un terminal garde le sien : la console de Windows reçoit déjà de l'UTF-8. Seul un substitut
+    isolé ne s'écrit pas en UTF-8 : il s'écrit en échappement, sans erreur.
+    """
+    for flux in (sys.stdout, sys.stderr):
+        if isinstance(flux, io.TextIOWrapper) and not flux.isatty():
+            flux.reconfigure(encoding="utf-8", errors="backslashreplace")
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """Point d'entrée ; renvoie le code de sortie du processus."""
+    _sortie_en_utf8()
     analyseur = construire_analyseur()
     arguments = analyseur.parse_args(argv)
     if arguments.comparer is not None:
