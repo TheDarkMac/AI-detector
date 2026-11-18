@@ -62,16 +62,6 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
                 raise pytest.UsageError(f"{item.nodeid} : exigence inconnue {', '.join(inconnues)}")
 
 
-def pytest_configure(config: pytest.Config) -> None:  # pragma: no cover - diagnostic
-    """DIAGNOSTIC TEMPORAIRE (T80), à retirer : sous Windows, chaque test est nommé, et la
-    session s'arrête au bout de 20 minutes avec la pile de tous ses fils."""
-    import faulthandler
-    import sys
-
-    if sys.platform == "win32":
-        config.option.verbose = max(config.option.verbose, 1)
-        faulthandler.dump_traceback_later(1200, exit=True, file=sys.__stderr__)
-
 EMPREINTE = "3f" * 32
 TAILLE = 2_048_576
 PARTIES = (

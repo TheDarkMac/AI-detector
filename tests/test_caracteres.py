@@ -646,6 +646,9 @@ def test_texte_colle_en_octets_et_empreinte() -> None:
         ("a\ud800", MotifRefus.TEXTE_ILLISIBLE),
         (b"a" * (TAILLE_MAX_TEXTE + 1), MotifRefus.TEXTE_HORS_LIMITES),
     ],
+    # Identifiants explicites : celui que pytest tirerait des 16 Mio du dernier cas ferait 16 Mi
+    # caractères, recopiés dans PYTEST_CURRENT_TEST, que Windows limite à 32 767 (T80).
+    ids=["chaine-vide", "octets-vides", "pas-utf8", "substitut-isole", "trop-long"],
 )
 def test_texte_colle_refuse(texte: str | bytes, motif: MotifRefus) -> None:
     with pytest.raises(AnalyseRefusee) as refus:
