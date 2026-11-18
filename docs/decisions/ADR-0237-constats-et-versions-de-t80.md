@@ -56,3 +56,4 @@ Une règle par famille, direction « rien de particulier », fondement « vérif
 | Date | Modification |
 | --- | --- |
 | 2026-11-17 | Création, avec les options d'ADR-0234 et d'ADR-0235 retenues au début de T80 |
+| 2026-11-18 | Renvoi : R-CARACTERES-013 (texte masqué) et `caracteres` 0.2.0, catalogue 0.17.0 ([ADR-0242](ADR-0242-texte-masque-et-versions-du-complement-de-t80.md)) (complément de T80) |

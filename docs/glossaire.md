@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.17** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 avec le complément bureautique de T52, v1.17 proposée dans la PR de T80. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.18** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 avec le complément bureautique de T52, v1.17 avec T80, v1.18 proposée dans la PR du complément de T80. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -55,6 +55,8 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Sélecteur de variante | Caractère invisible (U+FE00 à U+FE0F, U+E0100 à U+E01EF) qui choisit la forme du caractère qui le précède ; une suite de sélecteurs peut écrire des octets, comme l'enveloppe d'un manifeste C2PA. | ADR-0234, ADR-0236 |
 | Homoglyphe, mot mêlé | Lettre d'une écriture qui se confond avec une lettre d'une autre (même squelette, UTS #39) ; un mot mêlé a, dans son écriture dominante, une telle lettre d'une autre écriture. | F-73, ADR-0235 |
 | Lettre de compatibilité | Lettre ou chiffre qui n'est qu'une variante d'affichage d'un autre (gras mathématique, pleine chasse) : décomposition de compatibilité `<font>` ou `<wide>`. | ADR-0235 |
+| Texte supprimé | Texte d'une suppression suivie d'un DOCX ou d'un ODT : il reste dans le fichier sans s'afficher dans la version finale ; analysé, ses positions le disent. | ADR-0240 |
+| Texte masqué | Texte d'un DOCX ou d'un ODT que sa mise en forme cache (`w:vanish`, `text:display="none"`) ; analysé, compté, signalé par une information neutre. | ADR-0242 |
 | Enveloppe C2PATXT | Manifeste C2PA écrit dans un texte : en-tête `C2PATXT`, version, longueur et boîte JUMBF, en sélecteurs de variante après U+FEFF (C2PA 2.3, annexe A.7) ; trouvée et décrite par l'outil, non vérifiée. | ADR-0236 |
 
 ## Termes de l'architecture
@@ -142,3 +144,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-11-17 | 1.15 | Partie extraite, filtre d'un flux PDF ajoutés | T53 |
 | 2026-11-17 | 1.16 | Élément actif (DOCX, ODT), relation d'un paquet OPC ajoutés ; statut corrigé, il annonçait encore la v1.12 | T52 (complément bureautique) |
 | 2026-11-17 | 1.17 | Texte collé, caractère invisible, emploi ordinaire ou inhabituel, étiquette, sélecteur de variante, homoglyphe et mot mêlé, lettre de compatibilité, enveloppe C2PATXT ajoutés | T80 |
+| 2026-11-18 | 1.18 | Texte supprimé, texte masqué ajoutés | T80 (complément bureautique) |

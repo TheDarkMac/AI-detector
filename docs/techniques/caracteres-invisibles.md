@@ -1,12 +1,12 @@
-# Fiche technique — Caractères invisibles ou substitués d'un texte
+# Fiche technique — Caractères invisibles ou substitués d'un texte, d'un DOCX ou d'un ODT
 
-- **Module** : `caracteres` (version 0.1.0)
-- **Tâche** : T80
+- **Module** : `caracteres` (version 0.2.0)
+- **Tâche** : T80 et son complément bureautique
 - **Exigences** : F-73, F-24, F-25, ES-12
-- **Formats** : `texte`
+- **Formats** : `texte`, `docx`, `odt`
 - **Directions permises** : `rien_de_particulier`
 - **Règles** : aucune
-- **Bibliothèques** : aucune
+- **Bibliothèques** : `expat`
 
 ## Question
 
@@ -15,6 +15,15 @@ Le texte porte-t-il des caractères qui ne s'affichent pas, ou qui se font passe
 ## Principe
 
 Le module lit un texte brut, enregistré dans un fichier (UTF-8, avec ou sans marque d'ordre, ou UTF-16 avec sa marque, ADR-0070) ou collé (UTF-8, [ADR-0233](../decisions/ADR-0233-saisie-du-texte-colle.md)). Ses tables sont tirées des données d'**Unicode 18.0.0** par `tests/donnees/caracteres/generer_unicode.py` et livrées avec lui (`_unicode.py`) : les constats ne dépendent pas de la version d'Unicode de l'interpréteur ([ADR-0234](../decisions/ADR-0234-caracteres-invisibles.md)).
+
+**DOCX et ODT** (complément de T80, [ADR-0239](../decisions/ADR-0239-parties-lues-d-un-docx-et-d-un-odt.md) à [ADR-0242](../decisions/ADR-0242-texte-masque-et-versions-du-complement-de-t80.md)). Le texte est tiré des parties XML que le logiciel affiche, par le lecteur ZIP du projet ([ADR-0137](../decisions/ADR-0137-lecteur-zip-du-projet.md)) et expat, sans DTD ([ADR-0116](../decisions/ADR-0116-xml-par-expat-sans-dtd.md)), puis analysé paragraphe par paragraphe, comme un texte brut :
+
+| Format | Parties lues, dans l'ordre | Texte |
+| --- | --- | --- |
+| DOCX | Partie principale (relation `officeDocument` du paquet), puis, par ses relations, en-têtes, pieds de page, notes de bas de page, notes de fin, commentaires | `w:t` ; `w:delText` ; tabulation, saut de ligne, trait d'union insécable et conditionnel par leur caractère ; codes de champ (`w:instrText`) non lus |
+| ODT | `content.xml` (corps, notes, annotations, zones de texte, région des modifications), puis les en-têtes et pieds des pages types de `styles.xml` | Texte des paragraphes (`text:p`, `text:h`), hors métadonnées (`dc:`, `meta:`) et descriptions (`svg:`) ; `text:s`, `text:tab`, `text:line-break` par leur caractère |
+
+Est **supprimé** le texte d'une suppression suivie (`w:del`, `w:moveFrom`, `text:deletion`) ; **masqué**, celui d'une course qui porte `w:vanish` ou d'un paragraphe ou d'une portion dont le style, automatique de sa partie ou commun de `styles.xml`, a `text:display="none"`. Ce texte est analysé comme le reste, et ses positions le disent ([ADR-0240](../decisions/ADR-0240-texte-supprime-d-une-modification-suivie.md), ADR-0242). Un paragraphe contenu dans un autre (zone de texte, note d'un ODT) est un paragraphe à part. Positions : partie, numéro du paragraphe dans sa partie (à partir de 1), caractère dans le paragraphe (à partir de 1), « texte supprimé », « texte masqué », et la plage d'octets de la partie dans l'archive ([ADR-0241](../decisions/ADR-0241-texte-bureautique-dans-le-module-caracteres.md)).
 
 **Caractères invisibles.** Sept familles, un caractère recevant la première qui le contient :
 
@@ -42,6 +51,8 @@ Le texte qu'écrivent des étiquettes hors d'un drapeau (U+E0020 à U+E007E, un 
 | --- | --- |
 | `texte` (fichier) | Le fichier entier, UTF-8 (marque d'ordre comprise) ou UTF-16 avec sa marque |
 | `texte` (collé) | Les octets reçus, UTF-8, 16 Mio au plus ; les caractères de contrôle y sont admis |
+| `docx` | Les parties XML du tableau ci-dessus, décompressées |
+| `odt` | `content.xml`, et `styles.xml` pour ses pages types et ses styles communs |
 
 Données de référence : `DerivedCoreProperties.txt` (Default_Ignorable_Code_Point), `Scripts.txt`, `extracted/DerivedGeneralCategory.txt`, `UnicodeData.txt` (décompositions), `emoji/emoji-data.txt` (Extended_Pictographic, Emoji_Modifier), `security/confusables.txt`, version 18.0.0, empreintes dans `_unicode.py`.
 
@@ -49,7 +60,9 @@ Données de référence : `DerivedCoreProperties.txt` (Default_Ignorable_Code_Po
 
 | Observation | Forme |
 | --- | --- |
-| `caracteres.encodage` | `UTF-8`, `UTF-8 avec marque d'ordre`, `UTF-16LE`, `UTF-16BE` |
+| `caracteres.encodage` | Texte brut : `UTF-8`, `UTF-8 avec marque d'ordre`, `UTF-16LE`, `UTF-16BE` |
+| `caracteres.parties` | DOCX, ODT : noms des parties lues, dans l'ordre |
+| `caracteres.supprimes`, `caracteres.masques` | DOCX, ODT : caractères de texte supprimé, de texte masqué (« caractères ») |
 | `caracteres.longueur` | Points de code lus (« caractères ») |
 | `caracteres.<famille>` | Caractères de la famille, ordinaires compris ; seulement si elle en a |
 | `caracteres.<famille>.inhabituels` | Ceux hors de leur emploi ordinaire |
@@ -85,12 +98,15 @@ Le module n'émet aucun constat : les règles du catalogue lisent ses observatio
 | R-CARACTERES-010 | Au moins une enveloppe C2PATXT complète |
 | R-CARACTERES-011 | Au moins une enveloppe corrompue |
 | R-CARACTERES-012 | Au moins deux enveloppes |
+| R-CARACTERES-013 | DOCX, ODT : au moins un caractère de texte masqué par la mise en forme |
 
 Toutes en information neutre, direction « rien de particulier », fondement « vérification déterministe ».
 
 ## Taux d'erreur
 
 Sans objet pour une information neutre qui relève des caractères. Les relevés sont vérifiés sur des textes construits par `tests/test_caracteres.py` (chaque famille, chaque emploi ordinaire, enveloppes écrites selon l'annexe A.7). La part de textes ordinaires qui déclenchent chaque règle se mesurera sur le corpus de référence (T100).
+
+Sur les échantillons `tests/donnees/caracteres/texte.odt` et `texte.docx`, écrits et relus par LibreOffice 25.2.3.2 (`generer_bureau.py`, `oracle.json`), tout le texte que relit LibreOffice (paragraphes, note, en-tête, commentaire, suppression) se retrouve dans le texte lu, et chaque caractère semé est relevé à sa place.
 
 Durées mesurées par T80 sur le poste de développement, commande `vk` entière : 200 Mo d'anglais en 45 s, 64 Mo de français en 47 s, 64 Mo de russe en 31 s. Un texte de 1 Gio peut dépasser le délai de 120 s : l'analyse est alors interrompue (ADR-0078).
 
@@ -105,7 +121,11 @@ Durées mesurées par T80 sur le poste de développement, commande `vk` entière
 - Un segment sans saut de ligne ni espace de plus de 8 Mi points de code est coupé : une suite d'invisibles ou un mot à cheval sur la coupure est vu en deux.
 - Le manifeste d'une enveloppe n'est pas lu : ni ses déclarations, ni sa signature, ni l'empreinte du texte. Une superboîte JUMBF à longueur étendue est comptée corrompue.
 - Une nouvelle version d'Unicode n'est connue qu'avec de nouvelles tables (version mineure du module).
-- Le corps des DOCX et des ODT et la couche texte d'un PDF ne sont pas encore lus (complément de T80, complément de T53).
+- La couche texte d'un PDF n'est pas encore lue (complément de T53).
+- DOCX : seule la mise en forme directe masque (`w:vanish` d'une course) ; un style qui masque, un texte blanc sur blanc ou minuscule ne le sont pas. Ni le glossaire, ni les parties XML personnalisées, ni le texte des SmartArt et des graphiques ne sont lus ; le texte affiché d'un champ l'est, son code non.
+- ODT : un style masqué l'est sans ses styles parents ; les documents incorporés (`Object 1/`) ne sont pas lus.
+- Le dernier morceau d'un XML coupé n'est pas rendu par expat : le texte qui précède l'arrêt est analysé, pas celui-là.
+- Les positions d'un DOCX ou d'un ODT sont dans le texte décodé, non en octets : la plage citée est celle de la partie entière dans l'archive.
 
 ## Sécurité
 
@@ -116,3 +136,4 @@ Le module ne lit que le texte de sa partie, par blocs, et n'emploie aucune bibli
 | Date | Version du module | Modification |
 | --- | --- | --- |
 | 2026-11-17 | 0.1.0 | Création |
+| 2026-11-18 | 0.2.0 | DOCX et ODT : corps, notes, en-têtes et pieds de page, commentaires ; texte supprimé et masqué signalés ; R-CARACTERES-013 (complément de T80) |
