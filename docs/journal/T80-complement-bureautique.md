@@ -31,6 +31,8 @@ Appliquer l'analyse du module `caracteres` (caractères invisibles, homoglyphes,
 
 10. PR [#41](https://github.com/TheDarkMac/AI-detector/pull/41) ouverte vers `detector` (commits `ebb7547`, `fd1fa58`, `39d99d7`).
 
+11. CI de la PR sur `e555065` : seul le job `qualite` en échec, mypy sur `tests/test_orchestration.py` (comparaison `> 0` d'une valeur d'observation, de type mixte) ; l'assistant n'avait passé mypy que sur les fichiers du module et de ses tests. Test réécrit sur la longueur attendue (7, « Bonjour »), mypy passé sur tout le dépôt.
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |
@@ -40,6 +42,7 @@ Appliquer l'analyse du module `caracteres` (caractères invisibles, homoglyphes,
 | Suppressions relues par LibreOffice en erreur | `getString` d'une modification lève une exception UNO | Curseur de `RedlineStart` à `RedlineEnd` |
 | Module en erreur sur une archive à entrées en double | `Archive.trouver` lève `Illisible`, non attrapée | Partie déclarée non menée, lecture des suivantes |
 | 438 échecs de la campagne de fuzzing | Localisation d'une entrée illisible relue par son en-tête local | Localisation de l'arrêt |
+| `qualite` en échec dans la CI | mypy passé sur une partie des fichiers seulement | Test corrigé ; mypy passé sur tout le dépôt avant chaque commit |
 | Numéro d'ADR déjà pris | La PR #40 a pris ADR-0238 pendant le complément | ADR-0239 à ADR-0242 |
 
 ## Écarts par rapport au découpage

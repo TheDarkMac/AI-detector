@@ -296,7 +296,7 @@ def test_vrai_processus_extrait_les_proprietes_d_un_document(
     assert valeurs["actifsbureau.macros"] == valeurs["actifsbureau.externes"] == 0
     # Complément de T80 : le texte du document est lu, sans caractère inhabituel.
     assert etats.pop("caracteres") is EtatTechnique.APPLIQUEE
-    assert valeurs["caracteres.longueur"] > 0
+    assert valeurs["caracteres.longueur"] == 7  # « Bonjour », écrit par LibreOffice
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(contenu))
