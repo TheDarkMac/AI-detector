@@ -31,6 +31,8 @@ Lire la couche texte native d'un PDF et l'analyser par un module texte, ce que T
 11. Suite complète sous coverage, en 34 minutes 21 (la campagne de fuzzing tournait en même temps) : 3 202 tests verts, 4 ignorés (lanceur de l'environnement virtuel, cjpeg de mozjpeg absent), 2 en échec, deux attentes que le complément change : `caracteres` s'applique à un PDF (`test_soumission.py`), et l'échantillon d'ImageMagick de T53, une page d'image seule, est dit sans couche texte, ce qui rend le contrôle avant publication incomplet (`test_images_pdf.py`, qui vérifie désormais que cette non menée est la seule qui compte). Les deux fichiers relancés : verts. Couverture de tout le paquet et du banc à 100 %.
 12. Documentation : ADR-0243 à ADR-0247 ; renvois dans ADR-0017, ADR-0056, ADR-0215, ADR-0223, ADR-0224, ADR-0241 ; fiches [`caracteres-invisibles`](../techniques/caracteres-invisibles.md) (version 0.3.0) et [`pages-pdf`](../techniques/pages-pdf.md), index des fiches ; architecture (v1.32), découpage (v0.40), modèle de données (v1.16), guide du catalogue (v1.19), glossaire (v1.19), matrice (F-63 et F-73 réalisées), index du journal, ce journal.
 
+13. PR [#42](https://github.com/TheDarkMac/AI-detector/pull/42) ouverte vers `detector` (commits `8439bd7`, `0148c47`, `b23e643`).
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |
