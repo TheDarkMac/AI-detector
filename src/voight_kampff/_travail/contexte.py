@@ -79,6 +79,7 @@ RAISONS_D_UN_MODULE = frozenset(
         RaisonNonMenee.FICHIER_TRONQUE,
         RaisonNonMenee.REFERENCE_MANQUANTE,
         RaisonNonMenee.RESEAU_DESACTIVE,
+        RaisonNonMenee.DOCUMENT_NUMERISE,
     }
 )
 """Raisons qu'un module peut donner lui-même ; les autres sont produites par le moteur."""

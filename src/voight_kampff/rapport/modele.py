@@ -89,7 +89,7 @@ __all__ = [
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.11.0"
+VERSION_SCHEMA = "0.12.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -197,6 +197,7 @@ class RaisonNonMenee(StrEnum):
     FICHIER_TRONQUE = "fichier_tronque"
     REFERENCE_MANQUANTE = "reference_manquante"
     RESEAU_DESACTIVE = "reseau_desactive"
+    DOCUMENT_NUMERISE = "document_numerise"
     ERREUR_MODULE = "erreur_module"
     LIMITE_DEPASSEE = "limite_depassee"
     MEMOIRE_DEPASSEE = "memoire_depassee"
@@ -211,6 +212,7 @@ RAISONS_PROPRES_A_UNE_TECHNIQUE = frozenset(
         RaisonNonMenee.MODULE_DESACTIVE,
         RaisonNonMenee.REFERENCE_MANQUANTE,
         RaisonNonMenee.RESEAU_DESACTIVE,
+        RaisonNonMenee.DOCUMENT_NUMERISE,
         RaisonNonMenee.ERREUR_MODULE,
     }
 )

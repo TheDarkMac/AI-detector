@@ -39,14 +39,23 @@ from voight_kampff.modules._lecture.pdf import (
     Document,
     Flux,
     Illisible,
-    Nom,
     Objet,
     Ref,
     entier,
     operations,
     pages,
 )
-from voight_kampff.modules.pagespdf import _polices14
+from voight_kampff.modules._lecture.polices import IDENTITE as _IDENTITE
+from voight_kampff.modules._lecture.polices import INCONNUE as _INCONNUE
+from voight_kampff.modules._lecture.polices import Matrice
+from voight_kampff.modules._lecture.polices import Police as _Police
+from voight_kampff.modules._lecture.polices import Polices as _Polices
+from voight_kampff.modules._lecture.polices import dico as _dico
+from voight_kampff.modules._lecture.polices import matrice as _matrice
+from voight_kampff.modules._lecture.polices import nom as _nom
+from voight_kampff.modules._lecture.polices import produit as _produit
+from voight_kampff.modules._lecture.polices import reel as _reel
+from voight_kampff.modules._lecture.polices import reels as _reels
 from voight_kampff.rapport.modele import Localisation, RaisonNonMenee
 
 __all__ = [
@@ -74,11 +83,6 @@ CASES_MAX = 4096
 """Cases au plus de la grille pour une boîte ; une boîte plus grande est comparée à toutes."""
 _CASE = 16.0
 """Côté d'une case de la grille qui range les boîtes, en unités de l'espace de la page."""
-_ELEMENTS_MAX = 1 << 16
-"""Éléments au plus d'un tableau de largeurs (``/Widths``, ``/W``) ; au-delà, largeurs
-inconnues."""
-_NOMS_MAX = 64
-"""Caractères au plus d'un nom de police observé."""
 _ECHELLE_MAX = 1e6
 """Coefficient au plus d'une matrice ou d'une taille : au-delà, le texte n'est pas mesuré."""
 _COTE_MAX = 1e7
@@ -91,26 +95,9 @@ _CACHEES = 1 << 1 | 1 << 5 | 1 << 0
 """Indicateurs d'une annotation non affichée : invisible, cachée, non vue (§12.5.3)."""
 _SANS_APPARENCE = frozenset({"Popup", "Widget"})
 """Annotations dont l'apparence n'est pas interprétée (ADR-0214)."""
-_INCORPORATIONS = ("FontFile", "FontFile2", "FontFile3")
-_IDENTITE = (1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
 _LOCALISATION = Localisation(chemin="contenu des pages")
 
-type Matrice = tuple[float, float, float, float, float, float]
 type Boite = tuple[float, float, float, float]
-
-
-def _produit(m: Matrice, n: Matrice) -> Matrice:
-    """Produit de ``m`` par ``n`` : ``m`` appliquée d'abord (vecteur ligne, §8.3.4)."""
-    a, b, c, d, e, f = m
-    p, q, r, s, t, u = n
-    return (
-        a * p + b * r,
-        a * q + b * s,
-        c * p + d * r,
-        c * q + d * s,
-        e * p + f * r + t,
-        e * q + f * s + u,
-    )
 
 
 def _boite(m: Matrice, x0: float, y0: float, x1: float, y1: float) -> Boite:
@@ -135,298 +122,6 @@ def _commune(a: Boite, b: Boite) -> float:
     largeur = min(a[2], b[2]) - max(a[0], b[0])
     hauteur = min(a[3], b[3]) - max(a[1], b[1])
     return largeur * hauteur if largeur > 0 and hauteur > 0 else 0.0
-
-
-def _reel(objet: Objet) -> float | None:
-    """Nombre fini, entier ou réel ; ``None`` pour tout autre objet (un booléen n'en est pas un)."""
-    if type(objet) is int or type(objet) is float:
-        valeur = float(objet)
-        return valeur if math.isfinite(valeur) and abs(valeur) <= 1e12 else None
-    return None
-
-
-def _reels(objets: list[Objet], nombre: int) -> list[float] | None:
-    """Les ``nombre`` derniers opérandes, s'ils sont tous des nombres."""
-    if len(objets) < nombre:
-        return None
-    lus = [_reel(o) for o in objets[len(objets) - nombre :]]
-    return None if any(v is None for v in lus) else [v for v in lus if v is not None]
-
-
-def _matrice(objet: Objet) -> Matrice | None:
-    if not isinstance(objet, list) or len(objet) != 6:
-        return None
-    lus = _reels(objet, 6)
-    return None if lus is None else (lus[0], lus[1], lus[2], lus[3], lus[4], lus[5])
-
-
-def _nom(objet: Objet) -> str | None:
-    return str(objet) if isinstance(objet, Nom) else None
-
-
-def _dico(valeur: Objet) -> dict[str, Objet] | None:
-    if isinstance(valeur, Flux):
-        return valeur.dico
-    return valeur if isinstance(valeur, dict) else None
-
-
-# Polices (§9.6 à §9.7 ; ADR-0215, ADR-0216)
-
-
-def _charger_polices14() -> tuple[
-    dict[str, list[str]], dict[str, tuple[float, float, str, dict[str, float]]]
-]:
-    encodages = {nom: noms.split(" ") for nom, noms in _polices14.ENCODAGES.items()}
-    polices = {}
-    for nom, (montee, descente, propre, largeurs) in _polices14.POLICES.items():
-        mots = largeurs.split(" ")
-        polices[nom] = (
-            montee / 1000,
-            descente / 1000,
-            propre,
-            {g: int(w) / 1000 for g, w in zip(mots[::2], mots[1::2], strict=True)},
-        )
-    return encodages, polices
-
-
-_ENCODAGES, _STANDARD = _charger_polices14()
-"""Encodages de l'annexe D et 14 polices standard, lus à l'import : après les restrictions,
-plus rien n'est lu sur le disque (ADR-0079)."""
-
-
-@dataclass(frozen=True, slots=True)
-class _Police:
-    """Ce qu'une police déclare de ses glyphes, pour une taille de 1."""
-
-    nom: str
-    """Nom de la police (``/BaseFont``) sans le préfixe d'un sous-ensemble ; vide pour une
-    police Type3 ou sans nom."""
-    prefixe: str
-    """Préfixe de six capitales d'un sous-ensemble (``ABCDEF+``), vide sinon."""
-    incorporation: str
-    """Clé du programme incorporé (``FontFile``, ``FontFile2``, ``FontFile3``), ``Type3``, ou
-    vide pour une police non incorporée."""
-    octets: int
-    """Octets d'un code : 1 pour une police simple, 2 pour un CMap Identity-H ; 0 si les codes
-    ne se découpent pas (autre CMap, écriture verticale) et que le texte n'est pas mesuré."""
-    largeurs: dict[int, float]
-    plages: tuple[tuple[int, int, float], ...]
-    """Largeurs par plage de codes (``c1 c2 w`` de ``/W``)."""
-    defaut: float | None
-    """Largeur d'un code sans largeur déclarée ; ``None`` si elle n'est pas connue."""
-    premier: int | None
-    dernier: int | None
-    """Plage déclarée d'une police simple (``/FirstChar``, ``/LastChar``)."""
-    montee: float
-    descente: float
-
-    def largeur(self, code: int) -> float | None:
-        if code in self.largeurs:
-            return self.largeurs[code]
-        for debut, fin, largeur in self.plages:
-            if debut <= code <= fin:
-                return largeur
-        return self.defaut
-
-    def hors_plage(self, code: int) -> bool:
-        if self.premier is None or self.dernier is None:
-            return False
-        return not self.premier <= code <= self.dernier
-
-
-_INCONNUE = _Police("", "", "", 0, {}, (), None, None, None, 0.8, -0.2)
-
-
-def _sous_ensemble(base: str) -> tuple[str, str]:
-    """Préfixe d'un sous-ensemble (six capitales suivies de « + », §9.9.2) et nom de la police."""
-    if len(base) > 7 and base[6] == "+" and all("A" <= c <= "Z" for c in base[:6]):
-        return base[:6], base[7:]
-    return "", base
-
-
-class _Polices:
-    """Polices lues une fois chacune, par leur objet."""
-
-    def __init__(self, contexte: Contexte, document: Document) -> None:
-        self._contexte = contexte
-        self._document = document
-        self._lues: dict[object, _Police] = {}
-
-    def _resoudre(self, objet: Objet) -> Objet:
-        return self._document.resoudre(objet)
-
-    def police(self, designee: Objet) -> _Police:
-        cle: object = designee if isinstance(designee, Ref) else id(designee)
-        if cle not in self._lues:
-            dico = _dico(self._resoudre(designee))
-            self._lues[cle] = _INCONNUE if dico is None else self._lire(dico)
-        return self._lues[cle]
-
-    def _lire(self, dico: dict[str, Objet]) -> _Police:
-        sous_type = _nom(self._resoudre(dico.get("Subtype")))
-        base = _nom(self._resoudre(dico.get("BaseFont"))) or ""
-        prefixe, nom = _sous_ensemble(base[:_NOMS_MAX])
-        if sous_type == "Type0":
-            return self._composite(dico, prefixe, nom)
-        if sous_type == "Type3":
-            return self._type3(dico)
-        descripteur = _dico(self._resoudre(dico.get("FontDescriptor"))) or {}
-        incorporation = next((c for c in _INCORPORATIONS if c in descripteur), "")
-        montee, descente = self._hauteurs(descripteur)
-        premier = entier(self._resoudre(dico.get("FirstChar")))
-        dernier = entier(self._resoudre(dico.get("LastChar")))
-        largeurs = self._resoudre(dico.get("Widths"))
-        if isinstance(largeurs, list) and premier is not None and len(largeurs) <= _ELEMENTS_MAX:
-            self._contexte.compter_objets(len(largeurs))
-            lues: dict[int, float] = {}
-            for rang, largeur in enumerate(largeurs):
-                valeur = _reel(self._resoudre(largeur))
-                if valeur is not None:
-                    lues[premier + rang] = valeur / 1000
-            manquante = _reel(self._resoudre(descripteur.get("MissingWidth", 0)))
-            return _Police(
-                nom,
-                prefixe,
-                incorporation,
-                1,
-                lues,
-                (),
-                0.0 if manquante is None else manquante / 1000,
-                premier,
-                premier + len(largeurs) - 1 if dernier is None else dernier,
-                montee,
-                descente,
-            )
-        standard = _STANDARD.get(nom) if not incorporation and not prefixe else None
-        if standard is None:
-            return _Police(
-                nom, prefixe, incorporation, 1, {}, (), None, None, None, montee, descente
-            )
-        haut, bas, propre, par_nom = standard
-        noms = self._encodage(dico.get("Encoding"), propre)
-        lues = {code: par_nom[n] for code, n in enumerate(noms) if n in par_nom}
-        return _Police(nom, "", "", 1, lues, (), None, None, None, haut, bas)
-
-    def _encodage(self, designe: Objet, propre: str) -> list[str]:
-        """Noms des glyphes des codes 0 à 255 d'une police standard (§9.6.5)."""
-        encodage = self._resoudre(designe)
-        base = propre
-        differences: Objet = None
-        if isinstance(encodage, Nom):
-            base = str(encodage)
-        elif isinstance(encodage, dict):
-            base = _nom(self._resoudre(encodage.get("BaseEncoding"))) or propre
-            differences = self._resoudre(encodage.get("Differences"))
-        if propre in ("Symbol", "ZapfDingbats") or base not in _ENCODAGES:
-            base = propre
-        noms = list(_ENCODAGES[base])
-        code = None
-        if isinstance(differences, list) and len(differences) <= _ELEMENTS_MAX:
-            self._contexte.compter_objets(len(differences))
-            for element in differences:
-                if (nombre := entier(element)) is not None:
-                    code = nombre
-                elif isinstance(element, Nom) and code is not None:
-                    if 0 <= code < 256:
-                        noms[code] = str(element)
-                    code += 1
-        return noms
-
-    def _hauteurs(self, descripteur: dict[str, Objet]) -> tuple[float, float]:
-        """Montée et descente déclarées (``/Ascent``, ``/Descent``) ; 0,8 et -0,2 à défaut."""
-        montee = _reel(self._resoudre(descripteur.get("Ascent")))
-        descente = _reel(self._resoudre(descripteur.get("Descent")))
-        if montee is None or descente is None or not -4000 <= descente < montee <= 4000:
-            return 0.8, -0.2
-        return montee / 1000, min(descente, 0.0) / 1000
-
-    def _composite(self, dico: dict[str, Objet], prefixe: str, nom: str) -> _Police:
-        """Police Type0 (§9.7) : sa descendante, ses largeurs ``/W`` et ``/DW``."""
-        encodage = _nom(self._resoudre(dico.get("Encoding")))
-        descendantes = self._resoudre(dico.get("DescendantFonts"))
-        descendante = (
-            _dico(self._resoudre(descendantes[0]))
-            if isinstance(descendantes, list) and descendantes
-            else None
-        ) or {}
-        descripteur = _dico(self._resoudre(descendante.get("FontDescriptor"))) or {}
-        incorporation = next((c for c in _INCORPORATIONS if c in descripteur), "")
-        montee, descente = self._hauteurs(descripteur)
-        defaut = _reel(self._resoudre(descendante.get("DW", 1000)))
-        largeurs: dict[int, float] = {}
-        plages: list[tuple[int, int, float]] = []
-        lues = self._largeurs_w(self._resoudre(descendante.get("W")), largeurs, plages)
-        octets = 2 if encodage == "Identity-H" and lues else 0
-        return _Police(
-            nom,
-            prefixe,
-            incorporation,
-            octets,
-            largeurs,
-            tuple(plages),
-            None if defaut is None else defaut / 1000,
-            None,
-            None,
-            montee,
-            descente,
-        )
-
-    def _largeurs_w(
-        self, w: Objet, largeurs: dict[int, float], plages: list[tuple[int, int, float]]
-    ) -> bool:
-        """Lit ``/W`` : ``c [w1 w2 …]`` ou ``c1 c2 w`` (§9.7.4.3) ; faux s'il est mal formé."""
-        if w is None:
-            return True
-        if not isinstance(w, list) or len(w) > _ELEMENTS_MAX:
-            return False
-        self._contexte.compter_objets(len(w))
-        rang = 0
-        while rang < len(w):
-            premier = entier(w[rang])
-            suivant = self._resoudre(w[rang + 1]) if rang + 1 < len(w) else None
-            if premier is None:
-                return False
-            if isinstance(suivant, list):
-                if len(largeurs) + len(suivant) > _ELEMENTS_MAX:
-                    return False
-                self._contexte.compter_objets(len(suivant))
-                for decalage, largeur in enumerate(suivant):
-                    if (valeur := _reel(largeur)) is not None:
-                        largeurs[premier + decalage] = valeur / 1000
-                rang += 2
-                continue
-            dernier = entier(suivant)
-            largeur = _reel(w[rang + 2]) if rang + 2 < len(w) else None
-            if dernier is None or largeur is None:
-                return False
-            plages.append((premier, dernier, largeur / 1000))
-            rang += 3
-        return True
-
-    def _type3(self, dico: dict[str, Objet]) -> _Police:
-        """Police Type3 (§9.6.4) : largeurs dans l'espace des glyphes, par ``/FontMatrix``."""
-        matrice = _matrice(self._resoudre(dico.get("FontMatrix")))
-        largeurs = self._resoudre(dico.get("Widths"))
-        premier = entier(self._resoudre(dico.get("FirstChar")))
-        boite = self._resoudre(dico.get("FontBBox"))
-        if (
-            matrice is None
-            or not isinstance(largeurs, list)
-            or premier is None
-            or len(largeurs) > _ELEMENTS_MAX
-        ):
-            return _Police("", "", "Type3", 1, {}, (), None, None, None, 0.8, -0.2)
-        self._contexte.compter_objets(len(largeurs))
-        lues = {}
-        for rang, largeur in enumerate(largeurs):
-            valeur = _reel(self._resoudre(largeur))
-            if valeur is not None:
-                lues[premier + rang] = valeur * matrice[0]
-        montee, descente = 0.8, -0.2
-        cotes = _reels(boite, 4) if isinstance(boite, list) and len(boite) == 4 else None
-        if cotes is not None and cotes[3] * matrice[3] > cotes[1] * matrice[3]:
-            montee, descente = cotes[3] * matrice[3], min(cotes[1] * matrice[3], 0.0)
-        return _Police("", "", "Type3", 1, lues, (), 0.0, None, None, montee, descente)
 
 
 # Interprétation d'une page (§8.4, §9.3, §9.4)
