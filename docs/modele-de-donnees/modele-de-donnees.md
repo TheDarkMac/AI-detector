@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.15** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 avec T42, v1.12 avec T50, v1.13 avec T51, v1.14 avec T53, v1.15 proposée dans la PR de T80. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.16** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 avec T42, v1.12 avec T50, v1.13 avec T51, v1.14 avec T53, v1.15 avec T80, v1.16 proposée dans la PR du complément texte de T53. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, F-84, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -53,6 +53,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0217](../decisions/ADR-0217-objets-changes-un-par-un.md) | Nature de tableau `objets_revisions` ; `VERSION_SCHEMA` 0.9.0 (T51) |
 | [ADR-0224](../decisions/ADR-0224-parties-extraites.md), [ADR-0226](../decisions/ADR-0226-borne-des-images-extraites.md) | Partie extraite et son `Origine`, `Identification.extraites` (au plus 16), message `extraction` ; `VERSION_SCHEMA` 0.10.0 (T53, ADR-0227) |
 | [ADR-0233](../decisions/ADR-0233-saisie-du-texte-colle.md) | `Identification.saisie` (`fichier`, `texte_colle`) ; nom absent d'un texte collé ; `VERSION_SCHEMA` 0.11.0 (T80, ADR-0237) |
+| [ADR-0247](../decisions/ADR-0247-page-sans-couche-texte-et-versions-du-complement-de-t53.md) | Raison `document_numerise`, donnée par un module ; `VERSION_SCHEMA` 0.12.0 (complément texte de T53) |
 
 ### Où se trouve le code
 
@@ -70,7 +71,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Exports JSON et HTML, masquage (T16) | `src/voight_kampff/rapport/export.py`, `rapport/_html.py`, `rapport/_presentation.py`, `rapport/textes.toml` |
 | Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py` |
 
-Version commune : `0.11.0` (`VERSION_SCHEMA`, ADR-0233 ; 0.10.0 depuis ADR-0224, 0.9.0 depuis ADR-0217, 0.8.0 depuis ADR-0212, 0.7.0 depuis ADR-0201, 0.6.0 depuis ADR-0179, 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
+Version commune : `0.12.0` (`VERSION_SCHEMA`, ADR-0247 ; 0.11.0 depuis ADR-0233, 0.10.0 depuis ADR-0224, 0.9.0 depuis ADR-0217, 0.8.0 depuis ADR-0212, 0.7.0 depuis ADR-0201, 0.6.0 depuis ADR-0179, 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
 
 ## 2. Vue d'ensemble
 
@@ -288,7 +289,7 @@ Les observations `c2pa/1` à `c2pa/3` portent l'état de la signature, le signat
 
 | Raison | Module obligatoire | Interrompt l'analyse |
 | --- | --- | --- |
-| `hors_v1`, `module_desactive`, `reference_manquante`, `reseau_desactive`, `erreur_module` | Oui | Non |
+| `hors_v1`, `module_desactive`, `reference_manquante`, `reseau_desactive`, `document_numerise`, `erreur_module` | Oui | Non |
 | `hors_perimetre` (partie obligatoire, jamais de module) | Non | Non |
 | `format_partiel`, `fichier_tronque` | Non | Non |
 | `limite_depassee` : limite comptée par le moteur, identique sur toutes les machines (ADR-0076, ADR-0078) | Non | Non |
@@ -397,3 +398,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-11-17 | 1.13 | Nature de tableau `objets_revisions`, `VERSION_SCHEMA` 0.9.0 (§1, §2, §7, ADR-0217) | T51 |
 | 2026-11-17 | 1.14 | Partie extraite et `Origine`, `Identification.extraites`, message `extraction`, `VERSION_SCHEMA` 0.10.0 (§1, §2, §6, §7, §8, ADR-0224) | T53 |
 | 2026-11-17 | 1.15 | `Identification.saisie`, nom absent d'un texte collé, `VERSION_SCHEMA` 0.11.0 (§1, §6, §7, ADR-0233) ; statut corrigé, il annonçait encore la v1.12 | T80 |
+| 2026-11-19 | 1.16 | Raison `document_numerise` (page d'un PDF sans couche texte native, ADR-0017), `VERSION_SCHEMA` 0.12.0 (§1, §5, ADR-0247) ; statut corrigé, il annonçait encore la v1.15 proposée | T53 (complément texte) |

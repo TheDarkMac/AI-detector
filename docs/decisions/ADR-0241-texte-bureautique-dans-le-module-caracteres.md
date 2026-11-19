@@ -55,3 +55,4 @@ Option A. Précisions de l'assistant :
 | Date | Modification |
 | --- | --- |
 | 2026-11-18 | Création ; option choisie par TheDarkMac au début du complément de T80 |
+| 2026-11-19 | Renvoi : le complément de T53 étend `caracteres` au PDF, positions par page, ligne et caractère ([ADR-0243](ADR-0243-couche-texte-d-un-pdf-dans-le-module-caracteres.md)) |

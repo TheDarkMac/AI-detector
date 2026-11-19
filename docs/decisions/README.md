@@ -257,3 +257,8 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0240](ADR-0240-texte-supprime-d-une-modification-suivie.md) | Texte supprimé d'une modification suivie : analysé, ses positions le disent | Accepté | 2026-11-18 |
 | [ADR-0241](ADR-0241-texte-bureautique-dans-le-module-caracteres.md) | Texte d'un DOCX ou d'un ODT analysé par le module `caracteres` ; positions par partie, paragraphe et caractère | Accepté | 2026-11-18 |
 | [ADR-0242](ADR-0242-texte-masque-et-versions-du-complement-de-t80.md) | Texte masqué par la mise en forme : analysé, compté, une information neutre ; versions du complément de T80 | Accepté | 2026-11-18 |
+| [ADR-0243](ADR-0243-couche-texte-d-un-pdf-dans-le-module-caracteres.md) | Couche texte native d'un PDF analysée par le module `caracteres` ; positions par page, ligne et caractère | Accepté | 2026-11-19 |
+| [ADR-0244](ADR-0244-texte-lu-d-un-pdf.md) | Texte lu d'un PDF : ce qu'un lecteur affiche, et le commentaire des annotations | Accepté | 2026-11-19 |
+| [ADR-0245](ADR-0245-texte-invisible-d-un-pdf.md) | Texte invisible d'un PDF (modes de rendu 3 et 7) : analysé, compté, une information neutre | Accepté | 2026-11-19 |
+| [ADR-0246](ADR-0246-decodage-du-texte-d-un-pdf.md) | Texte des codes d'un PDF : `/ToUnicode`, puis Adobe Glyph List ; lignes dans l'ordre du flux | Accepté | 2026-11-19 |
+| [ADR-0247](ADR-0247-page-sans-couche-texte-et-versions-du-complement-de-t53.md) | Page sans couche texte native : raison `document_numerise` ; versions du complément de T53 | Accepté | 2026-11-19 |

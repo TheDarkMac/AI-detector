@@ -60,3 +60,4 @@ Option A, proposée par l'assistant, validée par TheDarkMac pendant la revue de
 | --- | --- |
 | 2026-11-17 | Création, statut « Proposé » ; proposée par l'assistant pendant T51 |
 | 2026-11-17 | Validé par TheDarkMac pendant la revue de la PR (« Oui, valide ADR-0215 ») : statut « Accepté » |
+| 2026-11-19 | Renvoi : la lecture des polices et les tables des 14 polices standard passent, sans changement, dans `_lecture/polices.py` et `_lecture/_polices14.py`, partagés avec `caracteres` ([ADR-0243](ADR-0243-couche-texte-d-un-pdf-dans-le-module-caracteres.md)) (complément de T53) |

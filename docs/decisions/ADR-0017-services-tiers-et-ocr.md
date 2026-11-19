@@ -53,3 +53,4 @@ Le §10 demande si des services tiers de vérification fondés sur l'IA (par exe
 | 2026-10-26 | Renvoi : flux vers les services tiers analysé au modèle de menace (M-15, RS-04), politique fixée par ADR-0033 (T03) |
 | 2026-10-26 | Renvoi : point d'extension des services tiers décrit par ADR-0042 (T04) |
 | 2026-11-17 | Renvoi : images d'un PDF analysées par les modules d'image (T53, ADR-0225) ; couche texte native, et page sans couche texte, renvoyées à un complément de T53 (ADR-0223) |
+| 2026-11-19 | Renvoi : une page sans couche texte native donne une analyse non menée pour la raison `document_numerise`, ajoutée à la liste fermée ([ADR-0247](ADR-0247-page-sans-couche-texte-et-versions-du-complement-de-t53.md)) (complément de T53) |

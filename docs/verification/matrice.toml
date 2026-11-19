@@ -317,10 +317,10 @@ note = "PDF (T52, ADR-0219) : module actifspdf, éléments cherchés depuis le c
 
 [[exigence]]
 id = "F-63"
-etat = "partielle"
+etat = "realisee"
 taches = ["T53"]
 methodes = ["test"]
-note = "Reformulée : couche texte native seulement, document numérisé non analysé (ADR-0017). Images (T53, ADR-0223) : module imagespdf, JPEG écrits tels quels (seul filtre DCTDecode) des ressources des pages et de leurs formes, reconnus par l'identification et analysés par les modules d'image comme des parties extraites, numérotées à la suite des parties (ADR-0224, ADR-0225) ; seize au plus, jusqu'à 2 Mio, dans l'ordre des pages (ADR-0226) ; autres images comptées par filtre ; informations neutres R-IMAGESPDF-001 à R-IMAGESPDF-004 (ADR-0227). Vérifié contre pdfimages -list et -j sur les échantillons de tests/donnees/images. Couche texte native : complément de T53, après T80."
+note = "Reformulée : couche texte native seulement, document numérisé non analysé (ADR-0017). Images (T53, ADR-0223) : module imagespdf, JPEG écrits tels quels (seul filtre DCTDecode) des ressources des pages et de leurs formes, reconnus par l'identification et analysés par les modules d'image comme des parties extraites, numérotées à la suite des parties (ADR-0224, ADR-0225) ; seize au plus, jusqu'à 2 Mio, dans l'ordre des pages (ADR-0226) ; autres images comptées par filtre ; informations neutres R-IMAGESPDF-001 à R-IMAGESPDF-004 (ADR-0227). Vérifié contre pdfimages -list et -j sur les échantillons de tests/donnees/images. Couche texte native (complément de T53, ADR-0243 à ADR-0247) : lue par le module caracteres sur les pages, leurs formes et leurs annotations (ADR-0244), codes traduits par /ToUnicode, puis par l'Adobe Glyph List, /ActualText suivi, lignes dans l'ordre du flux (ADR-0246) ; texte invisible signalé, R-CARACTERES-014 (ADR-0245) ; page sans couche texte native non lue, raison document_numerise (ADR-0247). Vérifié contre pdftotext -raw (Poppler 25.03.0) sur les échantillons de tests/donnees/caracteres."
 
 [[exigence]]
 id = "F-64"
@@ -351,10 +351,10 @@ note = "Hors V1 : requête sortante (ADR-0013)."
 
 [[exigence]]
 id = "F-73"
-etat = "partielle"
-taches = ["T80"]
+etat = "realisee"
+taches = ["T80", "T53"]
 methodes = ["test"]
-note = "Texte brut et texte collé (T80, ADR-0232) : module caracteres, tables Unicode 18.0 du projet ; sept familles de caractères invisibles, emplois ordinaires reconnus à leurs voisins, texte des étiquettes masqué par défaut (ADR-0234) ; mots mêlés d'écritures confusables d'après UTS #39, lettres de compatibilité (ADR-0235) ; informations neutres R-CARACTERES-001 à R-CARACTERES-009 (ADR-0237). DOCX et ODT (complément de T80, ADR-0239 à ADR-0242) : corps, notes, en-têtes et pieds de page, commentaires, texte supprimé d'une modification suivie et texte masqué par la mise en forme, signalés à leurs positions ; texte masqué R-CARACTERES-013. Vérifié contre LibreOffice sur tests/donnees/caracteres. Contrôle déterministe : tests de conformité sur des textes construits, sans taux sur corpus (A-55). Couche texte d'un PDF : complément de T53."
+note = "Texte brut et texte collé (T80, ADR-0232) : module caracteres, tables Unicode 18.0 du projet ; sept familles de caractères invisibles, emplois ordinaires reconnus à leurs voisins, texte des étiquettes masqué par défaut (ADR-0234) ; mots mêlés d'écritures confusables d'après UTS #39, lettres de compatibilité (ADR-0235) ; informations neutres R-CARACTERES-001 à R-CARACTERES-009 (ADR-0237). DOCX et ODT (complément de T80, ADR-0239 à ADR-0242) : corps, notes, en-têtes et pieds de page, commentaires, texte supprimé d'une modification suivie et texte masqué par la mise en forme, signalés à leurs positions ; texte masqué R-CARACTERES-013. Vérifié contre LibreOffice sur tests/donnees/caracteres. Couche texte native d'un PDF (complément de T53, ADR-0243) : même analyse, positions par page, ligne et caractère, texte invisible signalé (R-CARACTERES-014). Contrôle déterministe : tests de conformité sur des textes construits, sans taux sur corpus (A-55)."
 
 # 5.5 Restitution
 
