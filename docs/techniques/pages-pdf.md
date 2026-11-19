@@ -45,7 +45,7 @@ Oracle (`oracle.json`) : `pdftotext -bbox` de Poppler 25.03.0 donne la boîte de
 | --- | --- |
 | PDF | Dernière version : catalogue, arbre des pages et ressources héritées ; flux de contenu de chaque page (`FlateDecode` seul) ; formes appelées et leurs ressources ; annotations de chaque page, leur rectangle, leurs indicateurs et leur apparence normale ; dictionnaires d'état graphique ; polices employées, leurs descripteurs, leurs largeurs et leur encodage. Le programme des polices n'est pas lu. |
 
-Données de référence : les largeurs, la montée et la descente des 14 polices standard, tirées des fichiers AFM d'Adobe (`modules/pagespdf/_polices14.py`, écrit par `tests/donnees/pages/generer_polices14.py`), et les noms des glyphes des encodages de l'annexe D.
+Données de référence : les largeurs, la montée et la descente des 14 polices standard, tirées des fichiers AFM d'Adobe (`modules/_lecture/_polices14.py`, écrit par `tests/donnees/pages/generer_polices14.py`), et les noms des glyphes des encodages de l'annexe D.
 
 ## Sorties
 
@@ -118,3 +118,4 @@ Mêmes protections que le lecteur PDF du projet : lecture stricte, aucune exécu
 | --- | --- | --- |
 | 2026-11-17 | 0.1.0 | Création |
 | 2026-11-17 | 0.1.0 | Parcours de l'arbre des pages déplacé dans le lecteur PDF, partagé avec `actifspdf` (T52, ADR-0221) ; rien ne change de ce que le module lit ni observe |
+| 2026-11-19 | 0.1.0 | Lecture des polices et tables des 14 polices standard déplacées dans `_lecture/polices.py` et `_lecture/_polices14.py`, partagées avec `caracteres` (complément de T53, ADR-0243) ; rien ne change de ce que le module lit ni observe |

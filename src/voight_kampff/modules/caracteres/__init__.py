@@ -35,7 +35,9 @@ from dataclasses import dataclass, field
 from typing import Protocol
 
 from voight_kampff._travail.contexte import Contexte
-from voight_kampff.modules.caracteres import _bureau, _unicode
+from voight_kampff.modules._lecture import valeurs
+from voight_kampff.modules._lecture.pdf import Document, Illisible
+from voight_kampff.modules.caracteres import _bureau, _pdf, _unicode
 from voight_kampff.rapport.modele import CategorieIdentifiante, Localisation, Plage, RaisonNonMenee
 
 __all__ = [
@@ -395,6 +397,22 @@ class _DansLeParagraphe:
             position.localisation = Localisation(chemin=chemin, octets=self.octets)
 
 
+@dataclass(slots=True)
+class _DansLaLigne:
+    """Positions dans une ligne du texte d'un PDF : page, annotation s'il y a lieu, numéro de la
+    ligne, caractère à partir de 1, et passage invisible (complément de T53, ADR-0243)."""
+
+    ligne: _pdf.Ligne
+
+    def resoudre(self, segment: str, positions: list[_Position]) -> None:
+        ligne = self.ligne
+        for position in positions:
+            chemin = f"{ligne.lieu}, ligne {ligne.numero}, caractère {position.debut + 1}"
+            if _croise(ligne.invisibles, position.debut, position.fin):
+                chemin += ", texte invisible"
+            position.localisation = Localisation(chemin=chemin, octets=ligne.octets)
+
+
 def _croise(passages: list[tuple[int, int]], debut: int, fin: int) -> bool:
     return any(d < fin and debut < f for d, f in passages)
 
@@ -742,6 +760,9 @@ def analyser(contexte: Contexte) -> None:
     if contexte.format_reel in {"docx", "odt"}:
         _analyser_document(contexte)
         return
+    if contexte.format_reel == "pdf":
+        _analyser_pdf(contexte)
+        return
     nom = _encodage(contexte.lire(0, 2))
     fabrique, encoder = _CODECS[nom]
     decodeur = fabrique("strict")
@@ -799,6 +820,65 @@ def _analyser_document(contexte: Contexte) -> None:
     contexte.observer("caracteres.supprimes", supprimes, unite="caractères")
     contexte.observer("caracteres.masques", masques, unite="caractères")
     _observer(contexte, analyse)
+
+
+def _analyser_pdf(contexte: Contexte) -> None:
+    """Couche texte native d'un PDF, ligne par ligne (complément de T53, ADR-0243)."""
+    try:
+        document = Document(contexte)
+    except Illisible as illisible:
+        contexte.non_mener(illisible.raison, localisation=illisible.localisation(contexte.taille))
+        return
+    if "Encrypt" in document.trailer:  # rien n'est déchiffré (ADR-0126)
+        contexte.non_mener(
+            RaisonNonMenee.FORMAT_PARTIEL,
+            localisation=Localisation(chemin="texte des pages (document chiffré)"),
+        )
+        return
+    try:
+        lu = _pdf.lire(contexte, document)
+    except Illisible as illisible:
+        contexte.non_mener(illisible.raison, localisation=illisible.localisation(contexte.taille))
+        return
+    if lu.illisible is not None:
+        erreur = lu.illisible
+        contexte.non_mener(erreur.raison, localisation=erreur.localisation(contexte.taille))
+    analyse = _Analyse(_Curseur(_CODECS["utf-8"][1]))
+    analyse.premier = False  # une marque d'ordre n'a pas de raison d'être dans une page
+    for page in lu.pages:
+        for ligne in page.lignes:
+            analyse.segment(ligne.texte, _DansLaLigne(ligne))
+    sans_texte = [page.numero for page in lu.pages if page.sans_texte]
+    contexte.observer("caracteres.pages", lu.trouvees)
+    contexte.observer("caracteres.pages_lues", sum(page.complete for page in lu.pages))
+    if lu.arrete:
+        contexte.observer("caracteres.arret_avant_budget", True)
+    contexte.observer("caracteres.longueur", analyse.longueur, unite="caractères")
+    contexte.observer(
+        "caracteres.non_decodes", sum(p.non_decodes for p in lu.pages), unite="caractères"
+    )
+    contexte.observer(
+        "caracteres.texte_invisible", sum(p.invisibles for p in lu.pages), unite="caractères"
+    )
+    contexte.observer("caracteres.pages_sans_texte", len(sans_texte))
+    if sans_texte:
+        valeurs.observer(contexte, "caracteres.pages_sans_texte.pages", sans_texte)
+        contexte.non_mener(
+            RaisonNonMenee.DOCUMENT_NUMERISE,
+            localisation=Localisation(chemin=_pages_sans_texte(sans_texte)),
+        )
+    _observer(contexte, analyse)
+
+
+def _pages_sans_texte(numeros: list[int]) -> str:
+    """Pages sans couche texte native, citées : les 16 premières, « … » s'il y en a d'autres."""
+    cites = ", ".join(str(n) for n in numeros[:_PAGES_CITEES])
+    suite = ", …" if len(numeros) > _PAGES_CITEES else ""
+    pluriel = "s" if len(numeros) > 1 else ""
+    return f"page{pluriel} sans couche texte native : {cites}{suite}"
+
+
+_PAGES_CITEES = 16
 
 
 def _observer_releve(contexte: Contexte, nom: str, releve: _Releve, inhabituels: bool) -> None:

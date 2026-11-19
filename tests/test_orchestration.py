@@ -187,7 +187,7 @@ def test_vrai_processus_identifie_le_format(pdf: int) -> None:
     # Sans table de références croisées, aucune version ne se lit (ADR-0207).
     assert etats.pop("c2pa") is etats.pop("revisionspdf") is EtatTechnique.NON_MENEE
     assert etats.pop("pagespdf") is etats.pop("actifspdf") is EtatTechnique.NON_MENEE
-    assert etats.pop("imagespdf") is EtatTechnique.NON_MENEE
+    assert etats.pop("imagespdf") is etats.pop("caracteres") is EtatTechnique.NON_MENEE
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(PDF))
@@ -233,7 +233,8 @@ def test_vrai_processus_extrait_les_metadonnees_d_un_pdf(tmp_path: Path) -> None
     assert valeurs["infopdf.chiffre"] is False
     assert str(valeurs["xmp.Iptc4xmpExt:DigitalSourceType"]).endswith("trainedAlgorithmicMedia")
     etats = {t.module: t.etat for t in resultat.couverture.techniques if t.version is not None}
-    for module in ("infopdf", "xmp", "c2pa", "revisionspdf", "pagespdf", "actifspdf", "imagespdf"):
+    modules = ("infopdf", "xmp", "c2pa", "revisionspdf", "pagespdf", "actifspdf", "imagespdf")
+    for module in (*modules, "caracteres"):
         assert etats.pop(module) is EtatTechnique.APPLIQUEE, module
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue

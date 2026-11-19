@@ -55,3 +55,4 @@ Option A : T53 achemine les images d'un PDF vers les modules d'image ; la couche
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début de T53 |
 | 2026-11-17 | Renvoi : T80 livre le module `caracteres` (format `texte`), vers lequel le complément de T53 pourra acheminer la couche texte ([ADR-0232](ADR-0232-perimetre-de-t80.md)) (T80) |
+| 2026-11-19 | Renvoi : la couche texte native est analysée par le module `caracteres`, qui la lit lui-même, et non par une partie extraite ([ADR-0243](ADR-0243-couche-texte-d-un-pdf-dans-le-module-caracteres.md)) ; page sans couche texte : [ADR-0247](ADR-0247-page-sans-couche-texte-et-versions-du-complement-de-t53.md) (complément de T53) |

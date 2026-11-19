@@ -397,3 +397,30 @@ procedure = "Seuil fixé le 2026-11-18 par définition : un seul caractère masq
 observation = "caracteres.masques"
 seuil = { operateur = ">=", valeur = 1 }
 parametre = "masques"
+
+[[regle]]
+identifiant = "R-CARACTERES-014"
+version = "1"
+module = "caracteres"
+titre = "Texte invisible d'un PDF"
+description = "Le PDF porte du texte écrit dans un mode de rendu qui ne peint rien (Tr 3 ou 7, ISO 32000-2, §9.3.6 ; complément de T53, ADR-0245). Ce texte est dans le fichier, et un programme qui en lit le texte le lit, sans qu'un lecteur le voie : il peut porter une consigne destinée à un modèle de langage. Information neutre : c'est aussi la couche de texte qu'un logiciel de reconnaissance de caractères pose sur un document numérisé, ce qui est ordinaire."
+gabarit = "caracteres.invisible"
+phrase = { fr = "Le document porte {invisibles} de texte invisible, écrit sans être peint sur ses pages." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Seuls les modes de rendu 3 et 7 sont comptés : un texte blanc sur blanc, minuscule, caché sous une image ou hors de la page n'est pas invisible à ce sens.",
+  "La couche de texte d'un document numérisé déclenche la règle : rien ne la distingue d'un texte caché par un autre moyen que ce qu'elle dit.",
+  "Le texte invisible est analysé comme le reste : ses caractères invisibles et ses mots mêlés font leurs propres constats, positions marquées « texte invisible ».",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-19 par définition : un seul caractère invisible suffit à le signaler. Vérifié sur tests/donnees/caracteres/construit.pdf, dont pdftotext 25.03.0 (Poppler) extrait le même texte, et sur des documents construits par tests/test_caracteres.py."
+
+[[regle.condition]]
+observation = "caracteres.texte_invisible"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "invisibles"

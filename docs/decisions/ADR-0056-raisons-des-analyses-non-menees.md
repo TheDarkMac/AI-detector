@@ -66,3 +66,4 @@ Liste fixée par l'assistant :
 | 2026-10-27 | Complété par ADR-0071 (T13) : raison `hors_perimetre` ajoutée ; `fichier_tronque` et `format_partiel` produits à partir de l'identification ; partie d'une analyse non menée |
 | 2026-10-27 | Précisé par ADR-0078 (T14) : raison `memoire_depassee` ajoutée, qui interrompt ; `limite_depassee`, désormais comptée par le moteur, n'interrompt plus (ADR-0076) |
 | 2026-10-28 | Réalisé en T16 : une phrase par raison dans `rapport/textes.toml` (ADR-0098) |
+| 2026-11-19 | Complété par ADR-0247 (complément de T53) : raison `document_numerise` ajoutée, donnée par un module, propre à une technique, qui n'interrompt pas |

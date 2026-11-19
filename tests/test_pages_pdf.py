@@ -25,8 +25,8 @@ from voight_kampff._travail import garde
 from voight_kampff._travail.contexte import Contexte
 from voight_kampff.analyse import Analyse, analyser
 from voight_kampff.modules import pagespdf
+from voight_kampff.modules._lecture import _polices14, polices
 from voight_kampff.modules._lecture import pdf as lecteur
-from voight_kampff.modules.pagespdf import _polices14
 from voight_kampff.rapport import export
 from voight_kampff.rapport._presentation import Presentation, texte
 from voight_kampff.rapport.modele import EtatTechnique
@@ -433,7 +433,7 @@ def test_police_composite_sans_descendante(ouvrir: Any) -> None:
 
 
 def test_largeurs_trop_nombreuses(monkeypatch: pytest.MonkeyPatch, ouvrir: Any) -> None:
-    monkeypatch.setattr(pagespdf, "_ELEMENTS_MAX", 2)
+    monkeypatch.setattr(polices, "ELEMENTS_MAX", 2)
     simple = b"<</Subtype/TrueType/BaseFont/X/FirstChar 65/Widths[1 2 3]>>"
     assert police(simple, ouvrir).non_mesures == 1
     composite = b"<</Subtype/Type0/BaseFont/X/Encoding/Identity-H/DescendantFonts[8 0 R]>>"
@@ -491,7 +491,7 @@ def test_police_lue_une_fois_et_police_directe() -> None:
     ],
 )
 def test_prefixe_d_un_sous_ensemble(base: bytes, attendu: tuple[str, str]) -> None:
-    assert pagespdf._sous_ensemble(base.decode()) == attendu
+    assert polices.sous_ensemble(base.decode()) == attendu
 
 
 def test_familles_melangees() -> None:
@@ -891,7 +891,7 @@ def test_polices_comparees_a_pdffonts(nom: str, ouvrir: Any) -> None:
     relevee = ouvrir((ECHANTILLONS / f"{nom}.pdf").read_bytes())
     attendues: dict[str, set[tuple[bool, bool]]] = {}
     for police_ in ORACLE["echantillons"][nom]["polices"]:
-        _, base = pagespdf._sous_ensemble(police_["nom"])
+        _, base = polices.sous_ensemble(police_["nom"])
         attendues.setdefault(base, set()).add((police_["sous_ensemble"], police_["incorporee"]))
     lues = {
         nom_: {(bool(prefixe), bool(programme)) for prefixe, programme in vues}

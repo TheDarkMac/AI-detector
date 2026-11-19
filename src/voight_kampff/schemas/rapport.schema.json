@@ -18,7 +18,7 @@
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.11.0" },
+    "version_schema": { "const": "0.12.0" },
     "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
@@ -205,6 +205,7 @@
         "fichier_tronque",
         "reference_manquante",
         "reseau_desactive",
+        "document_numerise",
         "erreur_module",
         "limite_depassee",
         "memoire_depassee",
@@ -532,6 +533,7 @@
                   "module_desactive",
                   "reference_manquante",
                   "reseau_desactive",
+                  "document_numerise",
                   "erreur_module"
                 ]
               }

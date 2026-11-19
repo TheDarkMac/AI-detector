@@ -1,7 +1,7 @@
 """Largeurs des 14 polices standard du PDF, pour le module pagespdf (T51, ADR-0215).
 
 Lit les fichiers AFM d'Adobe des 14 polices standard (ISO 32000-2, §9.6.2.2) et écrit
-``src/voight_kampff/modules/pagespdf/_polices14.py`` : pour chaque police, sa montée et sa
+``src/voight_kampff/modules/_lecture/_polices14.py`` : pour chaque police, sa montée et sa
 descente, son encodage propre et la largeur de chaque glyphe, par son nom ; et les noms des
 glyphes des encodages StandardEncoding, WinAnsiEncoding et MacRomanEncoding (annexe D).
 
@@ -22,7 +22,7 @@ from pathlib import Path
 import fontTools.agl
 
 AFM = Path("/usr/share/matplotlib/mpl-data/fonts/pdfcorefonts")
-SORTIE = Path("src/voight_kampff/modules/pagespdf/_polices14.py")
+SORTIE = Path("src/voight_kampff/modules/_lecture/_polices14.py")
 POLICES = (
     "Courier",
     "Courier-Bold",

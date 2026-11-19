@@ -26,7 +26,12 @@ from voight_kampff.cli import resume
 from voight_kampff.modules import imagespdf
 from voight_kampff.modules._lecture import pdf as lecteur
 from voight_kampff.rapport import export
-from voight_kampff.rapport._presentation import Presentation, origine_partie, texte
+from voight_kampff.rapport._presentation import (
+    _SANS_METADONNEES,
+    Presentation,
+    origine_partie,
+    texte,
+)
 from voight_kampff.rapport.modele import (
     NOMBRE_MAX_EXTRAITES,
     Direction,
@@ -552,13 +557,23 @@ def test_rapport_montre_les_parties_extraites(analyses: dict[str, Analyse]) -> N
 
 def test_controle_avant_publication_complet(tmp_path: Path) -> None:
     # Le module ne lit aucune métadonnée identifiante : non mené, il ne rend pas le contrôle
-    # avant publication incomplet (ADR-0227). Désactivé, aucune image n'est extraite.
+    # avant publication incomplet (ADR-0227). Désactivé, aucune image n'est extraite. La page
+    # d'image seule n'a pas de couche texte : la non menée de caracteres (ADR-0247), qui le rend
+    # incomplet, est la seule qui compte.
     chemin = tmp_path / "imagemagick.pdf"
     chemin.write_bytes(echantillon("imagemagick"))
     analyse = analyser(chemin, desactiver={"imagespdf"})
     assert analyse.identification.extraites == ()
     assert "imagespdf" in {n.module for n in analyse.non_menees}
-    assert texte("resume.publication_incomplete") not in Presentation(analyse, ()).publication()
+    (numerise,) = [n for n in analyse.non_menees if n.module == "caracteres"]
+    assert numerise.raison is RaisonNonMenee.DOCUMENT_NUMERISE
+    assert texte("resume.publication_incomplete") in Presentation(analyse, ()).publication()
+    comptees = {
+        n.module
+        for n in analyse.non_menees
+        if n.raison is not RaisonNonMenee.HORS_V1 and n.module not in _SANS_METADONNEES
+    }
+    assert comptees == {"caracteres"}
 
 
 def test_document_sans_jpeg_ne_reprend_pas_d_autre_image() -> None:

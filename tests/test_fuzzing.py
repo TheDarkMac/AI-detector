@@ -569,7 +569,7 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "png": ("exif", "xmp", "textepng", "image", "dwtdct"),
     "webp": ("exif", "xmp", "image", "dwtdct"),
     "heic": ("exif", "xmp", "dwtdct"),
-    "pdf": ("infopdf", "xmp", "revisionspdf", "pagespdf", "actifspdf", "imagespdf"),
+    "pdf": ("infopdf", "xmp", "revisionspdf", "pagespdf", "actifspdf", "imagespdf", "caracteres"),
     "mp3": ("id3",),
     "aac": ("id3",),
     "wav": ("id3", "infowav", "xmp"),

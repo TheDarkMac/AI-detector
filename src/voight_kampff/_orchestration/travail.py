@@ -92,6 +92,7 @@ _RAISONS_D_UN_MODULE = _RAISONS_DU_MOTEUR | {
     RaisonNonMenee.FICHIER_TRONQUE,
     RaisonNonMenee.REFERENCE_MANQUANTE,
     RaisonNonMenee.RESEAU_DESACTIVE,
+    RaisonNonMenee.DOCUMENT_NUMERISE,
 }
 
 _ISOLATION_INCONNUE = EtatIsolation(NiveauIsolation.REDUITE, tuple(ManqueIsolation))
