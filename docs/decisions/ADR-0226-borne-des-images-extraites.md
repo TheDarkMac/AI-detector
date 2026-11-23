@@ -67,3 +67,4 @@ Option D. Précisions de l'assistant :
 | Date | Modification |
 | --- | --- |
 | 2026-11-17 | Création : seize images (option A), choisies par TheDarkMac au début de T53 ; remplacées le même jour par le budget de 2 Mio (option D), après la mesure de l'assistant |
+| 2026-11-23 | Renvoi : bornes reprises pour les images d'un DOCX ou d'un ODT, dans l'ordre de l'archive ; une image compressée compte pour sa taille décompressée ([ADR-0253](ADR-0253-images-cherchees-dans-un-docx-et-un-odt.md), [ADR-0254](ADR-0254-parties-extraites-decompressees.md)) (complément de T81) |

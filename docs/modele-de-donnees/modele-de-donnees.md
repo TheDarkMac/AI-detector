@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.16** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 avec T42, v1.12 avec T50, v1.13 avec T51, v1.14 avec T53, v1.15 avec T80, v1.16 proposée dans la PR du complément texte de T53. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.17** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 avec T42, v1.12 avec T50, v1.13 avec T51, v1.14 avec T53, v1.15 avec T80, v1.16 avec le complément texte de T53, v1.17 proposée dans la PR du complément de T81. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, F-84, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -54,6 +54,7 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0224](../decisions/ADR-0224-parties-extraites.md), [ADR-0226](../decisions/ADR-0226-borne-des-images-extraites.md) | Partie extraite et son `Origine`, `Identification.extraites` (au plus 16), message `extraction` ; `VERSION_SCHEMA` 0.10.0 (T53, ADR-0227) |
 | [ADR-0233](../decisions/ADR-0233-saisie-du-texte-colle.md) | `Identification.saisie` (`fichier`, `texte_colle`) ; nom absent d'un texte collé ; `VERSION_SCHEMA` 0.11.0 (T80, ADR-0237) |
 | [ADR-0247](../decisions/ADR-0247-page-sans-couche-texte-et-versions-du-complement-de-t53.md) | Raison `document_numerise`, donnée par un module ; `VERSION_SCHEMA` 0.12.0 (complément texte de T53) |
+| [ADR-0254](../decisions/ADR-0254-parties-extraites-decompressees.md) | `Decompression` de l'origine d'une partie extraite : méthode, taille du contenu, plage du format dans ce contenu ; `VERSION_SCHEMA` 0.13.0 (complément de T81, ADR-0255) |
 
 ### Où se trouve le code
 
@@ -101,6 +102,12 @@ classDiagram
     contenant
     module
     localisation
+    decompression
+  }
+  class Decompression {
+    methode
+    taille
+    octets
   }
   class Versions {
     outil
@@ -188,6 +195,7 @@ classDiagram
   Identification *-- "1..16" Partie
   Identification *-- "0..16" Partie : extraites
   Partie *-- "0..1" Origine
+  Origine *-- "0..1" Decompression
   Rapport *-- Versions
   Versions *-- VersionCatalogue
   Versions *-- "0..*" Dependance
@@ -319,7 +327,7 @@ Le processus principal tire de l'identification trois sortes d'analyses non men�
 
 **Partie** (ADR-0070, ADR-0071) : `rang` de 1 à 16, dans l'ordre des débuts ; `format`, pris dans le vocabulaire de `formats.py` ; `octets`, du début à la fin logique, ou à la fin du fichier si elle n'est pas connue ; `fin_connue` ; `tronquee` (structure interrompue avant sa fin, jamais avec une fin connue). Les plages peuvent se chevaucher. Au moins une partie est dans le périmètre : sinon le fichier est refusé, sans rapport (ADR-0075).
 
-**Partie extraite** (ADR-0224) : contenu qu'un module a trouvé dans une partie reconnue et que les modules de son format analysent comme une partie ; mêmes champs, et une `origine` : `contenant` (rang d'une partie reconnue du périmètre), `module` (celui qui l'a extraite), `localisation` (page, objet ; sans plage d'octets, qui est celle de la partie). Rangs à la suite des parties reconnues, de 2 à 32 ; au plus 16 (ADR-0226) ; format du périmètre ; plage dans celle du contenant, fin logique cherchée dans la plage donnée par le module. Une partie reconnue n'a pas d'origine. Les parties extraites n'entrent ni dans les polyglottes ni dans les octets non reconnus ; la couverture, les non menées tirées de l'identification (`fichier_tronque`) et les techniques hors V1 les comptent comme des parties analysées.
+**Partie extraite** (ADR-0224) : contenu qu'un module a trouvé dans une partie reconnue et que les modules de son format analysent comme une partie ; mêmes champs, et une `origine` : `contenant` (rang d'une partie reconnue du périmètre), `module` (celui qui l'a extraite), `localisation` (page, entrée d'une archive, objet ; sans plage d'octets, qui est celle de la partie) et, pour un contenu compressé dans le fichier, `decompression` (ADR-0254) : `methode` (`deflate`), `taille` du contenu décompressé, `octets` du format dans ce contenu (de sa première position à sa fin logique, ou à la fin du contenu si elle n'est pas connue) ; la plage de la partie est alors celle des données compressées, et les localisations de ses résultats se lisent dans le contenu décompressé. Rangs à la suite des parties reconnues, de 2 à 32 ; au plus 16 (ADR-0226) ; format du périmètre ; plage dans celle du contenant, fin logique cherchée dans la plage donnée par le module. Une partie reconnue n'a pas d'origine. Les parties extraites n'entrent ni dans les polyglottes ni dans les octets non reconnus ; la couverture, les non menées tirées de l'identification (`fichier_tronque`) et les techniques hors V1 les comptent comme des parties analysées.
 
 **Versions** : `outil` ; `interpreteur` (`nom`, `version` : implémentation et version de Python, lues dans P1, qui lance P2 par le même interpréteur, ADR-0111) ; `catalogue` (`version`, `date`, `empreinte`, `fourni_par_utilisateur`, ADR-0029) ; `confiance` (`nom`, `version`, `date`, `empreinte`, `fourni_par_utilisateur` : liste de confiance C2PA employée, ADR-0171) ; `dependances` (`nom`, `version`, sans doublon, ADR-0023 ; bibliothèques des modules actifs, ADR-0120).
 
@@ -399,3 +407,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-11-17 | 1.14 | Partie extraite et `Origine`, `Identification.extraites`, message `extraction`, `VERSION_SCHEMA` 0.10.0 (§1, §2, §6, §7, §8, ADR-0224) | T53 |
 | 2026-11-17 | 1.15 | `Identification.saisie`, nom absent d'un texte collé, `VERSION_SCHEMA` 0.11.0 (§1, §6, §7, ADR-0233) ; statut corrigé, il annonçait encore la v1.12 | T80 |
 | 2026-11-19 | 1.16 | Raison `document_numerise` (page d'un PDF sans couche texte native, ADR-0017), `VERSION_SCHEMA` 0.12.0 (§1, §5, ADR-0247) ; statut corrigé, il annonçait encore la v1.15 proposée | T53 (complément texte) |
+| 2026-11-23 | 1.17 | `Decompression` de l'origine d'une partie extraite, `VERSION_SCHEMA` 0.13.0 (§1, §2, §6, ADR-0254) | T81 (complément) |
