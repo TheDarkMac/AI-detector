@@ -26,7 +26,7 @@ Un DOCX est un paquet OPC (ECMA-376, partie 2) : une archive ZIP dont les partie
 
 - La cible d'une relation est résolue depuis la racine du paquet (`/`, `.`, `..`, encodage `%xx`) ; les noms de parties sont comparés sans la casse des lettres ASCII, comme le veut OPC.
 - Le type de relation des premières versions d'Office 2007 (`…/officedocument/2006/relationships/metadata/core-properties`) est accepté.
-- Ne sont pas lus : le document (`word/document.xml`) et toutes ses relations, dont le modèle (`attachedTemplate`), les liens et les objets incorporés, que signale le module `actifsbureau` sans leur cible (fiche [`actifs-bureau`](actifs-bureau.md), ADR-0229) ; la liste des liens des propriétés étendues (`HLinks`) ; la vignette ; les signatures numériques (T52) ; les identifiants de révision et les modifications suivies (T81).
+- Ne sont pas lus : le document (`word/document.xml`) et toutes ses relations, dont le modèle (`attachedTemplate`), les liens et les objets incorporés, que signale le module `actifsbureau` sans leur cible (fiche [`actifs-bureau`](actifs-bureau.md), ADR-0229) ; la liste des liens des propriétés étendues (`HLinks`) ; la vignette ; les signatures numériques (T52) ; les identifiants de révision et les modifications suivies, que lit le module `historique` (fiche [`historique-edition`](historique-edition.md), ADR-0249).
 
 Aucune donnée de référence.
 
@@ -72,7 +72,7 @@ Le nom d'une propriété personnalisée, choisi par l'auteur, reste écrit en cl
 | Retouche | Rien |
 | Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `Application` |
 
-Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. `Application` et `AppVersion` sont des déclarations du logiciel, que quiconque peut écrire (cas d'abus C-02) ; un temps d'édition nul ou une révision 1 ne disent pas qu'un texte a été généré : ils sont neutres (F-71, T81).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. `Application` et `AppVersion` sont des déclarations du logiciel, que quiconque peut écrire (cas d'abus C-02) ; un temps d'édition nul ou une révision 1 ne disent pas qu'un texte a été généré : ils sont neutres (F-71) ; le module `historique` les relit en nombres et les rapporte en informations neutres (fiche [`historique-edition`](historique-edition.md)).
 
 ## Ce qui déclenche un constat
 
@@ -124,3 +124,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-14 | 0.3.0 | Titres, sujet, mots-clés et propriétés personnalisées marqués ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |
 | 2026-11-17 | 0.3.0 | Renvoi : macros, objets et relations externes du document signalés par `actifsbureau` (T52, complément bureautique, ADR-0228, ADR-0229) ; module inchangé |
 | 2026-11-17 | 0.3.1 | Encodage déclaré qu'expat ne lit pas : lecture partielle au lieu d'une erreur du module (ERR-0012, T52, complément bureautique) |
+| 2026-11-23 | 0.3.1 | Renvoi : temps d'édition, révisions, identifiants de session, modifications suivies et commentaires lus par `historique` (T81, ADR-0248, ADR-0249) |

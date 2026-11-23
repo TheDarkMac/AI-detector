@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.19** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 avec le complément bureautique de T52, v1.17 avec T80, v1.18 avec le complément de T80, v1.19 proposée dans la PR du complément texte de T53. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.20** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 avec le complément bureautique de T52, v1.17 avec T80, v1.18 avec le complément de T80, v1.19 avec le complément texte de T53, v1.20 proposée dans la PR de T81. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -60,6 +60,9 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Couche texte native | Texte qu'un PDF montre par ses polices, codes traduits en caractères par `/ToUnicode` ou par le nom de leur glyphe ; une page sans couche texte native (image seule) n'est pas lue, la lecture des documents numérisés étant exclue (raison `document_numerise`). | F-63, ADR-0017, ADR-0246, ADR-0247 |
 | Texte invisible | Texte d'un PDF écrit dans un mode de rendu qui ne peint rien (3 ou 7) : couche d'un logiciel de reconnaissance de caractères, ou texte caché aux lecteurs ; analysé, compté, signalé par une information neutre. | ADR-0245 |
 | Texte de remplacement | Texte qu'un contenu marqué d'un PDF donne à la place de ses glyphes (`/ActualText`) : celui que copient les lecteurs, lu par `caracteres`. | ADR-0246 |
+| Historique d'édition | Ce qu'un document bureautique garde de la façon dont il a été écrit : temps d'édition, nombre d'enregistrements, sessions d'édition, modifications suivies, commentaires. Une valeur absente ou nulle reste une information neutre. | F-71, ADR-0249 |
+| Session d'édition, identifiant de session (rsid) | Période d'édition d'un document, d'un enregistrement au suivant. Word et LibreOffice lui donnent un identifiant (« rsid ») et en marquent le texte écrit pendant elle ; un texte écrit d'une traite ou collé en une fois n'en porte qu'un. | ADR-0249 |
+| Marque de révision | Élément d'un DOCX qui enregistre une modification suivie (insertion, suppression, déplacement, changement de mise en forme), avec son auteur et sa date ; une même modification peut en faire plusieurs. Dans un ODT, une région de modification. | ADR-0249, ADR-0250 |
 | Enveloppe C2PATXT | Manifeste C2PA écrit dans un texte : en-tête `C2PATXT`, version, longueur et boîte JUMBF, en sélecteurs de variante après U+FEFF (C2PA 2.3, annexe A.7) ; trouvée et décrite par l'outil, non vérifiée. | ADR-0236 |
 
 ## Termes de l'architecture
@@ -149,3 +152,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-11-17 | 1.17 | Texte collé, caractère invisible, emploi ordinaire ou inhabituel, étiquette, sélecteur de variante, homoglyphe et mot mêlé, lettre de compatibilité, enveloppe C2PATXT ajoutés | T80 |
 | 2026-11-18 | 1.18 | Texte supprimé, texte masqué ajoutés | T80 (complément bureautique) |
 | 2026-11-19 | 1.19 | Couche texte native, texte invisible, texte de remplacement ajoutés | T53 (complément texte) |
+| 2026-11-23 | 1.20 | Historique d'édition, session d'édition, identifiant de session (rsid), marque de révision ajoutés | T81 |

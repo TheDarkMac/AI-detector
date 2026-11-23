@@ -87,6 +87,7 @@ def test_analyse_d_un_pdf(tmp_path: Path) -> None:
             ("dwtdct", "0.1.0"),
             ("ela", "0.1.0"),
             ("exif", "0.4.0"),
+            ("historique", "0.1.0"),
             ("id3", "0.3.0"),
             ("image", "0.3.0"),
             ("infowav", "0.3.0"),

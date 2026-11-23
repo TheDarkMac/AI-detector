@@ -23,7 +23,7 @@ Un ODT est un paquet OpenDocument (OASIS) : une archive ZIP dont l'entrée `meta
 | `meta.xml` | `office:document-meta`, sa version (`office:version`), et les enfants d'`office:meta` |
 
 - Le nom `meta.xml` est fixé par OpenDocument et comparé avec sa casse : `META.XML` n'est pas cette entrée.
-- Ne sont pas lus : le contenu et les styles (`content.xml`, `styles.xml`), les réglages (`settings.xml`), le manifeste et les métadonnées RDF (`META-INF/manifest.xml`, `manifest.rdf`), la vignette, les signatures (T52), les modifications suivies (T81) ; les attributs `xlink` des métadonnées (modèle, rechargement automatique : adresses, ADR-0138), que signale le module `actifsbureau` sans leur cible, avec les macros, événements, objets et références du contenu (fiche [`actifs-bureau`](actifs-bureau.md), ADR-0229) ; la langue d'un élément (`xml:lang`).
+- Ne sont pas lus : le contenu et les styles (`content.xml`, `styles.xml`), les réglages (`settings.xml`), le manifeste et les métadonnées RDF (`META-INF/manifest.xml`, `manifest.rdf`), la vignette, les signatures (T52), les modifications suivies, que lit le module `historique` (fiche [`historique-edition`](historique-edition.md), ADR-0249) ; les attributs `xlink` des métadonnées (modèle, rechargement automatique : adresses, ADR-0138), que signale le module `actifsbureau` sans leur cible, avec les macros, événements, objets et références du contenu (fiche [`actifs-bureau`](actifs-bureau.md), ADR-0229) ; la langue d'un élément (`xml:lang`).
 
 Aucune donnée de référence.
 
@@ -44,7 +44,7 @@ Noms d'observation ([ADR-0140](../decisions/ADR-0140-noms-et-valeurs-des-proprie
 
 - Préfixes de la spécification, quel que soit celui qu'écrit le fichier : `office`, `meta`, `dc` ; un espace inconnu prend `ns1`, `ns2`… ([ADR-0117](../decisions/ADR-0117-vocabulaire-des-observations.md)). Un nom tiré du fichier passe par la règle des composants.
 - Valeurs : textes tels qu'écrits ; entiers pour `meta:editing-cycles` et les attributs de `meta:document-statistic` ; propriété utilisateur lue selon `meta:value-type` : réel (`float`, `percentage`), booléen (`boolean`), texte sinon (`string`, `date`, `time`) ; une écriture que le type n'admet pas reste un texte.
-- Dates et durées (`meta:creation-date`, `dc:date`, `meta:print-date`, `meta:editing-duration`) : telles qu'écrites (ISO 8601), sans conversion ; les règles de T23 lisent les deux premières par la lecture `date-iso8601` ([ADR-0148](../decisions/ADR-0148-lecture-des-dates.md)), `meta:print-date` n'est pas comparée (ADR-0150) ; T81 interprétera la durée.
+- Dates et durées (`meta:creation-date`, `dc:date`, `meta:print-date`, `meta:editing-duration`) : telles qu'écrites (ISO 8601), sans conversion ; les règles de T23 lisent les deux premières par la lecture `date-iso8601` ([ADR-0148](../decisions/ADR-0148-lecture-des-dates.md)), `meta:print-date` n'est pas comparée (ADR-0150) ; le module `historique` lit la durée en minutes (fiche [`historique-edition`](historique-edition.md)).
 - Élément répété (`meta:keyword`) : une liste, dans l'ordre du document. Texte vide : rien n'est observé.
 
 Le module n'émet aucun constat ; les règles du catalogue qui lisent ses observations sont à la rubrique « Ce qui déclenche un constat ».
@@ -67,7 +67,7 @@ Le nom d'une propriété utilisateur reste écrit en clair dans le nom de l'obse
 | Retouche | Rien |
 | Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `meta:generator` |
 
-Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. `meta:generator` est une déclaration du logiciel, que quiconque peut écrire (cas d'abus C-02) ; un seul cycle d'édition ou une durée nulle sont neutres (F-71, T81).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. `meta:generator` est une déclaration du logiciel, que quiconque peut écrire (cas d'abus C-02) ; un seul cycle d'édition ou une durée nulle sont neutres (F-71) ; le module `historique` les rapporte en informations neutres (fiche [`historique-edition`](historique-edition.md)).
 
 ## Ce qui déclenche un constat
 
@@ -116,3 +116,4 @@ Règles du catalogue non évaluées : aucun corpus de référence ne les a mesur
 | 2026-11-14 | 0.3.0 | Titre, sujet, mots-clés et propriétés utilisateur marqués ; contrôle avant publication (T25, ADR-0158 à ADR-0163) |
 | 2026-11-17 | 0.3.0 | Renvoi : macros, événements, objets et références hors de l'archive signalés par `actifsbureau` (T52, complément bureautique, ADR-0228, ADR-0229) ; module inchangé |
 | 2026-11-17 | 0.3.1 | Encodage déclaré qu'expat ne lit pas : lecture partielle au lieu d'une erreur du module (ERR-0012, T52, complément bureautique) |
+| 2026-11-23 | 0.3.1 | Renvoi : durée et cycles d'édition, identifiants de session, modifications suivies et commentaires lus par `historique` (T81, ADR-0248, ADR-0249) |

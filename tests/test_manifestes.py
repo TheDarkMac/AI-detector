@@ -183,7 +183,7 @@ def test_modules_de_metadonnees_livres() -> None:
     # T20 et T21 : un module par famille de métadonnées (ADR-0114, ADR-0127, ADR-0131, ADR-0136) ;
     # T24 : le module image, qui lit la structure d'une image (ADR-0154) ; T30 : le module c2pa,
     # qui lit les manifestes C2PA par c2pa-python (ADR-0164) ; T80 : le module caracteres, qui lit
-    # un texte brut (ADR-0232).
+    # un texte brut (ADR-0232) ; T81 : le module historique (ADR-0248).
     livres = {manifeste.identifiant: manifeste for manifeste in decouvrir()}
     assert sorted(livres) == [
         "actifsbureau",
@@ -194,6 +194,7 @@ def test_modules_de_metadonnees_livres() -> None:
         "dwtdct",
         "ela",
         "exif",
+        "historique",
         "id3",
         "image",
         "imagespdf",
@@ -238,13 +239,15 @@ def test_modules_de_metadonnees_livres() -> None:
             "doublejpeg",
             "dwtdct",
             "ela",
+            "historique",
             "imagespdf",
             "pagespdf",
             "revisionspdf",
         }:
             # tests/test_actifs_bureau.py, test_actifs_pdf.py, test_caracteres.py,
             # test_double_compression.py,
-            # test_dwtdct.py, test_ela.py, test_images_pdf.py, test_pages_pdf.py,
+            # test_dwtdct.py, test_ela.py, test_historique.py, test_images_pdf.py,
+            # test_pages_pdf.py,
             # test_revisions_pdf.py
             continue
         assert manifeste.regles == ()

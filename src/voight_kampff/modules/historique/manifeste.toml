@@ -1,0 +1,13 @@
+# Module historique : historique d'édition d'un DOCX ou d'un ODT, temps d'édition, enregistrements, sessions, modifications suivies et commentaires (T81, ADR-0248 à ADR-0251). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "historique"
+version = "0.1.0"
+formats = ["docx", "odt"]
+exigences = ["F-71"]
+regles = []
+fiche = "historique-edition"
+# Direction des règles du catalogue sur ses observations (ADR-0251) ; le module lui-même n'émet aucun constat.
+directions = ["rien_de_particulier"]
+requiert = []
+bibliotheques = ["expat"]
+extrait = []

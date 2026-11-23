@@ -339,6 +339,7 @@ _REVISIONS = Path(__file__).parent / "donnees" / "revisions"
 _PAGES = Path(__file__).parent / "donnees" / "pages"
 _ACTIFS = Path(__file__).parent / "donnees" / "actifs"
 _ACTIFS_BUREAU = Path(__file__).parent / "donnees" / "actifsbureau"
+_HISTORIQUE = Path(__file__).parent / "donnees" / "historique"
 _IMAGES = Path(__file__).parent / "donnees" / "images"
 _INFO = (
     b"<</Title(Titre \\(entre parenth\\350ses\\))/Author<FEFF004A0065>/Trapped/False"
@@ -530,6 +531,11 @@ ECHANTILLONS_METADONNEES = (
         (format_, (_ACTIFS_BUREAU / nom).read_bytes())
         for nom, format_ in (("macros.odt", "odt"), ("liens.odt", "odt"), ("objet.docx", "docx"))
     ),
+    # T81 : document écrit en trois sessions, modifications suivies et commentaire.
+    *(
+        (format_, (_HISTORIQUE / nom).read_bytes())
+        for nom, format_ in (("sessions.odt", "odt"), ("sessions.docx", "docx"))
+    ),
     (
         "docx",
         docx_(
@@ -579,8 +585,8 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "mp4": ("quicktime", "xmp"),
     "mov": ("quicktime", "xmp"),
     "webm": ("matroska",),
-    "docx": ("ooxml", "actifsbureau", "caracteres"),
-    "odt": ("odf", "actifsbureau", "caracteres"),
+    "docx": ("ooxml", "actifsbureau", "caracteres", "historique"),
+    "odt": ("odf", "actifsbureau", "caracteres", "historique"),
     "texte": ("caracteres",),
 }
 
@@ -648,5 +654,6 @@ def test_lecteur_xml_encodage_declare_quelconque(encodage: str) -> None:
         ("ooxml", "docx", docx_(declaration + core("<dc:title>T</dc:title>"))),
         ("odf", "odt", odt_(declaration + meta("<dc:title>T</dc:title>"))),
         ("actifsbureau", "odt", odt_(None, ("content.xml", declaration + b"<a/>"))),
+        ("historique", "odt", odt_(None, ("content.xml", declaration + b"<a/>"))),
     ):
         executer_module(module, format_, contenu)
