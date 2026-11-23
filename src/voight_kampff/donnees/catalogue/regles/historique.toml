@@ -1,0 +1,223 @@
+# Règles du module historique (T81) : historique d'édition d'un DOCX ou d'un ODT (F-71 ; ADR-0248
+# à ADR-0251). Propriétés : ECMA-376, parties 1 et 2, et OpenDocument 1.3, partie 3 ; sessions :
+# identifiants de révision (rsid) de Word et de LibreOffice ; fiche historique-edition.
+# Toutes en information neutre (F-71, ADR-0251) : un historique court, absent ou nul ne dit rien
+# de l'origine du texte, et deux incohérences, comme celles de T23, ne disent pas leur cause.
+
+[[regle]]
+identifiant = "R-HISTORIQUE-001"
+version = "1"
+module = "historique"
+titre = "Aucun historique d'édition"
+description = "Le module historique n'a trouvé dans le DOCX ou l'ODT ni temps d'édition, ni nombre d'enregistrements, ni identifiant de session, ni modification suivie, ni commentaire : l'observation historique.present vaut faux. Information neutre (F-71, ADR-0251) : une valeur absente reste une information neutre."
+gabarit = "historique.absence"
+phrase = { fr = "Le document ne porte aucun historique d'édition (temps d'édition, enregistrements, sessions, modifications suivies, commentaires). Cette absence est fréquente (conversions, export d'un autre logiciel, nettoyage des métadonnées) et ne dit rien de l'origine du texte." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Absence neutre : beaucoup de logiciels n'écrivent pas ces données, et l'inspecteur de document de Word comme les outils de nettoyage les retirent ; elle n'est ni un indice d'IA ni une garantie d'authenticité (F-71).",
+  "Seuls les emplacements de la fiche du module sont lus : un historique logé ailleurs (versions enregistrées d'un ODT, réglages de l'application) n'est pas vu.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "historique.present"
+egal = false
+
+[[regle]]
+identifiant = "R-HISTORIQUE-002"
+version = "1"
+module = "historique"
+titre = "Temps d'édition déclaré"
+description = "Le DOCX (propriété étendue TotalTime) ou l'ODT (meta:editing-duration) déclare le temps total pendant lequel il a été ouvert pour être modifié, que le module observe en minutes entières (historique.duree). Information neutre (F-71, ADR-0251) : un temps nul ou court ne dit pas qu'un texte a été généré."
+gabarit = "historique.duree"
+phrase = { fr = "Le document déclare un temps d'édition total de {duree}. Ce compte, tenu par le logiciel, ne dit pas qui a écrit le texte : un temps nul ou court vient aussi d'un texte collé depuis un autre document, d'une conversion ou d'un logiciel qui ne le compte pas." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer cette propriété.",
+  "Le logiciel compte le temps pendant lequel le document est ouvert, pas celui de la rédaction : un texte écrit ailleurs puis collé, ou un document gardé ouvert sans être touché, faussent la durée dans un sens ou dans l'autre.",
+  "LibreOffice ne compte pas ce temps quand il est piloté sans interface, et beaucoup d'outils de conversion écrivent zéro ; « Enregistrer sous » ou un modèle peuvent garder ou remettre à zéro le compte.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "historique.duree"
+presente = true
+parametre = "duree"
+
+[[regle]]
+identifiant = "R-HISTORIQUE-003"
+version = "1"
+module = "historique"
+titre = "Nombre d'enregistrements déclaré"
+description = "Le DOCX (propriété principale cp:revision) ou l'ODT (meta:editing-cycles) déclare combien de fois il a été enregistré ou ouvert pour être modifié (historique.revisions). Information neutre (F-71, ADR-0251) : un seul enregistrement ne dit pas qu'un texte a été généré."
+gabarit = "historique.revisions"
+phrase = { fr = "Le document déclare {revisions} enregistrement(s) ou cycle(s) d'édition. Un compte faible est ordinaire pour un document écrit d'une traite, converti ou exporté d'un autre logiciel." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : quiconque peut écrire ou effacer cette propriété.",
+  "Chaque logiciel compte à sa façon : Word à chaque enregistrement, LibreOffice à chaque cycle d'édition ; une conversion peut garder le compte du document d'origine ou le remettre à un.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "historique.revisions"
+presente = true
+parametre = "revisions"
+
+[[regle]]
+identifiant = "R-HISTORIQUE-004"
+version = "1"
+module = "historique"
+titre = "Sessions d'édition du texte"
+description = "Les caractères du texte visible du corps portent les identifiants de session (rsid) que Word et LibreOffice inscrivent à chaque session d'édition : le module compte les sessions qu'ils désignent et la part du texte écrite dans la plus représentée (historique.texte.sessions, historique.texte.part). Information neutre (F-71, ADR-0251) : un texte écrit en une session ne dit pas qu'il a été généré."
+gabarit = "historique.sessions-du-texte"
+phrase = { fr = "Les {caracteres} du texte du corps portent la marque de {sessions} session(s) d'édition ; la plus représentée en porte {part}. Un texte écrit d'une traite, ou collé en une fois depuis un autre document, n'en porte qu'une." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : les identifiants s'écrivent ou s'effacent comme tout attribut ; LibreOffice ne les écrit pas dans un DOCX, et beaucoup d'outils n'en écrivent aucun.",
+  "Une session va d'un enregistrement au suivant : elle ne dit ni qui a écrit, ni combien de temps, ni si le texte a été tapé ou collé.",
+  "Les identifiants d'un modèle, ou d'un texte copié depuis un autre document, peuvent venir d'autres sessions que celles du document.",
+  "Seul le texte du corps est compté (pas les en-têtes, notes ni commentaires) ; les caractères sans identifiant (historique.texte.sans_session) ne comptent pas dans la part.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-23 par définition : une seule session suffit à la dire (F-71). Vérifié sur les échantillons de tests/donnees/historique, comparés à ce qu'en relit LibreOffice 25.2.3.2, et sur les documents construits par tests/test_historique.py."
+
+[[regle.condition]]
+observation = "historique.texte.sessions"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "sessions"
+
+[[regle.condition]]
+observation = "historique.texte.part"
+presente = true
+parametre = "part"
+
+[[regle.condition]]
+observation = "historique.texte.caracteres"
+presente = true
+parametre = "caracteres"
+
+[[regle]]
+identifiant = "R-HISTORIQUE-005"
+version = "1"
+module = "historique"
+titre = "Modifications suivies dans le document"
+description = "Le corps du DOCX porte des marques de révision (insertion, suppression, déplacement, changement de mise en forme) ou l'ODT des régions de modifications suivies : le module les compte, et compte leurs auteurs distincts sans les nommer (ADR-0250). Information neutre (F-71, ADR-0251) : des modifications suivies disent qu'un texte a été relu ou repris, pas par qui ni comment il a été écrit."
+gabarit = "historique.modifications"
+phrase = { fr = "Le document porte {modifications} marque(s) de modification suivie, laissée(s) par {auteurs} auteur(s) nommé(s) distinct(s) ; l'outil ne lit pas leurs noms." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Une modification se compte en marques : Word et LibreOffice marquent à part le texte inséré et la fin de paragraphe insérée, si bien qu'une même modification peut en faire plusieurs.",
+  "Seul le corps est lu : les modifications des en-têtes, pieds de page et notes d'un DOCX ne sont pas comptées.",
+  "Un auteur se compte par le nom écrit, tel quel : un même relecteur sous deux noms en fait deux ; un nom retiré par l'inspecteur de document n'en fait aucun.",
+  "Des modifications suivies voyagent avec le texte copié d'un autre document.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-23 par définition : une seule marque suffit à le dire (F-71). Vérifié sur les échantillons de tests/donnees/historique, comparés à ce qu'en relit LibreOffice 25.2.3.2."
+
+[[regle.condition]]
+observation = "historique.modifications"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "modifications"
+
+[[regle.condition]]
+observation = "historique.modifications.auteurs"
+presente = true
+parametre = "auteurs"
+
+[[regle]]
+identifiant = "R-HISTORIQUE-006"
+version = "1"
+module = "historique"
+titre = "Commentaires dans le document"
+description = "Le DOCX (word/comments.xml) ou l'ODT (annotations de content.xml) porte des commentaires : le module les compte, et compte leurs auteurs distincts sans les nommer (ADR-0250). Information neutre (F-71, ADR-0251) : des commentaires disent qu'un document a été relu, pas comment son texte a été écrit."
+gabarit = "historique.commentaires"
+phrase = { fr = "Le document porte {commentaires} commentaire(s), laissé(s) par {auteurs} auteur(s) nommé(s) distinct(s) ; l'outil ne lit pas leurs noms." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Seuls les commentaires du corps d'un ODT et de la partie des commentaires d'un DOCX sont comptés ; les réponses, que Word range aussi dans cette partie, comptent chacune pour un.",
+  "Un auteur se compte par le nom écrit, tel quel : un même relecteur sous deux noms en fait deux ; un nom retiré n'en fait aucun.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-23 par définition : un seul commentaire suffit à le dire (F-71). Vérifié sur les échantillons de tests/donnees/historique, comparés à ce qu'en relit LibreOffice 25.2.3.2."
+
+[[regle.condition]]
+observation = "historique.commentaires"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "commentaires"
+
+[[regle.condition]]
+observation = "historique.commentaires.auteurs"
+presente = true
+parametre = "auteurs"
+
+[[regle]]
+identifiant = "R-HISTORIQUE-007"
+version = "1"
+module = "historique"
+titre = "Temps d'édition plus long que l'écart entre création et dernier enregistrement"
+description = "Le temps d'édition que déclare le document (historique.duree) dépasse le plus grand écart que permettent ses dates de création et de dernier enregistrement (historique.ecart : dcterms:created et dcterms:modified d'un DOCX, meta:creation-date et dc:date d'un ODT, lues comme les règles de T23, ADR-0148) : un document ne peut pas avoir été modifié plus longtemps qu'il n'a existé ; l'une des trois valeurs au moins est inexacte (ADR-0251)."
+gabarit = "historique.duree-apres-ecart"
+phrase = { fr = "Le document déclare {duree} d'édition, plus que les {ecart} au plus qui séparent sa création de son dernier enregistrement, quel que soit le fuseau horaire : l'une de ces valeurs au moins est inexacte." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, un logiciel qui garde le temps d'édition en remettant la date de création (copie, modèle, « Enregistrer sous »), ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Une date sans fuseau est lue dans tous les fuseaux, de UTC-12 à UTC+14 : l'écart est alors majoré de 26 heures, et seul un temps d'édition qui le dépasse encore est relevé (ADR-0148).",
+  "L'écart est arrondi à la minute supérieure, en faveur du document.",
+]
+application = "moteur"
+
+[[regle.condition]]
+observation = "historique.duree"
+parametre = "duree"
+comparer = { observation = "historique.ecart", operateur = ">", parametre = "ecart" }
+
+[[regle]]
+identifiant = "R-HISTORIQUE-008"
+version = "1"
+module = "historique"
+titre = "Modifications ou commentaires datés après le dernier enregistrement"
+description = "Au moins une modification suivie ou un commentaire porte une date certainement postérieure à la date du dernier enregistrement du document (dcterms:modified d'un DOCX, dc:date d'un ODT), une fois les deux lues dans tous les fuseaux possibles (historique.posterieures) : ce qui est enregistré dans le document ne peut pas avoir été fait après son enregistrement ; l'une des dates au moins est inexacte (ADR-0251)."
+gabarit = "historique.dates-apres-enregistrement"
+phrase = { fr = "{posterieures} modification(s) suivie(s) ou commentaire(s) sont datés après le dernier enregistrement du document, quel que soit le fuseau horaire : l'une de ces dates au moins est inexacte." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "declaration"
+limites = [
+  "Déclaration du fichier : une horloge mal réglée, deux machines à l'heure différente, un outil qui réécrit la date d'enregistrement sans toucher aux modifications, ou une modification volontaire donnent la même incohérence ; la règle ne dit pas laquelle (ADR-0149).",
+  "Dans un DOCX, Word et LibreOffice écrivent la date d'une modification ou d'un commentaire en heure locale suivie de « Z » : elle est lue sans fuseau, dans tous ceux de UTC-12 à UTC+14 (ADR-0250) ; seul un écart de plus de 14 heures, ou de 26 si la date d'enregistrement n'a pas de fuseau, est relevé.",
+  "Une date antérieure à la création n'est pas relevée : les modifications et commentaires voyagent avec le texte copié d'un autre document.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-23 par définition : une seule date postérieure suffit à le dire (F-71). Vérifié sur les documents construits par tests/test_historique.py."
+
+[[regle.condition]]
+observation = "historique.posterieures"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "posterieures"
