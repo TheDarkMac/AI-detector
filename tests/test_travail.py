@@ -13,6 +13,7 @@ import io
 import json
 import os
 import sys
+import zlib
 from collections.abc import Iterator, Mapping, Sequence
 from importlib import metadata
 from pathlib import Path
@@ -26,7 +27,12 @@ from voight_kampff import modules, schemas
 from voight_kampff._protocole import TAILLE_MAX_LECTURE
 from voight_kampff._regles import Regle
 from voight_kampff._travail import garde, identification, principal
-from voight_kampff._travail.contexte import Contexte, Extraction, LimiteDepassee
+from voight_kampff._travail.contexte import (
+    Contexte,
+    Extraction,
+    LimiteDepassee,
+    TailleDepassee,
+)
 from voight_kampff._travail.fichier import Fichier
 from voight_kampff._travail.principal import Analyseur, lire_configuration
 from voight_kampff.rapport.modele import (
@@ -682,6 +688,145 @@ def test_partie_extraite_non_extraite_a_son_tour(descripteur: int) -> None:
         c.extraire("jpeg", Plage(0, 1), LIEU)
 
 
+# Contenus décompressés (ADR-0254)
+
+ENTREE = Localisation(chemin="word/media/image1.jpeg")
+
+
+def decompressant(*contenus: bytes) -> Analyseur:
+    """Module qui déclare, dans un PDF, chaque contenu comme un JPEG décompressé des octets 2 à 5
+    ; il lit une partie d'un autre format."""
+
+    def module(contexte: Contexte) -> None:
+        if contexte.format_reel != "pdf":
+            lecteur(contexte)
+            return
+        for contenu in contenus:
+            accepte = contexte.extraire("jpeg", Plage(2, 4), ENTREE, contenu)
+            contexte.observer("acceptee", accepte)
+
+    return module
+
+
+def test_extraction_decompressee_analysee_en_memoire(descripteur: int) -> None:
+    analyseurs = {"alpha": decompressant(b"contenu"), "beta": lecteur}
+    vus: list[tuple[bytes, int, int]] = []
+
+    def reconnaitre(fichier: Fichier, debut: int, longueur: int) -> tuple[str, int, bool]:
+        vus.append((fichier.lire(debut, longueur), debut, longueur))
+        return ("jpeg", 4, False)
+
+    messages = derouler(
+        descripteur,
+        "alpha",
+        "beta",
+        analyseurs=analyseurs,
+        parties=PDF,
+        extrait={"alpha": ["jpeg"]},
+        reconnaitre=reconnaitre,
+    )
+    # Reconnue dans le contenu décompressé, pas dans le fichier.
+    assert vus == [(b"contenu", 0, 7)]
+    (extraite,) = next(m for m in messages if m["type"] == "extraction")["parties"]
+    assert extraite == {
+        "rang": 2,
+        "format": "jpeg",
+        "octets": {"debut": 2, "longueur": 4},
+        "fin_connue": True,
+        "tronquee": False,
+        "origine": {
+            "contenant": 1,
+            "module": "alpha",
+            "localisation": {"chemin": "word/media/image1.jpeg"},
+            "decompression": {
+                "methode": "deflate",
+                "taille": 7,
+                "octets": {"debut": 0, "longueur": 4},
+            },
+        },
+    }
+    # Les modules lisent la partie extraite dans le contenu, jusqu'à sa fin logique.
+    lues = [m["observation"] for m in messages if m["type"] == "observation"]
+    assert [(o["module"], o["partie"], o["valeur"]) for o in lues if o["partie"] == 2] == [
+        ("alpha", 2, "cont"),
+        ("beta", 2, "cont"),
+    ]
+
+
+def test_extraction_decompressee_sans_fin_ou_autre_format(descripteur: int) -> None:
+    messages = derouler(
+        descripteur,
+        "alpha",
+        analyseurs={"alpha": decompressant(b"abc")},
+        parties=PDF,
+        extrait={"alpha": ["jpeg"]},
+        reconnaitre=lambda _f, _d, _l: ("jpeg", None, True),
+    )
+    (extraite,) = next(m for m in messages if m["type"] == "extraction")["parties"]
+    assert (extraite["fin_connue"], extraite["tronquee"]) == (False, True)
+    assert extraite["origine"]["decompression"]["octets"] == {"debut": 0, "longueur": 3}
+    messages = derouler(
+        descripteur,
+        "alpha",
+        analyseurs={"alpha": decompressant(b"abc")},
+        parties=PDF,
+        extrait={"alpha": ["jpeg"]},
+        reconnaitre=lambda _f, _d, _l: None,
+    )
+    assert "extraction" not in types(messages)
+    non_menees = [m["non_menee"] for m in messages if m["type"] == "non_menee"]
+    assert non_menees == [
+        {"raison": "format_partiel", "localisation": ENTREE.vers_dict(), "partie": 1}
+    ]
+
+
+def test_extraction_decompressee_comptee_pour_sa_taille(
+    descripteur: int, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Le seuil compte les octets analysés : ceux du contenu décompressé, pas ceux du fichier.
+    monkeypatch.setattr(principal, "OCTETS_EXTRAITS_MAX", 10)
+    messages = derouler(
+        descripteur,
+        "alpha",
+        analyseurs={"alpha": decompressant(bytes(10), bytes(1))},
+        parties=PDF,
+        extrait={"alpha": ["jpeg"]},
+    )
+    assert [o["valeur"] for o in acceptees(messages)] == [True, False]
+
+
+def test_contexte_refuse_un_contenu_vide(descripteur: int) -> None:
+    garde.verrouiller()
+    c = Contexte(
+        "alpha",
+        (),
+        Fichier(descripteur),
+        PDF[0],
+        1 << 20,
+        extrait={"jpeg"},
+        places=2,
+        octets_restants=100,
+    )
+    with pytest.raises(ValueError, match="contenu décompressé vide"):
+        c.extraire("jpeg", Plage(0, 1), ENTREE, b"")
+    assert c.extraction_possible
+    assert c.extraire("jpeg", Plage(0, 1), ENTREE, b"abc")
+    (extraction,) = c.extractions
+    assert (extraction.contenu, extraction.taille) == (b"abc", 3)
+    assert c.extraire("jpeg", Plage(0, 1), ENTREE)
+    assert not c.extraction_possible
+    assert not c.extraire("jpeg", Plage(0, 1), ENTREE, b"abc")
+    assert c.refusee == ENTREE
+
+
+def test_decompression_bornee_par_le_module() -> None:
+    c = contexte()
+    donnees = zlib.compress(bytes(3 << 20))
+    assert len(c.decompresser(donnees, "zlib", 3 << 20)) == 3 << 20
+    with pytest.raises(TailleDepassee):
+        contexte().decompresser(donnees, "zlib", (3 << 20) - 1)
+
+
 def test_extraction_ramenee_au_fichier(descripteur: int) -> None:
     garde.verrouiller()
     partie = Partie(2, "pdf", Plage(4, 6), fin_connue=True)
@@ -731,7 +876,7 @@ def test_empreinte(descripteur: int) -> None:
     "ligne",
     [
         pytest.param(b"", id="absente"),
-        pytest.param(b'{"version_schema":"0.12.0","modules":[]}', id="sans-fin-de-ligne"),
+        pytest.param(b'{"version_schema":"0.13.0","modules":[]}', id="sans-fin-de-ligne"),
         pytest.param(b'{"version_schema":"9.9.9","modules":[]}\n', id="autre-version"),
     ],
 )
@@ -767,6 +912,7 @@ def test_import_des_modules_livres() -> None:
         "historique",
         "id3",
         "image",
+        "imagesbureau",
         "imagespdf",
         "infopdf",
         "infowav",

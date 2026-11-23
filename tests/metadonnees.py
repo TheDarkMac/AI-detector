@@ -477,14 +477,15 @@ def contexte(fichier: Any, contenu: bytes, format_: str, module: str) -> Context
     fichier.flush()
     partie = Partie(1, format_, Plage(0, len(contenu)), fin_connue=True)
     directions = {Direction.RIEN_DE_PARTICULIER}
-    # Les places d'un fichier : seul imagespdf extrait un contenu (ADR-0224, ADR-0226).
+    # Les places d'un fichier et les formats qu'extraient imagespdf (jpeg) et imagesbureau (jpeg,
+    # png, webp, heic) (ADR-0224, ADR-0226, ADR-0253).
     return Contexte(
         module,
         directions,
         Fichier(fichier.fileno()),
         partie,
         64 << 20,
-        extrait={"jpeg"},
+        extrait={"jpeg", "png", "webp", "heic"},
         places=NOMBRE_MAX_EXTRAITES,
         octets_restants=OCTETS_EXTRAITS_MAX,
     )

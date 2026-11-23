@@ -22,6 +22,7 @@ from voight_kampff.rapport.modele import (
     Categorie,
     Constat,
     Couverture,
+    Decompression,
     Dependance,
     Direction,
     EtatIsolation,
@@ -906,6 +907,60 @@ def test_partie_extraite_refusee(
 ) -> None:
     with pytest.raises(ValueError, match=motif):
         dataclasses.replace(rapport.identification, extraites=extraites)
+
+
+DECOMPRESSEE = dataclasses.replace(
+    EXTRAITE,
+    origine=Origine(
+        1,
+        "docx",
+        Localisation(chemin="word/media/image1.jpeg"),
+        Decompression("deflate", 800, Plage(0, 700)),
+    ),
+)
+"""Image compressée dans une archive, lue décompressée (ADR-0254) : sa plage est celle des
+données compressées ; la plage de sa décompression, celle du JPEG dans le contenu."""
+
+
+def test_partie_extraite_decompressee_relue(rapport: Rapport) -> None:
+    avec = avec_extraite(rapport, DECOMPRESSEE)
+    document = json.loads(json.dumps(avec.vers_dict()))
+    (extraite,) = document["identification"]["extraites"]
+    assert extraite["origine"]["decompression"] == {
+        "methode": "deflate",
+        "taille": 800,
+        "octets": {"debut": 0, "longueur": 700},
+    }
+    assert Rapport.depuis_dict(document) == avec
+    # Une fin non connue s'étend jusqu'à la fin du contenu décompressé.
+    sans_fin = dataclasses.replace(
+        DECOMPRESSEE,
+        fin_connue=False,
+        origine=Origine(
+            1,
+            "docx",
+            Localisation(chemin="word/media/image1.jpeg"),
+            Decompression("deflate", 800, Plage(0, 800)),
+        ),
+    )
+    assert avec_extraite(rapport, sans_fin).identification.extraites == (sans_fin,)
+    with pytest.raises(ValueError, match="fin non connue"):
+        avec_extraite(rapport, dataclasses.replace(DECOMPRESSEE, fin_connue=False))
+
+
+@pytest.mark.parametrize(
+    ("fabrique", "motif"),
+    [
+        pytest.param(lambda: Decompression("zlib", 8, Plage(0, 8)), "inconnue", id="methode"),
+        pytest.param(lambda: Decompression("deflate", 0, Plage(0, 1)), "hors bornes", id="vide"),
+        pytest.param(
+            lambda: Decompression("deflate", 8, Plage(1, 8)), "hors du contenu", id="plage"
+        ),
+    ],
+)
+def test_decompression_invalide(fabrique: Any, motif: str) -> None:
+    with pytest.raises(ValueError, match=motif):
+        fabrique()
 
 
 def test_partie_reconnue_sans_origine(rapport: Rapport) -> None:

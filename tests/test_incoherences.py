@@ -40,7 +40,7 @@ REGLES_T23 = tuple(
     if regle.categorie is Categorie.INFORMATION_NEUTRE
     # T50 : tests/test_revisions_pdf.py ; T52 : tests/test_actifs_pdf.py et
     # test_actifs_bureau.py ; T53 : tests/test_images_pdf.py ; T80 : tests/test_caracteres.py ;
-    # T81 : tests/test_historique.py
+    # T81 : tests/test_historique.py ; complément de T81 : tests/test_images_bureau.py
     and regle.module
     not in {
         "actifsbureau",
@@ -48,6 +48,7 @@ REGLES_T23 = tuple(
         "c2pa",
         "caracteres",
         "historique",
+        "imagesbureau",
         "imagespdf",
         "revisionspdf",
     }
@@ -346,10 +347,10 @@ def test_chaque_regle_de_t23_est_eprouvee() -> None:
     # (test_pages_pdf.py), les 5 de T52 (test_actifs_pdf.py), les 4 de T53 (test_images_pdf.py),
     # les 4 du complément bureautique de T52 (test_actifs_bureau.py), les 13 de T80 et de son
     # complément (test_caracteres.py), celle du complément texte de T53 (test_texte_pdf.py), les 8
-    # de T81 (test_historique.py).
-    assert len(REGLES_T23) + 24 + 8 + 12 + 3 + 1 + 15 + 3 + 3 + 4 + 5 + 4 + 4 + 13 + 1 + 8 == len(
-        CATALOGUE.regles
-    )
+    # de T81 (test_historique.py), les 5 de son complément (test_images_bureau.py).
+    assert len(
+        REGLES_T23
+    ) + 24 + 8 + 12 + 3 + 1 + 15 + 3 + 3 + 4 + 5 + 4 + 4 + 13 + 1 + 8 + 5 == len(CATALOGUE.regles)
 
 
 @pytest.mark.exigence("F-14", "ES-20")
