@@ -1,0 +1,57 @@
+{
+  "outils": {
+    "LibreOffice": "25.2.3.2"
+  },
+  "sessions.docx": {
+    "auteurs_commentaires": 1,
+    "auteurs_modifications": 1,
+    "commentaires": 1,
+    "cycles": 3,
+    "duree_secondes": 0,
+    "modifications": 1,
+    "portions": [
+      {
+        "longueur": 51,
+        "rsid": 0
+      },
+      {
+        "longueur": 45,
+        "rsid": 0
+      },
+      {
+        "longueur": 63,
+        "rsid": 0
+      },
+      {
+        "longueur": 48,
+        "rsid": 0
+      }
+    ]
+  },
+  "sessions.odt": {
+    "auteurs_commentaires": 1,
+    "auteurs_modifications": 1,
+    "commentaires": 1,
+    "cycles": 3,
+    "duree_secondes": 0,
+    "modifications": 1,
+    "portions": [
+      {
+        "longueur": 51,
+        "rsid": 82505
+      },
+      {
+        "longueur": 45,
+        "rsid": 96725
+      },
+      {
+        "longueur": 63,
+        "rsid": 96725
+      },
+      {
+        "longueur": 48,
+        "rsid": 105899
+      }
+    ]
+  }
+}

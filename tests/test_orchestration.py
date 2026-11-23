@@ -298,6 +298,9 @@ def test_vrai_processus_extrait_les_proprietes_d_un_document(
     # Complément de T80 : le texte du document est lu, sans caractère inhabituel.
     assert etats.pop("caracteres") is EtatTechnique.APPLIQUEE
     assert valeurs["caracteres.longueur"] == 7  # « Bonjour », écrit par LibreOffice
+    # T81 : l'historique d'édition est lu (temps et cycles d'édition de l'échantillon).
+    assert etats.pop("historique") is EtatTechnique.APPLIQUEE
+    assert (valeurs["historique.duree"], valeurs["historique.revisions"]) == (62, 7)
     assert set(etats.values()) == {EtatTechnique.NON_APPLICABLE}
     assert not resultat.interrompue
     analyse_de(resultat, len(contenu))
@@ -383,9 +386,9 @@ def test_vrai_processus_bibliotheques_des_seuls_modules_actifs(tmp_path: Path) -
     contenu = (Path(__file__).parent / "donnees" / "metadonnees" / "photo.jpg").read_bytes()
     ouvert = ouvrir(tmp_path / "photo.jpg", contenu)
     try:
-        # expat sert à xmp, ooxml, odf, actifsbureau et caracteres, c2pa-python à c2pa, numpy à
-        # doublejpeg, dwtdct et ela : désactivés, ils ne sont plus cités (ADR-0120).
-        desactives = {"xmp", "ooxml", "odf", "actifsbureau", "caracteres", "c2pa"}
+        # expat sert à xmp, ooxml, odf, actifsbureau, caracteres et historique, c2pa-python à c2pa,
+        # numpy à doublejpeg, dwtdct et ela : désactivés, ils ne sont plus cités (ADR-0120).
+        desactives = {"xmp", "ooxml", "odf", "actifsbureau", "caracteres", "historique", "c2pa"}
         desactives |= {"doublejpeg", "dwtdct", "ela"}
         resultat = executer(ouvert, manifestes.decouvrir(), desactives=desactives)
     finally:

@@ -764,6 +764,7 @@ def test_import_des_modules_livres() -> None:
         "dwtdct",
         "ela",
         "exif",
+        "historique",
         "id3",
         "image",
         "imagespdf",
