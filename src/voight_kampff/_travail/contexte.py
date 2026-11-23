@@ -15,7 +15,9 @@ sur toutes les machines.
 
 Un module dont le manifeste le permet (``extrait``) y déclare enfin les contenus de sa partie à
 faire analyser comme des parties extraites, par les modules de leur format (ADR-0224) : le moteur
-les reconnaît et les achemine une fois le module terminé, s'il n'a pas levé d'exception.
+les reconnaît et les achemine une fois le module terminé, s'il n'a pas levé d'exception. Un
+contenu compressé dans le fichier (entrée deflate d'un DOCX) est remis décompressé : il est alors
+analysé en mémoire, et les positions de ses résultats se lisent dans ce contenu (ADR-0254).
 
 Il porte enfin les règles du catalogue qui relèvent du module (ADR-0084, ADR-0090) : le module
 cite une règle « module » par son identifiant, et le catalogue fixe ce que dit le constat ; après
@@ -65,6 +67,7 @@ __all__ = [
     "Contexte",
     "Extraction",
     "LimiteDepassee",
+    "TailleDepassee",
 ]
 
 type Compression = Literal["zlib", "deflate", "gzip"]
@@ -105,13 +108,26 @@ class Extraction:
     format: str
     """Format attendu ; le moteur le vérifie par l'identification avant de l'acheminer."""
     octets: Plage
-    """Plage du contenu dans le fichier entier."""
+    """Plage du contenu dans le fichier entier ; celle des données compressées s'il l'est."""
     localisation: Localisation
-    """Où il est dans la partie : page, objet ; sans plage d'octets."""
+    """Où il est dans la partie : page, entrée d'une archive, objet ; sans plage d'octets."""
+    contenu: bytes | None = None
+    """Contenu décompressé, pour des données compressées par deflate (ADR-0254) ; ``None`` pour
+    un contenu lu en place."""
+
+    @property
+    def taille(self) -> int:
+        """Octets comptés contre le seuil des parties extraites : ceux qui seront analysés."""
+        return self.octets.longueur if self.contenu is None else len(self.contenu)
 
 
 class LimiteDepassee(Exception):
     """Module au-delà d'une limite comptée : taille des résultats ou budget (ES-03)."""
+
+
+class TailleDepassee(Exception):
+    """Contenu décompressé au-delà de la taille que le module a demandée : le module en décide
+    (:meth:`Contexte.decompresser`), le budget n'est pas atteint."""
 
 
 class Contexte:
@@ -248,18 +264,25 @@ class Contexte:
         ):
             self._depasser()
 
-    def decompresser(self, donnees: bytes, methode: Compression) -> bytes:
+    def decompresser(
+        self, donnees: bytes, methode: Compression, maximum: int | None = None
+    ) -> bytes:
         """Décompresse un flux par blocs, en comptant chaque bloc contre le budget.
 
         Lève ``zlib.error`` si le flux est invalide ou incomplet ; les octets qui suivent la fin
-        du flux sont ignorés.
+        du flux sont ignorés. Lève :class:`TailleDepassee` dès que le contenu dépasse
+        ``maximum`` octets, s'il est donné.
         """
         flux = zlib.decompressobj(_FENETRES[methode])
         morceaux: list[bytes] = []
+        sortis = 0
         entree = donnees
         while True:
             morceau = flux.decompress(entree, _BLOC)
             self.compter_decompression(len(entree) - len(flux.unconsumed_tail), len(morceau))
+            sortis += len(morceau)
+            if maximum is not None and sortis > maximum:
+                raise TailleDepassee
             morceaux.append(morceau)
             entree = flux.unconsumed_tail
             if flux.eof:
@@ -395,14 +418,22 @@ class Contexte:
         )
         self._ajouter({"type": "visualisation", "visualisation": visualisation.vers_dict()})
 
-    def extraire(self, format_: str, plage: Plage, localisation: Localisation) -> bool:
+    def extraire(
+        self,
+        format_: str,
+        plage: Plage,
+        localisation: Localisation,
+        contenu: bytes | None = None,
+    ) -> bool:
         """Déclare un contenu de la partie à analyser comme une partie extraite (ADR-0224).
 
         ``plage`` est relative à la partie ; ``localisation`` dit où est le contenu, sans plage.
-        Faux si le fichier n'a plus de place, ou si les contenus déjà déclarés ont atteint le
-        seuil d'octets : le contenu n'est pas acheminé, et le moteur déclare non menée, pour
-        limite dépassée, la première extraction refusée (ADR-0226). Le contenu qui franchit le
-        seuil est encore acheminé.
+        Pour des données compressées par deflate, ``plage`` est la leur, et ``contenu`` le
+        contenu décompressé, que le moteur analyse en mémoire (ADR-0254). Faux si le fichier n'a
+        plus de place, ou si les contenus déjà déclarés ont atteint le seuil d'octets : le
+        contenu n'est pas acheminé, et le moteur déclare non menée, pour limite dépassée, la
+        première extraction refusée (ADR-0226). Le contenu qui franchit le seuil est encore
+        acheminé ; un contenu décompressé y compte pour sa taille décompressée.
         """
         if format_ not in self._extrait:
             raise ValueError("extraction : format absent du manifeste, ou partie extraite")
@@ -410,13 +441,22 @@ class Contexte:
             raise ValueError("extraction.localisation : la plage est donnée à part")
         if plage.debut + plage.longueur > self.taille:
             raise ValueError("extraction : plage hors de la partie")
-        if len(self._extractions) >= self._places or self._octets_restants <= 0:
+        if contenu is not None and not contenu:
+            raise ValueError("extraction.contenu : contenu décompressé vide")
+        if not self.extraction_possible:
             self._refusee = self._refusee or localisation
             return False
-        self._octets_restants -= plage.longueur
         octets = Plage(self._debut + plage.debut, plage.longueur)
-        self._extractions.append(Extraction(format_, octets, localisation))
+        extraction = Extraction(format_, octets, localisation, contenu)
+        self._octets_restants -= extraction.taille
+        self._extractions.append(extraction)
         return True
+
+    @property
+    def extraction_possible(self) -> bool:
+        """Vrai si un contenu de plus serait encore accepté par :meth:`extraire` : un module
+        peut s'épargner une décompression qui ne serait pas acheminée."""
+        return len(self._extractions) < self._places and self._octets_restants > 0
 
     def _dans_le_fichier(self, localisation: Localisation | None) -> Localisation | None:
         """Plage d'octets relative à la partie ramenée à une position dans le fichier."""

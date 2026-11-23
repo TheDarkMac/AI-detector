@@ -35,6 +35,7 @@ __all__ = [
     "LONGUEUR_MAX_TEXTE",
     "LONGUEUR_MAX_UNITE",
     "LONGUEUR_MAX_VERSION",
+    "METHODES_DECOMPRESSION",
     "NOMBRE_MAX_DONNEES",
     "NOMBRE_MAX_ELEMENTS",
     "NOMBRE_MAX_EXTRAITES",
@@ -48,6 +49,7 @@ __all__ = [
     "CategorieIdentifiante",
     "Constat",
     "Couverture",
+    "Decompression",
     "Dependance",
     "Direction",
     "EtatIsolation",
@@ -89,7 +91,7 @@ __all__ = [
     "verifier_resultats",
 ]
 
-VERSION_SCHEMA = "0.12.0"
+VERSION_SCHEMA = "0.13.0"
 """Version commune du modèle, du schéma du rapport et de celui des messages (ADR-0036)."""
 
 # Bornes de structure (ES-04). Les limites de taille d'un message et d'un rapport relèvent de T14.
@@ -1080,6 +1082,44 @@ class Couverture:
 # Identification, versions, isolation (§6 du cahier, ADR-0023, ADR-0059)
 
 
+METHODES_DECOMPRESSION = frozenset({"deflate"})
+"""Compressions dont une partie extraite peut sortir (ADR-0254) : celle des entrées d'un DOCX ou
+d'un ODT."""
+
+
+@dataclass(frozen=True, slots=True)
+class Decompression:
+    """Partie extraite lue dans un contenu décompressé, et non en place dans le fichier
+    (ADR-0254) : la plage de la partie est alors celle des données compressées, et les positions
+    de ses résultats se lisent dans le contenu décompressé."""
+
+    methode: str
+    """Compression des données, parmi :data:`METHODES_DECOMPRESSION`."""
+    taille: int
+    """Taille du contenu décompressé, en octets."""
+    octets: Plage
+    """Du début du format à sa fin logique dans le contenu décompressé, ou à sa fin si elle
+    n'est pas connue."""
+
+    def __post_init__(self) -> None:
+        if self.methode not in METHODES_DECOMPRESSION:
+            raise ValueError("decompression.methode : compression inconnue")
+        _entier(self.taille, "decompression.taille", minimum=1)
+        if self.octets.debut + self.octets.longueur > self.taille:
+            raise ValueError("decompression.octets : plage hors du contenu décompressé")
+
+    def vers_dict(self) -> Document:
+        return {"methode": self.methode, "taille": self.taille, "octets": self.octets.vers_dict()}
+
+    @classmethod
+    def depuis_dict(cls, document: Mapping[str, Any]) -> "Decompression":
+        return cls(
+            methode=document["methode"],
+            taille=document["taille"],
+            octets=Plage.depuis_dict(document["octets"]),
+        )
+
+
 @dataclass(frozen=True, slots=True)
 class Origine:
     """D'où vient une partie extraite : la partie qui la contient, le module qui l'a trouvée, et
@@ -1090,7 +1130,9 @@ class Origine:
     module: str
     """Module qui l'a extraite ; son manifeste cite son format dans ``extrait`` (ADR-0064)."""
     localisation: Localisation
-    """Où elle se trouve dans le contenant : page d'un PDF, objet."""
+    """Où elle se trouve dans le contenant : page d'un PDF, entrée d'une archive, objet."""
+    decompression: Decompression | None = None
+    """Pour un contenu compressé dans le fichier seulement (ADR-0254)."""
 
     def __post_init__(self) -> None:
         _entier(self.contenant, "origine.contenant", minimum=1)
@@ -1099,18 +1141,25 @@ class Origine:
             raise ValueError("origine.localisation : la plage est celle de la partie")
 
     def vers_dict(self) -> Document:
-        return {
-            "contenant": self.contenant,
-            "module": self.module,
-            "localisation": self.localisation.vers_dict(),
-        }
+        return _sans_none(
+            {
+                "contenant": self.contenant,
+                "module": self.module,
+                "localisation": self.localisation.vers_dict(),
+                "decompression": self.decompression.vers_dict() if self.decompression else None,
+            }
+        )
 
     @classmethod
     def depuis_dict(cls, document: Mapping[str, Any]) -> "Origine":
+        decompression = document.get("decompression")
         return cls(
             contenant=document["contenant"],
             module=document["module"],
             localisation=Localisation.depuis_dict(document["localisation"]),
+            decompression=(
+                Decompression.depuis_dict(decompression) if decompression is not None else None
+            ),
         )
 
 
@@ -1220,6 +1269,13 @@ def verifier_extraites(extraites: tuple[Partie, ...], parties: tuple[Partie, ...
             raise ValueError("extraites : contenant absent ou non analysé")
         if extraite.octets.debut < contenant.octets.debut or extraite.fin > contenant.fin:
             raise ValueError("extraites : plage hors de son contenant")
+        decompression = origine.decompression
+        if (
+            decompression is not None
+            and not extraite.fin_connue
+            and decompression.octets.longueur != decompression.taille - decompression.octets.debut
+        ):
+            raise ValueError("extraites : fin non connue avant la fin du contenu décompressé")
 
 
 def plages_non_reconnues(parties: tuple[Partie, ...], taille: int) -> tuple[Plage, ...]:

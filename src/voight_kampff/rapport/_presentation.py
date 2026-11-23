@@ -165,16 +165,23 @@ def etat_partie(partie: Partie) -> str:
 
 
 def origine_partie(partie: Partie) -> str:
-    """D'où vient une partie extraite : contenant, module, lieu (ADR-0224) ; vide sinon."""
+    """D'où vient une partie extraite : contenant, module, lieu (ADR-0224), et sa décompression
+    (ADR-0254) ; vide sinon."""
     origine = partie.origine
     if origine is None:
         return ""
-    return texte(
+    lieu = texte(
         "formes.origine",
         contenant=origine.contenant,
         module=origine.module,
         lieu=localisation(origine.localisation),
     )
+    if (decompression := origine.decompression) is None:
+        return lieu
+    precision = texte(
+        "formes.decompressee", methode=decompression.methode, taille=decompression.taille
+    )
+    return f"{lieu} ; {precision}"
 
 
 _NIVEAUX_DECROISSANTS = (Niveau.FORT, Niveau.MODERE, Niveau.FAIBLE)
@@ -186,6 +193,7 @@ _SANS_METADONNEES = frozenset(
         "dwtdct",
         "ela",
         "historique",
+        "imagesbureau",
         "imagespdf",
         "pagespdf",
         "revisionspdf",

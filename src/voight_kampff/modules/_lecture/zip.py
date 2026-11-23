@@ -189,24 +189,44 @@ class Archive:
             raise _partiel(locale, f"{entree.nom} (nom de l'en-tête local différent)")
         return locale + 30 + longueur + supplement
 
-    def lire(self, entree: Entree) -> bytes:
-        """Contenu de l'entrée, décompressé ; lève :class:`Illisible` s'il ne se lit pas."""
+    def donnees(self, entree: Entree) -> Plage | None:
+        """Données de l'entrée dans la partie, telles qu'écrites (compressées ou non) ; ``None``
+        si elles sont vides. Lève :class:`Illisible` si l'entrée est chiffrée, compressée
+        autrement que par deflate, ou si ses données dépassent la partie."""
+        debut = self._verifiee(entree, lecture=False)
+        return Plage(debut, entree.compresse) if entree.compresse else None
+
+    def _verifiee(self, entree: Entree, *, lecture: bool) -> int:
+        """Position des données d'une entrée lisible, entière dans la partie ; pour une
+        lecture, pas plus grandes que ``TAILLE_MAX_LECTURE``."""
         debut = self._donnees(entree)
         if entree.drapeaux & _CHIFFREE:
             raise _partiel(debut, f"{entree.nom} (entrée chiffrée)")
         if entree.methode not in (_STOCKEE, _DEFLATE):
             raise _partiel(debut, f"{entree.nom} (compression inconnue)")
-        if entree.compresse > TAILLE_MAX_LECTURE:
+        if lecture and entree.compresse > TAILLE_MAX_LECTURE:
             raise _partiel(debut, entree.nom)
         if debut + entree.compresse > self._contexte.taille:
             raise Illisible(RaisonNonMenee.FICHIER_TRONQUE, debut, entree.nom)
+        return debut
+
+    def lire(self, entree: Entree, maximum: int | None = None) -> bytes:
+        """Contenu de l'entrée, décompressé ; lève :class:`Illisible` s'il ne se lit pas, et
+        ``TailleDepassee`` (du contexte) si le contenu décompressé d'une entrée deflate dépasse
+        ``maximum`` octets."""
+        debut = self._verifiee(entree, lecture=True)
         donnees = self._contexte.lire(debut, entree.compresse)
         if entree.methode == _STOCKEE:
             return donnees
         try:
-            return self._contexte.decompresser(donnees, "deflate")
+            return self._contexte.decompresser(donnees, "deflate", maximum)
         except zlib.error:
             raise _partiel(debut, entree.nom) from None
+
+    @staticmethod
+    def compressee(entree: Entree) -> bool:
+        """Vrai si les données de l'entrée sont compressées par deflate."""
+        return entree.methode == _DEFLATE
 
     def localisation(self, entree: Entree) -> Localisation:
         """Nom de l'entrée et ses octets dans la partie, en-tête local compris."""
