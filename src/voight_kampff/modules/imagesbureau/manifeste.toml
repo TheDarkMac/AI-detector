@@ -1,0 +1,15 @@
+# Module imagesbureau : images d'un DOCX ou d'un ODT, acheminées vers les modules d'image (complément de T81, ADR-0252 à ADR-0255). Validé par schemas/manifeste.schema.json (ADR-0064).
+
+identifiant = "imagesbureau"
+version = "0.1.0"
+formats = ["docx", "odt"]
+# F-63 étendue aux DOCX et aux ODT par A-24 (ADR-0252).
+exigences = ["F-63"]
+regles = []
+fiche = "images-bureau"
+# Direction des règles du catalogue sur ses observations (ADR-0255) ; le module lui-même n'émet aucun constat.
+directions = ["rien_de_particulier"]
+requiert = []
+bibliotheques = ["expat"]
+# Images JPEG, PNG, WebP et HEIC de l'archive, analysées comme des parties extraites par les modules d'image, en place ou décompressées (ADR-0224, ADR-0254).
+extrait = ["jpeg", "png", "webp", "heic"]

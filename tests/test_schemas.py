@@ -238,6 +238,28 @@ def test_parties_extraites_conformes(rapport: Rapport) -> None:
         schemas.valider("rapport", document)
 
 
+def test_partie_extraite_decompressee_conforme(rapport: Rapport) -> None:
+    # ADR-0254 : une image d'archive lue décompressée dit sa méthode, sa taille et sa plage.
+    origine = modele.Origine(
+        1,
+        "docx",
+        modele.Localisation(chemin="word/media/image1.jpeg"),
+        modele.Decompression("deflate", 800, modele.Plage(0, 700)),
+    )
+    extraite = modele.Partie(
+        3, "jpeg", modele.Plage(1_000, 500), fin_connue=True, origine=origine
+    ).vers_dict()
+    document = document_de(rapport)
+    document["identification"]["extraites"] = [extraite]
+    schemas.valider("rapport", document)
+    schemas.valider("messages", {"type": "extraction", "parties": [extraite]})
+    for champ, valeur in (("methode", "zlib"), ("taille", 0), ("octets", None), ("autre", 1)):
+        refusee = copy.deepcopy(extraite)
+        refusee["origine"]["decompression"][champ] = valeur
+        with pytest.raises(schemas.DocumentInvalide):
+            schemas.valider("messages", {"type": "extraction", "parties": [refusee]})
+
+
 def test_bornes_des_parties_extraites_identiques() -> None:
     defs = definitions()
     extraites = defs["identification"]["properties"]["extraites"]["maxItems"]
@@ -250,6 +272,8 @@ def test_bornes_des_parties_extraites_identiques() -> None:
     assert messages["parties"]["maxItems"] == modele.NOMBRE_MAX_EXTRAITES
     manifeste = schemas.charger("manifeste")["properties"]["extrait"]["items"]["$ref"]
     assert manifeste.endswith("format_du_perimetre")
+    methodes = defs["decompression"]["properties"]["methode"]["enum"]
+    assert set(methodes) == modele.METHODES_DECOMPRESSION
 
 
 def premier_constat(categorie: str) -> Callable[[Document], Document]:

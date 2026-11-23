@@ -65,3 +65,4 @@ Option A. Précisions de l'assistant :
 | --- | --- |
 | 2026-11-17 | Création ; option choisie par TheDarkMac au début de T53 |
 | 2026-11-19 | Renvoi : le texte d'un PDF n'est pas une plage d'octets ; il est lu par le module `caracteres` et ne passe pas par les parties extraites, contrairement à ce qu'annonçaient les conséquences ([ADR-0243](ADR-0243-couche-texte-d-un-pdf-dans-le-module-caracteres.md)) (complément de T53) |
+| 2026-11-23 | Renvoi : un contenu compressé dans le fichier (entrée deflate d'un DOCX) est remis décompressé par son module et analysé en mémoire ; la plage de la partie extraite est celle des données compressées, son origine dit sa décompression ([ADR-0254](ADR-0254-parties-extraites-decompressees.md)) (complément de T81) |

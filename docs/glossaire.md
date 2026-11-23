@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.20** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 avec le complément bureautique de T52, v1.17 avec T80, v1.18 avec le complément de T80, v1.19 avec le complément texte de T53, v1.20 proposée dans la PR de T81. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.21** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 avec le complément bureautique de T52, v1.17 avec T80, v1.18 avec le complément de T80, v1.19 avec le complément texte de T53, v1.20 avec T81, v1.21 proposée dans la PR du complément de T81. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -42,7 +42,10 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Neutralisation | Écriture visible (`⟨U+XXXX⟩`, ou échappement `\uXXXX` en JSON) des caractères de contrôle, de mise en forme et des séparateurs de ligne, au moment d'écrire une sortie. | ES-12, ADR-0096 |
 | Format réel | Format identifié par le contenu du fichier, non par son extension : celui de la partie 1. | F-02, ADR-0070 |
 | Partie (d'un fichier) | Format reconnu dans le fichier et plage d'octets qu'il occupe, du début à sa fin logique. Un fichier en a une ou plusieurs ; chaque partie du périmètre est analysée. | ADR-0071 |
-| Partie extraite | Contenu qu'un module a trouvé dans une partie (image JPEG d'un PDF), reconnu par l'identification et analysé par les modules de son format comme une partie ; numérotée à la suite des parties, avec son origine : partie qui la contient, module, page et objet. | F-63, ADR-0224 |
+| Partie extraite | Contenu qu'un module a trouvé dans une partie (image JPEG d'un PDF, image d'un DOCX ou d'un ODT), reconnu par l'identification et analysé par les modules de son format comme une partie ; numérotée à la suite des parties, avec son origine : partie qui la contient, module, page, entrée ou objet. | F-63, ADR-0224 |
+| Partie extraite décompressée | Partie extraite tirée de données compressées (entrée deflate d'un DOCX) : analysée dans son contenu décompressé, gardé en mémoire ; sa plage est celle des données compressées, et les positions de ses résultats se lisent dans le contenu. | ADR-0254 |
+| Type déclaré (d'une entrée) | Type que le document donne à une entrée de son archive : types de contenu d'un DOCX (`[Content_Types].xml`), manifeste d'un ODT ; vérifié par l'identification avant toute analyse. | ADR-0253 |
+| Vignette (d'un document) | Image de la première page que le logiciel range dans l'archive (`docProps/thumbnail.*` d'un DOCX, `Thumbnails/thumbnail.png` d'un ODT) ; comptée, non analysée. | ADR-0253 |
 | Fichier polyglotte | Fichier reconnu dans plusieurs formats à la fois : un JPEG suivi d'une archive ZIP, un PDF caché dans un JPEG. | A-31, ES-07 |
 | Fin logique | Position où s'achève la structure d'un format (EOI d'un JPEG, IEND d'un PNG, dernier `%%EOF` d'un PDF). Elle est établie, non établie (structure non parcourue ou de taille inconnue) ou tronquée (structure interrompue). | ES-07, ADR-0070 |
 | Octets non reconnus | Plages du fichier qu'aucune partie ne couvre, dont les données après la fin logique ; déclarées non menées (`format_partiel`). | ES-07, ADR-0072 |
@@ -153,3 +156,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-11-18 | 1.18 | Texte supprimé, texte masqué ajoutés | T80 (complément bureautique) |
 | 2026-11-19 | 1.19 | Couche texte native, texte invisible, texte de remplacement ajoutés | T53 (complément texte) |
 | 2026-11-23 | 1.20 | Historique d'édition, session d'édition, identifiant de session (rsid), marque de révision ajoutés | T81 |
+| 2026-11-23 | 1.21 | Partie extraite étendue au DOCX et à l'ODT ; partie extraite décompressée, type déclaré, vignette ajoutés | T81 (complément) |

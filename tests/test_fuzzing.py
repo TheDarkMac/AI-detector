@@ -340,6 +340,7 @@ _PAGES = Path(__file__).parent / "donnees" / "pages"
 _ACTIFS = Path(__file__).parent / "donnees" / "actifs"
 _ACTIFS_BUREAU = Path(__file__).parent / "donnees" / "actifsbureau"
 _HISTORIQUE = Path(__file__).parent / "donnees" / "historique"
+_IMAGES_BUREAU = Path(__file__).parent / "donnees" / "imagesbureau"
 _IMAGES = Path(__file__).parent / "donnees" / "images"
 _INFO = (
     b"<</Title(Titre \\(entre parenth\\350ses\\))/Author<FEFF004A0065>/Trapped/False"
@@ -536,6 +537,15 @@ ECHANTILLONS_METADONNEES = (
         (format_, (_HISTORIQUE / nom).read_bytes())
         for nom, format_ in (("sessions.odt", "odt"), ("sessions.docx", "docx"))
     ),
+    # Complément de T81 : images stockées (ODT) ou compressées (DOCX), paquet chiffré.
+    *(
+        (format_, (_IMAGES_BUREAU / nom).read_bytes())
+        for nom, format_ in (
+            ("libreoffice.odt", "odt"),
+            ("libreoffice.docx", "docx"),
+            ("chiffre.odt", "odt"),
+        )
+    ),
     (
         "docx",
         docx_(
@@ -585,8 +595,8 @@ _MODULES: dict[str, tuple[str, ...]] = {
     "mp4": ("quicktime", "xmp"),
     "mov": ("quicktime", "xmp"),
     "webm": ("matroska",),
-    "docx": ("ooxml", "actifsbureau", "caracteres", "historique"),
-    "odt": ("odf", "actifsbureau", "caracteres", "historique"),
+    "docx": ("ooxml", "actifsbureau", "caracteres", "historique", "imagesbureau"),
+    "odt": ("odf", "actifsbureau", "caracteres", "historique", "imagesbureau"),
     "texte": ("caracteres",),
 }
 

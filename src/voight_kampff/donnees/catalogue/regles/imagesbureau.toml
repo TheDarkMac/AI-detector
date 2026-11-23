@@ -1,0 +1,145 @@
+# Règles du module imagesbureau (complément de T81) : images d'un DOCX ou d'un ODT, acheminées vers
+# les modules d'image (F-63 étendue par A-24 ; ADR-0252 à ADR-0255). Types de contenu : ECMA-376,
+# partie 2, §10.1.2 ; manifeste : ODF 1.3, partie 2, §4 ; fiche images-bureau.
+
+[[regle]]
+identifiant = "R-IMAGESBUREAU-001"
+version = "1"
+module = "imagesbureau"
+titre = "Images du document analysées comme des parties extraites"
+description = "L'archive du DOCX ou de l'ODT porte au moins une entrée que le document déclare JPEG, PNG, WebP ou HEIC. Dans l'ordre de l'archive, seize au plus, tant que leur taille cumulée n'a pas atteint 2 Mio, elles sont reconnues par l'identification et analysées chacune comme une partie extraite par les modules d'image : métadonnées, C2PA, tables de quantification, double compression, ELA, filigrane dwtDct (ADR-0224, ADR-0226). Une image compressée dans l'archive est analysée décompressée (ADR-0254). Information neutre : elle dit où chercher leurs résultats, qui suivent ceux du document."
+gabarit = "imagesbureau.acheminees"
+phrase = { fr = "Le document porte {acheminables} image(s) JPEG, PNG, WebP ou HEIC : {acheminees} sont analysée(s) chacune comme une partie extraite, par les modules d'image (formats : {formats})." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Une entrée est une image si le document la déclare ainsi (types de contenu d'un DOCX, manifeste d'un ODT) : une image qu'il ne déclare pas n'est pas cherchée ; une image déclarée est analysée, que le texte l'affiche ou non.",
+  "La vignette du document, rendue par le logiciel à partir de la première page, n'est pas analysée.",
+  "Le logiciel qui écrit le document peut réencoder une image ou en retirer les métadonnées : leur absence dans une partie extraite ne dit rien de l'image d'origine.",
+  "Une image que l'identification ne reconnaît pas dans le format déclaré n'est pas analysée ; le rapport le dit par une analyse non menée, pour format partiel.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-23 par définition : une seule image acheminée suffit à le dire (F-63, A-24). Vérifié sur les échantillons de tests/donnees/imagesbureau, comparés aux entrées que liste zipfile de Python."
+
+[[regle.condition]]
+observation = "imagesbureau.acheminees"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "acheminees"
+
+[[regle.condition]]
+observation = "imagesbureau.acheminables"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "acheminables"
+
+[[regle.condition]]
+observation = "imagesbureau.acheminees.formats"
+presente = true
+parametre = "formats"
+
+[[regle]]
+identifiant = "R-IMAGESBUREAU-002"
+version = "1"
+module = "imagesbureau"
+titre = "Images du document dans un format que les modules d'image ne lisent pas"
+description = "L'archive porte au moins une entrée que le document déclare image, dans un autre format que JPEG, PNG, WebP ou HEIC : GIF, EMF, WMF, SVG, TIFF, BMP… Aucun module d'image ne lit ces formats : elles sont comptées par type, non analysées (ADR-0253). Information neutre : schémas, logos et illustrations d'un document sont souvent écrits ainsi."
+gabarit = "imagesbureau.non-acheminees"
+phrase = { fr = "{non_acheminees} image(s) du document sont dans un format que les modules d'image ne lisent pas (types : {types}) : aucune n'a été analysée." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Mêmes limites de recherche que R-IMAGESBUREAU-001 : images déclarées par le document, vignette exceptée.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-23 par définition : une seule image non analysée suffit à le dire (F-82). Vérifié sur les échantillons de tests/donnees/imagesbureau."
+
+[[regle.condition]]
+observation = "imagesbureau.non_acheminees"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "non_acheminees"
+
+[[regle.condition]]
+observation = "imagesbureau.non_acheminees.types"
+presente = true
+parametre = "types"
+
+[[regle]]
+identifiant = "R-IMAGESBUREAU-003"
+version = "1"
+module = "imagesbureau"
+titre = "Images au-delà de celles qu'un fichier peut faire analyser"
+description = "Le document porte plus d'images JPEG, PNG, WebP ou HEIC que l'outil n'en analyse pour un fichier : dans l'ordre de l'archive, seize au plus, tant que leur taille cumulée n'a pas atteint 2 Mio (celle qui franchit ce seuil est encore analysée ; une image compressée y compte pour sa taille décompressée). La borne garde l'analyse d'un document illustré dans son délai, avec le même résultat sur toutes les machines (ADR-0226). Les suivantes sont comptées ; le rapport déclare non menée, pour limite dépassée, la première d'entre elles. Information neutre."
+gabarit = "imagesbureau.au-dela"
+phrase = { fr = "{au_dela} image(s) du document ne sont pas analysées : l'outil analyse, dans l'ordre de l'archive, seize images au plus, jusqu'à 2 Mio de données." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "L'ordre est celui du répertoire central de l'archive, qui n'est pas forcément celui du texte : une image retouchée peut rester hors des seize.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-23 par définition : une seule image laissée de côté suffit à le dire (F-82). Vérifié sur les échantillons de tests/donnees/imagesbureau au-delà du nombre et des octets."
+
+[[regle.condition]]
+observation = "imagesbureau.au_dela"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "au_dela"
+
+[[regle]]
+identifiant = "R-IMAGESBUREAU-004"
+version = "1"
+module = "imagesbureau"
+titre = "Images compressées trop grandes pour être analysées"
+description = "Au moins une image JPEG, PNG, WebP ou HEIC compressée dans l'archive dépasse 16 Mio une fois décompressée : elle n'est pas analysée, l'outil gardant en mémoire le contenu de chaque image qu'il décompresse (ADR-0254). Information neutre : une photo de plusieurs dizaines de millions de pixels peut dépasser cette taille."
+gabarit = "imagesbureau.trop-grandes"
+phrase = { fr = "{trop_grandes} image(s) compressée(s) du document dépassent 16 Mio une fois décompressées : elles ne sont pas analysées." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Une image stockée telle quelle dans l'archive, lue en place, n'a pas cette borne.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Seuil fixé le 2026-11-23 par définition : une seule image laissée de côté suffit à le dire (F-82). Vérifié sur un échantillon construit par les tests, d'une image de plus de 16 Mio compressée par deflate."
+
+[[regle.condition]]
+observation = "imagesbureau.trop_grandes"
+seuil = { operateur = ">=", valeur = 1 }
+parametre = "trop_grandes"
+
+[[regle]]
+identifiant = "R-IMAGESBUREAU-005"
+version = "1"
+module = "imagesbureau"
+titre = "Images d'un ODT chiffré non analysées"
+description = "Le manifeste de l'ODT déclare au moins une entrée chiffrée : le document est protégé par un mot de passe, et l'outil ne déchiffre rien (ADR-0126). Une image chiffrée est comptée par le manifeste, qui ne l'est pas, sans être analysée ; un paquet chiffré en entier, comme l'écrit LibreOffice 25.2 (encrypted-package d'ODF 1.4), ne déclare plus ses images, qui ne sont même pas comptées. Information neutre."
+gabarit = "imagesbureau.chiffre"
+phrase = { fr = "Le document est chiffré par un mot de passe : ses images ne sont pas analysées, l'outil ne déchiffrant rien." }
+categorie = "information_neutre"
+direction = "rien_de_particulier"
+fondement = "verification_deterministe"
+limites = [
+  "Mêmes limites de recherche que R-IMAGESBUREAU-001.",
+]
+application = "moteur"
+
+[regle.calibrage]
+methode = "manuelle"
+procedure = "Condition fixée le 2026-11-23 par définition : une seule entrée chiffrée suffit à le dire (F-82). Vérifié sur l'échantillon chiffré de tests/donnees/imagesbureau, écrit par LibreOffice 25.2.3.2 (paquet chiffré en entier), et sur un ODT construit par les tests, aux entrées chiffrées une à une."
+
+[[regle.condition]]
+observation = "imagesbureau.chiffre"
+egal = true

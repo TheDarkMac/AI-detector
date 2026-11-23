@@ -78,3 +78,4 @@ Sur sa propre branche et sa propre PR, après T81, avec les parties extraites de
 | Date | Modification |
 | --- | --- |
 | 2026-11-23 | Création ; options choisies par TheDarkMac au début de T81 |
+| 2026-11-23 | Renvoi : images d'un DOCX ou d'un ODT extraites par le module `imagesbureau` ; A-24 tranché ([ADR-0252](ADR-0252-module-imagesbureau.md) à [ADR-0255](ADR-0255-constats-et-versions-du-complement-de-t81.md)) (complément de T81) |

@@ -54,3 +54,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T80 (complément bureautique)](T80-complement-bureautique.md) | Caractères invisibles ou substitués du texte d'un DOCX ou d'un ODT | `tache/T80-complement-bureautique` | [#41](https://github.com/TheDarkMac/AI-detector/pull/41) |
 | [T53 (complément texte)](T53-complement-texte.md) | Couche texte native d'un PDF, analysée par le module `caracteres` | `tache/T53-complement-texte` | [#42](https://github.com/TheDarkMac/AI-detector/pull/42) |
 | [T81](T81-historique-d-edition.md) | Historique d'édition d'un DOCX ou d'un ODT | `tache/T81-historique-d-edition` | [#43](https://github.com/TheDarkMac/AI-detector/pull/43) |
+| [T81 (complément)](T81-complement-images.md) | Images d'un DOCX ou d'un ODT, analysées comme des parties extraites | `tache/T81-complement-images` | [#44](https://github.com/TheDarkMac/AI-detector/pull/44) |

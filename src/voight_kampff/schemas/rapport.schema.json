@@ -18,7 +18,7 @@
     "interrompue"
   ],
   "properties": {
-    "version_schema": { "const": "0.12.0" },
+    "version_schema": { "const": "0.13.0" },
     "masquage": { "$ref": "#/$defs/masquage" },
     "identification": { "$ref": "#/$defs/identification" },
     "versions": { "$ref": "#/$defs/versions" },
@@ -609,7 +609,19 @@
       "properties": {
         "contenant": { "$ref": "#/$defs/entier_strictement_positif", "maximum": 16 },
         "module": { "$ref": "#/$defs/identifiant" },
-        "localisation": { "$ref": "#/$defs/localisation", "not": { "required": ["octets"] } }
+        "localisation": { "$ref": "#/$defs/localisation", "not": { "required": ["octets"] } },
+        "decompression": { "$ref": "#/$defs/decompression" }
+      }
+    },
+    "decompression": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Partie extraite lue dans un contenu décompressé (ADR-0254) : ses positions se lisent dans ce contenu.",
+      "required": ["methode", "taille", "octets"],
+      "properties": {
+        "methode": { "enum": ["deflate"] },
+        "taille": { "$ref": "#/$defs/entier_strictement_positif" },
+        "octets": { "$ref": "#/$defs/plage" }
       }
     },
     "partie_extraite": {

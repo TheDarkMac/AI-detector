@@ -197,6 +197,7 @@ def test_modules_de_metadonnees_livres() -> None:
         "historique",
         "id3",
         "image",
+        "imagesbureau",
         "imagespdf",
         "infopdf",
         "infowav",
@@ -240,13 +241,15 @@ def test_modules_de_metadonnees_livres() -> None:
             "dwtdct",
             "ela",
             "historique",
+            "imagesbureau",
             "imagespdf",
             "pagespdf",
             "revisionspdf",
         }:
             # tests/test_actifs_bureau.py, test_actifs_pdf.py, test_caracteres.py,
             # test_double_compression.py,
-            # test_dwtdct.py, test_ela.py, test_historique.py, test_images_pdf.py,
+            # test_dwtdct.py, test_ela.py, test_historique.py, test_images_bureau.py,
+            # test_images_pdf.py,
             # test_pages_pdf.py,
             # test_revisions_pdf.py
             continue
@@ -264,8 +267,12 @@ def test_modules_de_metadonnees_livres() -> None:
             attendues.insert(1, Direction.RETOUCHE)
         assert manifeste.directions == tuple(attendues)
     assert "F-11" in livres["xmp"].exigences
-    # T53 : seul imagespdf extrait un contenu, les JPEG d'un PDF (ADR-0224, ADR-0225).
-    assert {i: m.extrait for i, m in livres.items() if m.extrait} == {"imagespdf": ("jpeg",)}
+    # T53 : imagespdf extrait les JPEG d'un PDF (ADR-0224, ADR-0225) ; complément de T81 :
+    # imagesbureau, les images d'un DOCX ou d'un ODT (ADR-0253).
+    assert {i: m.extrait for i, m in livres.items() if m.extrait} == {
+        "imagesbureau": ("jpeg", "png", "webp", "heic"),
+        "imagespdf": ("jpeg",),
+    }
 
 
 # Techniques hors de cette version (T15, ADR-0087)

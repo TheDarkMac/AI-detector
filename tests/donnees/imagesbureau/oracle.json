@@ -1,0 +1,84 @@
+{
+ "outils": {
+  "LibreOffice": "25.2.3.2",
+  "ImageMagick": "7.1.1-43",
+  "exiftool": "13.25"
+ },
+ "images": {
+  "ia.jpg": "27ccb0034456a4454cab1f18d1048e20e820c7303b34a5e58b6d0faa5484223c",
+  "degrade.png": "14d1551e26b5dbe90295391eeb7e8f1593d110a2169eac2cc24df9b33f43db34",
+  "dessin.gif": "8ba4388c5c26405949cefb6cc82a54654a1b628c22c5b88ffd784b4eb7dfd8af"
+ },
+ "echantillons": {
+  "libreoffice.odt": {
+   "chiffre": false,
+   "images": [
+    {
+     "nom": "Pictures/100000000000007800000050A4D7ADCA.png",
+     "type": "image/png",
+     "compression": "stockee",
+     "vignette": false,
+     "chiffree": false,
+     "sha256": "14d1551e26b5dbe90295391eeb7e8f1593d110a2169eac2cc24df9b33f43db34"
+    },
+    {
+     "nom": "Pictures/100000010000005A0000003CA700ECD8.gif",
+     "type": "image/gif",
+     "compression": "stockee",
+     "vignette": false,
+     "chiffree": false,
+     "sha256": "8ba4388c5c26405949cefb6cc82a54654a1b628c22c5b88ffd784b4eb7dfd8af"
+    },
+    {
+     "nom": "Pictures/1000000000000180000001001B518CD3.jpg",
+     "type": "image/jpeg",
+     "compression": "stockee",
+     "vignette": false,
+     "chiffree": false,
+     "sha256": "27ccb0034456a4454cab1f18d1048e20e820c7303b34a5e58b6d0faa5484223c"
+    },
+    {
+     "nom": "Thumbnails/thumbnail.png",
+     "type": "image/png",
+     "compression": "stockee",
+     "vignette": true,
+     "chiffree": false,
+     "sha256": "8d067cec557f2981859be85ceba1adc08fd48e6c0e4af14f610acd72237764f4"
+    }
+   ]
+  },
+  "libreoffice.docx": {
+   "chiffre": false,
+   "images": [
+    {
+     "nom": "word/media/image1.jpeg",
+     "type": "image/jpeg",
+     "compression": "deflate",
+     "vignette": false,
+     "chiffree": false,
+     "sha256": "27ccb0034456a4454cab1f18d1048e20e820c7303b34a5e58b6d0faa5484223c"
+    },
+    {
+     "nom": "word/media/image2.png",
+     "type": "image/png",
+     "compression": "deflate",
+     "vignette": false,
+     "chiffree": false,
+     "sha256": "14d1551e26b5dbe90295391eeb7e8f1593d110a2169eac2cc24df9b33f43db34"
+    },
+    {
+     "nom": "word/media/image3.gif",
+     "type": "image/gif",
+     "compression": "deflate",
+     "vignette": false,
+     "chiffree": false,
+     "sha256": "8ba4388c5c26405949cefb6cc82a54654a1b628c22c5b88ffd784b4eb7dfd8af"
+    }
+   ]
+  },
+  "chiffre.odt": {
+   "chiffre": true,
+   "images": []
+  }
+ }
+}

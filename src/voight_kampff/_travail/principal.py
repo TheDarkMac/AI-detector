@@ -12,7 +12,7 @@
    « moteur », envoyer ses résultats puis son message « module » (ADR-0062).
 6. Reconnaître les contenus que des modules ont extraits de ces parties, envoyer les parties
    extraites, puis les analyser de la même façon (ADR-0224). Une partie extraite ne l'est pas
-   à son tour.
+   à son tour ; celle qui sort de données compressées est analysée en mémoire (ADR-0254).
 7. Envoyer les versions des bibliothèques des modules actifs, puis l'empreinte du fichier
    recalculée en fin d'analyse (ES-08).
 
@@ -23,6 +23,7 @@ principal en fait une analyse non menée.
 """
 
 import argparse
+import dataclasses
 import importlib
 import json
 import os
@@ -47,6 +48,7 @@ from voight_kampff._travail.fichier import Fichier, FichierEnMemoire, ouvrir_her
 from voight_kampff.rapport.modele import (
     NOMBRE_MAX_EXTRAITES,
     VERSION_SCHEMA,
+    Decompression,
     Direction,
     EtatIsolation,
     Localisation,
@@ -309,6 +311,8 @@ class _Deroule:
         """Rang de la première partie extraite : à la suite des parties reconnues."""
         self._numeros = dict.fromkeys((m.identifiant for m in configuration.modules), 0)
         self.extraites: list[Partie] = []
+        self._contenus: dict[int, FichierEnMemoire] = {}
+        """Contenus décompressés des parties extraites qui en sortent, par rang (ADR-0254)."""
         self._declarees = 0
         """Contenus acceptés par un contexte, reconnus ou non : ils comptent contre les places."""
         self._octets = 0
@@ -316,7 +320,14 @@ class _Deroule:
 
     def partie(self, partie: Partie) -> None:
         """Chaque module actif sur une partie du périmètre ; les contenus extraits d'une partie
-        reconnue sont reconnus aussitôt, et rangés pour être analysés après toutes les autres."""
+        reconnue sont reconnus aussitôt, et rangés pour être analysés après toutes les autres.
+
+        Une partie extraite décompressée est lue dans son contenu, où elle a sa plage."""
+        fichier = self._fichier
+        lue = partie
+        if partie.origine is not None and partie.origine.decompression is not None:
+            fichier = self._contenus[partie.rang]
+            lue = dataclasses.replace(partie, octets=partie.origine.decompression.octets)
         for module in self._configuration.modules:
             applicable = partie.format in module.formats
             if applicable:
@@ -336,8 +347,8 @@ class _Deroule:
                 execution = _executer(
                     module,
                     analyseur,
-                    self._fichier,
-                    partie,
+                    fichier,
+                    lue,
                     self._canal,
                     self._numeros[module.identifiant],
                     self._configuration.ancres,
@@ -360,20 +371,30 @@ class _Deroule:
         for extraction in execution.extractions:
             plage = extraction.octets
             self._declarees += 1
-            self._octets += plage.longueur
-            reconnu = self._reconnaitre(self._fichier, plage.debut, plage.longueur)
+            self._octets += extraction.taille
+            if extraction.contenu is None:
+                fichier, debut, taille = self._fichier, plage.debut, plage.longueur
+            else:
+                fichier, debut, taille = FichierEnMemoire(extraction.contenu), 0, extraction.taille
+            reconnu = self._reconnaitre(fichier, debut, taille)
             if reconnu is None or reconnu[0] != extraction.format:
                 self._non_mener(RaisonNonMenee.FORMAT_PARTIEL, extraction.localisation, contenant)
                 continue
             nature, longueur, tronquee = reconnu
+            lue = Plage(debut, taille if longueur is None else longueur)
+            rang = self._premier_rang + len(self.extraites)
+            decompression = None
+            if isinstance(fichier, FichierEnMemoire):
+                decompression = Decompression("deflate", taille, lue)
+                self._contenus[rang] = fichier
             self.extraites.append(
                 Partie(
-                    self._premier_rang + len(self.extraites),
+                    rang,
                     nature,
-                    Plage(plage.debut, plage.longueur if longueur is None else longueur),
+                    plage if decompression else lue,
                     fin_connue=longueur is not None,
                     tronquee=tronquee,
-                    origine=Origine(contenant.rang, module, extraction.localisation),
+                    origine=Origine(contenant.rang, module, extraction.localisation, decompression),
                 )
             )
         if execution.refusee is not None:
