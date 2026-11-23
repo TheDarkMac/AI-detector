@@ -1,6 +1,6 @@
 # ADR-0255 — Constats des images d'un DOCX ou d'un ODT : cinq informations neutres ; versions du complément de T81
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-23
 - **Décideur** : TheDarkMac, sur proposition de l'assistant, dans le cadre fixé par ADR-0252 à ADR-0254 et sur le modèle d'ADR-0227
 - **Tâche** : complément de T81
@@ -50,7 +50,7 @@ Observations du module : `images`, `vignette`, `acheminables`, `acheminees` et s
 
 ## Raisons
 
-- Option A proposée par l'assistant pour les raisons d'ADR-0227, que TheDarkMac a retenues pour `imagespdf`.
+- Option A proposée par l'assistant pour les raisons d'ADR-0227, que TheDarkMac a retenues pour `imagespdf` ; validée par TheDarkMac pendant la revue de la PR du complément de T81 (« Oui, valide ADR-0255 »), sans raison supplémentaire.
 - Option B écartée : F-82 demande de dire ce qui n'est pas analysé.
 - R-IMAGESBUREAU-005 sur le seul chiffrement, sans nombre d'images : le chiffrement d'un paquet entier ne les laisse pas compter.
 
@@ -65,3 +65,4 @@ Observations du module : `images`, `vignette`, `acheminables`, `acheminees` et s
 | Date | Modification |
 | --- | --- |
 | 2026-11-23 | Création, statut « Proposé » |
+| 2026-11-23 | Validé par TheDarkMac pendant la revue de la PR du complément de T81 : statut « Accepté » |

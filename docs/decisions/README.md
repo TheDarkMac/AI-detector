@@ -269,4 +269,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0252](ADR-0252-module-imagesbureau.md) | Module `imagesbureau` pour les images d'un DOCX ou d'un ODT ; F-63 étendue par A-24 | Accepté | 2026-11-23 |
 | [ADR-0253](ADR-0253-images-cherchees-dans-un-docx-et-un-odt.md) | Images cherchées dans un DOCX ou un ODT : toutes les entrées déclarées, vignette à part ; format déclaré, vérifié par l'identification | Accepté | 2026-11-23 |
 | [ADR-0254](ADR-0254-parties-extraites-decompressees.md) | Partie extraite décompressée : une image compressée dans l'archive, analysée en mémoire | Accepté | 2026-11-23 |
-| [ADR-0255](ADR-0255-constats-et-versions-du-complement-de-t81.md) | Constats des images d'un DOCX ou d'un ODT : cinq informations neutres ; versions du complément de T81 | Proposé | 2026-11-23 |
+| [ADR-0255](ADR-0255-constats-et-versions-du-complement-de-t81.md) | Constats des images d'un DOCX ou d'un ODT : cinq informations neutres ; versions du complément de T81 | Accepté | 2026-11-23 |
