@@ -31,6 +31,8 @@ Rapporter l'historique d'édition des documents bureautiques, temps d'édition e
 10. Suite complète sous coverage, en 12 minutes 43 : 3 294 tests verts, 4 ignorés (lanceur de l'environnement virtuel, cjpeg de mozjpeg absent), 2 en échec, une attente que T81 change : sur les documents `document.docx` et `document.odt` de LibreOffice, `historique` s'applique désormais, là où le test voulait tous les autres modules non applicables (`test_orchestration.py`, qui vérifie désormais leur temps et leurs cycles d'édition, 62 minutes et 7). Le fichier relancé : vert. Couverture de tout le paquet et du banc à 100 %.
 11. Documentation : ADR-0248 à ADR-0251 ; renvois dans ADR-0013, ADR-0139, ADR-0140, ADR-0240 ; fiche [`historique-edition`](../techniques/historique-edition.md), renvois dans les fiches `metadonnees-ooxml` et `metadonnees-odf`, index des fiches ; architecture (v1.33), découpage (v0.41), guide du catalogue (v1.20), glossaire (v1.20), registre des arbitrages (v1.12, A-24 en partie traité), matrice (F-71 réalisée), index des décisions et du journal, ce journal. Numéros de section d'ECMA-376 et d'OpenDocument que l'assistant n'avait pas vérifiés retirés avant le commit (ERR-0002).
 
+12. PR [#43](https://github.com/TheDarkMac/AI-detector/pull/43) ouverte vers `detector` (commits `025d447`, `68317ea`, `046f5d6`).
+
 ## Problèmes rencontrés
 
 | Problème | Cause | Résolution |
