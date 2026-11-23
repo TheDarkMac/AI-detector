@@ -262,3 +262,7 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0245](ADR-0245-texte-invisible-d-un-pdf.md) | Texte invisible d'un PDF (modes de rendu 3 et 7) : analysé, compté, une information neutre | Accepté | 2026-11-19 |
 | [ADR-0246](ADR-0246-decodage-du-texte-d-un-pdf.md) | Texte des codes d'un PDF : `/ToUnicode`, puis Adobe Glyph List ; lignes dans l'ordre du flux | Accepté | 2026-11-19 |
 | [ADR-0247](ADR-0247-page-sans-couche-texte-et-versions-du-complement-de-t53.md) | Page sans couche texte native : raison `document_numerise` ; versions du complément de T53 | Accepté | 2026-11-19 |
+| [ADR-0248](ADR-0248-module-historique-et-perimetre-de-t81.md) | Module `historique` pour T81 ; images d'un DOCX ou d'un ODT renvoyées à un complément | Accepté | 2026-11-23 |
+| [ADR-0249](ADR-0249-historique-lu-dans-un-docx-et-un-odt.md) | Historique lu dans un DOCX et dans un ODT : temps, enregistrements, sessions, modifications, commentaires | Accepté | 2026-11-23 |
+| [ADR-0250](ADR-0250-auteurs-comptes-et-dates-sans-fuseau.md) | Auteurs des modifications et des commentaires comptés, non lus ; leurs dates lues sans fuseau | Accepté | 2026-11-23 |
+| [ADR-0251](ADR-0251-constats-et-versions-de-t81.md) | Constats de T81 : huit informations neutres, dont deux incohérences de dates ; versions | Accepté | 2026-11-23 |

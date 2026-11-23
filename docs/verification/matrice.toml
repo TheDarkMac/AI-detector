@@ -338,9 +338,10 @@ note = "Hors V1, sans engagement (ADR-0012)."
 
 [[exigence]]
 id = "F-71"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T81"]
 methodes = ["test"]
+note = "Module historique (T81, ADR-0248 à ADR-0251) : temps d'édition et enregistrements déclarés (TotalTime, cp:revision ; meta:editing-duration, meta:editing-cycles) ; sessions d'édition par les identifiants de révision de Word (w:rsids, w:rsidR) et de LibreOffice (officeooo:rsid), part du texte du corps écrite dans la plus représentée ; modifications suivies et commentaires comptés, leurs auteurs distincts comptés sans être lus ; deux incohérences de dates. Toutes en information neutre, une absence ou un temps nul compris (R-HISTORIQUE-001 à R-HISTORIQUE-008). Vérifié contre LibreOffice sur tests/donnees/historique, et sur des DOCX construits à la manière de Word. Images d'un DOCX ou d'un ODT renvoyées à un complément de T81 (A-24)."
 
 [[exigence]]
 id = "F-72"

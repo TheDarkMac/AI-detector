@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.11** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 avec T17, v1.10 avec T18, v1.11 proposée dans la PR de T80. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.12** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 avec T17, v1.10 avec T18, v1.11 avec T80, v1.12 proposée dans la PR de T81. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -99,7 +99,7 @@ Autres constats de l'analyse adressés à T02 :
 | --- | --- |
 | A-08 Méthode de vérification | ADR-0024 (proposé dans le lot 4, retenu par TheDarkMac) |
 | A-23 Matrice format × technique | Tenue dans les fiches techniques et le catalogue (ADR-0022, ADR-0012) ; techniques hors V1 par format dans `modules/hors_v1.toml`, hors du catalogue (ADR-0087, T15) |
-| A-24 DOCX/ODT comme conteneurs | Examiné en T81 (ADR-0013) ; non tranché |
+| A-24 DOCX/ODT comme conteneurs | Examiné en T81 (ADR-0013, [ADR-0248](../decisions/ADR-0248-module-historique-et-perimetre-de-t81.md)) : F-71 étendue aux modifications suivies et aux identifiants de révision (module `historique`) ; images renvoyées à un complément de T81, non tranché jusque-là |
 | A-35, A-38, A-40, A-41 | ADR-0012, ADR-0013 |
 | A-45, A-51 | ADR-0014, ADR-0020 |
 
@@ -240,3 +240,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-10-28 | 1.9 | Seuils d'acceptation tranchés (§2) ; constats adressés à T17 (§3) | T17 |
 | 2026-10-28 | 1.10 | Constat A-05 adressé à T18 (§3) ; NF-06 : interpréteur parmi les versions (§4) ; effets (§6) | T18 |
 | 2026-11-17 | 1.11 | Constats adressés à T80 (§3) ; saisie de texte réalisée (§4, ADR-0233) ; effets (§6) | T80 |
+| 2026-11-23 | 1.12 | A-24 en partie traité (§3, ADR-0248) ; statut corrigé, il annonçait encore la v1.11 proposée | T81 |

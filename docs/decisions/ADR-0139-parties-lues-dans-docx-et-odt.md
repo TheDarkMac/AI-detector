@@ -57,3 +57,4 @@ Option A. Ne sont pas lus, et chaque fiche le dit : le corps et ses relations (`
 | 2026-11-13 | Création, statut « Proposé » |
 | 2026-11-13 | Validé par TheDarkMac pendant la revue de la PR du complément (« Yes, all three ») : statut « Accepté » |
 | 2026-11-17 | Renvoi : `actifsbureau` lit, pour son propre compte, les relations des parties suivies d'un DOCX, `content.xml`, `styles.xml`, `meta.xml` et `META-INF/manifest.xml` d'un ODT ; `ooxml` et `odf` ne lisent toujours que les propriétés (ADR-0229) (T52, complément bureautique) |
+| 2026-11-23 | Renvoi : `historique` lit, pour son propre compte, propriétés de temps et de révisions, réglages, corps et commentaires d'un DOCX, `meta.xml` et `content.xml` d'un ODT ([ADR-0249](ADR-0249-historique-lu-dans-un-docx-et-un-odt.md)) ; `ooxml` et `odf` ne lisent toujours que les propriétés (T81) |

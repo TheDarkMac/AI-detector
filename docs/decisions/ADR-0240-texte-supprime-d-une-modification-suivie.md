@@ -49,3 +49,4 @@ Option A. Précisions de l'assistant : est supprimé le texte de `w:delText` et 
 | Date | Modification |
 | --- | --- |
 | 2026-11-18 | Création ; option choisie par TheDarkMac au début du complément de T80 |
+| 2026-11-23 | Suite en T81 : modifications suivies comptées, auteurs comptés sans être lus, dates lues sans fuseau ([ADR-0250](ADR-0250-auteurs-comptes-et-dates-sans-fuseau.md)) ; le texte supprimé ne compte pas dans les sessions du texte ([ADR-0249](ADR-0249-historique-lu-dans-un-docx-et-un-odt.md)) |
