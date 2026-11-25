@@ -364,6 +364,7 @@ def test_html_ordre_des_rubriques(analyse: Analyse) -> None:
         "controle_publication",
         "donnees_identifiantes",
         "observations",
+        "conservation",
         "glossaire",
     ]
     # Les alertes précèdent l'avertissement ; l'isolation du rapport de test est réduite.

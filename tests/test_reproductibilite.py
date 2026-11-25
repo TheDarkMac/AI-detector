@@ -442,13 +442,27 @@ def ecrire(dossier: Path, nom: str, document_: Mapping[str, Any]) -> Path:
     return chemin
 
 
+# Bloc de conservation qui termine toute comparaison (ADR-0264).
+_CONSERVATION = [
+    "",
+    "Conservation des données (énoncé complet : vk --conservation) :",
+    "  rapports comparés : lus là où ils se trouvent, ni copiés ni modifiés",
+]
+
+
+def _sans_conservation(sortie: str) -> list[str]:
+    lignes = sortie.splitlines()
+    assert lignes[-3:] == _CONSERVATION
+    return lignes[:-3]
+
+
 def test_commande_resultats_identiques(
     tmp_path: Path, reference: Analyse, capsys: pytest.CaptureFixture[str]
 ) -> None:
     a = ecrire(tmp_path, "a.json", document(reference))
     b = ecrire(tmp_path, "b.json", document(reference))
     assert main(["--comparer", str(a), str(b)]) == 0
-    assert capsys.readouterr().out.splitlines() == [
+    assert _sans_conservation(capsys.readouterr().out) == [
         "Résultats identiques : mêmes parties, couverture, observations, constats et analyses "
         "non menées, à la date et au nom du fichier près.",
         "Conditions de la garantie de reproductibilité réunies : même fichier, même extension, "
@@ -470,7 +484,7 @@ def test_commande_defaut_de_reproductibilite(
         d["masquage"] = {"masquees": ["gps"], "levees": masque}
     code = main(["--comparer", str(ecrire(tmp_path, "a", a)), str(ecrire(tmp_path, "b", b))])
     assert code == 1
-    assert capsys.readouterr().out.splitlines() == [
+    assert _sans_conservation(capsys.readouterr().out) == [
         "Résultats différents : 1 écart.",
         "Conditions de la garantie de reproductibilité réunies : même fichier, même extension, "
         "mêmes versions, analyses non interrompues.",
@@ -497,7 +511,7 @@ def test_commande_hors_garantie(
     c = document(reference, [])
     chemins = [ecrire(tmp_path, n, d) for n, d in (("a", a), ("b", b), ("c", c))]
     assert main(["--comparer", str(chemins[0]), str(chemins[1])]) == 1
-    sortie = capsys.readouterr().out.splitlines()
+    sortie = _sans_conservation(capsys.readouterr().out)
     assert sortie[1] == (
         "Hors garantie de reproductibilité : extensions différentes, versions différentes "
         "(outil, interpréteur, catalogue, liste de confiance ou dépendances), analyse interrompue. "
@@ -507,7 +521,7 @@ def test_commande_hors_garantie(
     assert sortie[-1].startswith("… et ")
     assert len(sortie) == 2 + 50 + 1
     assert main(["--comparer", str(chemins[0]), str(chemins[2])]) == 0
-    sortie = capsys.readouterr().out.splitlines()
+    sortie = _sans_conservation(capsys.readouterr().out)
     assert sortie[1] == (
         "Hors garantie de reproductibilité : même fichier non établi (empreinte masquée). Des "
         "résultats différents s'expliquent alors."
