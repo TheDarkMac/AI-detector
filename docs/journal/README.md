@@ -57,3 +57,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T81 (complément)](T81-complement-images.md) | Images d'un DOCX ou d'un ODT, analysées comme des parties extraites | `tache/T81-complement-images` | [#44](https://github.com/TheDarkMac/AI-detector/pull/44) |
 | [T90](T90-interface.md) | Interface de la V1 : ligne de commande et rapport HTML lisibles, WCAG 2.2 AA vérifié | `tache/T90-interface` | [#45](https://github.com/TheDarkMac/AI-detector/pull/45) |
 | [T91](T91-conservation-et-horodatage.md) | Journal de conservation et horodatage des rapports, optionnels | `tache/T91-conservation-et-horodatage` | [#46](https://github.com/TheDarkMac/AI-detector/pull/46) |
+| [T92](T92-affichage-de-la-conservation.md) | Affichage de la conservation des données | `tache/T92-affichage-de-la-conservation` | à venir |
