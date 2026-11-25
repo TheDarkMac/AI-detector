@@ -25,7 +25,7 @@ from voight_kampff.modules import ela
 from voight_kampff.modules._lecture import dct, jpeg
 from voight_kampff.rapport import comparaison, export
 from voight_kampff.rapport._html import politique
-from voight_kampff.rapport._presentation import Presentation, texte, textes
+from voight_kampff.rapport._presentation import Presentation, accorder, texte, textes
 from voight_kampff.rapport.modele import (
     CategorieIdentifiante,
     EtatTechnique,
@@ -419,9 +419,9 @@ def test_html_sans_visualisation(analyse: Analyse) -> None:
 def test_resume_annonce_la_carte(analyse: Analyse) -> None:
     lignes = Presentation(analyse, ()).resume()
     assert (
-        texte(
+        accorder(
             "resume.visualisations",
-            nombre=1,
+            1,
             natures="Carte du niveau d'erreur de recompression (ELA)",
         )
         in lignes

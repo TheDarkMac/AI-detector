@@ -543,7 +543,10 @@ def test_rapport_montre_les_parties_extraites(analyses: dict[str, Analyse]) -> N
     analyse = analyses["formes"]
     page = export.exporter_html(analyse)
     assert escape(texte("champs.extraites")) in page
-    origine = "extraite de la partie 1 par imagespdf : chemin image (objet 14 0), page 2"
+    origine = (
+        "extraite de la partie 1 par images d'un PDF (imagespdf) : chemin image (objet 14 0), "
+        "page 2"
+    )
     assert escape(origine) in page
     signalement = texte("signalements.extraites", nombre=2, premiere=2, derniere=3)
     assert escape(signalement) in page

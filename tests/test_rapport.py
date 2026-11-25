@@ -349,6 +349,7 @@ def test_html_ordre_des_rubriques(analyse: Analyse) -> None:
     document = exporter_html(analyse)
     rubriques = re.findall(r'<section id="([a-z_]+)"', document)
     assert rubriques == [
+        "alertes",
         "avertissement",
         "resume",
         "identification",
@@ -434,9 +435,9 @@ def test_html_contenu_des_constats(analyse: Analyse) -> None:
     ) in document
     assert "règle non évaluée" in document
     # Indices comptés par direction et niveau, sans conclusion (ADR-0018).
-    assert "2 indice(s) :" in document
-    assert "vers origine IA : 1 fort" in document
-    assert "vers transformation : 1 faible" in document
+    assert "2 indices :" in document
+    assert "vers l&#x27;hypothèse « origine IA » : 1 de niveau fort" in document
+    assert "vers l&#x27;hypothèse « transformation » : 1 de niveau faible" in document
     # Analyses non menées : la phrase de leur raison, jamais leur code.
     assert textes()["raisons"]["reference_manquante"].replace("'", "&#x27;") in document
     assert "reference_manquante" not in document
@@ -458,7 +459,7 @@ def test_html_sans_constat_ni_observation(analyse: Analyse) -> None:
     document = exporter_html(vide)
     assert "Aucune preuve." in document
     assert "Aucun indice." in document
-    assert "0 information(s) neutre(s)." in document
+    assert "0 information neutre." in document
 
 
 def test_alertes(analyse: Analyse) -> None:

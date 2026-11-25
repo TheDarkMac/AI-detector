@@ -471,7 +471,7 @@ def test_commande_defaut_de_reproductibilite(
     code = main(["--comparer", str(ecrire(tmp_path, "a", a)), str(ecrire(tmp_path, "b", b))])
     assert code == 1
     assert capsys.readouterr().out.splitlines() == [
-        "Résultats différents : 1 écart(s).",
+        "Résultats différents : 1 écart.",
         "Conditions de la garantie de reproductibilité réunies : même fichier, même extension, "
         "mêmes versions, analyses non interrompues.",
         "Défaut de reproductibilité : dans les conditions de la garantie, les résultats "
