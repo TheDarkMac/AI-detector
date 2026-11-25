@@ -8,10 +8,11 @@ ni script, ni police, ni formulaire, ni ressource distante (M-20). Une image n'e
 document que comme PNG vérifié par le modèle (signature, dimensions, empreinte), encodé ici en
 base64 ; aucune donnée du fichier n'y entre telle quelle.
 
-Structure pour l'accessibilité (WCAG 2.2 AA, ADR-0025) : langue déclarée, un titre de niveau 1,
-rubriques en titres de niveau 2, tableaux avec légende et en-têtes, lien d'évitement, aucune
-information portée par la couleur seule ; contraste du texte d'au moins 7:1, des traits d'au moins
-3:1, en mode clair comme sombre.
+Structure pour l'accessibilité (WCAG 2.2 AA, ADR-0025, grille d'ADR-0256) : langue déclarée, un
+titre de niveau 1, sommaire des rubriques (ADR-0259), rubriques en titres de niveau 2, tableaux
+avec légende et en-têtes, lien d'évitement, listes de définitions empilées sur un écran étroit,
+aucune information portée par la couleur seule ; contraste du texte d'au moins 7:1, des traits
+d'au moins 3:1, en mode clair comme sombre.
 """
 
 import base64
@@ -30,6 +31,7 @@ from voight_kampff.rapport._presentation import (
     nombre,
     octets,
     origine_partie,
+    technique,
     texte,
     textes,
 )
@@ -54,7 +56,7 @@ STYLE = """
 body{margin:0 auto;max-width:60rem;padding:1rem;background:var(--fond);color:var(--texte);
 font:1rem/1.5 system-ui,sans-serif}
 a{color:var(--lien)}
-a:focus-visible{outline:3px solid var(--lien);outline-offset:2px}
+a:focus-visible,.defilement:focus-visible{outline:3px solid var(--lien);outline-offset:2px}
 .evitement{position:absolute;left:-100vw}
 .evitement:focus{position:static}
 h1{font-size:1.75rem}h2{font-size:1.4rem;margin-top:2.5rem;border-bottom:1px solid var(--trait)}
@@ -63,7 +65,7 @@ h3{font-size:1.1rem}
 .discret{color:var(--discret)}
 dl{display:grid;grid-template-columns:minmax(10rem,auto) 1fr;gap:.25rem 1rem}
 dt{font-weight:600}dd{margin:0}
-dd,td{overflow-wrap:anywhere}
+h3,p,li,dd,td{overflow-wrap:anywhere}
 .defilement{overflow-x:auto}
 table{border-collapse:collapse;width:100%}
 caption{text-align:left;font-weight:600;padding:.25rem 0}
@@ -73,7 +75,9 @@ article{border:1px solid var(--trait);padding:0 1rem .5rem;margin:1rem 0}
 figure{margin:1rem 0}
 .carte{display:block;width:100%;height:auto;image-rendering:pixelated;border:1px solid var(--trait);
 background:#000}
-@media print{body{max-width:none}.evitement{display:none}article,tr{break-inside:avoid}}
+nav ol{columns:2 14rem;padding-left:1.5rem}nav a{display:inline-block;padding:.2rem 0}
+@media (max-width:30rem){dl{grid-template-columns:1fr;gap:0}dd{margin-bottom:.5rem}}
+@media print{body{max-width:none}.evitement,nav{display:none}article,tr{break-inside:avoid}}
 """
 """Feuille de style du rapport : sa seule ressource, autorisée par son empreinte."""
 
@@ -374,7 +378,7 @@ def _non_menees(vue: Presentation) -> str:
         (
             [
                 vue.non_menee(n),
-                n.module or "",
+                technique(n.module) if n.module else "",
                 str(n.partie) if n.partie else "",
                 localisation(n.localisation) if n.localisation else "",
             ]
@@ -395,7 +399,7 @@ def _couverture(vue: Presentation) -> str:
         ],
         (
             [
-                t.module,
+                technique(t.module),
                 str(t.partie),
                 t.version or texte("formes.hors_version"),
                 libelle("etats", t.etat),
@@ -528,41 +532,44 @@ def _resume(vue: Presentation) -> str:
     return _liste(vue.resume())
 
 
+def _sommaire(rubriques: Iterable[str]) -> str:
+    """Liens vers chaque rubrique, dans l'ordre du document (NF-11, ADR-0259)."""
+    liens = "".join(f'<li><a href="#{r}">{_t(texte(f"rubriques.{r}"))}</a></li>' for r in rubriques)
+    return (
+        f'<nav aria-labelledby="t-sommaire"><h2 id="t-sommaire">'
+        f"{_t(texte('rubriques.sommaire'))}</h2><ol>{liens}</ol></nav>"
+    )
+
+
 def html(analyse: Analyse, masquees: Collection[CategorieIdentifiante]) -> str:
-    """Document HTML complet du rapport, dans l'ordre d'ADR-0098."""
+    """Document HTML complet du rapport, dans l'ordre d'ADR-0098, sommaire en tête."""
     vue = Presentation(analyse, masquees)
     alertes = vue.alertes()
     entete = (
-        f'<section class="alertes" aria-labelledby="t-alertes">'
+        f'<section id="alertes" class="alertes" aria-labelledby="t-alertes">'
         f'<h2 id="t-alertes">{_t(texte("rubriques.alertes"))}</h2>{_liste(alertes)}</section>'
         if alertes
         else ""
     )
-    corps = "".join(
-        [
-            entete,
-            _rubrique(
-                "avertissement", "".join(f"<p>{_t(p)}</p>" for p in textes()["avertissement"])
-            ),
-            _rubrique("resume", _resume(vue)),
-            _rubrique("identification", _identification(vue)),
-            _rubrique("versions", _versions(vue)),
-            _rubrique("isolation", _isolation(vue)),
-            _rubrique("preuves", _constats(vue, Categorie.PREUVE, "resume.preuves_aucune")),
-            _rubrique("indices", _constats(vue, Categorie.INDICE, "resume.indices_aucun")),
-            _rubrique(
-                "informations",
-                _constats(vue, Categorie.INFORMATION_NEUTRE, "aucune"),
-            ),
-            _rubrique("visualisations", _visualisations(vue)),
-            _rubrique("non_menees", _non_menees(vue)),
-            _rubrique("couverture", _couverture(vue)),
-            _rubrique("controle_publication", _controle_publication(vue)),
-            _rubrique("donnees_identifiantes", _donnees_identifiantes(vue)),
-            _rubrique("observations", _observations(vue)),
-            _rubrique("glossaire", _glossaire()),
-        ]
-    )
+    rubriques = [
+        ("avertissement", "".join(f"<p>{_t(p)}</p>" for p in textes()["avertissement"])),
+        ("resume", _resume(vue)),
+        ("identification", _identification(vue)),
+        ("versions", _versions(vue)),
+        ("isolation", _isolation(vue)),
+        ("preuves", _constats(vue, Categorie.PREUVE, "resume.preuves_aucune")),
+        ("indices", _constats(vue, Categorie.INDICE, "resume.indices_aucun")),
+        ("informations", _constats(vue, Categorie.INFORMATION_NEUTRE, "aucune")),
+        ("visualisations", _visualisations(vue)),
+        ("non_menees", _non_menees(vue)),
+        ("couverture", _couverture(vue)),
+        ("controle_publication", _controle_publication(vue)),
+        ("donnees_identifiantes", _donnees_identifiantes(vue)),
+        ("observations", _observations(vue)),
+        ("glossaire", _glossaire()),
+    ]
+    sommaire = _sommaire((["alertes"] if alertes else []) + [r for r, _ in rubriques])
+    corps = entete + "".join(_rubrique(r, contenu) for r, contenu in rubriques)
     titre = _t(texte("titre"))
     outil = _t(f"Voight-Kampff {version('voight-kampff-forensics')}")
     date = _t(analyse.identification.date_analyse.strftime("%Y-%m-%d %H:%M:%S UTC"))
@@ -576,5 +583,5 @@ def html(analyse: Analyse, masquees: Collection[CategorieIdentifiante]) -> str:
         f"<style>{STYLE}</style>\n</head>\n<body>\n"
         f'<a class="evitement" href="#resume">{_t(texte("evitement"))}</a>\n'
         f'<header><h1>{titre}</h1><p class="discret">{outil} · {date}</p></header>\n'
-        f"<main>\n{corps}\n</main>\n</body>\n</html>\n"
+        f"{sommaire}\n<main>\n{corps}\n</main>\n</body>\n</html>\n"
     )

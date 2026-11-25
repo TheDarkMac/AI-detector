@@ -42,18 +42,21 @@ from voight_kampff.analyse import Analyse, AnalyseRefusee, analyser, analyser_te
 from voight_kampff.rapport import comparaison, export
 from voight_kampff.rapport._presentation import (
     Presentation,
+    accorder,
     etat_partie,
     libelle,
     localisation,
     neutraliser,
     octets,
     origine_partie,
+    technique,
     texte,
     textes,
 )
 from voight_kampff.rapport.comparaison import Nature
 from voight_kampff.rapport.modele import (
     CategorieIdentifiante,
+    EtatTechnique,
     RaisonNonMenee,
     VersionCatalogue,
 )
@@ -175,6 +178,36 @@ def _lister_regles(catalogue: catalogues.Catalogue) -> None:
         print(f"{marquage.identifiant} ({recherche}) : {marquage.nom}")
 
 
+_ETATS_AFFICHES = ("appliquee", "partielle", "non_menee", "hors_version")
+"""États des techniques nommées au terminal, dans cet ordre ; les non applicables y sont
+seulement comptées (ADR-0258)."""
+
+
+def _techniques(analyse: Analyse) -> list[str]:
+    """Techniques de chaque partie : une ligne par état qui les nomme, puis le nombre de non
+    applicables, hors de cette version comprises (NF-11, ADR-0258)."""
+    par_partie: dict[int, dict[str, list[str]]] = {}
+    for t in analyse.couverture.techniques:
+        hors_version = t.version is None and t.etat is not EtatTechnique.NON_APPLICABLE
+        etat = "hors_version" if hors_version else t.etat.value
+        par_partie.setdefault(t.partie, {}).setdefault(etat, []).append(technique(t.module))
+    lignes = []
+    for partie, etats in par_partie.items():
+        lignes += [
+            texte(
+                "terminal.techniques",
+                partie=partie,
+                etat=texte(f"terminal.etats.{etat}"),
+                techniques=", ".join(etats[etat]),
+            )
+            for etat in _ETATS_AFFICHES
+            if etat in etats
+        ]
+        if non_applicables := etats.get(EtatTechnique.NON_APPLICABLE.value):
+            lignes.append(accorder("terminal.non_applicables", len(non_applicables), partie=partie))
+    return lignes
+
+
 def resume(analyse: Analyse, reveler: Sequence[str] = ()) -> list[str]:
     """Lignes du résumé d'une analyse ; données identifiantes masquées sauf ``reveler``.
 
@@ -214,17 +247,7 @@ def resume(analyse: Analyse, reveler: Sequence[str] = ()) -> list[str]:
     lignes.append(
         texte("terminal.isolation", niveau=libelle("isolation", analyse.isolation.niveau))
     )
-    lignes += [
-        texte(
-            "terminal.technique",
-            module=technique.module,
-            partie=technique.partie,
-            etat=texte("formes.hors_version")
-            if technique.version is None
-            else libelle("etats", technique.etat),
-        )
-        for technique in analyse.couverture.techniques
-    ]
+    lignes += _techniques(analyse)
     couverture = analyse.couverture
     if couverture.marquages_recherches:
         noms = (analyse.marquage(i).nom for i in couverture.marquages_recherches)
@@ -250,7 +273,7 @@ def resume(analyse: Analyse, reveler: Sequence[str] = ()) -> list[str]:
         if non_menee.raison in {RaisonNonMenee.HORS_PERIMETRE, RaisonNonMenee.HORS_V1}:
             continue  # déjà dit avec sa partie ou sa technique
         portee = [
-            non_menee.module or "",
+            technique(non_menee.module) if non_menee.module else "",
             f"{texte('champs.partie').lower()} {non_menee.partie}" if non_menee.partie else "",
             localisation(non_menee.localisation) if non_menee.localisation else "",
         ]
@@ -356,7 +379,7 @@ def lignes_comparaison(resultat: comparaison.Comparaison) -> list[str]:
     if resultat.identiques:
         lignes = [texte("comparaison.identiques")]
     else:
-        lignes = [texte("comparaison.differents", nombre=len(resultat.nature(Nature.RESULTAT)))]
+        lignes = [accorder("comparaison.differents", len(resultat.nature(Nature.RESULTAT)))]
     if resultat.garantie:
         lignes.append(texte("comparaison.garantie"))
     else:
@@ -389,7 +412,7 @@ def lignes_comparaison(resultat: comparaison.Comparaison) -> list[str]:
         for ecart in ecarts[:_ECARTS_AFFICHES]
     ]
     if len(ecarts) > _ECARTS_AFFICHES:
-        lignes.append(texte("comparaison.autres", nombre=len(ecarts) - _ECARTS_AFFICHES))
+        lignes.append(accorder("comparaison.autres", len(ecarts) - _ECARTS_AFFICHES))
     return lignes
 
 
