@@ -282,3 +282,7 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0265](ADR-0265-rubrique-conservation-du-rapport.md) | Rubrique « Conservation des données » au rapport HTML, sans chemin ; rapport JSON et schéma inchangés | Accepté | 2026-11-25 |
 | [ADR-0266](ADR-0266-ce-qui-echappe-a-l-outil.md) | L'énoncé de la conservation nomme ce qui échappe à l'outil, sans rien promettre | Accepté | 2026-11-25 |
 | [ADR-0267](ADR-0267-analyse-des-traitements-rgpd.md) | NF-13 : analyse des traitements au regard du RGPD dans `docs/verification/`, exigence partielle jusqu'à T103 | Accepté | 2026-11-25 |
+| [ADR-0268](ADR-0268-fiches-livrees-dans-le-paquet.md) | Fiches techniques livrées dans le paquet, lisibles par `vk --fiche MODULE` | Accepté | 2026-11-25 |
+| [ADR-0269](ADR-0269-detail-d-une-regle-par-vk-regle.md) | Détail d'une règle par `vk --regle IDENTIFIANT`, dans la forme des fichiers du catalogue | Accepté | 2026-11-25 |
+| [ADR-0270](ADR-0270-fiche-citee-par-la-couverture.md) | La couverture du rapport HTML cite la commande de la fiche de chaque technique livrée | Accepté | 2026-11-25 |
+| [ADR-0271](ADR-0271-publication-par-le-paquet-et-versions-de-t95.md) | Publication par le paquet, sans changement de la release ; versions de T95 | Accepté | 2026-11-25 |

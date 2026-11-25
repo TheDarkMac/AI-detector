@@ -11,7 +11,7 @@ Le résultat des tests est celui de chaque passage de la CI, qui joint cette mat
 | Famille | réalisée | partielle | à venir | hors V1 | Total |
 | --- | --- | --- | --- | --- | --- |
 | Exigences fonctionnelles (cahier, §5) | 31 | 2 | 0 | 15 | 48 |
-| Exigences non fonctionnelles (cahier, §7) | 13 | 6 | 0 | 0 | 19 |
+| Exigences non fonctionnelles (cahier, §7) | 14 | 5 | 0 | 0 | 19 |
 | Exigences de sécurité (modèle de menace, §8) | 18 | 3 | 0 | 1 | 22 |
 | Principes directeurs (cahier, §2 ; A-11) | 6 | 0 | 0 | 0 | 6 |
 
@@ -90,7 +90,7 @@ Le résultat des tests est celui de chaque passage de la CI, qui joint cette mat
 | NF-16 | Toute requête qui quitte l’infrastructure (certificats, bases bibliographiques, références) est inventoriée, réduite au minimum, et n’emporte jamais le fichier ni ses données identifiantes. | partielle | T03, T17, T30, T91 | test, inspection | tests : `test_banc.py`, `test_conservation.py`, `test_isolation.py`, `test_schemas.py` ; preuve : [modele-de-menace.md](../../docs/modele-de-menace/modele-de-menace.md) ; justification : L'inventaire se relit ; l'absence de requête non inventoriée se teste sans réseau (ES-11). | tests : CI ; Inventaire RS-01 à RS-05 tenu au §6.3 du modèle de menace ; RS-03 (horodatage) réalisée en T91, désactivée par défaut ; les autres non réalisées en V1 à ce jour. | Reformulée (ADR-0017, ADR-0033) ; RS-03 en T91 (ADR-0262). |
 | NF-17 | Chaque soumission, consultation et export est journalisé (qui, quand) ; chaque rapport porte un horodatage fiable. | réalisée | T91 | test | tests : `test_conservation.py` | tests : CI | Reformulée : journal et horodatage sur activation explicite (ADR-0030) ; consultation : rapports lus par l'outil (ADR-0261) ; signature des jetons vérifiée par openssl, non par l'outil (ADR-0263). |
 | NF-18 | Les données qui peuvent identifier une source sont masquées par défaut, dans l’interface comme dans les exports. | réalisée | T16 | test | tests : `test_cli.py`, `test_conservation.py`, `test_rapport.py` | tests : CI | — |
-| NF-19 | Le détail des règles et des seuils n’est accessible que selon une politique définie, pour ne pas fournir de mode d’emploi aux faussaires (section 10). | partielle | T15, T95 | inspection | preuve : [catalogue.toml](../../src/voight_kampff/donnees/catalogue/catalogue.toml), [README.md](../../docs/catalogue/README.md) ; justification : Reformulée : tout est public (ADR-0019) ; la publicité se constate. | Catalogue, seuils et limites livrés en clair dans le paquet et dans le dépôt public (T15). | Publication des fiches à T95. |
+| NF-19 | Le détail des règles et des seuils n’est accessible que selon une politique définie, pour ne pas fournir de mode d’emploi aux faussaires (section 10). | réalisée | T15, T95 | test, inspection | tests : `test_publication.py` ; preuve : [catalogue.toml](../../src/voight_kampff/donnees/catalogue/catalogue.toml), [fiches](../../src/voight_kampff/donnees/fiches), [README.md](../../docs/catalogue/README.md) ; justification : Reformulée : tout est public (ADR-0019) ; la publicité se constate, et sa lecture depuis l'outil se teste. | tests : CI ; Catalogue, seuils et limites livrés en clair dans le paquet et dans le dépôt public (T15) ; fiches livrées dans le paquet, lisibles par vk --fiche, détail d'une règle par vk --regle, fiche citée par la couverture du rapport (T95). | Reformulée (ADR-0019) ; publication des fiches et du détail des règles (ADR-0268 à ADR-0271). |
 
 ## Exigences de sécurité (modèle de menace, §8)
 

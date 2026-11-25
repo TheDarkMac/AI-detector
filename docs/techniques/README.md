@@ -10,6 +10,7 @@ Une fiche par module d'analyse (NF-09, livrable 4), livrée avec son code, ses t
 - La fiche liste les noms d'observation du module (ADR-0058) et les champs qu'il marque comme identifiants (ADR-0057).
 - Un module qui décompresse autrement que par `Contexte.decompresser` le dit, et déclare ses octets par `compter_decompression` (ADR-0078).
 - Un module qui extrait un contenu de sa partie (`extrait` au manifeste) le dit dans l'en-tête de sa fiche, champ « Contenus extraits » ; les autres n'ont pas ce champ (ADR-0224).
+- La fiche est livrée dans le paquet, copiée octet pour octet dans `src/voight_kampff/donnees/fiches/`, et `vk --fiche MODULE` l'affiche ([ADR-0268](../decisions/ADR-0268-fiches-livrees-dans-le-paquet.md)). Ce dossier-ci est la source : après toute modification d'une fiche, ou l'ajout d'un module, lancer `uv run --locked python -m banc.fiches` et commiter les deux exemplaires ; les tests échouent sinon. La rubrique Couverture du rapport HTML cite la commande de la fiche de chaque technique livrée ([ADR-0270](../decisions/ADR-0270-fiche-citee-par-la-couverture.md)).
 
 ## Index
 
