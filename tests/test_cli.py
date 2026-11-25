@@ -177,9 +177,14 @@ def test_lot_avec_un_refus(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -
     ]
     assert "  L'extension « pdf » correspond au format réel.\n" in sorties.out
     assert sorties.out.count("Ce rapport ne délivre aucun verdict") == 1
-    # Aucun fichier analysé : aucun avertissement à rappeler.
+    # Aucun fichier analysé : aucun avertissement à rappeler ; la conservation, toujours (ADR-0264).
     assert main([str(vide)]) == 1
-    assert capsys.readouterr().out == ""
+    assert capsys.readouterr().out.splitlines() == [
+        "",
+        "Conservation des données (énoncé complet : vk --conservation) :",
+        "  fichier analysé : lu là où il se trouve, ni copié ni modifié ; rien n'en est gardé",
+        "  rapports : aucun écrit",
+    ]
 
 
 def test_desactiver_un_module_inconnu(capsys: pytest.CaptureFixture[str]) -> None:

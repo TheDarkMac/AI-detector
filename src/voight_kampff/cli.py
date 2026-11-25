@@ -31,6 +31,10 @@ de rapport écrit par une autorité RFC 3161, ``1.json.tsr`` à côté de ``1.js
 ADR-0263). Un horodatage non obtenu, ou une entrée du journal non écrite, donnent le code 1 ;
 la seconde arrête la commande.
 
+Conservation des données (NF-05) : à la fin d'une analyse ou d'une comparaison, un bloc dit où
+est gardé chaque fichier lu ou écrit, et jusqu'à quand ; ``--conservation``, seule, affiche
+l'énoncé complet, ce qui échappe à l'outil compris (ADR-0264, ADR-0266).
+
 Hors d'un terminal, la sortie et l'erreur s'écrivent en UTF-8, quel que soit l'encodage local
 (ADR-0238).
 """
@@ -41,6 +45,7 @@ import io
 import os
 import sys
 from collections.abc import Callable, Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -178,6 +183,12 @@ def construire_analyseur() -> argparse.ArgumentParser:
         metavar="URL",
         help="fait horodater chaque fichier de rapport écrit par cette autorité RFC 3161, que "
         "vous choisissez ; elle ne reçoit que l'empreinte du fichier ; avec --rapport",
+    )
+    analyseur.add_argument(
+        "--conservation",
+        action="store_true",
+        help="dit où et combien de temps l'outil garde les fichiers analysés, les rapports, les "
+        "jetons d'horodatage et le journal, et ce qui lui échappe ; s'emploie seule",
     )
     analyseur.add_argument(
         "fichiers",
@@ -349,6 +360,54 @@ def _preparer(dossier: str, nombre: int, jetons: bool = False) -> Path:
     return chemin
 
 
+@dataclass
+class _Ecrits:
+    """Ce qu'une commande a écrit ou envoyé, pour le bloc de conservation (ADR-0264)."""
+
+    rapports: bool = False
+    jetons: bool = False
+    autorite: bool = False
+
+
+def lignes_conservation(
+    soumis: int,
+    texte_colle: bool,
+    dossier: Path | None,
+    ecrits: _Ecrits,
+    tenu: journal.Journal | None,
+) -> list[str]:
+    """Bloc affiché à la fin d'une analyse : où et jusqu'à quand chaque donnée est gardée (NF-05).
+
+    ``soumis`` vaut 0 pour une comparaison, dont les rapports lus remplacent les fichiers.
+    Les lignes ne sont pas neutralisées : l'appelant le fait en les écrivant (ES-12).
+    """
+    cle = "conservation.donnees"
+    lignes = [texte(f"{cle}.titre")]
+    if not soumis:
+        lignes.append(texte(f"{cle}.compares"))
+    elif texte_colle:
+        lignes.append(texte(f"{cle}.texte"))
+    else:
+        lignes.append(accorder(f"{cle}.fichiers", soumis))
+    if soumis:
+        if dossier is not None and ecrits.rapports:
+            rapports = "rapports_jetons" if ecrits.jetons else "rapports"
+            lignes.append(texte(f"{cle}.{rapports}", dossier=dossier))
+        else:
+            lignes.append(texte(f"{cle}.rapports_aucun"))
+    if tenu is not None:
+        lignes.append(texte(f"{cle}.journal", journal=tenu.chemin))
+    if ecrits.autorite:
+        lignes.append(texte(f"{cle}.autorite"))
+    return [lignes[0], *(f"  {ligne}" for ligne in lignes[1:])]
+
+
+def _afficher_conservation(lignes: Sequence[str]) -> None:
+    print()
+    for ligne in lignes:
+        print(neutraliser(ligne))
+
+
 def _consigner(repere: str, ajout: Callable[..., int], **champs: Any) -> int:
     """Ajoute une entrée au journal et rend son numéro ; à l'échec, le dit et rend 0."""
     try:
@@ -360,7 +419,12 @@ def _consigner(repere: str, ajout: Callable[..., int], **champs: Any) -> int:
 
 
 def _horodater(
-    repere: str, fichier: Path, contenu: bytes, autorite: str | None, lignes: list[str]
+    repere: str,
+    fichier: Path,
+    contenu: bytes,
+    autorite: str | None,
+    lignes: list[str],
+    ecrits: _Ecrits,
 ) -> tuple[bool, dict[str, str] | None]:
     """Fait horodater un fichier de rapport écrit et écrit son jeton à côté (ADR-0262).
 
@@ -369,10 +433,12 @@ def _horodater(
     """
     if autorite is None:
         return True, None
+    ecrits.autorite = True  # la demande part, qu'elle aboutisse ou non
     chemin = fichier.with_name(fichier.name + _JETON)
     try:
         jeton = horodatage.horodater(autorite, hashlib.sha256(contenu).digest())
         _ecrire(chemin, jeton.reponse)
+        ecrits.jetons = True
     except horodatage.HorodatageImpossible as erreur:
         sys.stdout.flush()
         print(f"{repere} {fichier.name} non horodaté : {erreur}", file=sys.stderr)
@@ -403,8 +469,31 @@ def _analyser(
     """Analyse chaque fichier ; ``None`` désigne le texte de l'entrée standard (ADR-0233).
 
     ``tenu`` est le journal de conservation, ``autorite`` l'autorité d'horodatage, s'ils sont
-    demandés (ADR-0260, ADR-0262). Une entrée du journal non écrite arrête la commande.
+    demandés (ADR-0260, ADR-0262). Une entrée du journal non écrite arrête la commande. Le bloc
+    de conservation s'affiche à la fin, arrêt compris (ADR-0264).
     """
+    ecrits = _Ecrits()
+    code = _analyser_chacun(
+        fichiers, desactiver, catalogue, confiance, dossier, reveler, tenu, autorite, ecrits
+    )
+    _afficher_conservation(
+        lignes_conservation(len(fichiers), None in fichiers, dossier, ecrits, tenu)
+    )
+    return code
+
+
+def _analyser_chacun(
+    fichiers: Sequence[str | None],
+    desactiver: Sequence[str],
+    catalogue: str | None,
+    confiance: str | None,
+    dossier: Path | None,
+    reveler: Sequence[str],
+    tenu: journal.Journal | None,
+    autorite: str | None,
+    ecrits: _Ecrits,
+) -> int:
+    """Boucle d'``_analyser`` ; ``ecrits`` reçoit ce qui a été écrit ou envoyé."""
     code = 0
     analysees = 0
     exemple: Path | None = None
@@ -460,7 +549,8 @@ def _analyser(
                     print(f"{repere} rapport non écrit : {erreur.strerror}", file=sys.stderr)
                     code = 1
                     break
-                reussi, jeton = _horodater(repere, fichier, octets_, autorite, horodatages)
+                ecrits.rapports = True
+                reussi, jeton = _horodater(repere, fichier, octets_, autorite, horodatages, ecrits)
                 code = code if reussi else 1
                 exemple = fichier if jeton is not None else exemple
                 if tenu is not None and not _consigner(
@@ -559,10 +649,12 @@ def _comparer(chemins: Sequence[str], tenu: journal.Journal | None = None) -> in
     if tenu is not None:
         for rang, (_, empreinte) in enumerate(lus, start=1):
             if not _consigner(f"[{rang}/2]", tenu.consultation, empreinte=empreinte):
+                _afficher_conservation(lignes_conservation(0, False, None, _Ecrits(), tenu))
                 return 2
     resultat = comparaison.comparer(*(document for document, _ in lus))
     for ligne in lignes_comparaison(resultat):
         print(neutraliser(ligne))
+    _afficher_conservation(lignes_conservation(0, False, None, _Ecrits(), tenu))
     return 0 if resultat.identiques else 1
 
 
@@ -589,6 +681,12 @@ def _verifier_journal(chemin: str) -> int:
         )
     print(texte("conservation.portee"))
     return 0
+
+
+def _afficher_enonce() -> None:
+    """Énoncé complet de la conservation des données (NF-05, ADR-0264, ADR-0266)."""
+    for paragraphe in textes()["conservation"]["donnees"]["enonce"]:
+        print(paragraphe)
 
 
 def _ouvrir_journal(
@@ -624,6 +722,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     _sortie_en_utf8()
     analyseur = construire_analyseur()
     arguments = analyseur.parse_args(argv)
+    if arguments.conservation:
+        options = {k: v for k, v in vars(arguments).items() if k != "conservation"}
+        if any(options.values()):
+            analyseur.error("--conservation s'emploie seule")
+        _afficher_enonce()
+        return 0
     if arguments.verifier_journal is not None:
         autres = (
             arguments.fichiers,

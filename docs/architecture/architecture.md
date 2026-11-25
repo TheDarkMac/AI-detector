@@ -1,6 +1,6 @@
 # Architecture
 
-> Statut : **v1.35** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 avec T15, v1.9 avec T16, v1.10 avec T17, v1.11 avec T18, v1.12 avec T20, v1.13 avec T21, v1.14 avec le complément audio et vidéo de T21, v1.15 avec le complément bureautique de T21, v1.16 avec T23, v1.17 avec T24, v1.18 avec T25, v1.19 avec T30, v1.20 avec T31, v1.21 avec T40, v1.22 avec T41, v1.23 avec T42, v1.24 avec T32, v1.25 avec T50, v1.26 avec T51, v1.27 avec T52, v1.28 avec T53, v1.29 avec le complément bureautique de T52, v1.30 avec T80, v1.31 avec le complément de T80, v1.32 avec le complément texte de T53, v1.33 avec T81, v1.34 avec le complément de T81, v1.35 proposée dans la PR de T91. Document vivant : toute modification est inscrite à l'historique (§13).
+> Statut : **v1.35** ; v1.0 mergée avec T04, v1.1 avec T10, v1.2 avec T11, v1.3 avec T12, v1.4 et v1.5 avec les compléments de T10, v1.6 avec T13, v1.7 avec T14, v1.8 avec T15, v1.9 avec T16, v1.10 avec T17, v1.11 avec T18, v1.12 avec T20, v1.13 avec T21, v1.14 avec le complément audio et vidéo de T21, v1.15 avec le complément bureautique de T21, v1.16 avec T23, v1.17 avec T24, v1.18 avec T25, v1.19 avec T30, v1.20 avec T31, v1.21 avec T40, v1.22 avec T41, v1.23 avec T42, v1.24 avec T32, v1.25 avec T50, v1.26 avec T51, v1.27 avec T52, v1.28 avec T53, v1.29 avec le complément bureautique de T52, v1.30 avec T80, v1.31 avec le complément de T80, v1.32 avec le complément texte de T53, v1.33 avec T81, v1.34 avec le complément de T81, v1.35 avec T91, v1.36 proposée dans la PR de T92. Document vivant : toute modification est inscrite à l'historique (§13).
 > Exigences : NF-01, NF-06, NF-10 ; exigences de sécurité ES-01, ES-02, ES-05, ES-10, ES-17, ES-18 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-05, A-16, A-30, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T04. Date de rédaction : 2026-10-26.
 
@@ -120,7 +120,7 @@ src/voight_kampff/
   __init__.py        interface publique de la bibliothèque : analyse par P2 seulement (ES-17)
   __main__.py        lancement par python -m voight_kampff
   analyse.py         analyser(), analyser_texte(), Analyse, AnalyseRefusee : interface publique (ADR-0073, ADR-0233)
-  cli.py             ligne de commande (argparse) : vk FICHIER... --desactiver MODULE ; vk --texte (ADR-0233) ; --journal, --horodater (ADR-0260, ADR-0262)
+  cli.py             ligne de commande (argparse) : vk FICHIER... --desactiver MODULE ; vk --texte (ADR-0233) ; --journal, --horodater (ADR-0260, ADR-0262) ; --conservation (ADR-0264)
   formats.py         vocabulaire des formats et extensions (P1, P2, modèle ; ADR-0070)
   _limites.py        valeurs des limites, fixes (P1 et P2 ; ADR-0077, ADR-0078)
   _protocole.py      lignes JSON du protocole, décodage strict (P1 et P2)
@@ -351,3 +351,4 @@ Les autres exigences (ES-03, ES-04, ES-06 à ES-09, ES-11 à ES-16, ES-19 à ES-
 | 2026-11-23 | 1.33 | Module `historique` (§4, ADR-0248, ADR-0249) ; LibreOffice écrit et relit ses échantillons (§9) | T81 |
 | 2026-11-23 | 1.34 | Module `imagesbureau` (§4, ADR-0252, ADR-0253) ; parties extraites décompressées, analysées en mémoire (§4, §7, ADR-0254) | T81 (complément) |
 | 2026-11-25 | 1.35 | `_conservation/` et schéma `journal` (§4, ADR-0260 à ADR-0263) ; aucune dépendance nouvelle | T91 |
+| 2026-11-25 | 1.36 | `vk --conservation` (§4, ADR-0264) ; aucune dépendance nouvelle | T92 |

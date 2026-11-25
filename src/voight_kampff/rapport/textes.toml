@@ -66,6 +66,7 @@ couverture = "Couverture"
 controle_publication = "Contrôle avant publication"
 donnees_identifiantes = "Données identifiantes"
 observations = "Observations"
+conservation = "Conservation des données"
 glossaire = "Glossaire"
 
 # Visualisations (F-84, ADR-0200) : titre, avertissement d'interprétation (F-32) affiché au-dessus
@@ -278,6 +279,36 @@ vide = "Journal vide : aucune entrée."
 rompu = "Journal rompu à l'entrée {numero} : {erreur}."
 illisible = "Journal illisible : {erreur}."
 portee = "Cohérent ne veut pas dire authentique : les dates sont celles de l'horloge du poste, non certifiées, « qui » est déclaré, et qui a le fichier peut le récrire en entier."
+
+# Conservation des données : où et combien de temps (NF-05, ADR-0264 à ADR-0266). Énoncé complet
+# de vk --conservation, rubrique du rapport HTML, bloc affiché à la fin d'une commande.
+[conservation.donnees]
+enonce = [
+    "Conservation des données par Voight-Kampff : où et combien de temps l'outil garde ce qu'il lit et ce qu'il écrit.",
+    "Fichier analysé : lu là où il se trouve, jamais modifié ni copié sur le disque. Son contenu n'existe que dans la mémoire du processus de travail ouvert pour lui seul, qui se termine avec son analyse. Rien n'en est gardé ensuite : ni copie, ni cache, ni historique, ni télémétrie.",
+    "Texte collé (--texte) : lu sur l'entrée standard, en mémoire seulement ; rien n'en est gardé.",
+    "Rapports (--rapport DOSSIER) : écrits seulement si vous le demandez, dans le dossier que vous nommez, jamais écrasés ; sous Linux et macOS, lisibles par leur seul propriétaire. Ils y restent jusqu'à ce que vous les supprimiez : l'outil ne les efface pas, ne les relit que pour --comparer et ne les envoie nulle part. Leurs données identifiantes sont masquées, sauf --reveler.",
+    "Jetons d'horodatage (--horodater URL) : écrits à côté des rapports et gardés de même. L'autorité que vous choisissez reçoit l'empreinte de chaque rapport, avec votre adresse et l'heure de la demande, et la garde selon sa propre politique, que l'outil ne connaît pas.",
+    "Journal de conservation (--journal FICHIER) : tenu seulement si vous le demandez, dans le fichier que vous nommez ; sous Linux et macOS, lisible par son seul propriétaire. Il garde l'empreinte des fichiers analysés et des rapports, sans leur nom, avec la date et le nom déclaré par --qui, jusqu'à ce que vous le supprimiez.",
+    "Rien d'autre ne quitte le poste : l'outil ne fait aucune autre requête sur le réseau. Le processus de travail est privé de réseau et d'écriture sur le disque quand son isolation est complète ; sinon, le rapport dit ce qui lui manque (rubrique Isolation).",
+    "Hors de l'outil : l'historique de votre shell et le défilement du terminal gardent les commandes tapées, noms de fichier compris, et ce que l'outil affiche ; le système peut écrire la mémoire sur le disque (fichier d'échange, mise en veille prolongée) ; d'autres logiciels peuvent copier les rapports écrits (sauvegarde, synchronisation, indexation). Rien de cela ne dépend de l'outil, qui ne peut ni le voir ni l'empêcher.",
+]
+# Rubrique « Conservation des données » du rapport HTML : sans chemin (ES-14).
+rapport_fichier = "L'outil n'a rien gardé du fichier analysé : il l'a lu là où il se trouvait, sans le copier sur le disque ni le modifier, dans un processus de travail qui s'est terminé avec l'analyse."
+rapport_texte = "L'outil n'a rien gardé du texte collé : il ne l'a lu qu'en mémoire, dans un processus de travail qui s'est terminé avec l'analyse."
+rapport = "Ce rapport est gardé là où il a été écrit, jusqu'à ce qu'on le supprime ; l'outil ne l'envoie nulle part. Si son horodatage a été demandé, seule son empreinte a été envoyée à l'autorité choisie, qui la garde selon sa propre politique."
+rapport_transmis = "Une fois transmis, chacune de ses copies est gardée par qui la reçoit, selon ses propres règles."
+rapport_detail = "Énoncé complet : vk --conservation."
+# Bloc affiché à la fin d'une analyse ou d'une comparaison, une ligne par donnée.
+titre = "Conservation des données (énoncé complet : vk --conservation) :"
+fichiers = { un = "fichier analysé : lu là où il se trouve, ni copié ni modifié ; rien n'en est gardé", plusieurs = "fichiers analysés : lus là où ils se trouvent, ni copiés ni modifiés ; rien n'en est gardé" }
+texte = "texte collé : lu en mémoire seulement ; rien n'en est gardé"
+rapports = "rapports : dans {dossier}, gardés jusqu'à ce que vous les supprimiez"
+rapports_jetons = "rapports et jetons d'horodatage : dans {dossier}, gardés jusqu'à ce que vous les supprimiez"
+rapports_aucun = "rapports : aucun écrit"
+compares = "rapports comparés : lus là où ils se trouvent, ni copiés ni modifiés"
+journal = "journal de conservation : {journal}, gardé jusqu'à ce que vous le supprimiez"
+autorite = "autorité d'horodatage : a reçu l'empreinte de chaque rapport et la garde selon sa propre politique, que l'outil ne connaît pas"
 
 # Comparaison de deux rapports du même fichier (vk --comparer, ADR-0112).
 [comparaison]

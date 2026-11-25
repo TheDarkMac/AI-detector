@@ -278,3 +278,7 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0261](ADR-0261-contenu-et-chaine-du-journal.md) | Contenu du journal : soumissions, refus, exports et rapports lus ; une ligne JSON chaînée par SHA-256 | Accepté | 2026-11-25 |
 | [ADR-0262](ADR-0262-horodatage-de-chaque-fichier-de-rapport.md) | Horodatage RFC 3161 : `--horodater URL`, un jeton par fichier de rapport écrit | Accepté | 2026-11-25 |
 | [ADR-0263](ADR-0263-reponse-de-l-autorite-et-date-non-certifiee.md) | Réponse de l'autorité vérifiée sur son contenu, non sur sa signature ; date de l'analyse marquée non certifiée | Accepté | 2026-11-25 |
+| [ADR-0264](ADR-0264-affichage-de-la-conservation-au-terminal.md) | Conservation des données au terminal : un bloc à la fin de chaque analyse ou comparaison, et `vk --conservation` | Accepté | 2026-11-25 |
+| [ADR-0265](ADR-0265-rubrique-conservation-du-rapport.md) | Rubrique « Conservation des données » au rapport HTML, sans chemin ; rapport JSON et schéma inchangés | Accepté | 2026-11-25 |
+| [ADR-0266](ADR-0266-ce-qui-echappe-a-l-outil.md) | L'énoncé de la conservation nomme ce qui échappe à l'outil, sans rien promettre | Accepté | 2026-11-25 |
+| [ADR-0267](ADR-0267-analyse-des-traitements-rgpd.md) | NF-13 : analyse des traitements au regard du RGPD dans `docs/verification/`, exigence partielle jusqu'à T103 | Accepté | 2026-11-25 |

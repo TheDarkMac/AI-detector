@@ -218,6 +218,11 @@ class Journal:
         finally:
             os.close(descripteur)
 
+    @property
+    def chemin(self) -> str | os.PathLike[str]:
+        """Chemin du journal, tel que la commande l'a nommé (affiché au terminal, ADR-0264)."""
+        return self._chemin
+
     def _ajouter(self, evenement: str, champs: dict[str, Any]) -> int:
         descripteur = _ouvrir(self._chemin)
         try:

@@ -51,3 +51,4 @@ Le §10 laisse ouverts les langues de l'interface et des rapports, et les pays v
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : la phrase d'un constat est un gabarit dont les paramètres renvoient à des observations (ADR-0058) ; raisons des analyses non menées par gabarit (ADR-0056) (T11) |
 | 2026-10-28 | Réalisé en T16 : phrases des constats dans les règles du catalogue (ADR-0091), autres textes du rapport dans `rapport/textes.toml` (ADR-0098) |
+| 2026-11-25 | Renvoi : analyse des traitements au regard du RGPD, `docs/verification/donnees-personnelles.md` ; NF-13 partielle jusqu'aux mentions de T103 (ADR-0267, T92) |
