@@ -42,6 +42,7 @@ from voight_kampff.rapport.modele import (
     Constat,
     NatureVisualisation,
     NiveauIsolation,
+    Saisie,
     Visualisation,
 )
 
@@ -528,6 +529,17 @@ def _glossaire() -> str:
     )
 
 
+def _conservation(analyse: Analyse) -> str:
+    """Où et combien de temps sont gardés le fichier et ce rapport, sans chemin (NF-05, ADR-0265).
+
+    Le texte ne dépend que de la saisie : le rapport ne sait pas où il sera écrit, et n'inscrit
+    aucun chemin (ES-14).
+    """
+    saisie = "texte" if analyse.identification.saisie is Saisie.TEXTE_COLLE else "fichier"
+    cles = (f"rapport_{saisie}", "rapport", "rapport_transmis", "rapport_detail")
+    return "".join(f"<p>{_t(texte(f'conservation.donnees.{cle}'))}</p>" for cle in cles)
+
+
 def _resume(vue: Presentation) -> str:
     return _liste(vue.resume())
 
@@ -566,6 +578,7 @@ def html(analyse: Analyse, masquees: Collection[CategorieIdentifiante]) -> str:
         ("controle_publication", _controle_publication(vue)),
         ("donnees_identifiantes", _donnees_identifiantes(vue)),
         ("observations", _observations(vue)),
+        ("conservation", _conservation(analyse)),
         ("glossaire", _glossaire()),
     ]
     sommaire = _sommaire((["alertes"] if alertes else []) + [r for r, _ in rubriques])
