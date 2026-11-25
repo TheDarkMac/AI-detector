@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.42** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 avec T40, v0.29 avec T41, v0.30 avec T42, v0.31 avec le complément de T40, v0.32 avec T32, v0.33 avec T50, v0.34 avec T51, v0.35 avec T52, v0.36 avec T53, v0.37 avec le complément bureautique de T52, v0.38 avec T80, v0.39 avec le complément de T80, v0.40 avec le complément texte de T53, v0.41 avec T81, v0.42 proposée dans la PR du complément de T81. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.44** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 avec T40, v0.29 avec T41, v0.30 avec T42, v0.31 avec le complément de T40, v0.32 avec T32, v0.33 avec T50, v0.34 avec T51, v0.35 avec T52, v0.36 avec T53, v0.37 avec le complément bureautique de T52, v0.38 avec T80, v0.39 avec le complément de T80, v0.40 avec le complément texte de T53, v0.41 avec T81, v0.42 avec le complément de T81, v0.43 avec T90, v0.44 proposée dans la PR de T91. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -134,7 +134,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 | ID | Tâche | Exigences |
 | --- | --- | --- |
 | T90 | Interface : en V1, ligne de commande et rapport HTML (ADR-0010, ADR-0025) ; interface web locale ensuite. WCAG 2.2 AA vérifié par une grille des critères et un passage d'axe-core, hors de la CI (ADR-0256) ; nom de chaque technique en langage courant (ADR-0257) ; résumé du terminal par partie et par état, textes accordés au nombre (ADR-0258) ; sommaire du rapport et écrans étroits (ADR-0259) | NF-11, NF-12 |
-| T91 | Journal de chaîne de conservation et horodatage fiable des rapports, optionnels, aucune trace par défaut (ADR-0030) | NF-17 |
+| T91 | Journal de chaîne de conservation et horodatage fiable des rapports, optionnels, aucune trace par défaut (ADR-0030) : `--journal FICHIER` à chaque commande, annoncé à chaque emploi, `--qui`, `--verifier-journal` (ADR-0260) ; soumissions, refus, exports et rapports lus, une ligne JSON chaînée par SHA-256 (ADR-0261) ; `--horodater URL`, un jeton RFC 3161 par fichier de rapport (ADR-0262), vérifié sur son contenu, non sur sa signature ; date de l'analyse marquée non certifiée (ADR-0263) | NF-17 |
 | T92 | Affichage de la conservation des données (durée, lieu) | NF-04, NF-05, NF-13 |
 | T93 | Comparaison de plusieurs exemplaires d'un document, sans attribution à un destinataire (ADR-0032) | F-91 |
 | T94 | Points de traçage d'imprimante : présence signalée, sans décodage (ADR-0032) | F-90 (partie image) |
@@ -224,3 +224,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-11-23 | 0.41 | T81 renvoyée à ses décisions (ADR-0248 à ADR-0251) ; complément de T81 (images d'un DOCX ou d'un ODT) ajouté à l'ordre de la V1 (§3, §4) | T81 |
 | 2026-11-23 | 0.42 | Complément de T81 renvoyé à ses décisions (ADR-0252 à ADR-0255) ; F-63 ajoutée à T81 (§3) | T81 (complément) |
 | 2026-11-25 | 0.43 | T90 renvoyée à ses décisions (ADR-0256 à ADR-0259) | T90 |
+| 2026-11-25 | 0.44 | T91 renvoyée à ses décisions (ADR-0260 à ADR-0263) ; état du document mis à jour (v0.43 n'y figurait pas) | T91 |

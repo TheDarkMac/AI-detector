@@ -1,6 +1,6 @@
 # Modèle de menace
 
-> Statut : **v1.4** ; v1.0 mergée avec T03, v1.1 avec T04, v1.2 avec T17, v1.3 avec T25, v1.4 proposée dans la PR de T30. Document vivant : toute modification est inscrite à l'historique (§12).
+> Statut : **v1.5** ; v1.0 mergée avec T03, v1.1 avec T04, v1.2 avec T17, v1.3 avec T25, v1.4 avec T30, v1.5 proposée dans la PR de T91. Document vivant : toute modification est inscrite à l'historique (§12).
 > Exigences : NF-15 (livrable 7 du §9), NF-01, NF-16, NF-18 ; constats A-14, A-16, A-31, A-37, A-42, A-48, A-53 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T03. Date de rédaction : 2026-10-26.
 
@@ -184,7 +184,7 @@ Colonnes : élément du §5 ; catégorie STRIDE ; adversaire (§3) ; biens (§2)
 | M-15 | X1 | I | Fichier envoyé à un service tiers (ADR-0017) : fuite du contenu, conservation, réutilisation | A7 | B1, B2 | Moyenne | Élevée | Haut | ES-10 |
 | M-16 | X1 | I | Une requête de révocation (OCSP) révèle à l'autorité de certification et au réseau quel certificat est vérifié, et quand | A7, A3 | B8 | Faible | Moyenne | Bas | ES-10 |
 | M-17 | X1 | I | Une requête d'horodatage révèle l'heure d'activité et l'adresse de l'utilisateur | A7 | B8 | Faible | Faible | Bas | ES-16 |
-| M-18 | X1 | S, T | Réponse réseau falsifiée : fausse réponse de révocation, faux manifeste distant | A1 | B7 | Faible | Moyenne | Bas | ES-10 |
+| M-18 | X1 | S, T | Réponse réseau falsifiée : fausse réponse de révocation, faux manifeste distant, fausse réponse d'horodatage | A1 | B7 | Faible | Moyenne | Bas | ES-10 ; horodatage : ES-16, contenu vérifié par l'outil, signature par `openssl` (ADR-0263) |
 | M-19 | P2, P1 | I | Requête non inventoriée introduite par une dépendance (télémétrie, schéma XML ou police téléchargés) | A5, A7 | B1, B8 | Moyenne | Élevée | Haut | ES-02, ES-11, ES-18 |
 
 #### Inventaire des requêtes sortantes (NF-16)
@@ -195,7 +195,7 @@ C'est l'inventaire initial exigé par NF-16 ; il est tenu à jour à chaque tâc
 | --- | --- | --- | --- | --- | --- | --- |
 | RS-01 | Révocation des certificats C2PA (CRL de préférence, OCSP sinon) | CRL : rien de propre au fichier. OCSP : émetteur et numéro de série du certificat | Autorité de certification du signataire | OCSP : qu'un certificat donné est vérifié, et quand | Désactivée | Complément de T30 (ADR-0166) |
 | RS-02 | Manifeste C2PA distant | L'URL écrite dans le fichier | Hôte choisi par l'auteur du fichier | Adresse, heure, et l'exemplaire si l'URL lui est propre | Désactivée ; confirmation par fichier | Complément de T30 (ADR-0166) ; en T30, jamais récupéré, hôte seul au rapport |
-| RS-03 | Horodatage RFC 3161 du rapport | Empreinte du rapport | Autorité d'horodatage choisie par l'utilisateur | Adresse et heure | Désactivée | T91 |
+| RS-03 | Horodatage RFC 3161 du rapport | Empreinte SHA-256 de chaque fichier de rapport écrit, et un nonce | Autorité d'horodatage choisie par l'utilisateur | Adresse et heure | Désactivée ; `--horodater URL`, avec `--rapport`, annoncée à chaque emploi ; sans redirection | Réalisée en T91 (ADR-0262, ADR-0263) |
 | RS-04 | Service tiers à base d'IA | En général le fichier | Fournisseur du service | Contenu du fichier | Aucun en V1 ; consentement par fichier | Point d'extension ([ADR-0042](../decisions/ADR-0042-modules-et-extension.md)) |
 | RS-05 | Références bibliographiques (F-72) | Références citées | Bases publiques | Contenu du travail (A-42) | Hors V1 (ADR-0013) | T83 |
 
@@ -268,7 +268,7 @@ Chaque exigence dérive des menaces citées ; T04 choisit les moyens, les tâche
 | ES-13 | Données identifiantes masquées par défaut dans **tous** les exports et la sortie du terminal : métadonnées nominatives, numéros de série, GPS, lieux nommés et textes libres (ADR-0159), nom du fichier (ADR-0014) et **empreinte** (ADR-0031). Levée explicite, par catégorie ; un rapport démasqué l'annonce en tête. | M-22, C-05 | ADR-0031, ADR-0159 | T16, T25 |
 | ES-14 | Le rapport n'inscrit ni chemin, ni nom de machine, ni utilisateur du système ; les heures sont en UTC. | M-23 | — | T16 |
 | ES-15 | **Aucune trace par défaut** : ni cache, ni journal, ni télémétrie ; fichiers temporaires dans un répertoire privé effacé en fin d'analyse, ou en mémoire ; messages d'erreur sans contenu du fichier ni chemin ; vidages mémoire désactivés pour le processus de travail. | M-26 | ADR-0030 | T14, T91 |
-| ES-16 | NF-17 en local : journal optionnel, chaîné, sans noms de fichier, avec avertissement à l'activation ; « qui » déclaratif ; horodatage RFC 3161 optionnel de l'empreinte du rapport ; heure du poste toujours inscrite, marquée « non certifiée ». | M-17, M-24, M-25, M-27, M-28 | ADR-0030 | T91 |
+| ES-16 | NF-17 en local : journal optionnel, chaîné, sans noms de fichier, avec avertissement à l'activation ; « qui » déclaratif ; horodatage RFC 3161 optionnel de l'empreinte du rapport ; heure du poste toujours inscrite, marquée « non certifiée ». | M-17, M-24, M-25, M-27, M-28 | ADR-0030, ADR-0260 à ADR-0263 | T91 |
 | ES-17 | La bibliothèque n'expose **aucune fonction qui analyse dans le processus appelant** ; toute analyse passe par ES-01. | M-29 | ADR-0028, ADR-0036 | T04, T12 |
 | ES-18 | Chaîne d'approvisionnement : dépendances en nombre minimal, versions figées avec empreintes (ADR-0023) ; préférence, à fonction égale, pour les analyseurs écrits dans un langage sûr pour la mémoire ; actions d'intégration continue épinglées par empreinte de commit (déjà le cas, ADR-0006) ; canal de distribution unique documenté, empreintes des versions publiées. | M-01, M-11, M-19, M-31, M-32 | ADR-0037, ADR-0041, ADR-0043 | T04, T10 |
 | ES-19 | Fuzzing des analyseurs de chaque format de la V1 ; catégorie « malformés » du corpus (§8 du cahier). | M-01 à M-05 | — | T14, T100, T102 |
@@ -327,3 +327,4 @@ Chaque tâche qui touche une surface du §5 vérifie, dans sa PR, que ses menace
 | 2026-10-28 | 1.2 | ES-11 réalisée par ADR-0100 (colonne « Décision » du §8) ; exigences ES vérifiées dans la [matrice](../verification/matrice.md) ; aucune menace ni surface nouvelle | T17 |
 | 2026-11-14 | 1.3 | M-22 et ES-13 étendues aux lieux nommés et aux textes libres, deux catégories masquées par défaut (ADR-0159) ; aucune menace ni surface nouvelle | T25 |
 | 2026-11-14 | 1.4 | RS-01 et RS-02 confiées au complément de T30 ; en T30, aucune requête, réseau coupé dans c2pa-rs en plus du système, liste de confiance validée au chargement (ADR-0164, ADR-0166, ADR-0171) ; aucune menace ni surface nouvelle | T30 |
+| 2026-11-25 | 1.5 | RS-03 réalisée : une requête par fichier de rapport écrit, sans redirection (ADR-0262) ; M-18 étendue à une fausse réponse d'horodatage, lue comme un fichier hostile, contenu vérifié, signature laissée à `openssl` (ADR-0263) ; ES-16 renvoie à ADR-0260 à ADR-0263 ; aucune surface nouvelle | T91 |

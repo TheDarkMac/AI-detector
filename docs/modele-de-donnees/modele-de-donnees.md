@@ -1,6 +1,6 @@
 # Modèle de données
 
-> Statut : **v1.17** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 avec T42, v1.12 avec T50, v1.13 avec T51, v1.14 avec T53, v1.15 avec T80, v1.16 avec le complément texte de T53, v1.17 proposée dans la PR du complément de T81. Document vivant : toute modification est inscrite à l'historique (§10).
+> Statut : **v1.18** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T18, v1.7 avec T20, v1.8 avec T25, v1.9 avec T30, v1.10 avec T31, v1.11 avec T42, v1.12 avec T50, v1.13 avec T51, v1.14 avec T53, v1.15 avec T80, v1.16 avec le complément texte de T53, v1.17 avec le complément de T81, v1.18 proposée dans la PR de T91. Document vivant : toute modification est inscrite à l'historique (§10).
 > Exigences : F-02, F-03, F-80, F-81, F-82, F-84, §6 du cahier ; ES-04, ES-07, ES-20 du [modèle de menace](../modele-de-menace/modele-de-menace.md) ; constats A-02, A-03, A-10, A-23, A-46, A-47 de l'[analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md).
 > Tâche : T11. Date de rédaction : 2026-10-26.
 
@@ -56,6 +56,13 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | [ADR-0247](../decisions/ADR-0247-page-sans-couche-texte-et-versions-du-complement-de-t53.md) | Raison `document_numerise`, donnée par un module ; `VERSION_SCHEMA` 0.12.0 (complément texte de T53) |
 | [ADR-0254](../decisions/ADR-0254-parties-extraites-decompressees.md) | `Decompression` de l'origine d'une partie extraite : méthode, taille du contenu, plage du format dans ce contenu ; `VERSION_SCHEMA` 0.13.0 (complément de T81, ADR-0255) |
 
+### Décisions de T91 qui touchent le modèle
+
+| ADR | Décision |
+| --- | --- |
+| [ADR-0261](../decisions/ADR-0261-contenu-et-chaine-du-journal.md) | Journal de conservation : schéma publié `journal`, format 1, une entrée par ligne, chaînée par SHA-256 (§7) |
+| [ADR-0263](../decisions/ADR-0263-reponse-de-l-autorite-et-date-non-certifiee.md) | `date_analyse` : horloge du poste, non certifiée, dit au rapport et dans la description du schéma ; `VERSION_SCHEMA` inchangée |
+
 ### Où se trouve le code
 
 | Élément | Fichier |
@@ -70,9 +77,10 @@ Ce document décrit les données qu'une analyse produit : observations, constats
 | Décodage strict d'une ligne de message (T12) | `src/voight_kampff/_protocole.py` |
 | Réception et validation des messages (T12) | `src/voight_kampff/_orchestration/travail.py` |
 | Exports JSON et HTML, masquage (T16) | `src/voight_kampff/rapport/export.py`, `rapport/_html.py`, `rapport/_presentation.py`, `rapport/textes.toml` |
-| Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py` |
+| Journal de conservation, horodatage (T91) | `src/voight_kampff/_conservation/`, `src/voight_kampff/schemas/journal.schema.json` |
+| Tests | `tests/test_modele.py`, `tests/test_schemas.py`, `tests/test_rapport.py`, `tests/test_conservation.py` |
 
-Version commune : `0.12.0` (`VERSION_SCHEMA`, ADR-0247 ; 0.11.0 depuis ADR-0233, 0.10.0 depuis ADR-0224, 0.9.0 depuis ADR-0217, 0.8.0 depuis ADR-0212, 0.7.0 depuis ADR-0201, 0.6.0 depuis ADR-0179, 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
+Version commune : `0.13.0` (`VERSION_SCHEMA`, ADR-0255 ; 0.12.0 depuis ADR-0247, 0.11.0 depuis ADR-0233, 0.10.0 depuis ADR-0224, 0.9.0 depuis ADR-0217, 0.8.0 depuis ADR-0212, 0.7.0 depuis ADR-0201, 0.6.0 depuis ADR-0179, 0.5.0 depuis ADR-0171, 0.4.0 depuis ADR-0159, 0.3.0 depuis ADR-0111, 0.2.0 depuis ADR-0095).
 
 ## 2. Vue d'ensemble
 
@@ -323,7 +331,7 @@ Le processus principal tire de l'identification trois sortes d'analyses non men�
 | `zone` | Rectangle `x`, `y`, `largeur`, `hauteur` en pixels |
 | `intervalle` | `debut` ≤ `fin`, en secondes, pour l'audio et la vidéo (hors V1, prévu par A-46) |
 
-**Identification** : `saisie` (`fichier`, ou `texte_colle` pour un texte collé, ADR-0233), `nom` (sans `/`, `\` ni caractère nul : aucun chemin, ES-14 ; absent d'un texte collé, qui n'a qu'une partie `texte` et aucune partie extraite), `format_reel` (celui de la partie 1), `taille` en octets, `empreinte` SHA-256 en hexadécimal minuscule, `date_analyse` au format `AAAA-MM-JJTHH:MM:SSZ` (UTC, ES-14), `parties`, `extraites` (ADR-0224). Nom et empreinte sont identifiants d'office (ADR-0014, ADR-0031). Champs déduits, écrits pour le lecteur et vérifiés à la relecture (ADR-0072) : `extension` (minuscules, au plus 32 caractères ; absente sans extension), `extension_concordante` (absente sans extension), `octets_non_reconnus` (plages qu'aucune partie ne couvre).
+**Identification** : `saisie` (`fichier`, ou `texte_colle` pour un texte collé, ADR-0233), `nom` (sans `/`, `\` ni caractère nul : aucun chemin, ES-14 ; absent d'un texte collé, qui n'a qu'une partie `texte` et aucune partie extraite), `format_reel` (celui de la partie 1), `taille` en octets, `empreinte` SHA-256 en hexadécimal minuscule, `date_analyse` au format `AAAA-MM-JJTHH:MM:SSZ` (UTC, ES-14 ; horloge du poste, non certifiée, ES-16, ADR-0263), `parties`, `extraites` (ADR-0224). Nom et empreinte sont identifiants d'office (ADR-0014, ADR-0031). Champs déduits, écrits pour le lecteur et vérifiés à la relecture (ADR-0072) : `extension` (minuscules, au plus 32 caractères ; absente sans extension), `extension_concordante` (absente sans extension), `octets_non_reconnus` (plages qu'aucune partie ne couvre).
 
 **Partie** (ADR-0070, ADR-0071) : `rang` de 1 à 16, dans l'ordre des débuts ; `format`, pris dans le vocabulaire de `formats.py` ; `octets`, du début à la fin logique, ou à la fin du fichier si elle n'est pas connue ; `fin_connue` ; `tronquee` (structure interrompue avant sa fin, jamais avec une fin connue). Les plages peuvent se chevaucher. Au moins une partie est dans le périmètre : sinon le fichier est refusé, sans rapport (ADR-0075).
 
@@ -350,6 +358,10 @@ Les expressions des schémas sont des classes de caractères ancrées, linéaire
 ### Export JSON (T16)
 
 Un export est le document du rapport dont les données des catégories masquées sont retirées : `nom` et `empreinte` de l'identification, `valeur` des observations identifiantes, `donnees` et `empreinte` des images de visualisation (catégorie `contenu`, ADR-0200 ; un tableau n'est jamais masqué, ADR-0212). L'objet `masquage`, juste après `version_schema`, liste les catégories `masquees` et `levees`, les huit une fois chacune (ADR-0095, ADR-0159, ADR-0200). Le schéma vérifie que le nom et l'empreinte manquent si et seulement si `masquage` les masque (le nom manque aussi d'un texte collé), et qu'une observation non identifiante a sa valeur ; le code (`rapport.export.valider`) vérifie la partition des catégories, l'absence de la valeur de chaque observation masquée et celle des données et de l'empreinte de chaque visualisation si `contenu` est masqué, leur présence sinon. `Rapport.depuis_dict` refuse un export masqué ; un export où tout est levé se relit à l'identique.
+
+### Journal de conservation (T91)
+
+Le journal tenu sur `--journal FICHIER` n'est pas un rapport : c'est un fichier à part, une entrée JSON par ligne, validée par `journal.schema.json` (format 1, ADR-0261). Champs communs : `format`, `numero`, `date` (horloge du poste), `evenement`, `qui` (facultatif, déclaré), `precedente` (SHA-256 de la ligne précédente, 64 zéros pour la première). Champs propres : `soumission` (`saisie`, `empreinte`, `format_reel`, `levees`), `refus` (`saisie`, `motif`), `export` (`soumission`, `rapport`, `empreinte`, `horodatage` facultatif : `autorite`, `heure`, `jeton`), `consultation` (`empreinte`). Le schéma reprend les définitions du rapport (empreinte, format, catégories identifiantes, date) ; le code vérifie en plus la suite des numéros, la chaîne, et qu'un export renvoie à une soumission antérieure. Aucun nom de fichier ni chemin.
 
 ## 8. Messages du processus de travail
 
@@ -383,6 +395,7 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | ES-04 | Données simples, bornées, validées par schéma puis par le modèle ; erreurs sans contenu ; lecture bornée et délai (T12), valeurs fixées (T14, ADR-0077) | — |
 | ES-20 | Une preuve exige un fondement de vérification ; une déclaration ne peut être qu'un indice ou une information | Rédaction « le fichier déclare » (T22, T30) |
 | F-84 | Visualisations au rapport : objet, message, rubrique HTML, masquage (ADR-0200) ; carte ELA (T42) ; tableau, chronologie des révisions PDF (T50, ADR-0212) | Spectre (T43), spectrogramme (T60) |
+| NF-17, ES-16 | Date de l'analyse marquée non certifiée (ADR-0263) ; journal de conservation optionnel, chaîné, schéma `journal` (T91, ADR-0261) | — |
 | A-10 | Glossaire du projet | Glossaire utilisateur (T103) |
 | A-23 | Couverture : état « non applicable », produit par T12 d'après les formats des manifestes ; techniques hors V1 par format (T15, ADR-0087) | Formats de chaque technique livrée, dans sa fiche : quatre modules en T20 (ADR-0115), puis chaque technique |
 
@@ -408,3 +421,4 @@ L'ordre des messages, les contrôles du processus principal et la conversion des
 | 2026-11-17 | 1.15 | `Identification.saisie`, nom absent d'un texte collé, `VERSION_SCHEMA` 0.11.0 (§1, §6, §7, ADR-0233) ; statut corrigé, il annonçait encore la v1.12 | T80 |
 | 2026-11-19 | 1.16 | Raison `document_numerise` (page d'un PDF sans couche texte native, ADR-0017), `VERSION_SCHEMA` 0.12.0 (§1, §5, ADR-0247) ; statut corrigé, il annonçait encore la v1.15 proposée | T53 (complément texte) |
 | 2026-11-23 | 1.17 | `Decompression` de l'origine d'une partie extraite, `VERSION_SCHEMA` 0.13.0 (§1, §2, §6, ADR-0254) | T81 (complément) |
+| 2026-11-25 | 1.18 | Journal de conservation, schéma `journal` (§1, §7, §9, ADR-0261) ; date de l'analyse non certifiée (§6, ADR-0263) ; version commune corrigée, elle citait encore 0.12.0 (§1) | T91 |

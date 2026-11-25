@@ -529,19 +529,19 @@ resultat = "Modèle de menace rédigé en T03 et mergé (PR #4) avant l'architec
 [[exigence]]
 id = "NF-16"
 etat = "partielle"
-taches = ["T03", "T17", "T30"]
+taches = ["T03", "T17", "T30", "T91"]
 methodes = ["test", "inspection"]
 justification = "L'inventaire se relit ; l'absence de requête non inventoriée se teste sans réseau (ES-11)."
 preuve = ["docs/modele-de-menace/modele-de-menace.md"]
-resultat = "Inventaire RS-01 à RS-05 tenu au §6.3 du modèle de menace ; aucune n'est réalisée en V1 à ce jour."
-note = "Reformulée (ADR-0017, ADR-0033) ; premières requêtes en T30."
+resultat = "Inventaire RS-01 à RS-05 tenu au §6.3 du modèle de menace ; RS-03 (horodatage) réalisée en T91, désactivée par défaut ; les autres non réalisées en V1 à ce jour."
+note = "Reformulée (ADR-0017, ADR-0033) ; RS-03 en T91 (ADR-0262)."
 
 [[exigence]]
 id = "NF-17"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T91"]
 methodes = ["test"]
-note = "Reformulée : journal et horodatage sur activation explicite (ADR-0030)."
+note = "Reformulée : journal et horodatage sur activation explicite (ADR-0030) ; consultation : rapports lus par l'outil (ADR-0261) ; signature des jetons vérifiée par openssl, non par l'outil (ADR-0263)."
 
 [[exigence]]
 id = "NF-18"
@@ -656,11 +656,11 @@ id = "ES-15"
 etat = "realisee"
 taches = ["T14"]
 methodes = ["test"]
-note = "Journal optionnel de T91 à venir, désactivé par défaut."
+note = "Journal et horodatage de T91 employés sur option seulement (ADR-0260, ADR-0262)."
 
 [[exigence]]
 id = "ES-16"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T91"]
 methodes = ["test"]
 
