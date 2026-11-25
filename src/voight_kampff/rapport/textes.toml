@@ -162,6 +162,7 @@ couverture = "Un résultat négatif ne vaut que pour les techniques appliquées 
 donnees_identifiantes = "Les données qui peuvent désigner une source sont masquées par défaut : elles sont absentes de ce rapport, pas seulement cachées."
 observations = "Toutes les données relevées dans le fichier, sans interprétation ; les constats y renvoient."
 legende_couverture = "Techniques, par partie du fichier"
+fiches = "La colonne Fiche technique donne la commande qui affiche la fiche d'une technique : son principe, son taux d'erreur, ses limites connues. Une règle citée par un constat s'affiche en entier, conditions et seuils compris, par vk --regle IDENTIFIANT. L'une et l'autre sont celles de l'outil installé : si sa version n'est pas celle de ce rapport, elles peuvent différer."
 legende_non_menees = "Analyses non menées, avec leur raison"
 legende_marquages = "Marquages connus non recherchés, avec leur raison"
 legende_identifiantes = "Masquage, par catégorie de données identifiantes"
@@ -200,6 +201,7 @@ evaluation = "Évaluation"
 localisation = "Localisation"
 partie = "Partie"
 technique = "Technique"
+fiche = "Fiche technique"
 version = "Version"
 etat = "État"
 raison = "Raison"
@@ -230,6 +232,7 @@ evaluee = "taux de faux positifs mesuré : {taux} sur {effectif} fichiers, au pl
 non_evaluee = "règle non évaluée : taux de faux positifs non mesuré, niveau faible imposé"
 partie = "partie {rang} : {format}, {octets}"
 hors_version = "hors de cette version"
+fiche = "vk --fiche {module}"
 page = "page {page}"
 zone = "zone x {x}, y {y}, {largeur} × {hauteur} px"
 intervalle = "de {debut} s à {fin} s"
@@ -309,6 +312,15 @@ rapports_aucun = "rapports : aucun écrit"
 compares = "rapports comparés : lus là où ils se trouvent, ni copiés ni modifiés"
 journal = "journal de conservation : {journal}, gardé jusqu'à ce que vous le supprimiez"
 autorite = "autorité d'horodatage : a reçu l'empreinte de chaque rapport et la garde selon sa propre politique, que l'outil ne connaît pas"
+
+# Publication des fiches techniques et des règles, lisibles hors ligne (NF-19, ADR-0268 à
+# ADR-0270).
+[publication]
+entete_fiche = "Fiche technique du module {module} {version}, livrée avec voight-kampff {outil}. Les renvois relatifs (../decisions/…) désignent les documents du dossier docs/ des sources de l'outil."
+entete_regles = [
+    "Règles écrites comme dans les fichiers du catalogue (regles/<module>.toml) ; chaque champ est décrit au §2 du guide du catalogue, docs/catalogue/README.md des sources de l'outil.",
+    "Fiche technique du module d'une règle : vk --fiche MODULE.",
+]
 
 # Comparaison de deux rapports du même fichier (vk --comparer, ADR-0112).
 [comparaison]

@@ -88,6 +88,12 @@ Un test qui vérifie une exigence la cite par le marqueur `exigence` ; après un
 uv run --locked python -m banc.matrice
 ```
 
+Après une fiche technique modifiée ou ajoutée (`docs/techniques/`), recopier les fiches dans le paquet (ADR-0268, [`docs/techniques/`](docs/techniques/README.md)) :
+
+```bash
+uv run --locked python -m banc.fiches
+```
+
 Sous Linux, le test du banc complet s'exécute dans un espace de noms réseau vide (`unshare -rn`) ; il est sauté si le système le refuse, sauf sur la CI (ADR-0100).
 
 Ajouter ou mettre à jour une dépendance : `uv add` ou `uv lock --upgrade-package <nom>`, puis commiter `uv.lock` avec `pyproject.toml`. Les critères d'admission d'une bibliothèque (ADR-0043) sont consignés dans la PR.

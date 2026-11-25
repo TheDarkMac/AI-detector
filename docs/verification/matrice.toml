@@ -557,13 +557,13 @@ methodes = ["test"]
 
 [[exigence]]
 id = "NF-19"
-etat = "partielle"
+etat = "realisee"
 taches = ["T15", "T95"]
-methodes = ["inspection"]
-justification = "Reformulée : tout est public (ADR-0019) ; la publicité se constate."
-preuve = ["src/voight_kampff/donnees/catalogue/catalogue.toml", "docs/catalogue/README.md"]
-resultat = "Catalogue, seuils et limites livrés en clair dans le paquet et dans le dépôt public (T15)."
-note = "Publication des fiches à T95."
+methodes = ["test", "inspection"]
+justification = "Reformulée : tout est public (ADR-0019) ; la publicité se constate, et sa lecture depuis l'outil se teste."
+preuve = ["src/voight_kampff/donnees/catalogue/catalogue.toml", "src/voight_kampff/donnees/fiches", "docs/catalogue/README.md"]
+resultat = "Catalogue, seuils et limites livrés en clair dans le paquet et dans le dépôt public (T15) ; fiches livrées dans le paquet, lisibles par vk --fiche, détail d'une règle par vk --regle, fiche citée par la couverture du rapport (T95)."
+note = "Reformulée (ADR-0019) ; publication des fiches et du détail des règles (ADR-0268 à ADR-0271)."
 
 # Exigences de sécurité (modèle de menace, §8)
 

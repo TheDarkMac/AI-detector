@@ -58,3 +58,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T90](T90-interface.md) | Interface de la V1 : ligne de commande et rapport HTML lisibles, WCAG 2.2 AA vérifié | `tache/T90-interface` | [#45](https://github.com/TheDarkMac/AI-detector/pull/45) |
 | [T91](T91-conservation-et-horodatage.md) | Journal de conservation et horodatage des rapports, optionnels | `tache/T91-conservation-et-horodatage` | [#46](https://github.com/TheDarkMac/AI-detector/pull/46) |
 | [T92](T92-affichage-de-la-conservation.md) | Affichage de la conservation des données | `tache/T92-affichage-de-la-conservation` | [#47](https://github.com/TheDarkMac/AI-detector/pull/47) |
+| [T95](T95-publication-du-catalogue-et-des-fiches.md) | Publication du catalogue et des fiches | `tache/T95-publication-du-catalogue-et-des-fiches` | [#48](https://github.com/TheDarkMac/AI-detector/pull/48) |
