@@ -572,7 +572,12 @@ def html(analyse: Analyse, masquees: Collection[CategorieIdentifiante]) -> str:
     corps = entete + "".join(_rubrique(r, contenu) for r, contenu in rubriques)
     titre = _t(texte("titre"))
     outil = _t(f"Voight-Kampff {version('voight-kampff-forensics')}")
-    date = _t(analyse.identification.date_analyse.strftime("%Y-%m-%d %H:%M:%S UTC"))
+    date = _t(
+        texte(
+            "conservation.date_entete",
+            date=analyse.identification.date_analyse.strftime("%Y-%m-%d %H:%M:%S"),
+        )
+    )
     return (
         "<!DOCTYPE html>\n"
         '<html lang="fr">\n<head>\n<meta charset="utf-8">\n'
