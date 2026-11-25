@@ -143,7 +143,10 @@ def test_resume_d_un_polyglotte(tmp_path: Path, capsys: pytest.CaptureFixture[st
         f"  partie 2 : zip, octets {fin_jpeg + 1} à {len(contenu) - 3}, "
         "non analysée : hors du périmètre de l'outil",
     ]
-    assert "  technique bruit, partie 1 : hors de cette version" in sortie
+    assert (
+        "  partie 1, techniques hors de cette version : motifs périodiques du résidu de bruit "
+        "(bruit)" in sortie
+    )
     assert "non livrée" not in sortie  # dit une fois, avec la technique
     livre = catalogue.charger(manifestes.decouvrir()).version
     liste = confiance.charger().version
@@ -204,9 +207,10 @@ def test_desactiver_un_module_livre(
     vide = ecrire_catalogue(tmp_path / "catalogue")
     assert main(["--catalogue", str(vide), "--desactiver", "exif", str(document)]) == 0
     sortie = capsys.readouterr().out
-    assert "  technique exif, partie 1 : non menée\n" in sortie
+    assert "  partie 1, techniques non menées : métadonnées EXIF (exif)\n" in sortie
     assert (
-        "  non menée : Technique désactivée à la demande de l'utilisateur. (exif, partie 1)\n"
+        "  non menée : Technique désactivée à la demande de l'utilisateur. (métadonnées EXIF "
+        "(exif), partie 1)\n"
     ) in sortie
 
 
@@ -267,15 +271,15 @@ def test_resume_de_chaque_element() -> None:
         "partie 2 : gif, octets 5 à 9, non analysée : hors du périmètre de l'outil, "
         "fin logique non établie",
         "isolation : complète",
-        "technique a, partie 1 : appliquée",
-        "technique b, partie 1 : partielle",
-        "technique c, partie 1 : non applicable",
-        "technique d, partie 1 : hors de cette version",
+        "partie 1, techniques appliquées : a",
+        "partie 1, techniques partielles : b",
+        "partie 1, techniques hors de cette version : d",
+        "partie 1 : 1 technique non applicable à son format",
         "Aucune preuve.",
         "Aucun indice.",
-        "0 information(s) neutre(s).",
-        "Techniques : 1 appliquée(s), 1 partielle(s), 1 non menée(s), 1 non applicable(s).",
-        "5 analyse(s) non menée(s).",
+        "0 information neutre.",
+        "Techniques : 1 appliquée, 1 partielle, 1 non menée, 1 non applicable.",
+        "5 analyses non menées.",
         "Contrôle avant publication : aucune donnée identifiante relevée dans les métadonnées "
         "lues.",
         "Contrôle avant publication incomplet : des parties du fichier n'ont pas été lues "
@@ -298,10 +302,7 @@ def test_resume_de_chaque_element() -> None:
     assert "isolation : réduite" in resume(reduite)
     du_fichier = tuple(n for n in analyse.non_menees if n.module is None)
     vide = dataclasses.replace(analyse, couverture=Couverture((), ()), non_menees=du_fichier)
-    assert (
-        "Techniques : 0 appliquée(s), 0 partielle(s), 0 non menée(s), 0 non applicable(s)."
-        in resume(vide)
-    )
+    assert "Techniques : aucune." in resume(vide)
     # Levée du masquage : le nom et l'empreinte apparaissent, et la levée est annoncée en tête.
     revele = resume(analyse, [CategorieIdentifiante.NOM_DE_FICHIER, "empreinte"])
     assert revele[1].startswith(

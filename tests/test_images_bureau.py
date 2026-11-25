@@ -673,7 +673,8 @@ def test_rapport_montre_les_parties_decompressees(analyses: dict[str, Analyse]) 
     assert jpeg.origine.decompression is not None
     taille = jpeg.origine.decompression.taille
     origine = (
-        "extraite de la partie 1 par imagesbureau : chemin word/media/image1.jpeg ; décompressée "
+        "extraite de la partie 1 par images d'un DOCX ou d'un ODT (imagesbureau) : chemin "
+        "word/media/image1.jpeg ; décompressée "
         f"(deflate, {taille} octets) : les positions de ses résultats se lisent dans ce contenu"
     )
     assert origine_partie(jpeg) == origine

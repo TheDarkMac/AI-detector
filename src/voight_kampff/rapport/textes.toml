@@ -33,21 +33,24 @@ interrompue = "Analyse interrompue : les résultats sont partiels et hors garant
 [resume]
 preuve = "Preuve, vers {direction} : {phrase}"
 preuves_aucune = "Aucune preuve."
-indices = "{nombre} indice(s) :"
+indices = { un = "{nombre} indice :", plusieurs = "{nombre} indices :" }
 indices_aucun = "Aucun indice."
-indice_par_direction = "vers {direction} : {detail}"
-indice_par_niveau = "{nombre} {niveau}"
+indice_par_direction = "vers l'hypothèse « {direction} » : {detail}"
+indice_par_niveau = "{nombre} de niveau {niveau}"
 transformation = "Le fichier porte des indices de transformation (messagerie, réseau social, capture d'écran, réenregistrement) : ils réduisent la portée des autres analyses, qui ne voient que ce que la transformation a laissé. Si vous le pouvez, obtenez le fichier original auprès de sa source et analysez-le."
-informations = "{nombre} information(s) neutre(s)."
-techniques = "Techniques : {appliquees} appliquée(s), {partielles} partielle(s), {non_menees} non menée(s), {non_applicables} non applicable(s)."
-non_menees = "{nombre} analyse(s) non menée(s)."
+informations = { un = "{nombre} information neutre.", plusieurs = "{nombre} informations neutres." }
+techniques = "Techniques : {detail}."
+# Une par état, dans l'ordre de la couverture (ADR-0258).
+techniques_par_etat = { appliquee = { un = "{nombre} appliquée", plusieurs = "{nombre} appliquées" }, partielle = { un = "{nombre} partielle", plusieurs = "{nombre} partielles" }, non_menee = { un = "{nombre} non menée", plusieurs = "{nombre} non menées" }, non_applicable = { un = "{nombre} non applicable", plusieurs = "{nombre} non applicables" } }
+non_menees = { un = "{nombre} analyse non menée.", plusieurs = "{nombre} analyses non menées." }
 non_menees_aucune = "Toutes les analyses prévues ont été menées."
-visualisations = "{nombre} visualisation(s) au rapport HTML et JSON : {natures}. Lisez l'avertissement d'interprétation de chacune avant de l'utiliser."
-publication = "Contrôle avant publication : {nombre} donnée(s) des métadonnées peuvent identifier la source ({categories}). L'outil ne les retire pas : retirez-les avant de publier le fichier."
+visualisations = { un = "{nombre} visualisation au rapport HTML et JSON : {natures}. Lisez son avertissement d'interprétation avant de l'utiliser.", plusieurs = "{nombre} visualisations au rapport HTML et JSON : {natures}. Lisez l'avertissement d'interprétation de chacune avant de l'utiliser." }
+publication = { un = "Contrôle avant publication : {nombre} donnée des métadonnées peut identifier la source ({categories}). L'outil ne la retire pas : retirez-la avant de publier le fichier.", plusieurs = "Contrôle avant publication : {nombre} données des métadonnées peuvent identifier la source ({categories}). L'outil ne les retire pas : retirez-les avant de publier le fichier." }
 publication_aucune = "Contrôle avant publication : aucune donnée identifiante relevée dans les métadonnées lues."
 publication_incomplete = "Contrôle avant publication incomplet : des parties du fichier n'ont pas été lues (analyses non menées) et peuvent porter d'autres marques."
 
 [rubriques]
+sommaire = "Sommaire"
 alertes = "Attention"
 avertissement = "Avertissement"
 resume = "Résumé"
@@ -164,7 +167,7 @@ legende_identifiantes = "Masquage, par catégorie de données identifiantes"
 controle_publication = "Données des métadonnées qui peuvent identifier la source si le fichier est publié tel quel (F-90). Elles sont nommées ici sans leur valeur ; la rubrique Observations montre la valeur de celles dont la catégorie est levée."
 controle_limites = "Le contrôle porte sur les métadonnées que l'outil lit et sur les champs que ses modules marquent. Il ne porte ni sur le contenu (texte visible, visages, lieux reconnaissables, points de traçage d'imprimante), ni sur le nom du fichier, ni sur les noms des données, qui peuvent venir du fichier. L'outil ne modifie pas le fichier : il indique les marques à retirer, il ne les retire pas."
 legende_marques = "Marques identifiantes, par catégorie"
-legende_observations = "Observations"
+legende_observations = "Données relevées, une par ligne"
 
 [champs]
 nom = "Nom du fichier"
@@ -250,7 +253,10 @@ empreinte = "empreinte : {empreinte}"
 partie = "partie {rang} : {format}, {octets}, {etat}"
 extraite = "partie {rang} : {format}, {octets}, {etat}, {origine}"
 isolation = "isolation : {niveau}"
-technique = "technique {module}, partie {partie} : {etat}"
+# Techniques d'une partie, une ligne par état ; les non applicables seulement comptées (ADR-0258).
+techniques = "partie {partie}, techniques {etat} : {techniques}"
+non_applicables = { un = "partie {partie} : {nombre} technique non applicable à son format", plusieurs = "partie {partie} : {nombre} techniques non applicables à son format" }
+etats = { appliquee = "appliquées", partielle = "partielles", non_menee = "non menées", hors_version = "hors de cette version" }
 non_menee = "non menée : {raison}"
 non_menee_precisee = "non menée : {raison} ({precision})"
 catalogue = "catalogue : {catalogue}"
@@ -263,7 +269,7 @@ non_recherche = "marquage non recherché : {nom} ({raison})"
 # Comparaison de deux rapports du même fichier (vk --comparer, ADR-0112).
 [comparaison]
 identiques = "Résultats identiques : mêmes parties, couverture, observations, constats et analyses non menées, à la date et au nom du fichier près."
-differents = "Résultats différents : {nombre} écart(s)."
+differents = { un = "Résultats différents : {nombre} écart.", plusieurs = "Résultats différents : {nombre} écarts." }
 garantie = "Conditions de la garantie de reproductibilité réunies : même fichier, même extension, mêmes versions, analyses non interrompues."
 hors_garantie = "Hors garantie de reproductibilité : {raisons}. Des résultats différents s'expliquent alors."
 defaut = "Défaut de reproductibilité : dans les conditions de la garantie, les résultats devraient être identiques. À signaler au projet, avec les deux rapports."
@@ -271,7 +277,7 @@ environnement = "Isolation différente d'un poste à l'autre : elle ne doit chan
 non_comparees = "Non comparées, car masquées dans au moins un rapport : {categories}."
 empreinte_masquee = "Empreinte masquée : rien n'établit qu'il s'agit du même fichier ; écrire les rapports avec --reveler empreinte."
 ecart = "écart ({nature}) : {chemin}"
-autres = "… et {nombre} autre(s) écart(s)."
+autres = { un = "… et {nombre} autre écart.", plusieurs = "… et {nombre} autres écarts." }
 illisible = "rapport {rang} : {erreur}"
 
 [comparaison.raisons]
@@ -397,7 +403,51 @@ marquage = ["Marquage", "Signal lisible par machine, posé exprès pour dire l'o
 non_menee = ["Analyse non menée", "Analyse qui aurait pu s'appliquer au fichier et ne l'a pas été, avec sa raison."]
 interrompue = ["Analyse interrompue", "Analyse dont une partie n'a pas abouti pour une raison qui dépend de la machine (délai, mémoire, arrêt) : ses résultats ne sont pas garantis reproductibles."]
 format_reel = ["Format réel", "Format identifié par le contenu du fichier, non par son extension."]
-partie = ["Partie", "Format reconnu dans le fichier et plage d'octets qu'il occupe. Un fichier polyglotte en a plusieurs ; une image extraite d'un PDF en est une aussi, numérotée à la suite."]
+partie = ["Partie", "Format reconnu dans le fichier et plage d'octets qu'il occupe. Un fichier polyglotte en a plusieurs ; une image extraite d'un PDF, d'un DOCX ou d'un ODT en est une aussi, numérotée à la suite."]
 empreinte = ["Empreinte", "Résumé cryptographique (SHA-256) du fichier entier : qui détient le même fichier obtient la même empreinte. Elle peut donc désigner une source, et elle est masquée par défaut."]
 donnee_identifiante = ["Donnée identifiante", "Donnée qui peut désigner une source : métadonnée nominative, numéro de série, coordonnées GPS, nom du fichier, empreinte. Masquée par défaut."]
 isolation = ["Isolation", "Restrictions imposées au processus qui lit le fichier : sans réseau, sans écriture, sans lancement de programmes. Réduite, elle protège moins le poste."]
+
+# Nom de chaque technique en langage courant, suivi de son identifiant au rapport (NF-11,
+# ADR-0257) : modules livrés, puis techniques hors de cette version (modules/hors_v1.toml).
+[techniques]
+actifsbureau = "éléments actifs d'un DOCX ou d'un ODT"
+actifspdf = "éléments actifs d'un PDF"
+c2pa = "manifeste C2PA"
+caracteres = "caractères invisibles ou substitués"
+doublejpeg = "double compression JPEG"
+dwtdct = "filigrane dwtDct"
+ela = "niveau d'erreur de recompression (ELA)"
+exif = "métadonnées EXIF"
+historique = "historique d'édition"
+id3 = "balises ID3"
+image = "structure de l'image"
+imagesbureau = "images d'un DOCX ou d'un ODT"
+imagespdf = "images d'un PDF"
+infopdf = "dictionnaire d'information d'un PDF"
+infowav = "liste INFO et bloc bext d'un WAV"
+iptc = "métadonnées IPTC-IIM"
+matroska = "éléments Info et Tags d'un WebM"
+odf = "métadonnées d'un ODT"
+ooxml = "propriétés d'un DOCX"
+pagespdf = "textes superposés, caches et polices des pages d'un PDF"
+quicktime = "métadonnées QuickTime et ISOBMFF"
+revisionspdf = "versions successives d'un PDF"
+textepng = "blocs texte PNG"
+vorbis = "commentaires Vorbis"
+xmp = "métadonnées XMP"
+bruit = "motifs périodiques du résidu de bruit"
+cfa = "traces de dématriçage (CFA)"
+prnu = "empreinte de capteur (PRNU)"
+referencepdf = "comparaison à des documents de référence"
+spectrogramme = "spectrogramme et coupures de bande passante"
+silences = "silences d'un enregistrement"
+enf = "fréquence du réseau électrique (ENF)"
+reencodageaudio = "réencodages successifs d'un son"
+structurevideo = "conteneur et structure d'encodage d'une vidéo"
+imagescles = "images clés d'une vidéo"
+pistesonore = "piste son d'une vidéo"
+rupturesvideo = "réencodages et ruptures du flux d'une vidéo"
+stylometrie = "stylométrie"
+references = "existence des références citées"
+pointstracage = "points de traçage d'imprimante"

@@ -25,7 +25,7 @@ from voight_kampff.modules import revisionspdf
 from voight_kampff.modules._lecture import pdf as lecteur
 from voight_kampff.modules._lecture import valeurs
 from voight_kampff.rapport import comparaison, export
-from voight_kampff.rapport._presentation import Presentation, texte, textes
+from voight_kampff.rapport._presentation import Presentation, accorder, texte, textes
 from voight_kampff.rapport.modele import (
     COLONNES,
     LIGNES_MAX_TABLEAU,
@@ -1002,7 +1002,7 @@ def test_json_chronologie_jamais_masquee(analyses: dict[str, Analyse]) -> None:
 def test_resume_annonce_la_chronologie(analyses: dict[str, Analyse]) -> None:
     lignes_ = Presentation(analyses["signe_modifie.pdf"], ()).resume()
     natures = "Chronologie des versions du PDF, Objets changés par les versions du PDF"
-    attendu = texte("resume.visualisations", nombre=2, natures=natures)
+    attendu = accorder("resume.visualisations", 2, natures=natures)
     assert attendu in lignes_
 
 

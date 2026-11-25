@@ -38,6 +38,7 @@ from voight_kampff.rapport.modele import (
 
 __all__ = [
     "Presentation",
+    "accorder",
     "echapper_json",
     "etat_partie",
     "libelle",
@@ -46,6 +47,7 @@ __all__ = [
     "nombre",
     "octets",
     "origine_partie",
+    "technique",
     "texte",
     "textes",
 ]
@@ -111,6 +113,28 @@ def texte(cle: str, **valeurs: object) -> str:
     return resultat
 
 
+def accorder(cle: str, quantite: int, **valeurs: object) -> str:
+    """Texte au singulier ou au pluriel selon ``quantite``, écrite à la place de ``{nombre}``.
+
+    L'entrée de ``textes.toml`` porte ``un`` et ``plusieurs`` (ADR-0258) : en français, le
+    singulier vaut pour zéro et un.
+    """
+    entree: Any = textes()
+    for partie in cle.split("."):
+        entree = entree[partie]
+    gabarit: str = entree["un" if quantite < 2 else "plusieurs"]
+    return gabarit.format(nombre=nombre(quantite), **valeurs)
+
+
+def technique(module: str) -> str:
+    """Nom d'une technique en langage courant, suivi de son identifiant (NF-11, ADR-0257).
+
+    Un identifiant sans nom (module factice des tests) s'écrit seul.
+    """
+    nom: str | None = textes()["techniques"].get(module)
+    return module if nom is None else f"{nom} ({module})"
+
+
 def libelle(table: str, valeur: str) -> str:
     """Libellé d'une valeur d'énumération : catégorie, direction, niveau, raison…"""
     resultat: str = textes()[table][valeur]
@@ -173,7 +197,7 @@ def origine_partie(partie: Partie) -> str:
     lieu = texte(
         "formes.origine",
         contenant=origine.contenant,
-        module=origine.module,
+        module=technique(origine.module),
         lieu=localisation(origine.localisation),
     )
     if (decompression := origine.decompression) is None:
@@ -395,19 +419,16 @@ class Presentation:
             # F-06, ADR-0156 : une fois, quel que soit le nombre d'indices de transformation.
             lignes.append(texte("resume.transformation"))
         informations = self.constats(Categorie.INFORMATION_NEUTRE)
-        lignes.append(texte("resume.informations", nombre=len(informations)))
-        etats = Counter(technique.etat for technique in self.analyse.couverture.techniques)
-        lignes.append(
-            texte(
-                "resume.techniques",
-                appliquees=etats[EtatTechnique.APPLIQUEE],
-                partielles=etats[EtatTechnique.PARTIELLE],
-                non_menees=etats[EtatTechnique.NON_MENEE],
-                non_applicables=etats[EtatTechnique.NON_APPLICABLE],
-            )
+        lignes.append(accorder("resume.informations", len(informations)))
+        etats = Counter(t.etat for t in self.analyse.couverture.techniques)
+        detail = ", ".join(
+            accorder(f"resume.techniques_par_etat.{etat}", etats[etat])
+            for etat in EtatTechnique
+            if etats[etat]
         )
+        lignes.append(texte("resume.techniques", detail=detail or texte("aucune")))
         if self.analyse.non_menees:
-            lignes.append(texte("resume.non_menees", nombre=len(self.analyse.non_menees)))
+            lignes.append(accorder("resume.non_menees", len(self.analyse.non_menees)))
         else:
             lignes.append(texte("resume.non_menees_aucune"))
         if visualisations := self.analyse.visualisations:
@@ -415,9 +436,7 @@ class Presentation:
                 texte(f"visualisations.{v.nature}.titre") for v in visualisations
             )
             lignes.append(
-                texte(
-                    "resume.visualisations", nombre=len(visualisations), natures=", ".join(natures)
-                )
+                accorder("resume.visualisations", len(visualisations), natures=", ".join(natures))
             )
         lignes.extend(self.publication())
         return lignes
@@ -446,9 +465,9 @@ class Presentation:
         marques = self.marques()
         if marques:
             lignes = [
-                texte(
+                accorder(
                     "resume.publication",
-                    nombre=sum(len(observations) for _, observations in marques),
+                    sum(len(observations) for _, observations in marques),
                     categories=", ".join(libelle("identifiantes", c) for c, _ in marques),
                 )
             ]
@@ -463,7 +482,7 @@ class Presentation:
         indices = self.constats(Categorie.INDICE)
         if not indices:
             return [texte("resume.indices_aucun")]
-        lignes = [texte("resume.indices", nombre=len(indices))]
+        lignes = [accorder("resume.indices", len(indices))]
         for direction in Direction:
             niveaux = Counter(
                 c.graduation.niveau for c in indices if c.direction is direction and c.graduation
@@ -471,7 +490,9 @@ class Presentation:
             if niveaux:
                 detail = ", ".join(
                     texte(
-                        "resume.indice_par_niveau", nombre=niveaux[n], niveau=libelle("niveaux", n)
+                        "resume.indice_par_niveau",
+                        nombre=nombre(niveaux[n]),
+                        niveau=libelle("niveaux", n),
                     )
                     for n in _NIVEAUX_DECROISSANTS
                     if niveaux[n]

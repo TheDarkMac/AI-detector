@@ -317,7 +317,7 @@ def test_marques_par_categorie_dans_l_ordre_d_es13(analyse: Analyse) -> None:
 def test_publication_au_resume(analyse: Analyse) -> None:
     vue = Presentation(analyse, set(CategorieIdentifiante))
     assert vue.publication() == [
-        "Contrôle avant publication : 4 donnée(s) des métadonnées peuvent identifier la source "
+        "Contrôle avant publication : 4 données des métadonnées peuvent identifier la source "
         "(métadonnées nominatives, lieux nommés, textes libres). L'outil ne les retire pas : "
         "retirez-les avant de publier le fichier.",
         texte("resume.publication_incomplete"),
