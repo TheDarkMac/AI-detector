@@ -29,6 +29,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : « Journal de chaîne d
 8. Tests : `tests/test_conservation.py` (DER, requête, réponse d'OpenSSL et réponses construites, refus nommés, URL, envoi par une autorité locale et refus d'une redirection, journal et ses ruptures, verrou entre deux processus, limites, ligne de commande, date non certifiée, aucune trace ni requête sans option, réponses hostiles par Hypothesis) ; `test_cli.py` : remplacement de `_preparer` mis à la nouvelle signature. Deux défauts trouvés par ces tests et corrigés avant la suite complète : une heure « AAAAMMJJHHMMSS.Z », sans chiffre après le point, était acceptée ; la taille d'un journal grossi par une autre commande n'était contrôlée qu'après la relecture de sa dernière ligne.
 9. Suite complète sous coverage, en 14 minutes 55 : 3 449 tests verts, 4 ignorés (lanceur de l'environnement virtuel, cjpeg de mozjpeg absent), 1 en échec, attendu : la matrice rendue n'était pas encore régénérée. Couverture de tout le paquet à 100 %, du banc à 100 % hors une branche de `banc/matrice.py` que seul le test en échec parcourt.
 10. Matrice : NF-17 et ES-16 « réalisées », RS-03 au résultat de NF-16, note d'ES-15 ; matrice régénérée (`python -m banc.matrice`), puis `test_matrice.py`, `test_conservation.py`, `test_cli.py` et `test_schemas.py` relancés (282 verts), et `banc/matrice.py` couvert à 100 %.
+11. PR [#46](https://github.com/TheDarkMac/AI-detector/pull/46) ouverte vers `detector` (commits `6e7caee`, `82fee60`, `f5e253a`, `d5cc40b`).
 
 ## Problèmes rencontrés
 
