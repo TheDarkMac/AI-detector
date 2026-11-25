@@ -433,18 +433,22 @@ note = "Le banc compte aussi les arrêts brutaux sur la catégorie « malformés
 [[exigence]]
 id = "NF-04"
 etat = "realisee"
-taches = ["T04", "T14"]
+taches = ["T04", "T14", "T92"]
 methodes = ["test", "analyse"]
 justification = "« Ni réutilisation ni transmission » est une absence : elle s'établit par l'architecture, et les tests en vérifient les moyens."
 preuve = ["docs/architecture/architecture.md", "docs/decisions/ADR-0010-distribution-et-traitement-local.md"]
 resultat = "Analyse locale, sans service ni requête sortante en V1 ; processus de travail sans réseau et sans trace (2026-10-28, T17)."
+note = "Affiché à l'utilisateur par vk --conservation (T92, ADR-0264) ; seule requête sortante, l'horodatage sur demande (RS-03, T91)."
 
 [[exigence]]
 id = "NF-05"
-etat = "a_venir"
+etat = "realisee"
 taches = ["T92"]
-methodes = ["inspection"]
-justification = "Un affichage destiné à l'utilisateur se vérifie à la relecture de l'interface."
+methodes = ["test", "inspection"]
+justification = "Un affichage destiné à l'utilisateur se vérifie à la relecture de l'interface ; sa présence à chaque commande, sa forme selon ce qui a été écrit et l'absence de chemin au rapport se testent."
+preuve = ["src/voight_kampff/rapport/textes.toml", "docs/journal/T92-affichage-de-la-conservation.md"]
+resultat = "T92 (2026-11-25) : bloc de conservation à la fin de chaque analyse et comparaison, énoncé complet par vk --conservation, rubrique « Conservation des données » au rapport HTML (ADR-0264 à ADR-0266) ; énoncé relu contre le code et les tests (journal de T92, étape 6)."
+note = "Textes à valider par TheDarkMac pendant la revue de la PR de T92 ; documentation utilisateur à T103."
 
 [[exigence]]
 id = "NF-06"
@@ -501,11 +505,13 @@ note = "Interface web locale après la V1, avec sa propre grille."
 
 [[exigence]]
 id = "NF-13"
-etat = "a_venir"
+etat = "partielle"
 taches = ["T92", "T103"]
 methodes = ["analyse"]
 justification = "La conformité au RGPD s'établit par une analyse des traitements, pas par un test."
-note = "Reformulée : Union européenne, RGPD (ADR-0020)."
+preuve = ["docs/verification/donnees-personnelles.md"]
+resultat = "Analyse des traitements (T92, 2026-11-25, ADR-0267) : données, lieu, durée et destinataires de chaque traitement, confrontés aux articles 5, 25, 32, au chapitre V et aux droits des personnes ; pas un avis juridique."
+note = "Reformulée : Union européenne, RGPD (ADR-0020). Mentions destinées à l'utilisateur à T103."
 
 [[exigence]]
 id = "NF-14"

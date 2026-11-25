@@ -55,3 +55,4 @@ Option A.
 | 2026-10-28 | Validé par TheDarkMac, textes du rapport compris, pendant la revue de la PR de T16 : statut « Accepté » |
 | 2026-11-14 | Renvoi : rubrique « Contrôle avant publication » entre « Couverture » et « Données identifiantes », lignes du contrôle à la fin du résumé et au terminal (ADR-0158, T25) |
 | 2026-11-25 | Renvoi : sommaire en tête du rapport HTML (ADR-0259) ; au terminal, techniques par partie et par état, nommées en langage courant, textes accordés au nombre (ADR-0257, ADR-0258, T90) |
+| 2026-11-25 | Renvoi : rubrique « Conservation des données » entre « Observations » et « Glossaire » ; au terminal, bloc de conservation après l'avertissement (ADR-0264, ADR-0265, T92) |
