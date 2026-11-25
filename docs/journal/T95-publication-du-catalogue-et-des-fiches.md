@@ -31,6 +31,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : « Publication du catal
 9. Tests : `tests/test_publication.py` (copie identique à la source et lancement de `python -m banc.fiches --verifier`, recopie et écarts, lecture depuis le paquet, fiches sans caractère invisible, `vk --fiche` et ses refus, neutralisation, fiche absente du paquet, TOML de chaque règle relu à l'identique, échappements, `vk --regle` et ses refus, catalogue fourni, colonne de la couverture, chemins `docs/` cités par le paquet).
 10. Documentation : ADR-0268 à ADR-0271 ; guide des fiches (`docs/techniques/README.md`) et `CONTRIBUTING.md` (`python -m banc.fiches`) ; guide du catalogue v1.22 ; découpage v0.46 ; historique d'ADR-0019 ; `README.md` ; matrice : NF-19 « réalisée », méthodes test et inspection, régénérée (`python -m banc.matrice`).
 11. Suite complète sous coverage, en 18 minutes 15 : 3 498 tests verts, 4 ignorés (lanceur de l'environnement virtuel, cjpeg de mozjpeg absent), aucun échec. Couverture de tout le paquet et du banc à 100 %.
+12. PR [#48](https://github.com/TheDarkMac/AI-detector/pull/48) ouverte vers `detector` (commits `96bbd39`, `582b542`, `eb4adea`, `8aec171`).
 
 ## Problèmes rencontrés
 
