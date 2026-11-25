@@ -133,7 +133,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 
 | ID | Tâche | Exigences |
 | --- | --- | --- |
-| T90 | Interface : en V1, ligne de commande et rapport HTML (ADR-0010, ADR-0025) ; interface web locale ensuite | NF-11, NF-12 |
+| T90 | Interface : en V1, ligne de commande et rapport HTML (ADR-0010, ADR-0025) ; interface web locale ensuite. WCAG 2.2 AA vérifié par une grille des critères et un passage d'axe-core, hors de la CI (ADR-0256) ; nom de chaque technique en langage courant (ADR-0257) ; résumé du terminal par partie et par état, textes accordés au nombre (ADR-0258) ; sommaire du rapport et écrans étroits (ADR-0259) | NF-11, NF-12 |
 | T91 | Journal de chaîne de conservation et horodatage fiable des rapports, optionnels, aucune trace par défaut (ADR-0030) | NF-17 |
 | T92 | Affichage de la conservation des données (durée, lieu) | NF-04, NF-05, NF-13 |
 | T93 | Comparaison de plusieurs exemplaires d'un document, sans attribution à un destinataire (ADR-0032) | F-91 |
@@ -223,3 +223,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-11-19 | 0.40 | Complément texte de T53 renvoyé à ses décisions (ADR-0243 à ADR-0247), F-73 ajoutée à ses exigences (§3) | T53 (complément texte) |
 | 2026-11-23 | 0.41 | T81 renvoyée à ses décisions (ADR-0248 à ADR-0251) ; complément de T81 (images d'un DOCX ou d'un ODT) ajouté à l'ordre de la V1 (§3, §4) | T81 |
 | 2026-11-23 | 0.42 | Complément de T81 renvoyé à ses décisions (ADR-0252 à ADR-0255) ; F-63 ajoutée à T81 (§3) | T81 (complément) |
+| 2026-11-25 | 0.43 | T90 renvoyée à ses décisions (ADR-0256 à ADR-0259) | T90 |

@@ -482,22 +482,22 @@ methodes = ["test"]
 [[exigence]]
 id = "NF-11"
 etat = "partielle"
-taches = ["T16", "T103"]
+taches = ["T16", "T90", "T103"]
 methodes = ["test", "inspection"]
-justification = "La compréhension d'un texte se juge à la relecture ; la présence du glossaire au rapport se teste."
-preuve = ["src/voight_kampff/rapport/textes.toml"]
-resultat = "Textes du rapport validés par TheDarkMac pendant la revue de la PR #16 (2026-10-28)."
-note = "Documentation utilisateur à T103."
+justification = "La compréhension d'un texte se juge à la relecture ; la présence du glossaire au rapport, le sommaire, le nom de chaque technique et l'accord des nombres se testent."
+preuve = ["src/voight_kampff/rapport/textes.toml", "docs/journal/T90-interface.md"]
+resultat = "Textes du rapport validés par TheDarkMac pendant la revue de la PR #16 (2026-10-28). T90 : techniques nommées en langage courant (ADR-0257), résumé du terminal par partie et par état et textes accordés au nombre (ADR-0258), sommaire du rapport (ADR-0259)."
+note = "Documentation utilisateur à T103 ; phrases des règles du catalogue encore en « (s) » (ADR-0258)."
 
 [[exigence]]
 id = "NF-12"
-etat = "partielle"
+etat = "realisee"
 taches = ["T16", "T90"]
-methodes = ["test", "analyse", "inspection"]
-justification = "WCAG 2.2 AA se vérifie par inspection et démonstration (ADR-0025) ; les contrastes se calculent, la structure se teste."
-preuve = ["docs/journal/T16-generation-du-rapport.md"]
-resultat = "Rapport HTML : contrastes de 7,2:1 à 17,2:1 pour le texte et de 5,3:1 à 8,8:1 pour les traits, en mode clair et sombre (T16, étape 13)."
-note = "Interface web locale après la V1 (T90) ; audit par un outil automatique non fait."
+methodes = ["test", "analyse", "inspection", "demonstration"]
+justification = "WCAG 2.2 AA se vérifie par inspection et démonstration (ADR-0025, ADR-0256) : grille de chaque critère A et AA, passage d'axe-core sur des rapports réels ; les contrastes se calculent, la structure se teste."
+preuve = ["docs/verification/accessibilite.md", "docs/journal/T16-generation-du-rapport.md"]
+resultat = "Grille WCAG 2.2 AA (T90, 2026-11-25) : critères A et AA conformes ou non applicables ; axe-core 4.14.0 sans violation sur cinq rapports, en mode clair et sombre, à 320 px ; contraste du texte d'au moins 8,04:1 en clair et 10,40:1 en sombre, des traits de 5,3:1 à 8,8:1 (T16) ; quatre défauts trouvés et corrigés."
+note = "Interface web locale après la V1, avec sa propre grille."
 
 [[exigence]]
 id = "NF-13"

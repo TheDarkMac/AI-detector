@@ -55,3 +55,4 @@ Le §10 laisse ouverts le mode de distribution, le lieu du traitement (local ou 
 | 2026-10-26 | Création |
 | 2026-10-26 | Renvoi : niveau d'isolation fixé par ADR-0028, portée de NF-17 par ADR-0030, politique des requêtes sortantes fixée par ADR-0033 (T03) |
 | 2026-10-26 | Renvoi : langage fixé par ADR-0034, canal de distribution par ADR-0041 (T04) |
+| 2026-11-25 | Renvoi : interface de la V1, ligne de commande et rapport HTML, réalisée en T90 (ADR-0256 à ADR-0259) ; l'interface web locale reste après la V1 |

@@ -53,3 +53,4 @@ Le §10 laisse ouverts les formats d'export et le niveau d'accessibilité visé 
 | --- | --- |
 | 2026-10-26 | Création |
 | 2026-10-28 | Réalisé en T16 : HTML autonome sans script (ADR-0094), JSON au schéma du rapport 0.2.0 (ADR-0095), masquage par défaut et levée par catégorie (ADR-0093), écriture par `--rapport` (ADR-0092) |
+| 2026-11-25 | Vérifié en T90 : grille des critères de WCAG 2.2 AA et passage d'axe-core (ADR-0256) ; sommaire et écrans étroits (ADR-0259) |
