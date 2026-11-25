@@ -29,6 +29,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : « Affichage de la cons
 8. Tests : `tests/test_conservation_donnees.py` (énoncé, option seule, chaque option nommée, bloc sans rapport, avec rapports et journal, rapports jamais écrits, horodatage obtenu et non obtenu, texte collé et comparaison, arrêt par le journal, chemin neutralisé, rubrique sans chemin, rubrique d'un texte collé) ; `test_rapport.py` (ordre des rubriques) et `test_cli.py` (sortie d'une commande dont tous les fichiers sont refusés) mis à la nouvelle sortie.
 9. Matrice : NF-05 « réalisée », NF-13 « partielle », NF-04 avec T92 ; matrice régénérée (`python -m banc.matrice`).
 10. Suite complète sous coverage, en 24 minutes 13 : 3 464 tests verts, 4 ignorés (lanceur de l'environnement virtuel, cjpeg de mozjpeg absent), 3 en échec, attendus : les tests de `vk --comparer` de `test_reproductibilite.py` comparaient toute la sortie, qui se termine maintenant par le bloc. Couverture de tout le paquet et du banc à 100 %. Attentes mises à jour (le bloc est vérifié puis retiré), `test_reproductibilite.py` et `test_matrice.py` relancés : 51 verts.
+11. PR [#47](https://github.com/TheDarkMac/AI-detector/pull/47) ouverte vers `detector` (commits `1b51a67`, `560ff1b`, `bb7d8a8`, `fd60159`).
 
 ## Problèmes rencontrés
 
