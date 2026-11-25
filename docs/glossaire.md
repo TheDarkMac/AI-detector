@@ -1,6 +1,6 @@
 # Glossaire du projet
 
-> Statut : **v1.21** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 avec le complément bureautique de T52, v1.17 avec T80, v1.18 avec le complément de T80, v1.19 avec le complément texte de T53, v1.20 avec T81, v1.21 proposée dans la PR du complément de T81. Document vivant : toute modification est inscrite à l'historique.
+> Statut : **v1.22** ; v1.0 mergée avec T11, v1.1 avec T12, v1.2 avec T13, v1.3 avec T14, v1.4 avec T15, v1.5 avec T16, v1.6 avec T17, v1.7 avec T18, v1.8 avec T20, v1.9 avec T25, v1.10 avec T30, v1.11 avec T31, v1.12 avec T50, v1.13 avec T51, v1.14 avec T52, v1.15 avec T53, v1.16 avec le complément bureautique de T52, v1.17 avec T80, v1.18 avec le complément de T80, v1.19 avec le complément texte de T53, v1.20 avec T81, v1.21 avec le complément de T81, v1.22 proposée dans la PR de T91. Document vivant : toute modification est inscrite à l'historique.
 > Source : glossaire du §11 du [cahier des charges](00-cahier-des-charges/cahier-des-charges-v0.1.md), complété selon A-10 de l'[analyse critique](01-analyse/analyse-critique-cdc-v0.1.md) et ADR-0021.
 
 Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète celui du cahier, qui n'est pas modifié (document source) ; quand les deux diffèrent, celui-ci s'applique au projet et l'écart est inscrit au [registre des arbitrages](02-arbitrages/registre-des-arbitrages.md). Le glossaire destiné aux utilisateurs du rapport est rédigé en T103 à partir de celui-ci.
@@ -100,6 +100,9 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | Signature | Réservé au sens cryptographique : signature d'un manifeste C2PA, signature électronique d'un PDF. | A-10 |
 | Empreinte d'outil | Trace laissée par un outil de génération (paramètres, nom du logiciel) ; le cahier dit « signature » (F-12). | A-10 |
 | Empreinte (du fichier) | SHA-256 du fichier entier ; donnée identifiante. | ADR-0031, ADR-0040 |
+| Journal de conservation | Fichier tenu sur `--journal`, une entrée par soumission, refus, export ou rapport lu, chaînée à la précédente par son empreinte : une modification s'y détecte sans s'y empêcher ; non probant, sans nom de fichier. | ADR-0030, ADR-0260, ADR-0261 |
+| Horodatage (RFC 3161), jeton | Attestation, par une autorité d'horodatage, qu'une empreinte existait à une heure donnée ; le jeton (`.tsr`) est la réponse signée de l'autorité, vérifiable par `openssl ts -verify`. | ADR-0262, ADR-0263 |
+| Non certifiée (date) | Donnée par l'horloge du poste, que son utilisateur peut régler : la date de l'analyse et celles du journal. | ES-16, ADR-0263 |
 
 ## Termes de l'évaluation
 
@@ -157,3 +160,4 @@ Ce glossaire fixe le vocabulaire de la documentation et du code. Il complète ce
 | 2026-11-19 | 1.19 | Couche texte native, texte invisible, texte de remplacement ajoutés | T53 (complément texte) |
 | 2026-11-23 | 1.20 | Historique d'édition, session d'édition, identifiant de session (rsid), marque de révision ajoutés | T81 |
 | 2026-11-23 | 1.21 | Partie extraite étendue au DOCX et à l'ODT ; partie extraite décompressée, type déclaré, vignette ajoutés | T81 (complément) |
+| 2026-11-25 | 1.22 | Journal de conservation, horodatage et jeton, date non certifiée ajoutés | T91 |

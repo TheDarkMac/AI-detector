@@ -274,3 +274,7 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0257](ADR-0257-nom-des-techniques.md) | Nom de chaque technique en langage courant, dans les textes du rapport | Accepté | 2026-11-25 |
 | [ADR-0258](ADR-0258-resume-du-terminal-et-accords.md) | Résumé du terminal : techniques par partie et par état ; textes accordés au nombre | Accepté | 2026-11-25 |
 | [ADR-0259](ADR-0259-sommaire-et-ecrans-etroits.md) | Sommaire du rapport HTML et lecture sur un écran étroit | Accepté | 2026-11-25 |
+| [ADR-0260](ADR-0260-activation-du-journal-de-conservation.md) | Journal de conservation : activé à chaque commande par `--journal FICHIER`, annoncé à chaque emploi | Accepté | 2026-11-25 |
+| [ADR-0261](ADR-0261-contenu-et-chaine-du-journal.md) | Contenu du journal : soumissions, refus, exports et rapports lus ; une ligne JSON chaînée par SHA-256 | Accepté | 2026-11-25 |
+| [ADR-0262](ADR-0262-horodatage-de-chaque-fichier-de-rapport.md) | Horodatage RFC 3161 : `--horodater URL`, un jeton par fichier de rapport écrit | Accepté | 2026-11-25 |
+| [ADR-0263](ADR-0263-reponse-de-l-autorite-et-date-non-certifiee.md) | Réponse de l'autorité vérifiée sur son contenu, non sur sa signature ; date de l'analyse marquée non certifiée | Accepté | 2026-11-25 |

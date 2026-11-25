@@ -176,7 +176,7 @@ format = "Format"
 extension = "Extension"
 taille = "Taille"
 empreinte = "Empreinte SHA-256"
-date_analyse = "Date de l'analyse (UTC)"
+date_analyse = "Date de l'analyse (UTC, horloge du poste, non certifiée)"
 parties = "Parties reconnues"
 extraites = "Parties extraites"
 origine = "Origine"
@@ -265,6 +265,19 @@ rapport = "rapport : {html} et {json}"
 marque = "marques identifiantes, {categorie} : {donnees}"
 marquages = "marquages recherchés : {marquages}"
 non_recherche = "marquage non recherché : {nom} ({raison})"
+
+# Journal de conservation et horodatage, optionnels (NF-17, ADR-0260 à ADR-0263).
+[conservation]
+date_entete = "{date} UTC, horloge du poste, non certifiée"
+avertissement_journal = "Journal de conservation activé : il garde l'empreinte de chaque fichier analysé et de chaque rapport, sans leur nom. À qui détient l'original, cette empreinte suffit à confirmer que vous l'avez eu. Il n'est pas probant : ses dates sont celles de l'horloge du poste, « qui » est déclaré, et une modification se détecte (--verifier-journal) sans s'empêcher."
+avertissement_horodatage = "Horodatage activé : l'autorité choisie reçoit l'empreinte de chaque rapport écrit, avec votre adresse et l'heure de la demande ; rien d'autre."
+horodatage = "{fichier} horodaté : {heure} UTC selon l'autorité, jeton {jeton}"
+verification_jeton = "Signature des jetons non vérifiée par l'outil ; pour la vérifier : openssl ts -verify -data {fichier} -in {jeton} -CAfile CERTIFICAT_DE_L_AUTORITÉ"
+coherent = { un = "Journal cohérent : {nombre} entrée, du {premiere} au {derniere} UTC.", plusieurs = "Journal cohérent : {nombre} entrées, du {premiere} au {derniere} UTC." }
+vide = "Journal vide : aucune entrée."
+rompu = "Journal rompu à l'entrée {numero} : {erreur}."
+illisible = "Journal illisible : {erreur}."
+portee = "Cohérent ne veut pas dire authentique : les dates sont celles de l'horloge du poste, non certifiées, « qui » est déclaré, et qui a le fichier peut le récrire en entier."
 
 # Comparaison de deux rapports du même fichier (vk --comparer, ADR-0112).
 [comparaison]

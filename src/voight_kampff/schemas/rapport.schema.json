@@ -664,6 +664,7 @@
         "taille": { "$ref": "#/$defs/entier_positif" },
         "empreinte": { "$ref": "#/$defs/empreinte" },
         "date_analyse": {
+          "description": "Date de l'analyse, en UTC, à la seconde, donnée par l'horloge du poste : non certifiée (ES-16). Un horodatage, s'il est demandé, porte sur le fichier du rapport, à côté (ADR-0262).",
           "type": "string",
           "minLength": 20,
           "maxLength": 20,

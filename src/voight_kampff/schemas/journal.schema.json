@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:voight-kampff:schema:journal",
+  "title": "Entrée du journal de conservation de Voight-Kampff",
+  "description": "Une ligne du journal tenu sur --journal FICHIER (ADR-0260, ADR-0261) : un objet JSON par ligne, en UTF-8, terminé par un saut de ligne. precedente est l'empreinte SHA-256 des octets de la ligne précédente, sans son saut de ligne, ou 64 zéros pour la première. Le code vérifie en plus la suite des numéros, la chaîne et qu'un export renvoie à une soumission antérieure. Les dates sont celles de l'horloge du poste, non certifiées ; qui est déclaré, non vérifié.",
+  "oneOf": [
+    { "$ref": "#/$defs/soumission" },
+    { "$ref": "#/$defs/refus" },
+    { "$ref": "#/$defs/export" },
+    { "$ref": "#/$defs/consultation" }
+  ],
+  "$defs": {
+    "format": {
+      "description": "Format du journal : 1 seulement dans cette version de l'outil.",
+      "const": 1
+    },
+    "numero": {
+      "description": "Rang de l'entrée dans le journal, à partir de 1, sans trou.",
+      "$ref": "urn:voight-kampff:schema:rapport#/$defs/entier_strictement_positif"
+    },
+    "date": {
+      "description": "Date de l'entrée, en UTC, à la seconde, donnée par l'horloge du poste : non certifiée.",
+      "$ref": "urn:voight-kampff:schema:rapport#/$defs/identification/properties/date_analyse"
+    },
+    "qui": {
+      "description": "Nom déclaré par --qui, non vérifié.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "precedente": {
+      "description": "Empreinte SHA-256 de la ligne précédente, ou 64 zéros pour la première.",
+      "$ref": "urn:voight-kampff:schema:rapport#/$defs/empreinte"
+    },
+    "saisie": {
+      "description": "Fichier, ou texte collé lu sur l'entrée standard (ADR-0233).",
+      "enum": ["fichier", "texte_colle"]
+    },
+    "soumission": {
+      "description": "Fichier ou texte analysé : son empreinte, son format, les catégories de données identifiantes montrées au terminal et aux rapports.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "numero", "date", "evenement", "precedente", "saisie", "empreinte", "format_reel", "levees"],
+      "properties": {
+        "format": { "$ref": "#/$defs/format" },
+        "numero": { "$ref": "#/$defs/numero" },
+        "date": { "$ref": "#/$defs/date" },
+        "evenement": { "const": "soumission" },
+        "qui": { "$ref": "#/$defs/qui" },
+        "precedente": { "$ref": "#/$defs/precedente" },
+        "saisie": { "$ref": "#/$defs/saisie" },
+        "empreinte": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/empreinte" },
+        "format_reel": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/format" },
+        "levees": {
+          "description": "Catégories dont le masquage est levé par --reveler (A-49, ADR-0093).",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/categorie_identifiante" }
+        }
+      }
+    },
+    "refus": {
+      "description": "Fichier ou texte refusé, sans empreinte : un refus peut précéder sa lecture.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "numero", "date", "evenement", "precedente", "saisie", "motif"],
+      "properties": {
+        "format": { "$ref": "#/$defs/format" },
+        "numero": { "$ref": "#/$defs/numero" },
+        "date": { "$ref": "#/$defs/date" },
+        "evenement": { "const": "refus" },
+        "qui": { "$ref": "#/$defs/qui" },
+        "precedente": { "$ref": "#/$defs/precedente" },
+        "saisie": { "$ref": "#/$defs/saisie" },
+        "motif": {
+          "description": "Motif du refus (ADR-0075, ADR-0233).",
+          "enum": [
+            "illisible",
+            "non_regulier",
+            "vide",
+            "hors_limites",
+            "format_inconnu",
+            "hors_perimetre",
+            "fichier_modifie",
+            "analyse_impossible",
+            "texte_vide",
+            "texte_hors_limites",
+            "texte_illisible"
+          ]
+        }
+      }
+    },
+    "export": {
+      "description": "Fichier de rapport écrit par --rapport : son empreinte et, s'il est horodaté, son jeton (ADR-0262).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "numero", "date", "evenement", "precedente", "soumission", "rapport", "empreinte"],
+      "properties": {
+        "format": { "$ref": "#/$defs/format" },
+        "numero": { "$ref": "#/$defs/numero" },
+        "date": { "$ref": "#/$defs/date" },
+        "evenement": { "const": "export" },
+        "qui": { "$ref": "#/$defs/qui" },
+        "precedente": { "$ref": "#/$defs/precedente" },
+        "soumission": {
+          "description": "Numéro de l'entrée de la soumission dont c'est le rapport.",
+          "$ref": "#/$defs/numero"
+        },
+        "rapport": { "enum": ["html", "json"] },
+        "empreinte": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/empreinte" },
+        "horodatage": {
+          "description": "Jeton RFC 3161 obtenu pour ce fichier, vérifié sur son contenu, non sur sa signature (ADR-0263).",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["autorite", "heure", "jeton"],
+          "properties": {
+            "autorite": { "type": "string", "minLength": 8, "maxLength": 2048, "pattern": "^https?://" },
+            "heure": {
+              "description": "Heure annoncée par l'autorité, en UTC, à la seconde.",
+              "$ref": "#/$defs/date"
+            },
+            "jeton": {
+              "description": "Empreinte SHA-256 du fichier .tsr écrit à côté du rapport.",
+              "$ref": "urn:voight-kampff:schema:rapport#/$defs/empreinte"
+            }
+          }
+        }
+      }
+    },
+    "consultation": {
+      "description": "Rapport JSON lu par l'outil (--comparer) : son empreinte.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "numero", "date", "evenement", "precedente", "empreinte"],
+      "properties": {
+        "format": { "$ref": "#/$defs/format" },
+        "numero": { "$ref": "#/$defs/numero" },
+        "date": { "$ref": "#/$defs/date" },
+        "evenement": { "const": "consultation" },
+        "qui": { "$ref": "#/$defs/qui" },
+        "precedente": { "$ref": "#/$defs/precedente" },
+        "empreinte": { "$ref": "urn:voight-kampff:schema:rapport#/$defs/empreinte" }
+      }
+    }
+  }
+}

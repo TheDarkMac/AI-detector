@@ -17,6 +17,7 @@ jamais les valeurs comparées, qui peuvent être identifiantes (ES-14).
 Ce module n'importe pas ``jsonschema`` : seule :func:`lire`, qui valide un fichier, le charge.
 """
 
+import hashlib
 import os
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
@@ -34,6 +35,7 @@ __all__ = [
     "RapportIllisible",
     "comparer",
     "lire",
+    "lire_avec_empreinte",
 ]
 
 TAILLE_MAX_RAPPORT = 256 << 20
@@ -116,6 +118,12 @@ class RapportIllisible(ValueError):
 
 def lire(chemin: str | os.PathLike[str]) -> dict[str, Any]:
     """Lit et valide un export JSON (ADR-0095) ; lève :class:`RapportIllisible`."""
+    return lire_avec_empreinte(chemin)[0]
+
+
+def lire_avec_empreinte(chemin: str | os.PathLike[str]) -> tuple[dict[str, Any], str]:
+    """Comme :func:`lire`, avec l'empreinte SHA-256 des octets lus, pour le journal de
+    conservation (ADR-0261)."""
     from voight_kampff.rapport import export  # jsonschema : seulement à l'appel
 
     try:
@@ -133,7 +141,7 @@ def lire(chemin: str | os.PathLike[str]) -> dict[str, Any]:
         export.valider(document)
     except ValueError as erreur:  # DocumentInvalide en est une
         raise RapportIllisible(f"pas un rapport de cette version de l'outil : {erreur}") from None
-    return document
+    return document, hashlib.sha256(contenu).hexdigest()
 
 
 def comparer(a: Mapping[str, Any], b: Mapping[str, Any]) -> Comparaison:

@@ -464,7 +464,7 @@ def test_rapport_non_ecrit(
     document.write_bytes(PDF)
     sortie = tmp_path / "rapports"
     # Rapport apparu entre la vérification et l'écriture : la création exclusive échoue.
-    monkeypatch.setattr("voight_kampff.cli._preparer", lambda dossier, _nombre: Path(dossier))
+    monkeypatch.setattr("voight_kampff.cli._preparer", lambda dossier, _nombre, **_: Path(dossier))
     sortie.mkdir()
     (sortie / "1.html").write_text("à garder")
     assert main(["--rapport", str(sortie), str(document)]) == 1

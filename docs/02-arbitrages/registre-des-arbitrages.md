@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.13** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 avec T17, v1.10 avec T18, v1.11 avec T80, v1.12 avec T81, v1.13 proposée dans la PR du complément de T81. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.14** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 avec T17, v1.10 avec T18, v1.11 avec T80, v1.12 avec T81, v1.13 avec le complément de T81, v1.14 proposée dans la PR de T91. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -60,7 +60,7 @@ Statuts : **Tranché** (ADR cité), **Reporté** (tâche citée), **Non tranché
 | --- | --- | --- | --- |
 | Traitement local ou serveur | Tranché | Local | ADR-0010 |
 | Hors ligne ou connexion requise | Tranché | Hors ligne par défaut ; requêtes sortantes optionnelles | ADR-0010 |
-| Conservation, compte | Tranché | Aucun compte ; l'outil ne conserve aucun fichier. Portée de NF-17 en local : journal et horodatage optionnels, aucune trace par défaut (T03) ; réalisation en T91. | ADR-0010, ADR-0030 |
+| Conservation, compte | Tranché | Aucun compte ; l'outil ne conserve aucun fichier. Portée de NF-17 en local : journal et horodatage optionnels, aucune trace par défaut (T03) ; réalisés en T91 (`--journal`, `--horodater`). | ADR-0010, ADR-0030, ADR-0260 à ADR-0263 |
 | Pays visés | Tranché | Union européenne, RGPD | ADR-0020 |
 | Responsabilité en cas de faux positif, mentions | Reporté | Question juridique hors du ressort de l'assistant ; l'outil ne délivre aucun verdict (ADR-0018) et ne vise pas l'enseignement (ADR-0009). Mentions rédigées en T103. | T103 |
 | Anonymisation des marques (F-90) | Tranché | Hors périmètre | ADR-0014 |
@@ -141,7 +141,7 @@ Constats de l'analyse adressés à T16 :
 | --- | --- |
 | A-44 Visualisations accessibles | Aucune visualisation livrée en T16 ; le rapport HTML est structuré pour WCAG 2.2 AA, et l'intégration d'une image demandera un nouvel ADR (ADR-0094) |
 | A-48 Nom et empreinte identifiants | Masqués par défaut au terminal et dans les exports, absents des fichiers produits ; levée par catégorie (ADR-0093, ADR-0095) |
-| A-49 Masquage contre vérification par un expert | Levée explicite, par catégorie, annoncée en tête du rapport et du terminal (ADR-0093) ; la trace dans un journal de conservation reste à T91 (NF-17, ADR-0030) |
+| A-49 Masquage contre vérification par un expert | Levée explicite, par catégorie, annoncée en tête du rapport et du terminal (ADR-0093) ; tracée, si un journal de conservation est tenu, à chaque soumission (`levees`, ADR-0261) |
 | « Absence ≠ authenticité » (§7 de l'analyse) | Avertissement du rapport : l'absence de constat ne vaut que pour la couverture (ADR-0098) |
 
 Constats de l'analyse adressés à T17 :
@@ -179,7 +179,7 @@ Le cahier n'est pas modifié (document source). Ces reformulations s'appliquent 
 | NF-06 | Même fichier, même version de l'outil et du catalogue : mêmes constats | Même fichier ; mêmes versions de l'outil, du catalogue et des dépendances, interpréteur compris (ADR-0111) ; mêmes données externes ; analyse non interrompue : mêmes constats | ADR-0023, ADR-0111 |
 | NF-13 | Réglementation des pays où l'outil est proposé | Réglementation de l'Union européenne, dont le RGPD | ADR-0020 |
 | NF-16 | Aucune requête sortante n'emporte le fichier | Aucune n'emporte le fichier, **son contenu** ni ses données identifiantes, sauf service tiers activé explicitement par l'utilisateur, avec son consentement pour ce fichier | ADR-0017, ADR-0033 |
-| NF-17 | Journal « qui, quand » de chaque soumission, consultation, export ; horodatage fiable | Heure du poste, non certifiée, toujours au rapport ; journal (« qui » déclaratif) et horodatage RFC 3161 sur activation explicite | ADR-0030 |
+| NF-17 | Journal « qui, quand » de chaque soumission, consultation, export ; horodatage fiable | Heure du poste, non certifiée, toujours au rapport ; journal (« qui » déclaratif) et horodatage RFC 3161 sur activation explicite ; « consultation » : rapports lus par l'outil (`--comparer`), l'ouverture d'un rapport hors de l'outil n'étant pas visible | ADR-0030, ADR-0261 |
 | NF-01 | Analyse « de façon isolée » | Un processus restreint par fichier, sans réseau ; isolation réduite signalée au rapport | ADR-0028 |
 | F-05 | Empreinte inscrite au rapport | Inscrite, mais masquée par défaut comme donnée identifiante | ADR-0031 |
 | NF-19 | Accès au détail des règles selon une politique | Le détail des règles et des seuils est public ; la robustesse repose sur la combinaison des techniques et la publication de leurs limites | ADR-0019 |
@@ -223,6 +223,7 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 - T16 : constats A-44, A-48, A-49 et « absence ≠ authenticité » (§3) ; architecture v1.9, modèle de données v1.5, glossaire v1.5, découpage v0.15, guide du catalogue v1.1.
 - T18 : constat A-05 (§3) ; reformulation de NF-06 complétée par l'interpréteur (§4) ; architecture v1.11, modèle de données v1.6, glossaire v1.7, découpage v0.17, vérification v1.1.
 - T80 : constats A-29 et A-43 (§3) ; saisie de texte réalisée (§4) ; architecture v1.30, modèle de données v1.29, glossaire v1.17, découpage v0.38.
+- T91 : conservation réalisée (§2), A-49 (§3), portée de « consultation » (§4) ; architecture v1.35, modèle de données v1.18, glossaire v1.22, modèle de menace v1.5, découpage v0.44.
 
 ## 7. Historique
 
@@ -242,3 +243,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-11-17 | 1.11 | Constats adressés à T80 (§3) ; saisie de texte réalisée (§4, ADR-0233) ; effets (§6) | T80 |
 | 2026-11-23 | 1.12 | A-24 en partie traité (§3, ADR-0248) ; statut corrigé, il annonçait encore la v1.11 proposée | T81 |
 | 2026-11-23 | 1.13 | A-24 tranché (§3, ADR-0252 à ADR-0254) | T81 (complément) |
+| 2026-11-25 | 1.14 | Conservation réalisée (§2), A-49 tranché pour la trace (§3), portée de « consultation » dans NF-17 (§4) | T91 |

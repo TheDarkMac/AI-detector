@@ -22,18 +22,30 @@ ADR-0092).
 ``--comparer A B`` compare deux rapports JSON du même fichier (NF-06, ADR-0112) : 0 si leurs
 résultats sont identiques, 1 s'ils diffèrent, 2 si l'un n'est pas un rapport valide.
 
+Chaîne de conservation, optionnelle (NF-17, ADR-0030) : ``--journal FICHIER`` tient un journal
+chaîné des soumissions, refus, exports et rapports comparés, sans nom de fichier, et l'annonce
+à chaque emploi ; ``--qui NOM`` y inscrit un nom déclaré (ADR-0260, ADR-0261).
+``--verifier-journal FICHIER`` vérifie sa chaîne : 0 si elle est cohérente, 1 si elle est
+rompue, 2 si le fichier n'est pas un journal. ``--horodater URL`` fait horodater chaque fichier
+de rapport écrit par une autorité RFC 3161, ``1.json.tsr`` à côté de ``1.json`` (ADR-0262,
+ADR-0263). Un horodatage non obtenu, ou une entrée du journal non écrite, donnent le code 1 ;
+la seconde arrête la commande.
+
 Hors d'un terminal, la sortie et l'erreur s'écrivent en UTF-8, quel que soit l'encodage local
 (ADR-0238).
 """
 
 import argparse
+import hashlib
 import io
 import os
 import sys
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
+from typing import Any
 
 from voight_kampff import __version__
+from voight_kampff._conservation import horodatage, journal
 from voight_kampff._limites import TAILLE_MAX_TEXTE
 from voight_kampff._orchestration import catalogue as catalogues
 from voight_kampff._orchestration import confiance as listes
@@ -58,6 +70,7 @@ from voight_kampff.rapport.modele import (
     CategorieIdentifiante,
     EtatTechnique,
     RaisonNonMenee,
+    Saisie,
     VersionCatalogue,
 )
 
@@ -67,6 +80,7 @@ _DESCRIPTION = (
 )
 
 _EXTENSIONS = (".html", ".json")
+_JETON = ".tsr"
 _ECARTS_AFFICHES = 50
 # Conditions de la garantie (ADR-0023), par le début du chemin de leurs écarts.
 _RAISONS = (
@@ -140,7 +154,30 @@ def construire_analyseur() -> argparse.ArgumentParser:
         nargs=2,
         metavar=("RAPPORT_A", "RAPPORT_B"),
         help="compare deux rapports JSON du même fichier, à la date et au nom près, et dit si "
-        "la garantie de reproductibilité s'applique ; s'emploie seule",
+        "la garantie de reproductibilité s'applique ; s'emploie seule, ou avec --journal",
+    )
+    analyseur.add_argument(
+        "--journal",
+        metavar="FICHIER",
+        help="tient un journal de conservation dans ce fichier, créé au besoin : l'empreinte de "
+        "chaque fichier analysé et de chaque rapport écrit ou comparé, sans nom de fichier ; à "
+        "qui détient l'original, elle suffit à confirmer que vous l'avez eu",
+    )
+    analyseur.add_argument(
+        "--qui",
+        metavar="NOM",
+        help="nom inscrit à chaque entrée du journal, déclaré, non vérifié ; avec --journal",
+    )
+    analyseur.add_argument(
+        "--verifier-journal",
+        metavar="FICHIER",
+        help="vérifie la chaîne d'un journal de conservation ; s'emploie seule",
+    )
+    analyseur.add_argument(
+        "--horodater",
+        metavar="URL",
+        help="fait horodater chaque fichier de rapport écrit par cette autorité RFC 3161, que "
+        "vous choisissez ; elle ne reçoit que l'empreinte du fichier ; avec --rapport",
     )
     analyseur.add_argument(
         "fichiers",
@@ -285,14 +322,14 @@ def resume(analyse: Analyse, reveler: Sequence[str] = ()) -> list[str]:
     return lignes
 
 
-def _ecrire(chemin: Path, contenu: str) -> None:
+def _ecrire(chemin: Path, contenu: bytes) -> None:
     """Crée le fichier, lisible par son seul propriétaire ; échoue s'il existe (ADR-0092)."""
     descripteur = os.open(chemin, _CREATION, 0o600)
     with os.fdopen(descripteur, "wb") as fichier:
-        fichier.write(contenu.encode("utf-8"))
+        fichier.write(contenu)
 
 
-def _preparer(dossier: str, nombre: int) -> Path:
+def _preparer(dossier: str, nombre: int, jetons: bool = False) -> Path:
     """Dossier des rapports, créé au besoin (pas ses parents).
 
     Lève ``ValueError``, avec le message à afficher, si le dossier est inutilisable ou s'il
@@ -304,11 +341,53 @@ def _preparer(dossier: str, nombre: int) -> Path:
             chemin.mkdir()
     except OSError as erreur:
         raise ValueError(f"dossier inutilisable ({erreur.strerror})") from None
+    noms = [e + j for e in _EXTENSIONS for j in ("", _JETON) if jetons or not j]
     for rang in range(1, nombre + 1):
-        for extension in _EXTENSIONS:
+        for extension in noms:
             if (chemin / f"{rang}{extension}").exists():
                 raise ValueError(f"{rang}{extension} existe déjà ; aucun rapport n'est écrasé")
     return chemin
+
+
+def _consigner(repere: str, ajout: Callable[..., int], **champs: Any) -> int:
+    """Ajoute une entrée au journal et rend son numéro ; à l'échec, le dit et rend 0."""
+    try:
+        return ajout(**champs)
+    except journal.JournalInvalide as erreur:
+        sys.stdout.flush()
+        print(f"{repere} journal non écrit : {erreur} ; arrêt", file=sys.stderr)
+        return 0
+
+
+def _horodater(
+    repere: str, fichier: Path, contenu: bytes, autorite: str | None, lignes: list[str]
+) -> tuple[bool, dict[str, str] | None]:
+    """Fait horodater un fichier de rapport écrit et écrit son jeton à côté (ADR-0262).
+
+    Rend la réussite, vraie sans horodatage demandé, et ce que le journal garde du jeton ; la
+    ligne du terminal s'ajoute à ``lignes``.
+    """
+    if autorite is None:
+        return True, None
+    chemin = fichier.with_name(fichier.name + _JETON)
+    try:
+        jeton = horodatage.horodater(autorite, hashlib.sha256(contenu).digest())
+        _ecrire(chemin, jeton.reponse)
+    except horodatage.HorodatageImpossible as erreur:
+        sys.stdout.flush()
+        print(f"{repere} {fichier.name} non horodaté : {erreur}", file=sys.stderr)
+        return False, None
+    except OSError as erreur:
+        sys.stdout.flush()
+        print(f"{repere} jeton de {fichier.name} non écrit : {erreur.strerror}", file=sys.stderr)
+        return False, None
+    heure = jeton.heure.strftime("%Y-%m-%d %H:%M:%S")
+    lignes.append(texte("conservation.horodatage", fichier=fichier.name, heure=heure, jeton=chemin))
+    return True, {
+        "autorite": autorite,
+        "heure": jeton.heure.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "jeton": hashlib.sha256(jeton.reponse).hexdigest(),
+    }
 
 
 def _analyser(
@@ -318,12 +397,21 @@ def _analyser(
     confiance: str | None,
     dossier: Path | None,
     reveler: Sequence[str],
+    tenu: journal.Journal | None = None,
+    autorite: str | None = None,
 ) -> int:
-    """Analyse chaque fichier ; ``None`` désigne le texte de l'entrée standard (ADR-0233)."""
+    """Analyse chaque fichier ; ``None`` désigne le texte de l'entrée standard (ADR-0233).
+
+    ``tenu`` est le journal de conservation, ``autorite`` l'autorité d'horodatage, s'ils sont
+    demandés (ADR-0260, ADR-0262). Une entrée du journal non écrite arrête la commande.
+    """
     code = 0
     analysees = 0
+    exemple: Path | None = None
+    levees = [c.value for c in CategorieIdentifiante if c.value in reveler]
     for rang, chemin in enumerate(fichiers, start=1):
         repere = f"[{rang}/{len(fichiers)}]"
+        saisie = (Saisie.FICHIER if chemin is not None else Saisie.TEXTE_COLLE).value
         try:
             if chemin is None:
                 analyse = analyser_texte(
@@ -337,20 +425,56 @@ def _analyser(
             sys.stdout.flush()  # les deux flux restent dans l'ordre des fichiers
             print(f"{repere} refusé : {refus}", file=sys.stderr)
             code = 1
+            if tenu is not None and not _consigner(
+                repere, tenu.refus, saisie=saisie, motif=refus.motif.value
+            ):
+                return 1
             continue
         analysees += 1
+        numero = 0
+        if tenu is not None:
+            numero = _consigner(
+                repere,
+                tenu.soumission,
+                saisie=saisie,
+                empreinte=analyse.identification.empreinte,
+                format_reel=analyse.identification.format_reel,
+                levees=levees,
+            )
+            if not numero:
+                return 1
         lignes = resume(analyse, reveler)
         if dossier is not None:
             html, json = (dossier / f"{rang}{extension}" for extension in _EXTENSIONS)
-            try:
-                _ecrire(html, export.exporter_html(analyse, reveler=reveler))
-                _ecrire(json, export.exporter_json(analyse, reveler=reveler))
-            except OSError as erreur:
-                sys.stdout.flush()
-                print(f"{repere} rapport non écrit : {erreur.strerror}", file=sys.stderr)
-                code = 1
+            rapports = (
+                (html, export.exporter_html(analyse, reveler=reveler)),
+                (json, export.exporter_json(analyse, reveler=reveler)),
+            )
+            horodatages: list[str] = []
+            for fichier, contenu in rapports:
+                octets_ = contenu.encode("utf-8")
+                try:
+                    _ecrire(fichier, octets_)
+                except OSError as erreur:
+                    sys.stdout.flush()
+                    print(f"{repere} rapport non écrit : {erreur.strerror}", file=sys.stderr)
+                    code = 1
+                    break
+                reussi, jeton = _horodater(repere, fichier, octets_, autorite, horodatages)
+                code = code if reussi else 1
+                exemple = fichier if jeton is not None else exemple
+                if tenu is not None and not _consigner(
+                    repere,
+                    tenu.export,
+                    soumission=numero,
+                    rapport=fichier.suffix.removeprefix("."),
+                    empreinte=hashlib.sha256(octets_).hexdigest(),
+                    horodatage=jeton,
+                ):
+                    return 1
             else:
                 lignes.append(texte("terminal.rapport", html=html, json=json))
+            lignes += horodatages
         print(neutraliser(f"{repere} {lignes[0]}"))
         for ligne in lignes[1:]:
             print(neutraliser(f"  {ligne}"))
@@ -358,6 +482,9 @@ def _analyser(
         print()
         for phrase in textes()["avertissement"]:
             print(phrase)
+    if exemple is not None:
+        tsr = exemple.with_name(exemple.name + _JETON)
+        print(neutraliser(texte("conservation.verification_jeton", fichier=exemple, jeton=tsr)))
     return code
 
 
@@ -416,21 +543,67 @@ def lignes_comparaison(resultat: comparaison.Comparaison) -> list[str]:
     return lignes
 
 
-def _comparer(chemins: Sequence[str]) -> int:
-    documents = []
+def _comparer(chemins: Sequence[str], tenu: journal.Journal | None = None) -> int:
+    """Compare deux rapports ; chacun est consigné au journal, s'il est tenu, avant que le
+    résultat ne s'affiche (ADR-0261)."""
+    lus = []
     for rang, chemin in enumerate(chemins, start=1):
         try:
-            documents.append(comparaison.lire(chemin))
+            lus.append(comparaison.lire_avec_empreinte(chemin))
         except comparaison.RapportIllisible as erreur:
             print(
                 neutraliser(texte("comparaison.illisible", rang=rang, erreur=erreur)),
                 file=sys.stderr,
             )
             return 2
-    resultat = comparaison.comparer(*documents)
+    if tenu is not None:
+        for rang, (_, empreinte) in enumerate(lus, start=1):
+            if not _consigner(f"[{rang}/2]", tenu.consultation, empreinte=empreinte):
+                return 2
+    resultat = comparaison.comparer(*(document for document, _ in lus))
     for ligne in lignes_comparaison(resultat):
         print(neutraliser(ligne))
     return 0 if resultat.identiques else 1
+
+
+def _verifier_journal(chemin: str) -> int:
+    """Vérifie un journal : 0 s'il est cohérent, 1 s'il est rompu, 2 s'il est illisible."""
+    try:
+        bilan = journal.lire(chemin)
+    except journal.JournalInvalide as erreur:
+        if erreur.numero is None:
+            print(texte("conservation.illisible", erreur=erreur), file=sys.stderr)
+            return 2
+        print(texte("conservation.rompu", numero=erreur.numero, erreur=erreur))
+        return 1
+    if bilan.premiere is None or bilan.derniere is None:
+        print(texte("conservation.vide"))
+    else:
+        print(
+            accorder(
+                "conservation.coherent",
+                bilan.entrees,
+                premiere=bilan.premiere.strftime("%Y-%m-%d %H:%M:%S"),
+                derniere=bilan.derniere.strftime("%Y-%m-%d %H:%M:%S"),
+            )
+        )
+    print(texte("conservation.portee"))
+    return 0
+
+
+def _ouvrir_journal(
+    analyseur: argparse.ArgumentParser, arguments: argparse.Namespace
+) -> journal.Journal | None:
+    """Journal demandé, vérifié et annoncé ; un journal inutilisable arrête tout (code 2)."""
+    if arguments.journal is None:
+        return None
+    try:
+        tenu = journal.Journal(arguments.journal, arguments.qui)
+    except journal.JournalInvalide as erreur:
+        cause = f"entrée {erreur.numero} : {erreur}" if erreur.numero else str(erreur)
+        analyseur.error(f"--journal : {cause} ; --verifier-journal le détaille")
+    print(texte("conservation.avertissement_journal"), file=sys.stderr)
+    return tenu
 
 
 def _sortie_en_utf8() -> None:
@@ -451,10 +624,43 @@ def main(argv: Sequence[str] | None = None) -> int:
     _sortie_en_utf8()
     analyseur = construire_analyseur()
     arguments = analyseur.parse_args(argv)
+    if arguments.verifier_journal is not None:
+        autres = (
+            arguments.fichiers,
+            arguments.modules,
+            arguments.regles,
+            arguments.texte,
+            arguments.comparer,
+            arguments.journal,
+            arguments.horodater,
+        )
+        if any(autres):
+            analyseur.error("--verifier-journal s'emploie seule")
+        return _verifier_journal(arguments.verifier_journal)
+    if arguments.qui is not None:
+        if arguments.journal is None:
+            analyseur.error("--qui s'emploie avec --journal")
+        try:
+            journal.verifier_qui(arguments.qui)
+        except ValueError as erreur:
+            analyseur.error(f"--qui : {erreur}")
+    if arguments.horodater is not None:
+        if arguments.rapport is None:
+            analyseur.error(
+                "--horodater s'emploie avec --rapport : il horodate les rapports écrits"
+            )
+        try:
+            horodatage.verifier_url(arguments.horodater)
+        except ValueError as erreur:
+            analyseur.error(f"--horodater : {erreur}")
     if arguments.comparer is not None:
         if arguments.fichiers or arguments.modules or arguments.regles or arguments.texte:
             analyseur.error("--comparer s'emploie seule, sans fichier à analyser")
-        return _comparer(arguments.comparer)
+        if arguments.horodater is not None:
+            analyseur.error("--horodater s'emploie avec une analyse, pas avec --comparer")
+        return _comparer(arguments.comparer, _ouvrir_journal(analyseur, arguments))
+    if arguments.journal is not None and not (arguments.fichiers or arguments.texte):
+        analyseur.error("--journal s'emploie avec une analyse ou avec --comparer")
     if arguments.modules:
         _lister_modules()
         return 0
@@ -484,9 +690,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     dossier = None
     if arguments.rapport is not None:
         try:
-            dossier = _preparer(arguments.rapport, max(len(arguments.fichiers), 1))
+            dossier = _preparer(
+                arguments.rapport,
+                max(len(arguments.fichiers), 1),
+                jetons=arguments.horodater is not None,
+            )
         except ValueError as erreur:
             analyseur.error(f"--rapport : {erreur}")
+    tenu = _ouvrir_journal(analyseur, arguments)
+    if arguments.horodater is not None:
+        print(texte("conservation.avertissement_horodatage"), file=sys.stderr)
     return _analyser(
         [None] if arguments.texte else arguments.fichiers,
         arguments.desactiver,
@@ -494,4 +707,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         arguments.confiance,
         dossier,
         arguments.reveler,
+        tenu,
+        arguments.horodater,
     )
