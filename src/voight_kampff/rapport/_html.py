@@ -397,6 +397,7 @@ def _couverture(vue: Presentation) -> str:
             texte("champs.partie"),
             texte("champs.version"),
             texte("champs.etat"),
+            texte("champs.fiche"),
         ],
         (
             [
@@ -404,6 +405,8 @@ def _couverture(vue: Presentation) -> str:
                 str(t.partie),
                 t.version or texte("formes.hors_version"),
                 libelle("etats", t.etat),
+                # Une technique hors de cette version n'a pas de fiche livrée (ADR-0270).
+                "" if t.version is None else texte("formes.fiche", module=t.module),
             ]
             for t in couverture.techniques
         ),
@@ -417,6 +420,7 @@ def _couverture(vue: Presentation) -> str:
     return (
         f"<p>{_t(texte('intros.couverture'))}</p>"
         + techniques
+        + f"<p>{_t(texte('intros.fiches'))}</p>"
         + _definitions(
             [
                 (

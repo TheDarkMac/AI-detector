@@ -3,7 +3,7 @@
 # Un marquage est un signal lisible par machine, posé exprès pour dire l'origine d'un contenu
 # (ADR-0176). Chacun est recherché par un module livré (`module`), ou ne l'est pas pour une
 # raison (`raison`) ; le rapport d'un fichier cite ceux qui pourraient s'y trouver, d'après
-# leurs `formats`. Inventaire et sources : docs/techniques/filigranes-invisibles.md. Les
+# leurs `formats`. Inventaire et sources : docs/catalogue/inventaire-des-marquages.md. Les
 # signatures de générateurs dans les métadonnées (F-12) sont des règles, pas des marquages.
 # Validé par schemas/marquages.schema.json.
 

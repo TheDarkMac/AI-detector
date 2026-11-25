@@ -9,7 +9,9 @@ identifiantes, nom et empreinte compris, y sont masquées (ADR-0031, ADR-0098).
 masquage d'une catégorie, au terminal comme dans les rapports, et le signale (ADR-0093).
 ``--catalogue DOSSIER`` remplace le catalogue livré par celui de l'utilisateur (ADR-0086) ;
 ``--regles`` affiche la version, la date, l'empreinte, les règles et les marquages du catalogue
-(NF-07, ADR-0175).
+(NF-07, ADR-0175) ; ``--regle IDENTIFIANT`` affiche tout d'une règle, dans la forme des fichiers
+du catalogue, et ``--fiche MODULE`` la fiche technique d'un module livré (NF-19, ADR-0268,
+ADR-0269).
 ``--confiance DOSSIER`` remplace de même la liste de confiance C2PA livrée (ADR-0171).
 ``--texte`` analyse le texte lu sur l'entrée standard, collé ou reçu d'un tube, au lieu d'un
 fichier (ADR-0233) ; il s'emploie sans fichier, et son rapport s'écrit ``1.html`` et ``1.json``.
@@ -49,7 +51,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from voight_kampff import __version__
+from voight_kampff import __version__, _publication
 from voight_kampff._conservation import horodatage, journal
 from voight_kampff._limites import TAILLE_MAX_TEXTE
 from voight_kampff._orchestration import catalogue as catalogues
@@ -113,6 +115,21 @@ def construire_analyseur() -> argparse.ArgumentParser:
         "--regles",
         action="store_true",
         help="affiche la version, la date, l'empreinte et les règles du catalogue employé",
+    )
+    analyseur.add_argument(
+        "--regle",
+        action="append",
+        default=[],
+        metavar="IDENTIFIANT",
+        help="affiche tout d'une règle du catalogue employé, dans la forme de ses fichiers : "
+        "conditions et seuils, limites connues, évaluation, calibrage ; s'emploie seule ou "
+        "avec --catalogue (option répétable)",
+    )
+    analyseur.add_argument(
+        "--fiche",
+        metavar="MODULE",
+        help="affiche la fiche technique d'un module livré, celle de cette version : "
+        "principe, taux d'erreur, limites connues ; s'emploie seule",
     )
     analyseur.add_argument(
         "--catalogue",
@@ -224,6 +241,48 @@ def _lister_regles(catalogue: catalogues.Catalogue) -> None:
     for marquage in catalogue.marquages:
         recherche = marquage.module or f"non recherché : {marquage.raison}"
         print(f"{marquage.identifiant} ({recherche}) : {marquage.nom}")
+
+
+def _afficher_regles(
+    analyseur: argparse.ArgumentParser, catalogue: catalogues.Catalogue, demandees: Sequence[str]
+) -> int:
+    """Règles demandées, dans la forme des fichiers du catalogue (NF-19, ADR-0269)."""
+    par_identifiant = {regle.identifiant: regle for regle in catalogue.regles}
+    inconnues = [i for i in dict.fromkeys(demandees) if i not in par_identifiant]
+    if inconnues:
+        analyseur.error(
+            f"règle absente du catalogue employé : {neutraliser(', '.join(inconnues))} ; "
+            "vk --regles les liste"
+        )
+    entete = [_catalogue(catalogue.version), *textes()["publication"]["entete_regles"]]
+    regles = [par_identifiant[i] for i in dict.fromkeys(demandees)]
+    print(_publication.en_toml(regles, entete), end="")
+    return 0
+
+
+def _afficher_fiche(analyseur: argparse.ArgumentParser, module: str) -> int:
+    """Fiche technique d'un module livré, celle de cette version (NF-19, ADR-0268)."""
+    livres = {manifeste.identifiant: manifeste for manifeste in manifestes.decouvrir()}
+    manifeste = livres.get(module)
+    if manifeste is None:
+        connus = ", ".join(livres) or "aucun"
+        analyseur.error(f"module inconnu : {neutraliser(module)} ; modules livrés : {connus}")
+    try:
+        contenu = _publication.fiche(manifeste)
+    except FileNotFoundError:
+        analyseur.error(f"fiche du module {module} absente de ce paquet")
+    print(
+        texte(
+            "publication.entete_fiche",
+            module=module,
+            version=manifeste.version,
+            outil=__version__,
+        )
+    )
+    print()
+    for ligne in contenu.splitlines():
+        print(neutraliser(ligne))
+    return 0
 
 
 _ETATS_AFFICHES = ("appliquee", "partielle", "non_menee", "hors_version")
@@ -728,6 +787,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             analyseur.error("--conservation s'emploie seule")
         _afficher_enonce()
         return 0
+    if arguments.fiche is not None:
+        options = {k: v for k, v in vars(arguments).items() if k != "fiche"}
+        if any(options.values()):
+            analyseur.error("--fiche s'emploie seule")
+        return _afficher_fiche(analyseur, arguments.fiche)
+    if arguments.regle:
+        options = {k: v for k, v in vars(arguments).items() if k not in ("regle", "catalogue")}
+        if any(options.values()):
+            analyseur.error("--regle s'emploie seule, ou avec --catalogue")
     if arguments.verifier_journal is not None:
         autres = (
             arguments.fichiers,
@@ -770,7 +838,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     if arguments.texte and arguments.fichiers:
         analyseur.error("--texte s'emploie sans fichier : le texte est lu sur l'entrée standard")
-    if not (arguments.fichiers or arguments.regles or arguments.texte):
+    if not (arguments.fichiers or arguments.regles or arguments.regle or arguments.texte):
         analyseur.print_help()
         return 0
     livres = manifestes.decouvrir()
@@ -782,6 +850,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     if arguments.regles:
         _lister_regles(catalogue)
         return 0
+    if arguments.regle:
+        return _afficher_regles(analyseur, catalogue, arguments.regle)
     try:
         listes.charger(arguments.confiance)
     except listes.ConfianceInvalide as erreur:
