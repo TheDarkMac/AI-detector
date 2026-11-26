@@ -1,6 +1,6 @@
 # Registre des arbitrages
 
-> Statut : **v1.14** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 avec T17, v1.10 avec T18, v1.11 avec T80, v1.12 avec T81, v1.13 avec le complément de T81, v1.14 proposée dans la PR de T91. Document vivant : toute modification est inscrite à l'historique (§7).
+> Statut : **v1.15** ; v1.0 mergée avec T02, v1.1 avec T03, v1.2 avec T04, v1.3 avec T10, v1.4 avec T11, v1.5 avec T13, v1.6 avec T14, v1.7 avec T15, v1.8 avec T16, v1.9 avec T17, v1.10 avec T18, v1.11 avec T80, v1.12 avec T81, v1.13 avec le complément de T81, v1.14 avec T91, v1.15 proposée dans la PR de T100. Document vivant : toute modification est inscrite à l'historique (§7).
 > Sources : [cahier des charges v0.1](../00-cahier-des-charges/cahier-des-charges-v0.1.md), §10 ; [analyse critique](../01-analyse/analyse-critique-cdc-v0.1.md), §6 et §8.
 > Tâche : T02. Date de rédaction : 2026-10-26.
 
@@ -71,7 +71,7 @@ Statuts : **Tranché** (ADR cité), **Reporté** (tâche citée), **Non tranché
 | --- | --- | --- | --- |
 | Limites de taille, de durée, temps d'analyse | Tranché | Budget mixte : limites comptées identiques partout, mémoire et temps du système hors garantie (ADR-0076) ; 1 Gio par fichier, 2 Gio de mémoire, 120 s, fixes en V1 (ADR-0077) | ADR-0076, ADR-0077, ADR-0078 |
 | Seuils d'acceptation | Tranché | Taux par technique et taux par fichier, publiés avec effectif et intervalle de Wilson à 95 % (A-54) ; niveaux « fort » et « modéré » jusqu'à une borne supérieure de 1 % et 5 % ; cible par fichier : borne supérieure au plus 5 %. Valeurs fixées avant toute mesure. | ADR-0018, ADR-0101 |
-| Constitution du corpus | Reporté en partie | Séparation calibrage / évaluation tranchée ; sources, volume et droits en T100 | ADR-0016, T100 |
+| Constitution du corpus | Tranché | Séparation calibrage / évaluation (ADR-0016) ; corpus réel tiré de Wikimedia Commons, data.gouv.fr et Wikipédia, fichiers hors du dépôt (ADR-0272) ; authentiques datés d'avant le 2022-08-22, générés déclarés et textes de l'assistant (ADR-0273) ; 400 authentiques en évaluation par famille, un original sur trois en calibrage (ADR-0274) ; dérivés fabriqués par scripts (ADR-0275) ; manifeste au dépôt, sans sous-catégorie « références » (ADR-0276) | ADR-0016, ADR-0272 à ADR-0276 |
 | Références des modules comparatifs | Tranché | F-35 et F-64 hors V1 (références fournies par l'utilisateur, comme le prévoit le cahier) ; F-42 hors V1 faute de base de référence | ADR-0012 |
 | Niveau d'accessibilité | Tranché | WCAG 2.2 AA pour le rapport HTML | ADR-0025 |
 | Priorisation des exigences F et NF | Tranché | Exigences de la V1 listées dans ADR-0012 ; les autres sont des candidates | ADR-0012 |
@@ -244,3 +244,4 @@ Les six questions du §8 de l'analyse restent sans réponse au 2026-10-26. Les d
 | 2026-11-23 | 1.12 | A-24 en partie traité (§3, ADR-0248) ; statut corrigé, il annonçait encore la v1.11 proposée | T81 |
 | 2026-11-23 | 1.13 | A-24 tranché (§3, ADR-0252 à ADR-0254) | T81 (complément) |
 | 2026-11-25 | 1.14 | Conservation réalisée (§2), A-49 tranché pour la trace (§3), portée de « consultation » dans NF-17 (§4) | T91 |
+| 2026-11-25 | 1.15 | Constitution du corpus tranchée (ADR-0272 à ADR-0276) ; statut mis à jour (la v1.14 y était encore proposée) | T100 |

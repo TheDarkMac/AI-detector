@@ -1,0 +1,19 @@
+Compte rendu de la réunion d'équipe du mardi
+
+Présents : l'ensemble de l'équipe projet, à l'exception de deux personnes excusées.
+
+1. Point sur l'avancement
+Le développement du module de réservation est terminé à 80 %. Les tests utilisateurs débuteront la semaine prochaine. Un retard de trois jours est à prévoir sur l'intégration du paiement, en raison d'un changement de prestataire.
+
+2. Budget
+Les dépenses restent dans l'enveloppe prévue. Une demande de rallonge sera toutefois préparée pour financer une campagne de communication au lancement.
+
+3. Organisation
+À partir du mois prochain, les réunions d'équipe auront lieu un mardi sur deux, avec un point écrit hebdomadaire envoyé le vendredi.
+
+Actions à mener :
+- finaliser le cahier de tests avant jeudi ;
+- contacter le nouveau prestataire de paiement ;
+- préparer une première version du plan de communication.
+
+Prochaine réunion : dans deux semaines, même heure, même salle.

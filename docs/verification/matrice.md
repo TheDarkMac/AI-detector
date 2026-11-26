@@ -12,7 +12,7 @@ Le résultat des tests est celui de chaque passage de la CI, qui joint cette mat
 | --- | --- | --- | --- | --- | --- |
 | Exigences fonctionnelles (cahier, §5) | 31 | 2 | 0 | 15 | 48 |
 | Exigences non fonctionnelles (cahier, §7) | 14 | 5 | 0 | 0 | 19 |
-| Exigences de sécurité (modèle de menace, §8) | 18 | 3 | 0 | 1 | 22 |
+| Exigences de sécurité (modèle de menace, §8) | 19 | 2 | 0 | 1 | 22 |
 | Principes directeurs (cahier, §2 ; A-11) | 6 | 0 | 0 | 0 | 6 |
 
 ## Exigences fonctionnelles (cahier, §5)
@@ -117,7 +117,7 @@ Le résultat des tests est celui de chaque passage de la CI, qui joint cette mat
 | ES-19 | Fuzzing des analyseurs de chaque format de la V1 ; catégorie « malformés » du corpus (§8 du cahier). | partielle | T14, T20, T21, T100, T102 | test | tests : `test_double_compression.py`, `test_fuzzing.py` | tests : CI | Fuzzing des analyseurs livrés, dont les modules de métadonnées et leurs lecteurs : images (T20), PDF, conteneurs audio et vidéo (T21) ; catégorie « malformés » du corpus de référence à T100. |
 | ES-20 | Une déclaration non signée est restituée comme ce que le fichier déclare ; seule une vérification cryptographique ou déterministe produit une preuve (ADR-0021). | réalisée | T11, T22, T30 | test | tests : `test_c2pa.py`, `test_incoherences.py`, `test_modele.py`, `test_signatures.py`, `test_tables_connues.py`, `test_tables_relevees.py`, `test_transfert.py` | tests : CI | Le modèle refuse une preuve sans vérification ; les règles de T22 restituent une déclaration du fichier en indice, jamais en preuve (ADR-0142) ; une déclaration C2PA n'est une preuve que sous une signature valide d'un signataire reconnu (T30, ADR-0170). |
 | ES-21 | Fonctions à double usage (T45, T93, T94) soumises aux garde-fous d'ADR-0032. | hors V1 | T45, T93, T94 | test, inspection | justification : Les garde-fous d'ADR-0032 portent aussi sur la documentation, qui se relit. | — | Fonctions à double usage candidates V2 (ADR-0012, ADR-0032). |
-| ES-22 | Provenance documentée de chaque fichier du corpus ; corpus versionné ; calibrage reproductible. | partielle | T17, T100 | test, inspection | tests : `test_banc.py` ; justification : La provenance réelle des fichiers se vérifie à la relecture du corpus ; sa présence et le versionnage se testent. | tests : CI | Le banc exige provenance, version et empreinte de chaque fichier (ADR-0103) ; le corpus de référence est T100. |
+| ES-22 | Provenance documentée de chaque fichier du corpus ; corpus versionné ; calibrage reproductible. | réalisée | T17, T100 | test, inspection | tests : `test_banc.py`, `test_corpus_reference.py` ; preuve : [corpus.toml](../../banc/reference/corpus.toml), [effectifs.json](../../banc/reference/effectifs.json), [corpus-de-reference.md](../../docs/verification/corpus-de-reference.md) ; justification : La provenance réelle des fichiers se vérifie à la relecture du corpus ; sa présence et le versionnage se testent. | tests : CI ; Corpus de référence 1.0.0 (6 734 fichiers) : page de la source, licence, date et générateur de chaque original, opération et outil de chaque dérivé ; empreinte de chaque fichier et du manifeste ; parties fixées par une règle écrite avant tout téléchargement (relu le 2026-11-26). | Le banc exige provenance, version et empreinte de chaque fichier (ADR-0103) ; corpus de référence constitué en T100 (ADR-0272 à ADR-0276). |
 
 ## Principes directeurs (cahier, §2 ; A-11)
 

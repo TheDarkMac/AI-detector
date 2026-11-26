@@ -709,11 +709,13 @@ note = "Fonctions à double usage candidates V2 (ADR-0012, ADR-0032)."
 
 [[exigence]]
 id = "ES-22"
-etat = "partielle"
+etat = "realisee"
 taches = ["T17", "T100"]
 methodes = ["test", "inspection"]
 justification = "La provenance réelle des fichiers se vérifie à la relecture du corpus ; sa présence et le versionnage se testent."
-note = "Le banc exige provenance, version et empreinte de chaque fichier (ADR-0103) ; le corpus de référence est T100."
+preuve = ["banc/reference/corpus.toml", "banc/reference/effectifs.json", "docs/verification/corpus-de-reference.md"]
+resultat = "Corpus de référence 1.0.0 (6 734 fichiers) : page de la source, licence, date et générateur de chaque original, opération et outil de chaque dérivé ; empreinte de chaque fichier et du manifeste ; parties fixées par une règle écrite avant tout téléchargement (relu le 2026-11-26)."
+note = "Le banc exige provenance, version et empreinte de chaque fichier (ADR-0103) ; corpus de référence constitué en T100 (ADR-0272 à ADR-0276)."
 
 # Principes directeurs
 

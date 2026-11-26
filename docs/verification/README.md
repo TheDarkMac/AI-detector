@@ -1,6 +1,6 @@
 # Vérification : banc d'évaluation et matrice
 
-> Statut : **v1.2** ; v1.0 mergée avec T17, v1.1 avec T18, v1.2 avec T90, v1.3 proposée dans la PR de T92. Document vivant : toute modification est inscrite à l'historique (§6).
+> Statut : **v1.4** ; v1.0 mergée avec T17, v1.1 avec T18, v1.2 avec T90, v1.3 avec T92, v1.4 proposée dans la PR de T100. Document vivant : toute modification est inscrite à l'historique (§6).
 
 Ce dossier tient la [matrice de vérification](matrice.md) : chaque exigence du cahier, de sécurité et chaque principe directeur, avec son état, ses méthodes de vérification et leur résultat ([ADR-0024](../decisions/ADR-0024-methode-de-verification.md)). Les taux d'erreur des techniques sont mesurés par le banc d'évaluation, paquet `banc/` du dépôt ([ADR-0099](../decisions/ADR-0099-banc-outil-du-depot.md)).
 
@@ -14,6 +14,8 @@ Ce dossier tient la [matrice de vérification](matrice.md) : chaque exigence du 
 | Banc d'évaluation | `banc/` (commande `python -m banc`) |
 | Schéma du manifeste d'un corpus | `banc/corpus.schema.json` |
 | Corpus d'essai (démonstration, rien de publiable) | `banc/essai/` |
+| Corpus de référence : scripts de constitution, manifeste, effectifs, textes de l'assistant (ADR-0272 à ADR-0276) | `banc/reference/` |
+| Description du corpus de référence (livrable 5) | [`corpus-de-reference.md`](corpus-de-reference.md) |
 
 ## 1. Tenir la matrice à jour
 
@@ -99,3 +101,4 @@ Code 0 : aucun écart de résultat ; 1 : résultats différents ; 2 : rapport il
 | 2026-10-28 | 1.1 | Double analyse au banc (§3), reproductibilité et `vk --comparer` (§5) | T18 |
 | 2026-11-25 | 1.2 | Grille WCAG 2.2 AA de l'interface ajoutée au tableau des éléments ; renvoi de l'historique corrigé (§6, non §5) | T90 |
 | 2026-11-25 | 1.3 | Analyse des traitements au regard du RGPD ajoutée au tableau des éléments | T92 |
+| 2026-11-25 | 1.4 | Corpus de référence et sa description ajoutés au tableau des éléments ; statut mis à jour (il annonçait la v1.2) | T100 |
