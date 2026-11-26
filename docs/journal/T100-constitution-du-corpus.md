@@ -36,7 +36,8 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : « Constitution du corp
 16. Tests : `tests/test_corpus_reference.py` (manifeste lu par le banc, cinq catégories dans les deux parties, un original sur trois en calibrage par format, dérivés dans le groupe et la partie de leur original, provenance de chaque catégorie, aucun nom de compte, accord d'`effectifs.json`, textes de l'assistant identiques à ceux du dépôt, sources retenues et refusées, paramètres de suivi retirés). Scripts de constitution exclus de la mesure de couverture (`pyproject.toml`).
 17. Documentation : ADR-0272 à ADR-0276 ; [description du corpus](../verification/corpus-de-reference.md) (livrable 5) ; guide du dossier de vérification v1.4 ; registre des arbitrages v1.15 (constitution du corpus tranchée) ; découpage v0.47 ; historique d'ADR-0103 ; `CONTRIBUTING.md` ; matrice : ES-22 « réalisée », régénérée ; `.gitattributes` (manifeste, effectifs et textes sans conversion des fins de ligne).
 18. Suite complète sous coverage : voir « Résultat ».
-19. PR [#49](https://github.com/TheDarkMac/AI-detector/pull/49) ouverte vers `detector` (commits `04dc63d`, `3a48371`, `9105d6a`, `da0a838`).
+19. PR [#49](https://github.com/TheDarkMac/AI-detector/pull/49) ouverte vers `detector` (commits `04dc63d`, `3a48371`, `9105d6a`, `da0a838`, `ee43438`).
+20. CI de `ee43438` : 15 vérifications vertes, `lint-markdown` en échec sur le seul contrôle des ADR « Proposé » (ADR-0129), comme attendu. ADR-0276 validé par TheDarkMac (« Oui, valide ADR-0276 ») et passé à « Accepté ».
 
 ## Problèmes rencontrés
 
@@ -76,4 +77,3 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : « Constitution du corp
 - Bureautique : chercher une autre source libre de DOCX et ODT pour une version suivante du corpus.
 - T102 : retouches soignées, faites à la main, que les retouches mécaniques du corpus n'approchent pas.
 - A-13 : renouveler les générés à chaque génération de générateurs, par une nouvelle version.
-- Validation d'ADR-0276 (« Proposé ») pendant la revue de la PR.

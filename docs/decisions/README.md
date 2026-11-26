@@ -290,4 +290,4 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0273](ADR-0273-verite-des-originaux.md) | Vérité des originaux : authentiques datés d'avant le 2022-08-22, générés déclarés et textes de l'assistant | Accepté | 2026-11-25 |
 | [ADR-0274](ADR-0274-effectifs-et-parties.md) | Effectifs : 400 authentiques en évaluation par famille, un original sur trois en calibrage | Accepté | 2026-11-25 |
 | [ADR-0275](ADR-0275-derives-fabriques-par-scripts.md) | Transformés, retouchés et malformés fabriqués sur le poste par des scripts versionnés | Accepté | 2026-11-25 |
-| [ADR-0276](ADR-0276-manifeste-et-description-du-corpus.md) | Manifeste au dépôt, version 1.0.0, description publiée ; pas de sous-catégorie « références » | Proposé | 2026-11-25 |
+| [ADR-0276](ADR-0276-manifeste-et-description-du-corpus.md) | Manifeste au dépôt, version 1.0.0, description publiée ; pas de sous-catégorie « références » | Accepté | 2026-11-25 |

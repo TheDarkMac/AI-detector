@@ -1,8 +1,8 @@
 # ADR-0276 — Manifeste au dépôt, version 1.0.0, description publiée ; pas de sous-catégorie « références »
 
-- **Statut** : Proposé
+- **Statut** : Accepté
 - **Date** : 2026-11-25
-- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T100, à valider pendant la revue de la PR de T100
+- **Décideur** : TheDarkMac, sur proposition de l'assistant non posée en question pendant T100, validée pendant la revue de la PR de T100
 - **Tâche** : T100
 - **Exigences liées** : §8 et §9 (livrable 5) du cahier, ES-22, NF-16 ; M-33 ; ADR-0103, ADR-0105, ADR-0272 à ADR-0275 ; A-13, A-56
 
@@ -53,3 +53,4 @@ Option A :
 | Date | Modification |
 | --- | --- |
 | 2026-11-25 | Création, statut « Proposé » |
+| 2026-11-26 | Validé par TheDarkMac pendant la revue de la PR de T100 (« Oui, valide ADR-0276 ») : statut « Accepté » |
