@@ -14,8 +14,8 @@ from voight_kampff._marquages import Marquage
 from voight_kampff._orchestration.catalogue import Catalogue
 from voight_kampff._orchestration.catalogue import charger as _charger
 from voight_kampff._orchestration.manifestes import decouvrir
-from voight_kampff._regles import Regle
-from voight_kampff.rapport.modele import VersionCatalogue, VersionConfiance
+from voight_kampff._regles import Regle, niveau_permis
+from voight_kampff.rapport.modele import Niveau, VersionCatalogue, VersionConfiance
 
 VERSION = VersionCatalogue("0.0.1", date(2026, 10, 27), "c" * 64, fourni_par_utilisateur=False)
 CONFIANCE = VersionConfiance("Liste de test", "1", date(2026, 11, 14), "d" * 64, False)
@@ -56,6 +56,20 @@ def regle_dict(
 
 def regle(identifiant: str = "R-TEST-001", module: str = "alpha", **champs: Any) -> Regle:
     return Regle.depuis_dict(regle_dict(identifiant, module, **champs))
+
+
+CORPUS_DE_REFERENCE = "reference-1.0.0"
+"""Corpus dont la partie évaluation a mesuré les indices du catalogue livré (T101, ADR-0278)."""
+
+
+def niveau_mesure(regle: Regle) -> bool:
+    """Vrai si l'indice livré est au niveau que permet sa mesure sur le corpus de référence, ou
+    « faible » sans mesure (ADR-0018, ADR-0101, ADR-0278)."""
+    if regle.evaluation is None:
+        return regle.niveau is Niveau.FAIBLE
+    return regle.evaluation.corpus == CORPUS_DE_REFERENCE and regle.niveau is niveau_permis(
+        regle.evaluation.borne_superieure
+    )
 
 
 def livre() -> Catalogue:

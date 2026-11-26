@@ -446,6 +446,19 @@ def test_calibrage_sans_ecart_sur_les_taux() -> None:
     assert mesures.ecarts == ("m2 : arrêt brutal de l'analyse (X)",)
 
 
+def test_niveaux_non_controles_hors_d_un_corpus_de_reference() -> None:
+    """Sur un corpus d'essai, un niveau n'est pas contrôlé ; une preuve fautive, si."""
+    resultats = [*RESULTATS, resultat("a6", C.AUTHENTIQUE, Origine.AUTHENTIQUE, RETOUCHE)]
+    reference = mesurer(Partie.EVALUATION, resultats, ["alpha"], REGLES)
+    essai = mesurer(Partie.EVALUATION, resultats, ["alpha"], REGLES, reference=False)
+    niveau = "l'indice R-ALPHA-001 est au niveau « fort »"
+    preuve = "la preuve R-ALPHA-003 a des faux positifs"
+    assert any(e.startswith(niveau) for e in reference.ecarts)
+    assert not any(e.startswith(niveau) for e in essai.ecarts)
+    assert preuve in reference.ecarts
+    assert preuve in essai.ecarts
+
+
 def test_regles_d_un_module_desactive_non_mesurees() -> None:
     assert mesurer(Partie.EVALUATION, RESULTATS, ["beta"], REGLES).regles == ()
 
@@ -752,7 +765,13 @@ def test_commande_sans_ecart(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     fichiers = {f"a{n}.txt": str(n).encode() for n in range(73)}
+    # Corpus d'essai : les niveaux du catalogue livré, fondés sur le corpus de référence, n'y
+    # sont pas contrôlés (ADR-0278).
     manifeste = ecrire_corpus(tmp_path, fichiers)
+    texte = manifeste.read_text(encoding="utf-8")
+    manifeste.write_text(
+        texte.replace('nature = "reference"', 'nature = "essai"'), encoding="utf-8"
+    )
     analyse = analyse_alpha(EtatTechnique.APPLIQUEE, EtatTechnique.APPLIQUEE)
     monkeypatch.setattr(cli, "analyser", analyser_factice(lambda _chemin: analyse))
     assert cli.main([str(manifeste), "--sortie", str(tmp_path / "r")]) == 0
@@ -760,6 +779,22 @@ def test_commande_sans_ecart(
     doc = json.loads((tmp_path / "r" / "evaluation.json").read_text(encoding="utf-8"))
     assert doc["par_fichier"]["cible_atteinte"] is True
     assert doc["reseau"] == {"interfaces": ["lo"], "tentatives": 0}
+
+
+@pytest.mark.usefixtures("sans_reseau")
+def test_niveaux_controles_sur_un_corpus_de_reference(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    fichiers = {f"a{n}.txt": str(n).encode() for n in range(73)}
+    manifeste = ecrire_corpus(tmp_path, fichiers)
+    analyse = analyse_alpha(EtatTechnique.APPLIQUEE, EtatTechnique.APPLIQUEE)
+    monkeypatch.setattr(cli, "analyser", analyser_factice(lambda _chemin: analyse))
+    # Aucun module livré n'analyse ces fichiers : les indices « fort » du catalogue livré n'y ont
+    # pas de mesure, et seul « faible » est permis.
+    assert cli.main([str(manifeste), "--sortie", str(tmp_path / "r")]) == 1
+    sortie_ = capsys.readouterr().out
+    assert "écart : l'indice R-" in sortie_
+    assert "la mesure permet au plus « faible »" in sortie_
 
 
 @pytest.mark.exigence("ES-11")

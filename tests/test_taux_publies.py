@@ -4,8 +4,10 @@ L'inscription est éprouvée sur une copie du catalogue livré, avec un rapport 
 qui porte de vraies règles ; la rubrique des fiches, sur une copie des fiches.
 """
 
+import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -17,7 +19,7 @@ from typing import Any
 import pytest
 from test_banc import REGLES, RESULTATS, doc_de
 
-from banc import fiches, inscription
+from banc import fiches, inscription, sortie
 from banc.corpus import Partie
 from banc.evaluation import mesurer
 from banc.inscription import Inscription, InscriptionRefusee
@@ -147,14 +149,15 @@ def test_inscrire(copie: Path) -> None:
     assert (double["niveau"], double["evaluation"]["taux_faux_positifs"]) == ("faible", 0.1)
     assert "calibrage" in double
     assert "condition" in double
+    evaluees = {i for i, r in avant.items() if "evaluation" in r} | {"R-C2PA-004", "R-C2PA-006"}
     # Le catalogue modifié reste valide ; une seconde inscription remplace la première.
     inscription.inscrire([_inscription("R-C2PA-004", 0.03, taux=0.02)], copie)
     regle = _regles(copie, "c2pa")["R-C2PA-004"]
     assert (regle["niveau"], regle["evaluation"]["borne_superieure"]) == ("modere", 0.03)
     assert int(regle["version"]) == int(avant["R-C2PA-004"]["version"]) + 2
-    assert texte.count("[regle.evaluation]") == 2
+    assert texte.count("[regle.evaluation]") == len(evaluees)
     texte = (copie / "regles" / "c2pa.toml").read_text(encoding="utf-8")
-    assert texte.count("[regle.evaluation]") == 2
+    assert texte.count("[regle.evaluation]") == len(evaluees)
     assert "\n\n\n" not in texte
 
 
@@ -173,7 +176,7 @@ def test_regle_sans_version_ni_niveau(copie: Path) -> None:
     debut = texte.index('identifiant = "R-C2PA-004"')
     fin = texte.index("[[regle]]", debut)
     bloc = texte[debut:fin]
-    sans_niveau = bloc.replace('niveau = "faible"\n', "")
+    sans_niveau = re.sub(r'(?m)^niveau = "[a-z]+"\n', "", bloc)
     fichier.write_text(texte.replace(bloc, sans_niveau), encoding="utf-8")
     with pytest.raises(InscriptionRefusee, match="clé « niveau » absente"):
         inscription.inscrire([_inscription("R-C2PA-004", 0.009)], copie)
@@ -321,3 +324,85 @@ def test_commande_fiches_taux(
     assert "](../evaluation.md)" in (copie / "metadonnees-exif.md").read_text(encoding="utf-8")
     assert fiches.main(["--taux", str(tmp_path / "absent.json")]) == 2
     assert capsys.readouterr().err.startswith("fiches : ")
+
+
+# Rapports publiés par T101 (ADR-0280)
+
+RACINE = Path(__file__).resolve().parent.parent
+EVALUATIONS = RACINE / "docs" / "verification" / "evaluations"
+PREMIERE = EVALUATIONS / "reference-1.0.0-catalogue-0.20.1"
+SECONDE = EVALUATIONS / "reference-1.0.0-catalogue-0.21.0"
+
+
+def _publie(dossier: Path) -> dict[str, Any]:
+    document: dict[str, Any] = json.loads((dossier / "evaluation.json").read_text(encoding="utf-8"))
+    return document
+
+
+@pytest.mark.exigence("ES-22")
+def test_rapports_publies_sur_le_corpus_de_reference() -> None:
+    manifeste = RACINE / "banc" / "reference" / "corpus.toml"
+    empreinte = hashlib.sha256(manifeste.read_bytes()).hexdigest()
+    for dossier in (PREMIERE, SECONDE):
+        doc = _publie(dossier)
+        assert doc["publiable"] is True
+        assert doc["corpus"]["empreinte"] == empreinte
+        assert doc["reseau"]["tentatives"] == 0
+        # Le Markdown publié est celui que le banc rend du JSON, sans retouche.
+        rendu = sortie.markdown(doc)
+        assert (dossier / "evaluation.md").read_text(encoding="utf-8") == rendu
+    assert _publie(PREMIERE)["versions"]["catalogue"]["version"] == "0.20.1"
+
+
+def test_seconde_passe_avec_le_catalogue_livre() -> None:
+    doc = _publie(SECONDE)
+    assert doc["versions"]["catalogue"]["empreinte"] == _empreinte(LIVRE)
+    assert not doc["versions"]["catalogue"]["fourni_par_utilisateur"]
+    # Aucun indice au-dessus de sa mesure (guide du catalogue, §5).
+    assert not [e for e in doc["ecarts"] if e.startswith("l'indice ")]
+
+
+def test_niveaux_sans_effet_sur_les_taux_des_regles() -> None:
+    """Les niveaux ne changent pas les constats (ADR-0278) : mêmes taux par règle et par
+    technique dans les deux passes ; seul le taux par fichier peut changer."""
+    premiere, seconde = _publie(PREMIERE), _publie(SECONDE)
+
+    def taux(doc: dict[str, Any]) -> dict[str, Any]:
+        return {r["identifiant"]: r["faux_positifs"] for r in doc["regles"]}
+
+    assert taux(premiere) == taux(seconde)
+    assert premiere["techniques"] == seconde["techniques"]
+    assert premiere["fichiers"]["total"] == seconde["fichiers"]["total"]
+
+
+def test_catalogue_livre_inscrit_d_apres_la_premiere_passe() -> None:
+    doc = _publie(PREMIERE)
+    attendues = {
+        i.identifiant: i
+        for i in inscription.inscriptions(doc, doc["versions"]["catalogue"]["empreinte"])
+    }
+    livre = catalogues.charger(manifestes.decouvrir()).regles
+    evaluees = {r.identifiant: r for r in livre if r.evaluation is not None}
+    assert set(evaluees) == set(attendues)
+    for identifiant, regle in evaluees.items():
+        attendue = attendues[identifiant]
+        assert regle.evaluation is not None
+        assert regle.niveau is not None
+        assert regle.niveau.value == attendue.niveau
+        assert (regle.evaluation.effectif, regle.evaluation.corpus) == (
+            attendue.effectif,
+            attendue.corpus,
+        )
+        assert regle.evaluation.borne_superieure == attendue.borne
+        assert regle.evaluation.taux_faux_positifs == attendue.taux
+
+
+@pytest.mark.exigence("NF-09")
+def test_fiches_accordees_au_rapport_publie() -> None:
+    doc = _publie(SECONDE)
+    noms = {m.identifiant: f"{m.fiche}.md" for m in manifestes.decouvrir()}
+    assert set(doc["versions"]["techniques"]) == set(noms)
+    for module, nom in noms.items():
+        texte = (fiches.SOURCE / nom).read_text(encoding="utf-8")
+        lien = "../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md"
+        assert fiches.bloc_des_taux(module, doc, lien) in texte, nom

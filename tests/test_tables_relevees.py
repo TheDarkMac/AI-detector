@@ -14,13 +14,14 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from catalogues import niveau_mesure
 from metadonnees import app1_exif, ascii_, dqt, jpeg_image, tiff
 from test_signatures import CATALOGUE, constats
 
 from voight_kampff._regles import Application
 from voight_kampff._travail import garde
 from voight_kampff.modules import image
-from voight_kampff.rapport.modele import Categorie, Direction, Fondement, Niveau
+from voight_kampff.rapport.modele import Categorie, Direction, Fondement
 
 pytestmark = pytest.mark.exigence("F-30")
 
@@ -106,17 +107,17 @@ def test_chaque_regle_nomme_ses_tables() -> None:
 
 @pytest.mark.exigence("ES-20")
 def test_nature_des_regles() -> None:
-    # ADR-0191 : indice faible, vérification déterministe ; Photoshop vers la transformation,
-    # appareil vers l'authenticité.
+    # ADR-0191, ADR-0278 : indice au niveau de sa mesure, vérification déterministe ; Photoshop
+    # vers la transformation, appareil vers l'authenticité.
     for (famille, _), identifiant in REGLE_DE.items():
         regle = REGLES[identifiant]
         assert regle.application is Application.MOTEUR
         assert regle.categorie is Categorie.INDICE
-        assert (regle.niveau, regle.evaluation) == (Niveau.FAIBLE, None)
+        assert niveau_mesure(regle)  # niveau permis par sa mesure (T101, ADR-0278)
         assert regle.fondement is Fondement.VERIFICATION_DETERMINISTE
         attendue = Direction.TRANSFORMATION if famille == "photoshop" else Direction.AUTHENTICITE
         assert regle.direction is attendue
-        assert regle.version == "1"
+        assert regle.version == ("1" if regle.evaluation is None else "2")  # T101 : évaluée
 
 
 def test_concordance_du_releve() -> None:
