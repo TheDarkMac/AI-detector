@@ -94,6 +94,8 @@ Après une fiche technique modifiée ou ajoutée (`docs/techniques/`), recopier 
 uv run --locked python -m banc.fiches
 ```
 
+Le corpus de référence (T100) se constitue par les six scripts de `banc/reference/`, qui téléchargent depuis Wikimedia Commons, data.gouv.fr et Wikipédia ; ses fichiers restent hors du dépôt, son manifeste `banc/reference/corpus.toml` est écrit par la dernière phase, jamais à la main (procédure : [`docs/verification/corpus-de-reference.md`](docs/verification/corpus-de-reference.md), ADR-0272 à ADR-0276). Un nouveau passage donne une nouvelle version du corpus.
+
 Sous Linux, le test du banc complet s'exécute dans un espace de noms réseau vide (`unshare -rn`) ; il est sauté si le système le refuse, sauf sur la CI (ADR-0100).
 
 Ajouter ou mettre à jour une dépendance : `uv add` ou `uv lock --upgrade-package <nom>`, puis commiter `uv.lock` avec `pyproject.toml`. Les critères d'admission d'une bibliothèque (ADR-0043) sont consignés dans la PR.

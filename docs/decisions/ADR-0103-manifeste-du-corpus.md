@@ -59,3 +59,4 @@ Option A, schéma `banc/corpus.schema.json` :
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T17 : statut « Accepté » |
+| 2026-11-25 | Appliqué en T100 : manifeste du corpus de référence écrit par script, au dépôt, fichiers hors du dépôt (ADR-0272, ADR-0276) |

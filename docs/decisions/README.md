@@ -286,3 +286,8 @@ Un ADR (*Architecture Decision Record*) consigne une décision, son contexte, **
 | [ADR-0269](ADR-0269-detail-d-une-regle-par-vk-regle.md) | Détail d'une règle par `vk --regle IDENTIFIANT`, dans la forme des fichiers du catalogue | Accepté | 2026-11-25 |
 | [ADR-0270](ADR-0270-fiche-citee-par-la-couverture.md) | La couverture du rapport HTML cite la commande de la fiche de chaque technique livrée | Accepté | 2026-11-25 |
 | [ADR-0271](ADR-0271-publication-par-le-paquet-et-versions-de-t95.md) | Publication par le paquet, sans changement de la release ; versions de T95 | Accepté | 2026-11-25 |
+| [ADR-0272](ADR-0272-corpus-reel-de-sources-libres.md) | Corpus de référence réel, tiré de sources libres (Commons, data.gouv.fr, Wikipédia), fichiers hors du dépôt | Accepté | 2026-11-25 |
+| [ADR-0273](ADR-0273-verite-des-originaux.md) | Vérité des originaux : authentiques datés d'avant le 2022-08-22, générés déclarés et textes de l'assistant | Accepté | 2026-11-25 |
+| [ADR-0274](ADR-0274-effectifs-et-parties.md) | Effectifs : 400 authentiques en évaluation par famille, un original sur trois en calibrage | Accepté | 2026-11-25 |
+| [ADR-0275](ADR-0275-derives-fabriques-par-scripts.md) | Transformés, retouchés et malformés fabriqués sur le poste par des scripts versionnés | Accepté | 2026-11-25 |
+| [ADR-0276](ADR-0276-manifeste-et-description-du-corpus.md) | Manifeste au dépôt, version 1.0.0, description publiée ; pas de sous-catégorie « références » | Proposé | 2026-11-25 |
