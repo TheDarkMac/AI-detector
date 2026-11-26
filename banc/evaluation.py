@@ -11,11 +11,16 @@ calcule à partir de ces résultats :
 
 Chaque fichier est analysé deux fois : deux rapports différents dans les conditions de la
 garantie sont un défaut de reproductibilité, compté comme un écart (NF-06, ADR-0113).
+
+Plusieurs fichiers peuvent être analysés à la fois, chacun dans ses processus de travail, et
+une évaluation interrompue reprendre là où elle s'est arrêtée (ADR-0277) : les résultats
+restent dans l'ordre du manifeste, et les mesures n'en dépendent pas.
 """
 
 import dataclasses
 from collections import Counter
 from collections.abc import Callable, Iterable, Mapping, Sequence
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from enum import StrEnum
 from pathlib import Path
@@ -113,6 +118,32 @@ class ConstatRetenu:
         """Preuve ou indice : un constat qui pointe vers une hypothèse."""
         return self.categorie is not Categorie.INFORMATION_NEUTRE
 
+    def vers_dict(self) -> dict[str, Any]:
+        return {
+            "regle": self.regle,
+            "module": self.module,
+            "categorie": self.categorie.value,
+            "direction": self.direction.value,
+            "niveau": None if self.niveau is None else self.niveau.value,
+        }
+
+    @classmethod
+    def depuis_dict(cls, document: Mapping[str, Any]) -> "ConstatRetenu":
+        niveau = document["niveau"]
+        return cls(
+            _chaine(document["regle"]),
+            _chaine(document["module"]),
+            Categorie(document["categorie"]),
+            Direction(document["direction"]),
+            None if niveau is None else Niveau(niveau),
+        )
+
+
+def _chaine(valeur: object) -> str:
+    if not isinstance(valeur, str):
+        raise TypeError("chaîne attendue")
+    return valeur
+
 
 @dataclass(frozen=True, slots=True)
 class ResultatFichier:
@@ -140,6 +171,38 @@ class ResultatFichier:
 
     def constats_de(self, module: str) -> Iterable[ConstatRetenu]:
         return (constat for constat in self.constats if constat.module == module)
+
+    def vers_dict(self) -> dict[str, Any]:
+        """Tout le résultat, sauf l'entrée, que le chemin et l'empreinte désignent."""
+        return {
+            "chemin": self.entree.chemin,
+            "empreinte": self.entree.empreinte,
+            "techniques": {module: etat.value for module, etat in self.techniques.items()},
+            "constats": [constat.vers_dict() for constat in self.constats],
+            "refus": self.refus,
+            "erreur": self.erreur,
+            "interrompue": self.interrompue,
+            "non_reproduit": list(self.non_reproduit),
+        }
+
+    @classmethod
+    def depuis_dict(cls, entree: Entree, document: Mapping[str, Any]) -> "ResultatFichier":
+        """Inverse de :meth:`vers_dict` ; ``TypeError``, ``KeyError`` ou ``ValueError`` sinon."""
+        if (document["chemin"], document["empreinte"]) != (entree.chemin, entree.empreinte):
+            raise ValueError("résultat d'un autre fichier")
+        interrompue = document["interrompue"]
+        if not isinstance(interrompue, bool):
+            raise TypeError("booléen attendu")
+        refus, erreur = document["refus"], document["erreur"]
+        return cls(
+            entree,
+            {_chaine(module): EtatFichier(etat) for module, etat in document["techniques"].items()},
+            tuple(ConstatRetenu.depuis_dict(constat) for constat in document["constats"]),
+            refus=None if refus is None else _chaine(refus),
+            erreur=None if erreur is None else _chaine(erreur),
+            interrompue=interrompue,
+            non_reproduit=tuple(_chaine(ecart) for ecart in document["non_reproduit"]),
+        )
 
 
 def depuis_analyse(entree: Entree, analyse: Analyse, modules: Iterable[str]) -> ResultatFichier:
@@ -198,38 +261,95 @@ def reproduction(premiere: Issue, seconde: Issue) -> tuple[str, ...]:
             return ("analysé une fois, refusé l'autre",)
 
 
+def _analyser_entree(
+    corpus: Corpus,
+    entree: Entree,
+    analyser_fichier: Callable[[Path], Analyse],
+    modules: Sequence[str],
+) -> ResultatFichier:
+    """Deux analyses d'un fichier ; le résultat retenu est celui de la première (ADR-0113)."""
+    chemin = corpus.verifier(entree)
+    try:
+        premiere = _issue(analyser_fichier, chemin)
+        seconde = _issue(analyser_fichier, chemin)
+    except ReseauInterdit:
+        raise
+    except Exception as erreur:  # arrêt brutal : c'est ce que le §8 demande de compter
+        sans_analyse = dict.fromkeys(modules, EtatFichier.NON_ANALYSABLE)
+        return ResultatFichier(entree, sans_analyse, erreur=type(erreur).__name__)
+    ecarts = reproduction(premiere, seconde)
+    if isinstance(premiere, AnalyseRefusee):
+        sans_analyse = dict.fromkeys(modules, EtatFichier.NON_ANALYSABLE)
+        resultat = ResultatFichier(entree, sans_analyse, refus=premiere.motif.value)
+    else:
+        resultat = depuis_analyse(entree, premiere, modules)
+    return dataclasses.replace(resultat, non_reproduit=ecarts)
+
+
 def analyser_corpus(
     corpus: Corpus,
     partie: Partie,
     analyser_fichier: Callable[[Path], Analyse],
     modules: Sequence[str],
+    *,
+    processus: int = 1,
+    deja: Mapping[str, ResultatFichier] | None = None,
+    noter: Callable[[ResultatFichier], None] | None = None,
 ) -> list[ResultatFichier]:
-    """Analyse chaque fichier de la partie deux fois, dans l'ordre du manifeste.
+    """Analyse chaque fichier de la partie deux fois ; résultats dans l'ordre du manifeste.
 
     Un fichier absent ou modifié arrête tout (``CorpusInvalide``) ; une tentative d'accès au
     réseau aussi (:class:`ReseauInterdit`). Un refus est un résultat ; toute autre exception est
     un arrêt brutal, noté par son seul nom, et l'évaluation continue. Le résultat retenu est
     celui de la première analyse ; la seconde n'est comparée qu'à elle (ADR-0113).
+
+    ``processus`` fichiers sont analysés à la fois, chacun par un fil qui attend ses processus de
+    travail. Les fichiers de ``deja``, désignés par leur chemin, ne sont pas réanalysés : ils
+    viennent d'un journal de reprise (ADR-0277). ``noter`` reçoit chaque nouveau résultat dès
+    qu'il est connu, dans le fil de l'appelant ; après un arrêt, les résultats notés restent
+    valables.
     """
-    sans_analyse = dict.fromkeys(modules, EtatFichier.NON_ANALYSABLE)
-    resultats = []
-    for entree in corpus.partie(partie):
-        chemin = corpus.verifier(entree)
+    if processus < 1:
+        raise ValueError("au moins un processus")
+    deja = deja or {}
+    entrees = corpus.partie(partie)
+    resultats: dict[str, ResultatFichier] = {
+        entree.chemin: deja[entree.chemin] for entree in entrees if entree.chemin in deja
+    }
+    restantes = [entree for entree in entrees if entree.chemin not in resultats]
+    with ThreadPoolExecutor(max_workers=processus) as executeur:
+        en_cours: set[Future[ResultatFichier]] = set()
+        suivantes = iter(restantes)
         try:
-            premiere = _issue(analyser_fichier, chemin)
-            seconde = _issue(analyser_fichier, chemin)
-        except ReseauInterdit:
-            raise
-        except Exception as erreur:  # arrêt brutal : c'est ce que le §8 demande de compter
-            resultats.append(ResultatFichier(entree, sans_analyse, erreur=type(erreur).__name__))
-            continue
-        ecarts = reproduction(premiere, seconde)
-        if isinstance(premiere, AnalyseRefusee):
-            resultat = ResultatFichier(entree, sans_analyse, refus=premiere.motif.value)
-        else:
-            resultat = depuis_analyse(entree, premiere, modules)
-        resultats.append(dataclasses.replace(resultat, non_reproduit=ecarts))
-    return resultats
+            while True:
+                # Au plus « processus » analyses soumises : un arrêt n'en laisse pas d'autres.
+                for entree in suivantes:
+                    en_cours.add(
+                        executeur.submit(
+                            _analyser_entree, corpus, entree, analyser_fichier, modules
+                        )
+                    )
+                    if len(en_cours) >= processus:
+                        break
+                if not en_cours:
+                    break
+                finies, en_cours = wait(en_cours, return_when=FIRST_COMPLETED)
+                # Les résultats obtenus sont notés avant de relancer l'erreur d'un autre fichier.
+                erreurs: list[BaseException] = []
+                for future in finies:
+                    if (erreur := future.exception()) is not None:
+                        erreurs.append(erreur)
+                        continue
+                    resultat = future.result()
+                    resultats[resultat.entree.chemin] = resultat
+                    if noter is not None:
+                        noter(resultat)
+                if erreurs:
+                    raise erreurs[0]  # CorpusInvalide ou ReseauInterdit
+        finally:
+            for future in en_cours:
+                future.cancel()
+    return [resultats[entree.chemin] for entree in entrees]
 
 
 # Mesures
