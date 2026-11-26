@@ -5,7 +5,7 @@
 
 [[regle]]
 identifiant = "R-DOUBLEJPEG-001"
-version = "1"
+version = "2"
 module = "doublejpeg"
 titre = "Luminance d'un JPEG quantifiée deux fois"
 description = "JPEG dont la luminance porte, à au moins 4 des 9 premières fréquences examinées, la trace d'une quantification antérieure : l'histogramme des coefficients du fichier est expliqué au moins quatre fois mieux par deux quantifications successives, à un pas antérieur puis au pas de la table du fichier, que par une seule. L'image avant compression est estimée par la luminance recalculée et recadrée de 4 pixels, ce qui désaccorde la grille des blocs (Lukáš et Fridrich, DFRWS 2003, §4.1). Une image JPEG décompressée puis enregistrée de nouveau en JPEG, sans recadrage ni redimensionnement, porte cette trace (F-31, ADR-0186)."
@@ -16,13 +16,20 @@ direction = "transformation"
 fondement = "mesure"
 niveau = "faible"
 limites = [
-  "Seuils fixés à la main sur des essais, pas mesurés sur un corpus (T100) : des images compressées une seule fois, surtout des images de synthèse ou des aplats, y portent jusqu'à 2 traces sur 9 ; une double compression à qualités proches (par exemple 70 puis 75, ou 80 puis 85) peut rester sous le seuil.",
+  "Seuils fixés à la main sur des essais, avant toute mesure ; sur la partie évaluation du corpus de référence 1.0.0 (T101), la règle se déclenche sur 27 des 608 JPEG authentiques analysés (4,4 %), d'où le niveau « faible ». Des images compressées une seule fois, surtout des images de synthèse ou des aplats, portent jusqu'à 2 traces sur 9 ; une double compression à qualités proches (par exemple 70 puis 75, ou 80 puis 85) peut rester sous le seuil.",
   "Aucune trace quand les deux compressions emploient les mêmes tables, ni à une fréquence où le pas du fichier est un multiple du pas antérieur ; la trace est la plus nette quand la seconde compression est plus fine que la première.",
   "Un recadrage qui décale la grille des blocs, un redimensionnement ou une rotation entre les deux compressions effacent la trace : la double compression non alignée n'est pas cherchée.",
   "Seule la première composante est examinée, sur une région du haut de l'image (au plus 32 768 blocs, ADR-0189) : la règle ne localise pas une zone retouchée et ne voit pas une trace limitée au reste de l'image.",
   "Le constat dit que l'image a été enregistrée au moins deux fois en JPEG, pas pourquoi : messageries, réseaux sociaux et logiciels d'édition réenregistrent les images ; l'image avant ces étapes peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.044407894736842105
+effectif = 608
+borne_superieure = 0.06383989189597326
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [regle.calibrage]
 methode = "manuelle"

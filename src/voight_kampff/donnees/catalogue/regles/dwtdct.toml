@@ -5,7 +5,7 @@
 
 [[regle]]
 identifiant = "R-DWTDCT-001"
-version = "1"
+version = "2"
 module = "dwtdct"
 titre = "Filigrane dwtDct de Stable Diffusion 1"
 description = "La composante U de l'image porte, dans la méthode dwtDct de la bibliothèque invisible-watermark, au moins 98 des 136 bits du message « StableDiffusionV1 » que pose le script de référence de Stable Diffusion 1 (CompVis, scripts/txt2img.py), lu sur huit bits comme il le pose. Sur une image non marquée, la probabilité d'au moins 98 bits concordants est de 2,2 x 10^-7 sous l'hypothèse d'un ordre des scores indépendant du message (ADR-0204)."
@@ -14,14 +14,21 @@ phrase = { fr = "La chrominance de l'image porte {concordants} des 136 bits du f
 categorie = "indice"
 direction = "origine_ia"
 fondement = "mesure"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Le message est public et fixe, le schéma n'est pas cryptographique : n'importe qui peut le poser sur une photographie avec la bibliothèque. Le constat n'établit pas qui l'a posé (ADR-0021).",
   "Son absence ne dit rien : la plupart des interfaces de Stable Diffusion ne le posent pas, et un recadrage d'un seul pixel en haut ou à gauche, un redimensionnement ou une rotation l'effacent. Une compression JPEG à chrominance sous-échantillonnée (4:2:0) l'affaiblit, même à qualité 95.",
-  "Seuil fixé par le calcul et vérifié sur un relevé d'images de Wikimedia Commons versées avant la publication de Stable Diffusion 1, pas mesuré sur le corpus de référence (T100) : des images aux couleurs très uniformes s'écartent de l'hypothèse du calcul.",
+  "Seuil fixé par le calcul et vérifié sur un relevé d'images de Wikimedia Commons versées avant la publication de Stable Diffusion 1 ; aucun déclenchement sur les 752 images authentiques de la partie évaluation du corpus de référence 1.0.0 (T101). Des images aux couleurs très uniformes s'écartent de l'hypothèse du calcul.",
   "Seuls le JPEG et le PNG sont lus, jusqu'à 4 194 304 pixels, puis le haut de l'image au-delà ; une image en niveaux de gris ou de moins de 65 536 pixels n'est pas lue.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 752
+borne_superieure = 0.005082360561020009
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [regle.calibrage]
 methode = "manuelle"
@@ -34,7 +41,7 @@ parametre = "concordants"
 
 [[regle]]
 identifiant = "R-DWTDCT-002"
-version = "1"
+version = "2"
 module = "dwtdct"
 titre = "Filigrane dwtDct de SDXL"
 description = "La composante U de l'image porte, dans la méthode dwtDct de la bibliothèque invisible-watermark, au moins 42 des 48 bits du message 0xB3EC907BB19E que posent les codes de SDXL (Stability-AI, generative-models ; diffusers), lu en flottant comme ils le posent. Le message est lu dans l'ordre des couleurs qu'attend la bibliothèque, puis le rouge et le bleu échangés, comme le pipeline SDXL de diffusers l'a posé du 2023-07-06 au 2024-04-26 : la meilleure des deux lectures est gardée. Sur une image non marquée, la probabilité d'au moins 42 bits concordants est au plus de 3,6 x 10^-7 (deux lectures de 1,8 x 10^-7 chacune) sous l'hypothèse d'un ordre des scores indépendant du message (ADR-0204)."
@@ -43,14 +50,21 @@ phrase = { fr = "La chrominance de l'image porte {concordants} des 48 bits du fi
 categorie = "indice"
 direction = "origine_ia"
 fondement = "mesure"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Le message est public et fixe, le schéma n'est pas cryptographique : n'importe qui peut le poser sur une photographie avec la bibliothèque. Le constat n'établit pas qui l'a posé (ADR-0021).",
   "Son absence ne dit rien : diffusers ne le pose que si invisible-watermark est installée, d'autres interfaces jamais, et un recadrage d'un seul pixel en haut ou à gauche, un redimensionnement ou une rotation l'effacent. Une compression JPEG à chrominance sous-échantillonnée (4:2:0) l'affaiblit, même à qualité 95.",
-  "Seuil fixé par le calcul et vérifié sur un relevé d'images de Wikimedia Commons versées avant la publication de Stable Diffusion 1, pas mesuré sur le corpus de référence (T100) : des images aux couleurs très uniformes s'écartent de l'hypothèse du calcul.",
+  "Seuil fixé par le calcul et vérifié sur un relevé d'images de Wikimedia Commons versées avant la publication de Stable Diffusion 1 ; aucun déclenchement sur les 752 images authentiques de la partie évaluation du corpus de référence 1.0.0 (T101). Des images aux couleurs très uniformes s'écartent de l'hypothèse du calcul.",
   "Seuls le JPEG et le PNG sont lus, jusqu'à 4 194 304 pixels, puis le haut de l'image au-delà ; une image en niveaux de gris ou de moins de 65 536 pixels n'est pas lue.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 752
+borne_superieure = 0.005082360561020009
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [regle.calibrage]
 methode = "manuelle"
@@ -63,7 +77,7 @@ parametre = "concordants"
 
 [[regle]]
 identifiant = "R-DWTDCT-003"
-version = "1"
+version = "2"
 module = "dwtdct"
 titre = "Filigrane dwtDct de FLUX.1"
 description = "La composante U de l'image porte, dans la méthode dwtDct de la bibliothèque invisible-watermark, au moins 39 des 46 bits du message que pose le code de référence de FLUX.1 (Black Forest Labs, src/flux/util.py : 0x2AFE879CF52E écrit par bin(), sans ses deux zéros de tête), lu en flottant comme il le pose. Sur une image non marquée, la probabilité d'au moins 39 bits concordants est de 9,7 x 10^-7 sous l'hypothèse d'un ordre des scores indépendant du message (ADR-0204)."
@@ -72,14 +86,21 @@ phrase = { fr = "La chrominance de l'image porte {concordants} des 46 bits du fi
 categorie = "indice"
 direction = "origine_ia"
 fondement = "mesure"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Le message est public et fixe, le schéma n'est pas cryptographique : n'importe qui peut le poser sur une photographie avec la bibliothèque. Le constat n'établit pas qui l'a posé (ADR-0021).",
   "Son absence ne dit rien : les services et interfaces qui emploient FLUX.1 ne le posent pas tous, et un recadrage d'un seul pixel en haut ou à gauche, un redimensionnement ou une rotation l'effacent. Une compression JPEG à chrominance sous-échantillonnée (4:2:0) l'affaiblit, même à qualité 95.",
-  "Seuil fixé par le calcul et vérifié sur un relevé d'images de Wikimedia Commons versées avant la publication de Stable Diffusion 1, pas mesuré sur le corpus de référence (T100) : des images aux couleurs très uniformes s'écartent de l'hypothèse du calcul.",
+  "Seuil fixé par le calcul et vérifié sur un relevé d'images de Wikimedia Commons versées avant la publication de Stable Diffusion 1 ; aucun déclenchement sur les 752 images authentiques de la partie évaluation du corpus de référence 1.0.0 (T101). Des images aux couleurs très uniformes s'écartent de l'hypothèse du calcul.",
   "Seuls le JPEG et le PNG sont lus, jusqu'à 4 194 304 pixels, puis le haut de l'image au-delà ; une image en niveaux de gris ou de moins de 65 536 pixels n'est pas lue.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 752
+borne_superieure = 0.005082360561020009
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [regle.calibrage]
 methode = "manuelle"

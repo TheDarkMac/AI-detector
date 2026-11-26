@@ -4,7 +4,7 @@
 
 [[regle]]
 identifiant = "R-PAGESPDF-001"
-version = "1"
+version = "2"
 module = "pagespdf"
 titre = "Texte posé sur un autre texte"
 description = "Dans le contenu d'une page de la dernière version, ou l'apparence d'une annotation visible, un texte d'au moins deux signes est posé sur un texte différent déjà posé, d'au moins deux signes lui aussi, et leurs boîtes se recouvrent au moins pour moitié de la plus petite (ADR-0214). La boîte d'un texte va de son point de départ à la somme des avancées de ses glyphes, et de la descente à la montée de sa police (ADR-0215). Le même texte redit, faux gras ou ombre, et le texte invisible ne comptent pas."
@@ -19,9 +19,16 @@ limites = [
   "Un texte d'un seul signe posé sur un autre (accent composé à part, chiffre seul changé) n'est pas compté ici : l'observation pagespdf.superpositions_d_un_signe le compte à part.",
   "Les boîtes sont calculées d'après les largeurs que la police déclare, sans dessiner les glyphes ni tenir compte du découpage (W, W*) : un texte masqué par un découpage ou peint dans la couleur du fond compte comme visible.",
   "Seule la dernière version est interprétée ; une police dont les largeurs ne se lisent pas (CMap autre qu'Identity-H, écriture verticale) n'est pas mesurée (pagespdf.textes_non_mesures).",
-  "Pas mesurée sur le corpus de référence (T100) : la part de documents ordinaires qui la déclenchent n'est pas connue.",
+  "Mesurée sur la partie évaluation du corpus de référence 1.0.0 (T101) : déclenchée sur 23 des 397 PDF authentiques analysés (5,8 %), d'où le niveau « faible ».",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.05793450881612091
+effectif = 397
+borne_superieure = 0.08543037315797072
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [regle.calibrage]
 methode = "manuelle"
@@ -39,7 +46,7 @@ parametre = "page"
 
 [[regle]]
 identifiant = "R-PAGESPDF-002"
-version = "1"
+version = "2"
 module = "pagespdf"
 titre = "Rectangle opaque peint sur un texte"
 description = "Dans le contenu d'une page de la dernière version, ou l'apparence d'une annotation visible, un rectangle plein et opaque (opacité de remplissage 1, mode de fusion normal, sans masque doux) est peint sur un texte déjà posé, qu'il recouvre au moins pour moitié (ADR-0214) : le texte reste dans le fichier mais ne se voit plus. Un nouveau texte peut avoir été écrit dessus (R-PAGESPDF-001)."
@@ -48,14 +55,21 @@ phrase = { fr = "{caches} rectangle(s) opaque(s) peint(s) sur un texte déjà po
 categorie = "indice"
 direction = "retouche"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Un caviardage mal fait (rectangle noir sur un texte laissé dans le fichier) la déclenche : le texte caché reste lisible par quiconque l'extrait, ce qui compte aussi avant de publier le document.",
   "Seuls les rectangles (opérateur re, ou quatre segments alignés sur les axes) sont comptés : une image, une forme courbe ou un dégradé posés sur un texte ne le sont pas.",
   "La couleur n'est pas comparée à celle du fond : un rectangle coloré peint après le texte, par un logiciel qui dessine les fonds après le texte, la déclenche.",
-  "Mêmes limites de mesure des boîtes que R-PAGESPDF-001 ; pas mesurée sur le corpus de référence (T100).",
+  "Mêmes limites de mesure des boîtes que R-PAGESPDF-001. Mesurée sur la partie évaluation du corpus de référence 1.0.0 (T101) : déclenchée sur 7 des 397 PDF authentiques analysés (1,8 %).",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.017632241813602016
+effectif = 397
+borne_superieure = 0.035943280864485797
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [regle.calibrage]
 methode = "manuelle"
@@ -73,7 +87,7 @@ parametre = "page"
 
 [[regle]]
 identifiant = "R-PAGESPDF-003"
-version = "1"
+version = "2"
 module = "pagespdf"
 titre = "Même police en plusieurs incorporations sur une page"
 description = "Sur une page de la dernière version, une même police (son nom, sans le préfixe d'un sous-ensemble) peint du texte visible par au moins deux polices d'incorporation différente : sous-ensembles de préfixes différents, police incorporée et non incorporée, ou programmes de types différents (FontFile, FontFile2, FontFile3) (ADR-0216). Un logiciel qui écrit une page d'un seul tenant incorpore d'ordinaire une police une seule fois ; deux incorporations viennent souvent de deux logiciels, ou d'un texte ajouté à la page."
@@ -87,9 +101,16 @@ limites = [
   "Un document fusionné ou composé de pages de plusieurs origines la déclenche sur les pages où ces origines se mêlent (en-tête ajouté, tampon, page assemblée) ; un logiciel qui découpe une police en plusieurs sous-ensembles (plus de 256 glyphes employés) aussi.",
   "La police est reconnue à son nom déclaré (/BaseFont) : deux polices de même nom mais de dessins différents ne sont pas distinguées, et deux noms d'une même police (ArialMT, Arial) ne sont pas rapprochés.",
   "Les polices Type3, sans nom de police, ne sont pas comparées.",
-  "Pas mesurée sur le corpus de référence (T100) : la part de documents ordinaires qui la déclenchent n'est pas connue.",
+  "Mesurée sur la partie évaluation du corpus de référence 1.0.0 (T101) : déclenchée sur 27 des 397 PDF authentiques analysés (6,8 %), d'où le niveau « faible ».",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.06801007556675064
+effectif = 397
+borne_superieure = 0.09714176059222054
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [regle.calibrage]
 methode = "manuelle"
@@ -107,7 +128,7 @@ parametre = "page"
 
 [[regle]]
 identifiant = "R-PAGESPDF-004"
-version = "1"
+version = "2"
 module = "pagespdf"
 titre = "Codes dessinés hors de la plage déclarée d'une police"
 description = "Un texte visible d'une page de la dernière version emploie, avec une police simple qui déclare ses largeurs, des codes hors de la plage qu'elle déclare (/FirstChar, /LastChar) (ADR-0216). Le logiciel qui a écrit la police n'y a mis que les codes de son texte : un code hors plage a été écrit après, d'ordinaire par un outil qui réemploie la police pour un texte nouveau ; un lecteur l'affiche avec une largeur par défaut, souvent sans glyphe."
@@ -116,14 +137,21 @@ phrase = { fr = "{codes} code(s) de caractère dessiné(s) hors de la plage que 
 categorie = "indice"
 direction = "retouche"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Seules les polices simples qui déclarent leurs largeurs (Type1, TrueType) sont lues : un code d'une police composite (Type0) absent de ses largeurs prend la largeur par défaut, ce que la norme permet ; une police Type3 n'est pas lue ici.",
   "Un code de la plage dont le glyphe manque au sous-ensemble incorporé n'est pas vu : le programme de la police n'est pas lu.",
   "Un logiciel peut déclarer une plage plus étroite que ses codes par erreur ; la règle ne dit pas qui a écrit le texte.",
-  "Pas mesurée sur le corpus de référence (T100) : la part de documents ordinaires qui la déclenchent n'est pas connue.",
+  "Mesurée sur la partie évaluation du corpus de référence 1.0.0 (T101) : déclenchée sur 1 des 397 PDF authentiques analysés (0,3 %).",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0025188916876574307
+effectif = 397
+borne_superieure = 0.014128205919519833
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [regle.calibrage]
 methode = "manuelle"

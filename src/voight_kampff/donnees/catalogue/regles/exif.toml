@@ -3,7 +3,7 @@
 
 [[regle]]
 identifiant = "R-EXIF-001"
-version = "1"
+version = "2"
 module = "exif"
 titre = "Générateur nommé par l'étiquette Software"
 description = "L'étiquette Software (TIFF 6.0) du répertoire principal nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
@@ -12,13 +12,20 @@ phrase = { fr = "L'étiquette EXIF Software, qui nomme le logiciel de création,
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Déclaration du fichier : quiconque peut écrire ou effacer cette étiquette ; son absence ne dit rien (F-14).",
   "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
   "Le constat dit ce que l'étiquette nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 825
+borne_superieure = 0.004634732951413764
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "exif.ifd0.Software"
@@ -27,7 +34,7 @@ parametre = "logiciel"
 
 [[regle]]
 identifiant = "R-EXIF-002"
-version = "1"
+version = "2"
 module = "exif"
 titre = "Paramètres de génération au format d'AUTOMATIC1111 dans le commentaire EXIF"
 description = "L'étiquette UserComment porte des paramètres de génération au format qu'écrit l'interface stable-diffusion-webui d'AUTOMATIC1111 dans un JPEG ou un WebP (modules/images.py, par piexif) : la requête, puis une ligne « Steps: …, Sampler: … »."
@@ -36,13 +43,20 @@ phrase = { fr = "Le commentaire EXIF (UserComment) porte des paramètres de gén
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Déclaration du fichier : quiconque peut écrire ou effacer ce commentaire ; une conversion ou une plateforme de partage l'efface souvent ; son absence ne dit rien (F-14).",
   "Le constat dit le format des paramètres, pas l'outil : d'autres interfaces peuvent écrire le même format.",
   "Seuls les 4 096 premiers caractères du commentaire sont lus (ADR-0118) : une requête plus longue cache la ligne des paramètres.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 825
+borne_superieure = 0.004634732951413764
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "exif.exif.UserComment"
@@ -347,7 +361,7 @@ egal = false
 
 [[regle]]
 identifiant = "R-EXIF-014"
-version = "1"
+version = "2"
 module = "exif"
 titre = "Capture d'écran déclarée par le commentaire EXIF (UserComment)"
 description = "L'étiquette EXIF UserComment vaut Screenshot, la valeur que macOS et iOS écrivent dans leurs captures d'écran d'après témoignages d'utilisateurs sur la communauté d'Apple (discussions.apple.com, fil 255854599, lu le 2026-11-13), pas une documentation d'Apple (F-06, ADR-0153)."
@@ -356,7 +370,7 @@ phrase = { fr = "Le commentaire EXIF UserComment vaut « Screenshot », la valeu
 categorie = "indice"
 direction = "transformation"
 fondement = "declaration"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Déclaration du fichier : quiconque peut écrire, recopier ou effacer cette étiquette ; son absence ne dit rien (F-14).",
   "Source : témoignages d'utilisateurs sur la communauté d'Apple (discussions.apple.com, fil 255854599, lu le 2026-11-13), pas une documentation d'Apple ; d'autres versions de macOS et d'iOS peuvent écrire autre chose, ou rien, et une capture convertie ou transmise perd souvent cette valeur.",
@@ -364,6 +378,13 @@ limites = [
   "Une capture d'écran reproduit ce qu'affichait l'écran : elle ne dit rien du fichier affiché, qui peut être généré, retouché ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0024242424242424242
+effectif = 825
+borne_superieure = 0.008795679718959303
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "exif.exif.UserComment"
