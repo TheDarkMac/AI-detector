@@ -59,3 +59,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T91](T91-conservation-et-horodatage.md) | Journal de conservation et horodatage des rapports, optionnels | `tache/T91-conservation-et-horodatage` | [#46](https://github.com/TheDarkMac/AI-detector/pull/46) |
 | [T92](T92-affichage-de-la-conservation.md) | Affichage de la conservation des données | `tache/T92-affichage-de-la-conservation` | [#47](https://github.com/TheDarkMac/AI-detector/pull/47) |
 | [T95](T95-publication-du-catalogue-et-des-fiches.md) | Publication du catalogue et des fiches | `tache/T95-publication-du-catalogue-et-des-fiches` | [#48](https://github.com/TheDarkMac/AI-detector/pull/48) |
+| [T100](T100-constitution-du-corpus.md) | Constitution du corpus de référence | `tache/T100-constitution-du-corpus` | [#49](https://github.com/TheDarkMac/AI-detector/pull/49) |
