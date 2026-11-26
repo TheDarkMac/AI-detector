@@ -1,0 +1,12 @@
+Dear Hiring Manager,
+
+I am writing to apply for the Junior Data Analyst position advertised on your website. I recently graduated with a degree in economics, and I am eager to apply my analytical skills in a fast-paced environment such as yours.
+
+During my studies, I completed several projects using Python and SQL, including an analysis of public transport ridership that was later presented to the city council. I also worked part-time as a research assistant, where I cleaned large datasets and produced weekly reports for the team.
+
+What attracts me to your company is its commitment to using data to improve public services. I would welcome the opportunity to contribute to projects that have a real impact on people's daily lives.
+
+Thank you for considering my application. I would be glad to discuss how my background could benefit your team.
+
+Sincerely,
+Daniel Brooks

@@ -9,3 +9,9 @@ banc/essai/** -text
 # Liste de confiance C2PA livrée : fichiers recopiés tels que publiés, empreintes vérifiées par
 # les tests et inscrites au rapport, identiques sur tous les systèmes (ADR-0165, ADR-0171).
 src/voight_kampff/donnees/confiance/** -text
+
+# Manifeste et effectifs du corpus de référence, textes écrits par l'assistant : empreintes
+# vérifiées par les tests, octets identiques sur tous les systèmes (ADR-0276).
+banc/reference/corpus.toml -text
+banc/reference/effectifs.json -text
+banc/reference/textes-ia/** -text

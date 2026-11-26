@@ -1,0 +1,21 @@
+# Données brutes et fichiers du corpus de référence, régénérables par les scripts (ADR-0272) :
+# hors du dépôt. Au dépôt : scripts, textes écrits par l'assistant, manifeste et fichiers.csv.
+listes.*.jsonl
+listes.*.etat.json
+listes.jsonl
+listes.etat.json
+listes.hasard*.json
+choix.jsonl
+telechargements.jsonl
+derives.jsonl
+*.log
+__pycache__/
+.mypy_cache/
+authentiques/
+generes/
+transformes/
+retouches/
+malformes/
+uno.json
+uno.resultats.json
+essai-local/

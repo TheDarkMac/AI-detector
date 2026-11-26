@@ -124,6 +124,9 @@ branch = true
 source = ["voight_kampff", "banc"]
 # Mesure aussi les interpréteurs lancés par les tests (python -m voight_kampff).
 patch = ["subprocess"]
+# Scripts de constitution du corpus de référence (T100) : lancés à la main, avec le réseau et les
+# outils du poste ; les tests n'en emploient que le contrôle des adresses (ADR-0272).
+omit = ["banc/reference/*"]
 
 [tool.coverage.report]
 show_missing = true
