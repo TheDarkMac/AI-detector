@@ -545,11 +545,15 @@ def mesurer(
     resultats: Sequence[ResultatFichier],
     modules: Sequence[str],
     regles: Sequence[Regle],
+    *,
+    reference: bool = True,
 ) -> Evaluation:
     """Mesures d'une partie ; les écarts ne portent sur les taux que pour l'évaluation.
 
     Seules les règles des modules mesurés (``modules``) le sont : celles d'un module désactivé
-    n'ont aucun fichier où il ait été analysé.
+    n'ont aucun fichier où il ait été analysé. Le niveau d'un indice n'est contrôlé que sur un
+    corpus de référence (``reference``) : c'est sur lui qu'il est fondé (ADR-0278) ; un corpus
+    d'essai, de quelques fichiers, ne permettrait aucun niveau.
     """
     techniques = tuple(
         _mesure_technique(module, categorie, resultats)
@@ -577,7 +581,12 @@ def mesurer(
     ]
     evaluation = Evaluation(partie, tuple(resultats), techniques, mesures_regles, par_fichier)
     if partie is Partie.EVALUATION:
-        ecarts += [mesure.ecart for mesure in mesures_regles if mesure.ecart is not None]
+        ecarts += [
+            mesure.ecart
+            for mesure in mesures_regles
+            if mesure.ecart is not None
+            and (reference or mesure.regle.categorie is Categorie.PREUVE)
+        ]
         match evaluation.cible_atteinte:
             case None:
                 ecarts.append("taux par fichier non mesurable : aucun fichier authentique analysé")

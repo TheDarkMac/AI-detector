@@ -156,7 +156,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 3
-    mesures = evaluation.mesurer(partie, resultats, modules, catalogue.regles)
+    mesures = evaluation.mesurer(
+        partie,
+        resultats,
+        modules,
+        catalogue.regles,
+        reference=corpus.nature is corpora.Nature.REFERENCE,
+    )
     doc = sortie.document(
         corpus,
         mesures,
