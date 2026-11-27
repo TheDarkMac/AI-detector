@@ -32,10 +32,31 @@ pytestmark = pytest.mark.exigence("NF-09")
 LIVRE = inscription.CATALOGUE
 
 
+def _sans_evaluations(texte: str) -> str:
+    """Fichier de règles d'avant T101 : aucune évaluation, tous les indices « faible »."""
+    lignes, garde, dans = texte.split("\n"), [], False
+    for ligne in lignes:
+        if ligne.strip() == "[regle.evaluation]":
+            dans = True
+            continue
+        if dans and (re.match(r"^\[\[?[A-Za-z]", ligne) or not ligne.strip()):
+            dans = False
+            if not ligne.strip():
+                continue
+        if not dans:
+            garde.append(re.sub(r'^niveau = "[a-z]+"$', 'niveau = "faible"', ligne))
+    return "\n".join(garde)
+
+
 @pytest.fixture
 def copie(tmp_path: Path) -> Path:
+    """Copie du catalogue livré, ramenée à l'état d'avant toute inscription : les tests ne
+    dépendent pas des évaluations que porte le catalogue livré."""
     dossier = tmp_path / "catalogue"
     shutil.copytree(LIVRE, dossier)
+    for fichier in (dossier / "regles").glob("*.toml"):
+        fichier.write_text(_sans_evaluations(fichier.read_text(encoding="utf-8")), encoding="utf-8")
+    catalogues.charger(manifestes.decouvrir(), dossier)
     return dossier
 
 
@@ -267,9 +288,24 @@ def test_bloc_des_taux() -> None:
     assert "| R-ALPHA-003 v1 | preuve | retouche | 0/3 : 0,0 % [0,0 % ; 56,1 %] | — | — |" in avec
 
 
+def _sans_bloc(texte: str) -> str:
+    """Fiche sans le bloc des taux, ni la ligne vide qui le suit."""
+    if fiches.DEBUT not in texte:
+        return texte
+    avant, reste = texte.split(fiches.DEBUT, 1)
+    return avant + reste.split(fiches.FIN + "\n\n", 1)[1]
+
+
+def _fiches_sans_bloc(dossier: Path) -> Path:
+    """Copie des fiches sans leur bloc des taux, comme avant T101."""
+    shutil.copytree(fiches.SOURCE, dossier)
+    for fiche in dossier.glob("*.md"):
+        fiche.write_text(_sans_bloc(fiche.read_text(encoding="utf-8")), encoding="utf-8")
+    return dossier
+
+
 def test_taux_ecrits_dans_les_fiches(tmp_path: Path) -> None:
-    source = tmp_path / "techniques"
-    shutil.copytree(fiches.SOURCE, source)
+    source = _fiches_sans_bloc(tmp_path / "techniques")
     rapport = tmp_path / "evaluations" / "evaluation.md"
     doc = _doc_exif()
     assert fiches.inscrire_taux(doc, rapport, source) == ["metadonnees-exif.md"]
@@ -277,8 +313,9 @@ def test_taux_ecrits_dans_les_fiches(tmp_path: Path) -> None:
     bloc = fiches.bloc_des_taux("exif", doc, "../evaluations/evaluation.md")
     assert f"## Taux d'erreur\n\n{bloc}\n\n" in texte
     # Le reste de la fiche, rubrique rédigée comprise, est intact.
-    origine = (fiches.SOURCE / "metadonnees-exif.md").read_text(encoding="utf-8")
-    assert texte.replace(f"{bloc}\n\n", "") == origine
+    assert _sans_bloc(texte) == _sans_bloc(
+        (fiches.SOURCE / "metadonnees-exif.md").read_text(encoding="utf-8")
+    )
     # Une seconde écriture remplace le bloc.
     doc["date"] = "2027-01-01T00:00:00Z"
     fiches.inscrire_taux(doc, rapport, source)
@@ -314,8 +351,7 @@ def test_rapport_non_publiable(tmp_path: Path) -> None:
 def test_commande_fiches_taux(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    source, copie = tmp_path / "techniques", tmp_path / "fiches"
-    shutil.copytree(fiches.SOURCE, source)
+    source, copie = _fiches_sans_bloc(tmp_path / "techniques"), tmp_path / "fiches"
     monkeypatch.setattr(fiches, "SOURCE", source)
     monkeypatch.setattr(fiches, "COPIE", copie)
     rapport = tmp_path / "evaluation.json"
@@ -363,15 +399,19 @@ def test_seconde_passe_avec_le_catalogue_livre() -> None:
 
 
 def test_niveaux_sans_effet_sur_les_taux_des_regles() -> None:
-    """Les niveaux ne changent pas les constats (ADR-0278) : mêmes taux par règle et par
-    technique dans les deux passes ; seul le taux par fichier peut changer."""
+    """Les niveaux ne changent pas les constats (ADR-0278) : mêmes taux par règle, mêmes faux
+    positifs et faux négatifs par technique dans les deux passes."""
     premiere, seconde = _publie(PREMIERE), _publie(SECONDE)
 
     def taux(doc: dict[str, Any]) -> dict[str, Any]:
         return {r["identifiant"]: r["faux_positifs"] for r in doc["regles"]}
 
     assert taux(premiere) == taux(seconde)
-    assert premiere["techniques"] == seconde["techniques"]
+    # Une analyse interrompue au délai, mesuré en temps écoulé, peut ne l'être qu'à une passe
+    # (ADR-0277) : seules les parts non analysables en dépendent.
+    for avant, apres in zip(premiere["techniques"], seconde["techniques"], strict=True):
+        cles = ("module", "categorie", "effectif", "faux_positifs", "faux_negatifs", "confusions")
+        assert {c: avant[c] for c in cles} == {c: apres[c] for c in cles}
     assert premiere["fichiers"]["total"] == seconde["fichiers"]["total"]
 
 
