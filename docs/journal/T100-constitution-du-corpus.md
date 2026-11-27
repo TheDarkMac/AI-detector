@@ -65,7 +65,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : « Constitution du corp
 
 ## Résultat
 
-- Corpus `reference` 1.0.0 : 6 734 fichiers, 4 509 en évaluation ; cinq catégories du §8 ; empreinte du manifeste `055a8becce9fbf5a7c656341014145c020fa2e5ffe3de53535fda8ecec0a76d7`.
+- Corpus `reference` 1.0.0 : 6 734 fichiers, 4 467 en évaluation (total corrigé par ERR-0014) ; cinq catégories du §8 ; empreinte du manifeste `055a8becce9fbf5a7c656341014145c020fa2e5ffe3de53535fda8ecec0a76d7`.
 - Au dépôt : scripts et textes de l'assistant (`banc/reference/`), manifeste et effectifs, description du corpus.
 - Matrice : ES-22 « réalisée ».
 - Vérification locale : suite complète sous coverage, en 19 minutes 28 : 3 516 tests verts, 4 ignorés (lanceur de l'environnement virtuel, cjpeg de mozjpeg absent), aucun échec ; couverture de tout le paquet et du banc à 100 % (scripts de constitution exclus) ; Ruff, mypy et markdownlint sans erreur.
