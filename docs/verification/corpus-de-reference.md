@@ -1,17 +1,17 @@
 # Corpus de référence : description (livrable 5)
 
-> Statut : **v1.0**, proposée dans la PR de T100. Corpus décrit : `reference` **1.0.0**, du 2026-11-25. Document vivant : toute modification est inscrite à l'historique (§8).
+> Statut : **v1.1** ; v1.0 mergée avec T100, v1.1 proposée dans la PR de T101. Corpus décrit : `reference` **1.0.0**, du 2026-11-25. Document vivant : toute modification est inscrite à l'historique (§8).
 > Décisions : [ADR-0272](../decisions/ADR-0272-corpus-reel-de-sources-libres.md) à [ADR-0276](../decisions/ADR-0276-manifeste-et-description-du-corpus.md) ; manifeste : [ADR-0103](../decisions/ADR-0103-manifeste-du-corpus.md) ; parties : [ADR-0016](../decisions/ADR-0016-frontiere-sans-ia.md).
 
 Ce document décrit le corpus sur lequel le banc d'évaluation mesure les taux d'erreur de chaque technique (§8 du cahier). Les fichiers ne sont pas au dépôt : leur volume (7,7 Gio, dont 5,2 Gio téléchargés) et les licences qui demandent l'attribution et le partage à l'identique s'y opposent ; le livrable 5 est donc, pour l'instant, cette description et le manifeste qui désigne chaque fichier ([`banc/reference/corpus.toml`](../../banc/reference/corpus.toml)).
 
 ## 1. En bref
 
-- **6 734 fichiers**, empreinte du manifeste `055a8becce9fbf5a7c656341014145c020fa2e5ffe3de53535fda8ecec0a76d7` ; **4 509 en évaluation**, 2 225 en calibrage.
+- **6 734 fichiers**, empreinte du manifeste `055a8becce9fbf5a7c656341014145c020fa2e5ffe3de53535fda8ecec0a76d7` ; **4 467 en évaluation**, 2 267 en calibrage.
 - **Cinq catégories du §8** : 3 597 authentiques, 640 générés, 1 949 transformés, 407 retouchés, 141 malformés.
 - **Six familles** : image (JPEG, PNG, WebP, et HEIC en transformé), PDF, audio (MP3, WAV, Ogg, FLAC, et M4A en transformé), vidéo (WebM, et MP4 en transformé), bureautique (DOCX, ODT), texte.
 - **Authentiques en évaluation** : au moins 400 par famille (image 599, PDF 400, audio 439, vidéo 400, texte 461), sauf la bureautique (86), faute de source : data.gouv.fr n'a que 222 DOCX et ODT éligibles.
-- **Non publiable tel quel** : tant que T101 n'a pas évalué le corpus, aucun taux n'en est tiré.
+- **Évalué** par T101 : rapports publiés dans [`evaluations/`](evaluations/README.md) ; seule la partie évaluation fonde un taux.
 
 ## 2. Sources et droits
 
@@ -47,7 +47,7 @@ Par catégorie et partie :
 | Transformés | 1 294 | 655 | 1 949 |
 | Retouchés | 273 | 134 | 407 |
 | Malformés | 91 | 50 | 141 |
-| **Total** | **4 509** | **2 225** | **6 734** |
+| **Total** | **4 467** | **2 267** | **6 734** |
 
 Authentiques par format (évaluation + calibrage) :
 
@@ -152,3 +152,4 @@ Un nouveau passage ne redonne pas le même corpus : Commons, data.gouv.fr et Wik
 | Date | Version | Modification | Tâche |
 | --- | --- | --- | --- |
 | 2026-11-25 | 1.0 | Création : corpus `reference` 1.0.0 | T100 |
+| 2026-11-27 | 1.1 | Total des parties corrigé, 4 467 en évaluation et 2 267 en calibrage (§1, §4, [ERR-0014](../errata/ERR-0014-total-des-parties-du-corpus.md)) ; corpus évalué, renvoi aux rapports (§1) | T101 |

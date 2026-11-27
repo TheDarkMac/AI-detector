@@ -69,11 +69,11 @@ Aucune trame normalisée ne nomme un lieu ([ADR-0159](../decisions/ADR-0159-lieu
 | Retouche | Rien |
 | Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `TSSE` |
 
-Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. Un `TSSE` (souvent `Lavf…` pour un fichier écrit par ffmpeg) est une déclaration que quiconque peut écrire ou effacer (cas d'abus C-02).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. Un `TSSE` (souvent `Lavf…` pour un fichier écrit par ffmpeg) est une déclaration que quiconque peut écrire ou effacer (cas d'abus C-02).
 
 ## Ce qui déclenche un constat
 
-Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices fondés sur une déclaration du fichier, chacun au niveau que permet sa mesure (« Taux d'erreur ») :
 
 | Règle | Observation | Test | Direction |
 | --- | --- | --- | --- |
@@ -89,7 +89,25 @@ Une absence de balise est l'observation `id3.present` à faux ; la règle `R-ID3
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un MP3 (ID3v2.4 et ID3v1) et un AAC écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)) ; ffmpeg n'écrit d'ID3 ni dans un WAV ni dans un FLAC, ces emplacements sont vérifiés par les échantillons construits des tests. ffmpeg écrit le texte UTF-8 de son titre dans la balise ID3v1, en Latin-1 : `id3.v1.Title` le lit en Latin-1, comme exiftool, et montre donc des caractères mal décodés. Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `id3` 0.3.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 2025 | 1/360 : 0,3 % [0,0 % ; 1,6 %] | 0/359 : 0,0 % [0,0 % ; 1,1 %] | — | 0 |
+| Générés | 424 | 424 | — | — | — | 0 |
+| Transformés | 1294 | 1260 | 1/34 : 2,9 % [0,5 % ; 14,9 %] | 0/33 : 0,0 % [0,0 % ; 10,4 %] | — | 0 |
+| Retouchés | 273 | 248 | 1/25 : 4,0 % [0,7 % ; 19,5 %] | — | 24/24 : 100,0 % [86,2 % ; 100,0 %] | 0 |
+| Malformés | 91 | 59 | 22/32 : 68,8 % [51,4 % ; 82,0 %] | 0/10 : 0,0 % [0,0 % ; 27,8 %] | — | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-ID3-001 v2 | indice | origine_ia | 0/359 : 0,0 % [0,0 % ; 1,1 %] | modere | modere |
+
+<!-- Fin des taux mesurés. -->
+
+Le niveau de chaque indice est celui que permet son taux de faux positifs, mesuré ci-dessus (ADR-0018, [ADR-0278](../decisions/ADR-0278-evaluation-et-niveau-des-indices-au-catalogue.md)). Le déclenchement des règles est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un MP3 (ID3v2.4 et ID3v1) et un AAC écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)) ; ffmpeg n'écrit d'ID3 ni dans un WAV ni dans un FLAC, ces emplacements sont vérifiés par les échantillons construits des tests. ffmpeg écrit le texte UTF-8 de son titre dans la balise ID3v1, en Latin-1 : `id3.v1.Title` le lit en Latin-1, comme exiftool, et montre donc des caractères mal décodés. Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 

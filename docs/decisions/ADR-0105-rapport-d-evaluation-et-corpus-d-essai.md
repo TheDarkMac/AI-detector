@@ -58,3 +58,4 @@ Option A :
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T17 : statut « Accepté » |
 | 2026-10-28 | Précisé en T18 : chaque fichier est analysé deux fois ; un défaut de reproductibilité est un écart, `fichiers.non_reproduits` au document (ADR-0113) |
+| 2026-11-27 | Précisé en T101 : `--processus` et `--reprise` (ADR-0277) ; journal de reprise refusé avec le code 2 ; rapports du corpus de référence publiés dans `docs/verification/evaluations/` (ADR-0280) |

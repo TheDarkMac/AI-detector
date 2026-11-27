@@ -67,11 +67,11 @@ Le nom d'une propriété utilisateur reste écrit en clair dans le nom de l'obse
 | Retouche | Rien |
 | Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `meta:generator` |
 
-Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. `meta:generator` est une déclaration du logiciel, que quiconque peut écrire (cas d'abus C-02) ; un seul cycle d'édition ou une durée nulle sont neutres (F-71) ; le module `historique` les rapporte en informations neutres (fiche [`historique-edition`](historique-edition.md)).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. `meta:generator` est une déclaration du logiciel, que quiconque peut écrire (cas d'abus C-02) ; un seul cycle d'édition ou une durée nulle sont neutres (F-71) ; le module `historique` les rapporte en informations neutres (fiche [`historique-edition`](historique-edition.md)).
 
 ## Ce qui déclenche un constat
 
-Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices fondés sur une déclaration du fichier, chacun au niveau que permet sa mesure (« Taux d'erreur ») :
 
 | Règle | Observation | Test | Direction |
 | --- | --- | --- | --- |
@@ -90,7 +90,25 @@ Une absence de métadonnées est l'observation `odf.present` à faux ; la règle
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, dans les deux sens, sur un ODT écrit par LibreOffice ([ADR-0141](../decisions/ADR-0141-oracle-bureautique-par-libreoffice.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `odf` 0.3.1, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 2351 | 1/34 : 2,9 % [0,5 % ; 14,9 %] | 0/33 : 0,0 % [0,0 % ; 10,4 %] | — | 0 |
+| Générés | 424 | 398 | 0/26 : 0,0 % [0,0 % ; 12,9 %] | — | 26/26 : 100,0 % [87,1 % ; 100,0 %] | 0 |
+| Transformés | 1294 | 1262 | 1/32 : 3,1 % [0,6 % ; 15,7 %] | 0/31 : 0,0 % [0,0 % ; 11,0 %] | — | 0 |
+| Retouchés | 273 | 264 | 1/9 : 11,1 % [2,0 % ; 43,5 %] | — | 8/8 : 100,0 % [67,6 % ; 100,0 %] | 0 |
+| Malformés | 91 | 67 | 22/24 : 91,7 % [74,2 % ; 97,7 %] | 0/2 : 0,0 % [0,0 % ; 65,8 %] | — | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-ODF-001 v2 | indice | origine_ia | 0/33 : 0,0 % [0,0 % ; 10,4 %] | faible | faible |
+
+<!-- Fin des taux mesurés. -->
+
+Le niveau de chaque indice est celui que permet son taux de faux positifs, mesuré ci-dessus (ADR-0018, [ADR-0278](../decisions/ADR-0278-evaluation-et-niveau-des-indices-au-catalogue.md)). Le déclenchement des règles est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, dans les deux sens, sur un ODT écrit par LibreOffice ([ADR-0141](../decisions/ADR-0141-oracle-bureautique-par-libreoffice.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 

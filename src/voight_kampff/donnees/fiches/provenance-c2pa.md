@@ -73,9 +73,9 @@ L'organisation du certificat (`issuer`) n'est pas marquée : elle nomme l'organi
 | Hypothèse | Ce que la technique en dit |
 | --- | --- |
 | Capture brute | Un appareil qui signe déclare `digitalCapture` ou `computationalCapture` ; sous un signataire reconnu, c'est une preuve de ce qui a été signé, pas de la scène (R-C2PA-003) |
-| Transformation banale (recompression, redimensionnement) | Un outil qui ne connaît pas la C2PA efface en général le manifeste (état absent, neutre) ; un outil qui le garde sans le mettre à jour rend l'empreinte fausse (R-C2PA-006, indice faible) |
+| Transformation banale (recompression, redimensionnement) | Un outil qui ne connaît pas la C2PA efface en général le manifeste (état absent, neutre) ; un outil qui le garde sans le mettre à jour rend l'empreinte fausse (R-C2PA-006, indice) |
 | Retouche | Un outil conforme ajoute un manifeste dont l'ingrédient est l'original ; une retouche par IA déclarée donne R-C2PA-002 ou R-C2PA-005 |
-| Génération | Un générateur conforme déclare `trainedAlgorithmicMedia` : preuve de la déclaration sous un signataire reconnu (R-C2PA-001), indice faible sinon (R-C2PA-004) |
+| Génération | Un générateur conforme déclare `trainedAlgorithmicMedia` : preuve de la déclaration sous un signataire reconnu (R-C2PA-001), indice sinon (R-C2PA-004) |
 
 La technique ne distingue rien hors de ce que le manifeste déclare : elle ne remplace pas l'analyse du contenu, et un manifeste absent ne compte ni pour ni contre (F-14).
 
@@ -94,15 +94,38 @@ Toutes les règles sont appliquées par le module ([ADR-0170](../decisions/ADR-0
 | R-C2PA-001 | Preuve, origine IA | Valide, reconnu, `trainedAlgorithmicMedia` déclaré |
 | R-C2PA-002 | Preuve, retouche | Valide, reconnu, `compositeWithTrainedAlgorithmicMedia` ou `compositeSynthetic` |
 | R-C2PA-003 | Preuve, authenticité | Valide, reconnu, `digitalCapture` ou `computationalCapture` ([ADR-0168](../decisions/ADR-0168-capture-declaree-signataire-reconnu.md)) |
-| R-C2PA-004 | Indice faible, origine IA | Hors liste ou invalide, `trainedAlgorithmicMedia` déclaré |
-| R-C2PA-005 | Indice faible, retouche | Hors liste ou invalide, retouche par IA déclarée |
-| R-C2PA-006 | Indice faible, transformation | Invalide par un écart d'empreinte ([ADR-0167](../decisions/ADR-0167-manifeste-invalide.md)) |
+| R-C2PA-004 | Indice, origine IA | Hors liste ou invalide, `trainedAlgorithmicMedia` déclaré |
+| R-C2PA-005 | Indice, retouche | Hors liste ou invalide, retouche par IA déclarée |
+| R-C2PA-006 | Indice, transformation | Invalide par un écart d'empreinte ([ADR-0167](../decisions/ADR-0167-manifeste-invalide.md)) |
 
 Les codes IPTC sont reconnus avec ou sans l'adresse du vocabulaire, en `http` ou `https`, sans égard à la casse ([ADR-0143](../decisions/ADR-0143-valeurs-iptc-de-la-source-numerique.md)).
 
 ## Taux d'erreur
 
-Sans objet : la vérification est déterministe, juste ou fausse (A-55). Elle est vérifiée par des tests de conformité, sur des fichiers signés pendant les tests par une autorité d'essai, dans les treize formats du module : signataire reconnu ou non, contenu changé, manifeste mal formé, manifeste distant, ingrédient, conteneur illisible (`tests/test_c2pa.py`). Aucune règle n'est évaluée par le banc : leur niveau reste celui fixé par le catalogue.
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `c2pa` 0.1.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 941 | 1/1444 : 0,1 % [0,0 % ; 0,4 %] | 0/1443 : 0,0 % [0,0 % ; 0,3 %] | — | 0 |
+| Générés | 424 | 26 | 0/398 : 0,0 % [0,0 % ; 1,0 %] | — | 371/398 : 93,2 % [90,3 % ; 95,3 %] | 1 |
+| Transformés | 1294 | 100 | 0/1194 : 0,0 % [0,0 % ; 0,3 %] | 0/814 : 0,0 % [0,0 % ; 0,5 %] | 380/380 : 100,0 % [99,0 % ; 100,0 %] | 0 |
+| Retouchés | 273 | 73 | 0/200 : 0,0 % [0,0 % ; 1,9 %] | — | 200/200 : 100,0 % [98,1 % ; 100,0 %] | 0 |
+| Malformés | 91 | 15 | 29/76 : 38,2 % [28,1 % ; 49,4 %] | 0/39 : 0,0 % [0,0 % ; 9,0 %] | 5/5 : 100,0 % [56,6 % ; 100,0 %] | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-C2PA-001 v1 | preuve | origine_ia | 0/1443 : 0,0 % [0,0 % ; 0,3 %] | — | — |
+| R-C2PA-002 v1 | preuve | retouche | 0/1443 : 0,0 % [0,0 % ; 0,3 %] | — | — |
+| R-C2PA-003 v1 | preuve | authenticite | 0/598 : 0,0 % [0,0 % ; 0,6 %] | — | — |
+| R-C2PA-004 v2 | indice | origine_ia | 0/1443 : 0,0 % [0,0 % ; 0,3 %] | fort | fort |
+| R-C2PA-005 v2 | indice | retouche | 0/1443 : 0,0 % [0,0 % ; 0,3 %] | fort | fort |
+| R-C2PA-006 v2 | indice | transformation | 0/1443 : 0,0 % [0,0 % ; 0,3 %] | fort | fort |
+
+<!-- Fin des taux mesurés. -->
+
+Sans objet : la vérification est déterministe, juste ou fausse (A-55). Elle est vérifiée par des tests de conformité, sur des fichiers signés pendant les tests par une autorité d'essai, dans les treize formats du module : signataire reconnu ou non, contenu changé, manifeste mal formé, manifeste distant, ingrédient, conteneur illisible (`tests/test_c2pa.py`). Une preuve n'a pas de niveau ; les indices du module (déclaration sous un signataire non reconnu, contenu changé) sont au niveau que permet leur taux de faux positifs, mesuré ci-dessus ([ADR-0278](../decisions/ADR-0278-evaluation-et-niveau-des-indices-au-catalogue.md)).
 
 ## Limites connues
 

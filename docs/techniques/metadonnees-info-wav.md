@@ -63,11 +63,11 @@ Voir [ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-libres.md) et [ADR-
 | Retouche | Rien |
 | Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `ISFT` |
 
-Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. Un `ISFT` ou un historique de codage sont des déclarations que quiconque peut écrire (cas d'abus C-02).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. Un `ISFT` ou un historique de codage sont des déclarations que quiconque peut écrire (cas d'abus C-02).
 
 ## Ce qui déclenche un constat
 
-Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices fondés sur une déclaration du fichier, chacun au niveau que permet sa mesure (« Taux d'erreur ») :
 
 | Règle | Observation | Test | Direction |
 | --- | --- | --- | --- |
@@ -83,7 +83,25 @@ Une absence de liste et de bloc est l'observation `infowav.present` à faux ; la
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un WAV écrit par ffmpeg, liste `INFO` et bloc `bext` ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Écarts connus : exiftool lit les textes `INFO` en Latin-1 (« Titre accentuÃ© » pour un titre écrit en UTF-8 par ffmpeg), et joint `OriginationDate` et `OriginationTime` en une seule date. Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `infowav` 0.3.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 2251 | 1/134 : 0,7 % [0,1 % ; 4,1 %] | 0/133 : 0,0 % [0,0 % ; 2,8 %] | — | 0 |
+| Générés | 424 | 424 | — | — | — | 0 |
+| Transformés | 1294 | 1280 | 1/14 : 7,1 % [1,3 % ; 31,5 %] | 0/13 : 0,0 % [0,0 % ; 22,8 %] | — | 0 |
+| Retouchés | 273 | 259 | 1/14 : 7,1 % [1,3 % ; 31,5 %] | — | 13/13 : 100,0 % [77,2 % ; 100,0 %] | 0 |
+| Malformés | 91 | 66 | 22/25 : 88,0 % [70,0 % ; 95,8 %] | 0/3 : 0,0 % [0,0 % ; 56,1 %] | — | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-INFOWAV-001 v2 | indice | origine_ia | 0/133 : 0,0 % [0,0 % ; 2,8 %] | modere | modere |
+
+<!-- Fin des taux mesurés. -->
+
+Le niveau de chaque indice est celui que permet son taux de faux positifs, mesuré ci-dessus (ADR-0018, [ADR-0278](../decisions/ADR-0278-evaluation-et-niveau-des-indices-au-catalogue.md)). Le déclenchement des règles est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un WAV écrit par ffmpeg, liste `INFO` et bloc `bext` ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Écarts connus : exiftool lit les textes `INFO` en Latin-1 (« Titre accentuÃ© » pour un titre écrit en UTF-8 par ffmpeg), et joint `OriginationDate` et `OriginationTime` en une seule date. Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 

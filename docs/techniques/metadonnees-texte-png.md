@@ -57,11 +57,11 @@ Marqués `texte_libre` ([ADR-0159](../decisions/ADR-0159-lieux-nommes-et-textes-
 | Retouche | Rien |
 | Génération | Ce que le fichier en déclare, sans vérification : paramètres d'AUTOMATIC1111, graphe de ComfyUI, métadonnées d'InvokeAI, nom d'un générateur dans `Software` |
 
-Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations.
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations.
 
 ## Ce qui déclenche un constat
 
-Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices fondés sur une déclaration du fichier, chacun au niveau que permet sa mesure (« Taux d'erreur ») :
 
 | Règle | Observation | Test | Direction |
 | --- | --- | --- | --- |
@@ -79,7 +79,7 @@ Règles de T23, des informations neutres fondées sur une déclaration du fichie
 
 Une absence de bloc texte est l'observation `textepng.present` à faux ; la règle `R-TEXTEPNG-006` en fait une information neutre, jamais un indice (F-14).
 
-Règle de T24, un indice faible vers la transformation fondé sur une déclaration du fichier ([ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md), [ADR-0155](../decisions/ADR-0155-nature-d-un-indice-de-transfert.md)) :
+Règle de T24, un indice vers la transformation, au niveau que permet sa mesure, fondé sur une déclaration du fichier ([ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md), [ADR-0155](../decisions/ADR-0155-nature-d-un-indice-de-transfert.md)) :
 
 | Règle | Observation | Test | Direction |
 | --- | --- | --- | --- |
@@ -87,7 +87,30 @@ Règle de T24, un indice faible vers la transformation fondé sur une déclarati
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par mot-clé ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`). La règle de T24 est un indice faible, non évalué ; son déclenchement est vérifié sur des échantillons construits (`tests/test_transfert.py`).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `textepng` 0.4.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 2216 | 1/169 : 0,6 % [0,1 % ; 3,3 %] | 0/168 : 0,0 % [0,0 % ; 2,2 %] | — | 0 |
+| Générés | 424 | 220 | 0/204 : 0,0 % [0,0 % ; 1,8 %] | — | 198/204 : 97,1 % [93,7 % ; 98,6 %] | 0 |
+| Transformés | 1294 | 1045 | 1/249 : 0,4 % [0,1 % ; 2,2 %] | 0/129 : 0,0 % [0,0 % ; 2,9 %] | 118/119 : 99,2 % [95,4 % ; 99,9 %] | 0 |
+| Retouchés | 273 | 239 | 1/34 : 2,9 % [0,5 % ; 14,9 %] | — | 33/33 : 100,0 % [89,6 % ; 100,0 %] | 0 |
+| Malformés | 91 | 61 | 22/30 : 73,3 % [55,6 % ; 85,8 %] | 0/4 : 0,0 % [0,0 % ; 49,0 %] | 4/4 : 100,0 % [51,0 % ; 100,0 %] | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-TEXTEPNG-001 v2 | indice | origine_ia | 0/168 : 0,0 % [0,0 % ; 2,2 %] | modere | modere |
+| R-TEXTEPNG-002 v2 | indice | origine_ia | 0/168 : 0,0 % [0,0 % ; 2,2 %] | modere | modere |
+| R-TEXTEPNG-003 v2 | indice | origine_ia | 0/168 : 0,0 % [0,0 % ; 2,2 %] | modere | modere |
+| R-TEXTEPNG-004 v2 | indice | origine_ia | 0/168 : 0,0 % [0,0 % ; 2,2 %] | modere | modere |
+| R-TEXTEPNG-005 v2 | indice | origine_ia | 0/168 : 0,0 % [0,0 % ; 2,2 %] | modere | modere |
+| R-TEXTEPNG-007 v2 | indice | transformation | 0/168 : 0,0 % [0,0 % ; 2,2 %] | modere | modere |
+
+<!-- Fin des taux mesurés. -->
+
+Le niveau de chaque indice est celui que permet son taux de faux positifs, mesuré ci-dessus (ADR-0018, [ADR-0278](../decisions/ADR-0278-evaluation-et-niveau-des-indices-au-catalogue.md)). Le déclenchement des règles est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool, par mot-clé ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`). La règle de T24 est un indice, au niveau que permet sa mesure ; son déclenchement est vérifié sur des échantillons construits (`tests/test_transfert.py`).
 
 ## Limites connues
 

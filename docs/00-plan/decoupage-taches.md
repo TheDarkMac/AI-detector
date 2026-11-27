@@ -1,6 +1,6 @@
 # Découpage du travail en tâches
 
-> Statut : **v0.47** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 avec T40, v0.29 avec T41, v0.30 avec T42, v0.31 avec le complément de T40, v0.32 avec T32, v0.33 avec T50, v0.34 avec T51, v0.35 avec T52, v0.36 avec T53, v0.37 avec le complément bureautique de T52, v0.38 avec T80, v0.39 avec le complément de T80, v0.40 avec le complément texte de T53, v0.41 avec T81, v0.42 avec le complément de T81, v0.43 avec T90, v0.44 avec T91, v0.45 avec T92, v0.46 avec T95, v0.47 proposée dans la PR de T100. Document vivant : toute modification est inscrite au §6.
+> Statut : **v0.48** ; v0.4 validée par TheDarkMac le 2026-10-26 (lancement de T00), v0.5 mergée avec T01, v0.6 avec T02, v0.7 avec T03, v0.8 avec T04, v0.9 avec T10, v0.10 avec T11, v0.11 avec T12, v0.12 avec T13, v0.13 avec T14, v0.14 avec T15, v0.15 avec T16, v0.16 avec T17, v0.17 avec T18, v0.18 avec T20, v0.19 avec T21, v0.20 avec le complément audio et vidéo de T21, v0.21 avec le complément bureautique de T21, v0.22 avec T22, v0.23 avec T23, v0.24 avec T24, v0.25 avec T25, v0.26 avec T30, v0.27 avec T31, v0.28 avec T40, v0.29 avec T41, v0.30 avec T42, v0.31 avec le complément de T40, v0.32 avec T32, v0.33 avec T50, v0.34 avec T51, v0.35 avec T52, v0.36 avec T53, v0.37 avec le complément bureautique de T52, v0.38 avec T80, v0.39 avec le complément de T80, v0.40 avec le complément texte de T53, v0.41 avec T81, v0.42 avec le complément de T81, v0.43 avec T90, v0.44 avec T91, v0.45 avec T92, v0.46 avec T95, v0.47 avec T100, v0.48 proposée dans la PR de T101. Document vivant : toute modification est inscrite au §6.
 > Source : [`cahier-des-charges-v0.1.md`](../00-cahier-des-charges/cahier-des-charges-v0.1.md) (v0.1, 24 oct. 2026).
 > Date de rédaction : 2026-10-26.
 
@@ -145,7 +145,7 @@ Le périmètre de la V1 et l'ordre des tâches sont fixés par [ADR-0012](../dec
 | ID | Tâche | Livrable (section 9) |
 | --- | --- | --- |
 | T100 | Constitution du corpus (5 catégories) ou sa description : corpus réel tiré de sources libres, fichiers hors du dépôt (ADR-0272) ; authentiques datés, générés déclarés et textes de l'assistant (ADR-0273) ; effectifs et parties (ADR-0274) ; dérivés fabriqués par scripts (ADR-0275) ; manifeste au dépôt et description publiée (ADR-0276) | Livrable 5 |
-| T101 | Rapport d'évaluation : taux par technique et catégorie | Livrables 4, 5 |
+| T101 | Rapport d'évaluation : taux par technique et catégorie ; banc en parallèle avec reprise (ADR-0277) ; évaluation et niveau permis inscrits au catalogue, seconde passe avec le catalogue 0.21.0 (ADR-0278) ; taux écrits dans les fiches par le banc (ADR-0279) ; rapports publiés tels que mesurés, écarts corrigés ensuite (ADR-0280) | Livrables 4, 5 |
 | T102 | Équipe rouge : fichiers qui trompent les contrôles → limites connues | §8 |
 | T103 | Documentation utilisateur et mentions d'avertissement | Livrables 3, 6 |
 | T104 | Étude d'usage (biais d'automatisation) — protocole ; hors V1 (ADR-0026) | §8 |
@@ -228,3 +228,4 @@ Elles sont développées dans l'[analyse critique](../01-analyse/analyse-critiqu
 | 2026-11-25 | 0.45 | T92 renvoyée à ses décisions (ADR-0264 à ADR-0267) | T92 |
 | 2026-11-25 | 0.46 | T95 renvoyée à ses décisions (ADR-0268 à ADR-0271) ; état du document mis à jour (v0.45 n'y figurait pas) | T95 |
 | 2026-11-25 | 0.47 | T100 renvoyée à ses décisions (ADR-0272 à ADR-0276) | T100 |
+| 2026-11-26 | 0.48 | T101 renvoyée à ses décisions (ADR-0277 à ADR-0280) (§3) | T101 |

@@ -99,7 +99,23 @@ Le module n'émet aucun constat ; cinq règles « moteur » du catalogue lisent 
 
 ## Taux d'erreur
 
-Sans objet pour une information neutre qui compte ce que le document déclare. Les relevés et les plages ont été vérifiés sur les échantillons ci-dessus, contre `zipfile` et `xml.etree`, et sur des documents synthétiques des tests. Les constats des modules d'image sur une partie extraite gardent les taux de leurs règles. La part de documents ordinaires dont des images ne sont pas analysées se mesurera sur le corpus de référence (T100).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `imagesbureau` 0.1.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 2298 | 1/87 : 1,1 % [0,2 % ; 6,2 %] | 0/86 : 0,0 % [0,0 % ; 4,3 %] | — | 0 |
+| Générés | 424 | 372 | 0/52 : 0,0 % [0,0 % ; 6,9 %] | — | 52/52 : 100,0 % [93,1 % ; 100,0 %] | 0 |
+| Transformés | 1294 | 1210 | 1/84 : 1,2 % [0,2 % ; 6,4 %] | 0/83 : 0,0 % [0,0 % ; 4,4 %] | — | 0 |
+| Retouchés | 273 | 233 | 1/40 : 2,5 % [0,4 % ; 12,9 %] | — | 39/39 : 100,0 % [91,0 % ; 100,0 %] | 0 |
+| Malformés | 91 | 61 | 22/30 : 73,3 % [55,6 % ; 85,8 %] | 0/8 : 0,0 % [0,0 % ; 32,4 %] | — | 0 |
+
+Aucune règle de preuve ou d'indice : les règles du module sont des informations neutres, sans taux.
+
+<!-- Fin des taux mesurés. -->
+
+Sans objet pour une information neutre qui compte ce que le document déclare. Les relevés et les plages ont été vérifiés sur les échantillons ci-dessus, contre `zipfile` et `xml.etree`, et sur des documents synthétiques des tests. Les constats des modules d'image sur une partie extraite gardent les taux de leurs règles. La part de documents dont l'extraction n'a pas pu être menée est la colonne « Non analysables » ci-dessus ; celle des documents dont une partie seulement des images est analysée n'est pas comptée par le banc.
 
 ## Limites connues
 

@@ -1,0 +1,5702 @@
+{
+  "format": 1,
+  "date": "2026-11-27T01:11:06Z",
+  "corpus": {
+    "nom": "reference",
+    "version": "1.0.0",
+    "date": "2026-11-26",
+    "nature": "reference",
+    "empreinte": "055a8becce9fbf5a7c656341014145c020fa2e5ffe3de53535fda8ecec0a76d7"
+  },
+  "publiable": true,
+  "versions": {
+    "outil": "0.1.0.dev0",
+    "catalogue": {
+      "version": "0.21.0",
+      "date": "2026-11-26",
+      "empreinte": "358c60e329923356d161ee671935c827288ef2e86f27102c831d1e249862c465",
+      "fourni_par_utilisateur": false
+    },
+    "techniques": {
+      "actifsbureau": "0.1.0",
+      "actifspdf": "0.1.0",
+      "c2pa": "0.1.0",
+      "caracteres": "0.3.0",
+      "doublejpeg": "0.1.0",
+      "dwtdct": "0.1.0",
+      "ela": "0.1.0",
+      "exif": "0.4.0",
+      "historique": "0.1.0",
+      "id3": "0.3.0",
+      "image": "0.3.0",
+      "imagesbureau": "0.1.0",
+      "imagespdf": "0.1.0",
+      "infopdf": "0.3.0",
+      "infowav": "0.3.0",
+      "iptc": "0.4.0",
+      "matroska": "0.3.0",
+      "odf": "0.3.1",
+      "ooxml": "0.3.1",
+      "pagespdf": "0.1.0",
+      "quicktime": "0.3.0",
+      "revisionspdf": "0.2.0",
+      "textepng": "0.4.0",
+      "vorbis": "0.3.0",
+      "xmp": "0.7.1"
+    }
+  },
+  "reseau": {
+    "interfaces": [
+      "lo"
+    ],
+    "tentatives": 0
+  },
+  "bornes": {
+    "methode": "wilson",
+    "confiance": 0.95,
+    "fort": 0.01,
+    "modere": 0.05
+  },
+  "partie": "evaluation",
+  "fichiers": {
+    "total": 4467,
+    "par_categorie": {
+      "authentique": 2385,
+      "genere": 424,
+      "transforme": 1294,
+      "retouche": 273,
+      "malforme": 91
+    },
+    "refus": {
+      "format_inconnu": 21,
+      "hors_perimetre": 1
+    },
+    "arrets_brutaux": {
+      "ValueError": 1
+    },
+    "interrompues": 2,
+    "non_reproduits": 0
+  },
+  "techniques": [
+    {
+      "module": "actifsbureau",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 2298,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 87,
+        "valeur": 0.011494252873563218,
+        "intervalle": [
+          0.0020319077375923027,
+          0.06227197835723791
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 86,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.042758197285742226
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "actifsbureau",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 372,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 52,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.06879223612386234
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 52,
+        "effectif": 52,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9312077638761376,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "actifsbureau",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1210,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 84,
+        "valeur": 0.011904761904761904,
+        "intervalle": [
+          0.002104583087549225,
+          0.064395437507714
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 83,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.04423530964197385
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "actifsbureau",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 233,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 40,
+        "valeur": 0.025,
+        "intervalle": [
+          0.0044268315026814095,
+          0.1288136896347409
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 39,
+        "effectif": 39,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9103331462924287,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "actifsbureau",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 61,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 30,
+        "valeur": 0.7333333333333333,
+        "intervalle": [
+          0.555520383048111,
+          0.8581733668040368
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 8,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.32440756488388023
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "actifspdf",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1985,
+      "non_analysables": {
+        "nombre": 3,
+        "effectif": 400,
+        "valeur": 0.0075,
+        "intervalle": [
+          0.0025538891952499396,
+          0.021815720724032123
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 397,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.009583486778029367
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "actifspdf",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 398,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 26,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.1287289218592153
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 26,
+        "effectif": 26,
+        "valeur": 1.0,
+        "intervalle": [
+          0.8712710781407846,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "actifspdf",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1178,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 116,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.032054506499638716
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 116,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.032054506499638716
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "actifspdf",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 230,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 43,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.08200980322579117
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 43,
+        "effectif": 43,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9179901967742088,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "actifspdf",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 57,
+      "non_analysables": {
+        "nombre": 28,
+        "effectif": 34,
+        "valeur": 0.8235294117647058,
+        "intervalle": [
+          0.6648626260015724,
+          0.9165103095462768
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 6,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.3903342879021653
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "c2pa",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 941,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 1444,
+        "valeur": 0.0006925207756232687,
+        "intervalle": [
+          0.0001222573833709606,
+          0.003912341007983402
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1443,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0026550654857687445
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "c2pa",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 26,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 398,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.009559637853117154
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 371,
+        "effectif": 398,
+        "valeur": 0.9321608040201005,
+        "intervalle": [
+          0.9030977796253535,
+          0.9529612268533593
+        ]
+      },
+      "confusions": 1
+    },
+    {
+      "module": "c2pa",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 100,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 1194,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0032069843570752183
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 814,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0046970702931022935
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 380,
+        "effectif": 380,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9899920690367933,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "c2pa",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 73,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 200,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.018845326377266575
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 200,
+        "effectif": 200,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9811546736227335,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "c2pa",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 15,
+      "non_analysables": {
+        "nombre": 29,
+        "effectif": 76,
+        "valeur": 0.3815789473684211,
+        "intervalle": [
+          0.28057076752897386,
+          0.4939824499864535
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 39,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.08966685370757144
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 5,
+        "effectif": 5,
+        "valeur": 1.0,
+        "intervalle": [
+          0.5655175352168251,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "caracteres",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1438,
+      "non_analysables": {
+        "nombre": 7,
+        "effectif": 947,
+        "valeur": 0.007391763463569166,
+        "intervalle": [
+          0.0035851036609961277,
+          0.015178759289219
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 940,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004070025516249234
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "caracteres",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 320,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 104,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.03562135437245191
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 104,
+        "effectif": 104,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9643786456275479,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "caracteres",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1050,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 244,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.015499661916827669
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 244,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.015499661916827669
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "caracteres",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 149,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 124,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.030048615340677695
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 124,
+        "effectif": 124,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9699513846593223,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "caracteres",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 44,
+      "non_analysables": {
+        "nombre": 28,
+        "effectif": 47,
+        "valeur": 0.5957446808510638,
+        "intervalle": [
+          0.4534212295011096,
+          0.7235996548079124
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 18,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.17587922364665765
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "doublejpeg",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1776,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 609,
+        "valeur": 0.0016420361247947454,
+        "intervalle": [
+          0.0002899185268731442,
+          0.009241843296054092
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 608,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0062785199749268725
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "doublejpeg",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 330,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 94,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.03926207629154474
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 94,
+        "effectif": 94,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9607379237084551,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "doublejpeg",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 781,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 513,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.007432567096028627
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 335,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.01133703896230397
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 178,
+        "effectif": 178,
+        "valeur": 1.0,
+        "intervalle": [
+          0.978874681023748,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "doublejpeg",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 162,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 111,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.03345010469339235
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 111,
+        "effectif": 111,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9665498953066078,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "doublejpeg",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 46,
+      "non_analysables": {
+        "nombre": 33,
+        "effectif": 45,
+        "valeur": 0.7333333333333333,
+        "intervalle": [
+          0.5896116224686505,
+          0.8403509647893348
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 12,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.24249400665524085
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "dwtdct",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1559,
+      "non_analysables": {
+        "nombre": 74,
+        "effectif": 826,
+        "valeur": 0.08958837772397095,
+        "intervalle": [
+          0.07196457119890523,
+          0.11101189642236708
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 752,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.005082360561020009
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "dwtdct",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 104,
+      "non_analysables": {
+        "nombre": 24,
+        "effectif": 320,
+        "valeur": 0.075,
+        "intervalle": [
+          0.05091491480619657,
+          0.1091679202004167
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 295,
+        "effectif": 296,
+        "valeur": 0.9966216216216216,
+        "intervalle": [
+          0.9811147909065915,
+          0.9994033841194067
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "dwtdct",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 343,
+      "non_analysables": {
+        "nombre": 195,
+        "effectif": 951,
+        "valeur": 0.20504731861198738,
+        "intervalle": [
+          0.18059821119650554,
+          0.23186969662467344
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 459,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.008299729307919055
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 295,
+        "effectif": 297,
+        "valeur": 0.9932659932659933,
+        "intervalle": [
+          0.9757835671365366,
+          0.9981513457859282
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "dwtdct",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 120,
+      "non_analysables": {
+        "nombre": 15,
+        "effectif": 153,
+        "valeur": 0.09803921568627451,
+        "intervalle": [
+          0.06031594280007543,
+          0.15545263698202608
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 138,
+        "effectif": 138,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9729172355344272,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "dwtdct",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 39,
+      "non_analysables": {
+        "nombre": 44,
+        "effectif": 52,
+        "valeur": 0.8461538461538461,
+        "intervalle": [
+          0.7247591482358985,
+          0.9199231498321968
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 8,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.32440756488388023
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "ela",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1776,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 609,
+        "valeur": 0.0016420361247947454,
+        "intervalle": [
+          0.0002899185268731442,
+          0.009241843296054092
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 608,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0062785199749268725
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "ela",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 330,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 94,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.03926207629154474
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 94,
+        "effectif": 94,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9607379237084551,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "ela",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 781,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 513,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.007432567096028627
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 335,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.01133703896230397
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 178,
+        "effectif": 178,
+        "valeur": 1.0,
+        "intervalle": [
+          0.978874681023748,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "ela",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 162,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 111,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.03345010469339235
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 111,
+        "effectif": 111,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9665498953066078,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "ela",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 46,
+      "non_analysables": {
+        "nombre": 36,
+        "effectif": 45,
+        "valeur": 0.8,
+        "intervalle": [
+          0.6617703088385799,
+          0.8910387319216871
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 9,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.2991450484195441
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "exif",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1559,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 826,
+        "valeur": 0.0012106537530266344,
+        "intervalle": [
+          0.0002137420915021681,
+          0.00682550469305298
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "exif",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 104,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 320,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.011862158831309737
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 320,
+        "effectif": 320,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9881378411686904,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "exif",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 343,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 951,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004023137857292702
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 571,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.006682640512003088
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 380,
+        "effectif": 380,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9899920690367933,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "exif",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 120,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 153,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.024492623631394532
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 153,
+        "effectif": 153,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9755073763686055,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "exif",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 39,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 52,
+        "valeur": 0.4230769230769231,
+        "intervalle": [
+          0.2986805208350091,
+          0.5580567462609698
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 23,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.14311661845042686
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 6,
+        "effectif": 6,
+        "valeur": 1.0,
+        "intervalle": [
+          0.6096657120978346,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "historique",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 2298,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 87,
+        "valeur": 0.011494252873563218,
+        "intervalle": [
+          0.0020319077375923027,
+          0.06227197835723791
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 86,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.042758197285742226
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "historique",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 372,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 52,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.06879223612386234
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 52,
+        "effectif": 52,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9312077638761376,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "historique",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1210,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 84,
+        "valeur": 0.011904761904761904,
+        "intervalle": [
+          0.002104583087549225,
+          0.064395437507714
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 83,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.04423530964197385
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "historique",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 233,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 40,
+        "valeur": 0.025,
+        "intervalle": [
+          0.0044268315026814095,
+          0.1288136896347409
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 39,
+        "effectif": 39,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9103331462924287,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "historique",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 61,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 30,
+        "valeur": 0.7333333333333333,
+        "intervalle": [
+          0.555520383048111,
+          0.8581733668040368
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 8,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.32440756488388023
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "id3",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 2025,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 360,
+        "valeur": 0.002777777777777778,
+        "intervalle": [
+          0.000490514392087504,
+          0.015564442180557707
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 359,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.010587155153602403
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "id3",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 424,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "id3",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1260,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 34,
+        "valeur": 0.029411764705882353,
+        "intervalle": [
+          0.0052109062762689395,
+          0.1491557329268593
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 33,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.10426999754245206
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "id3",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 248,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 25,
+        "valeur": 0.04,
+        "intervalle": [
+          0.007096233501987265,
+          0.19544063736193734
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 24,
+        "effectif": 24,
+        "valeur": 1.0,
+        "intervalle": [
+          0.8620237953250198,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "id3",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 59,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 32,
+        "valeur": 0.6875,
+        "intervalle": [
+          0.5143332169904459,
+          0.8204745836639026
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 10,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.2775327998628892
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "image",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1559,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 826,
+        "valeur": 0.0012106537530266344,
+        "intervalle": [
+          0.0002137420915021681,
+          0.00682550469305298
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "image",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 104,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 320,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.011862158831309737
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 320,
+        "effectif": 320,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9881378411686904,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "image",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 518,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 776,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00492594844406365
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 472,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.008072980505344444
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 304,
+        "effectif": 304,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9875213077685823,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "image",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 120,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 153,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.024492623631394532
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 153,
+        "effectif": 153,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9755073763686055,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "image",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 39,
+      "non_analysables": {
+        "nombre": 28,
+        "effectif": 52,
+        "valeur": 0.5384615384615384,
+        "intervalle": [
+          0.4050361132695787,
+          0.6665952531824317
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 19,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.16817922405261626
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 4,
+        "effectif": 4,
+        "valeur": 1.0,
+        "intervalle": [
+          0.5101091635454027,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "imagesbureau",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 2298,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 87,
+        "valeur": 0.011494252873563218,
+        "intervalle": [
+          0.0020319077375923027,
+          0.06227197835723791
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 86,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.042758197285742226
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "imagesbureau",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 372,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 52,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.06879223612386234
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 52,
+        "effectif": 52,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9312077638761376,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "imagesbureau",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1210,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 84,
+        "valeur": 0.011904761904761904,
+        "intervalle": [
+          0.002104583087549225,
+          0.064395437507714
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 83,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.04423530964197385
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "imagesbureau",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 233,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 40,
+        "valeur": 0.025,
+        "intervalle": [
+          0.0044268315026814095,
+          0.1288136896347409
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 39,
+        "effectif": 39,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9103331462924287,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "imagesbureau",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 61,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 30,
+        "valeur": 0.7333333333333333,
+        "intervalle": [
+          0.555520383048111,
+          0.8581733668040368
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 8,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.32440756488388023
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "imagespdf",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1985,
+      "non_analysables": {
+        "nombre": 3,
+        "effectif": 400,
+        "valeur": 0.0075,
+        "intervalle": [
+          0.0025538891952499396,
+          0.021815720724032123
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 397,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.009583486778029367
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "imagespdf",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 398,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 26,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.1287289218592153
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 26,
+        "effectif": 26,
+        "valeur": 1.0,
+        "intervalle": [
+          0.8712710781407846,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "imagespdf",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1178,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 116,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.032054506499638716
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 116,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.032054506499638716
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "imagespdf",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 230,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 43,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.08200980322579117
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 43,
+        "effectif": 43,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9179901967742088,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "imagespdf",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 57,
+      "non_analysables": {
+        "nombre": 28,
+        "effectif": 34,
+        "valeur": 0.8235294117647058,
+        "intervalle": [
+          0.6648626260015724,
+          0.9165103095462768
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 6,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.3903342879021653
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "infopdf",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1985,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 400,
+        "valeur": 0.0025,
+        "intervalle": [
+          0.0004414477868016362,
+          0.01402328507582339
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 399,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00953590733173263
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "infopdf",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 398,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 26,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.1287289218592153
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 26,
+        "effectif": 26,
+        "valeur": 1.0,
+        "intervalle": [
+          0.8712710781407846,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "infopdf",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1178,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 116,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.032054506499638716
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 116,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.032054506499638716
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "infopdf",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 230,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 43,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.08200980322579117
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 43,
+        "effectif": 43,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9179901967742088,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "infopdf",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 57,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 34,
+        "valeur": 0.6470588235294118,
+        "intervalle": [
+          0.47913963119781733,
+          0.785120794051205
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 10,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.2775327998628892
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "infowav",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 2251,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 134,
+        "valeur": 0.007462686567164179,
+        "intervalle": [
+          0.001318564353840538,
+          0.041059533430896106
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 133,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.02807233168807166
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "infowav",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 424,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "infowav",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1280,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 14,
+        "valeur": 0.07142857142857142,
+        "intervalle": [
+          0.012722215247890939,
+          0.31468704424151117
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 13,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.22809537235419838
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "infowav",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 259,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 14,
+        "valeur": 0.07142857142857142,
+        "intervalle": [
+          0.012722215247890939,
+          0.31468704424151117
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 13,
+        "effectif": 13,
+        "valeur": 1.0,
+        "intervalle": [
+          0.7719046276458016,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "infowav",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 66,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 25,
+        "valeur": 0.88,
+        "intervalle": [
+          0.7004420607907267,
+          0.9583318284955964
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 3,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.5614970317550454
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "iptc",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1776,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 609,
+        "valeur": 0.0016420361247947454,
+        "intervalle": [
+          0.0002899185268731442,
+          0.009241843296054092
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 608,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0062785199749268725
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "iptc",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 330,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 94,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.03926207629154474
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 94,
+        "effectif": 94,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9607379237084551,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "iptc",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 781,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 513,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.007432567096028627
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 335,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.01133703896230397
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 178,
+        "effectif": 178,
+        "valeur": 1.0,
+        "intervalle": [
+          0.978874681023748,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "iptc",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 162,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 111,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.03345010469339235
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 111,
+        "effectif": 111,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9665498953066078,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "iptc",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 46,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 45,
+        "valeur": 0.4888888888888889,
+        "intervalle": [
+          0.349570237528785,
+          0.6299553535541681
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 20,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.16112515805281938
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 2,
+        "effectif": 2,
+        "valeur": 1.0,
+        "intervalle": [
+          0.34238022750665303,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "matroska",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1984,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 401,
+        "valeur": 0.0024937655860349127,
+        "intervalle": [
+          0.000440346579990189,
+          0.01398865690623954
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 400,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.009512294334296508
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "matroska",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 424,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "matroska",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1246,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 48,
+        "valeur": 0.020833333333333332,
+        "intervalle": [
+          0.003687110977510649,
+          0.10899217995251861
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 47,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.07555760416399632
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "matroska",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 248,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 25,
+        "valeur": 0.04,
+        "intervalle": [
+          0.007096233501987265,
+          0.19544063736193734
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 24,
+        "effectif": 24,
+        "valeur": 1.0,
+        "intervalle": [
+          0.8620237953250198,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "matroska",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 61,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 30,
+        "valeur": 0.7333333333333333,
+        "intervalle": [
+          0.555520383048111,
+          0.8581733668040368
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 7,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.35433043506668743
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "odf",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 2351,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 34,
+        "valeur": 0.029411764705882353,
+        "intervalle": [
+          0.0052109062762689395,
+          0.1491557329268593
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 33,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.10426999754245206
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "odf",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 398,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 26,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.1287289218592153
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 26,
+        "effectif": 26,
+        "valeur": 1.0,
+        "intervalle": [
+          0.8712710781407846,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "odf",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1262,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 32,
+        "valeur": 0.03125,
+        "intervalle": [
+          0.005537860164003122,
+          0.15744263820012558
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 31,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.11025539546043596
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "odf",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 264,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 9,
+        "valeur": 0.1111111111111111,
+        "intervalle": [
+          0.019890887638544907,
+          0.434999705576656
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 8,
+        "effectif": 8,
+        "valeur": 1.0,
+        "intervalle": [
+          0.6755924351161198,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "odf",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 67,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 24,
+        "valeur": 0.9166666666666666,
+        "intervalle": [
+          0.741511978067893,
+          0.9768411847029567
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 2,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.6576197724933469
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "ooxml",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 2331,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 54,
+        "valeur": 0.018518518518518517,
+        "intervalle": [
+          0.003276487718229061,
+          0.09771437488781931
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 53,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.06758198857654187
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "ooxml",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 398,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 26,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.1287289218592153
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 26,
+        "effectif": 26,
+        "valeur": 1.0,
+        "intervalle": [
+          0.8712710781407846,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "ooxml",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1241,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 53,
+        "valeur": 0.018867924528301886,
+        "intervalle": [
+          0.0033384533882637665,
+          0.09942912052501235
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 52,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.06879223612386234
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "ooxml",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 241,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 32,
+        "valeur": 0.03125,
+        "intervalle": [
+          0.005537860164003122,
+          0.15744263820012558
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 31,
+        "effectif": 31,
+        "valeur": 1.0,
+        "intervalle": [
+          0.889744604539564,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "ooxml",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 63,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 28,
+        "valeur": 0.7857142857142857,
+        "intervalle": [
+          0.6046141434627812,
+          0.8978753966710211
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 6,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.3903342879021653
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "pagespdf",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1985,
+      "non_analysables": {
+        "nombre": 3,
+        "effectif": 400,
+        "valeur": 0.0075,
+        "intervalle": [
+          0.0025538891952499396,
+          0.021815720724032123
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 50,
+        "effectif": 397,
+        "valeur": 0.12594458438287154,
+        "intervalle": [
+          0.09685174636572089,
+          0.16220693265965622
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "pagespdf",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 398,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 26,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.1287289218592153
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 26,
+        "effectif": 26,
+        "valeur": 1.0,
+        "intervalle": [
+          0.8712710781407846,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "pagespdf",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1178,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 116,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.032054506499638716
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 15,
+        "effectif": 116,
+        "valeur": 0.12931034482758622,
+        "intervalle": [
+          0.07995391352718764,
+          0.20243132405013073
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "pagespdf",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 230,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 43,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.08200980322579117
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 34,
+        "effectif": 43,
+        "valeur": 0.7906976744186046,
+        "intervalle": [
+          0.6479435728926356,
+          0.885771657790044
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "pagespdf",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 57,
+      "non_analysables": {
+        "nombre": 28,
+        "effectif": 34,
+        "valeur": 0.8235294117647058,
+        "intervalle": [
+          0.6648626260015724,
+          0.9165103095462768
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 1,
+        "effectif": 6,
+        "valeur": 0.16666666666666666,
+        "intervalle": [
+          0.030053369748306635,
+          0.5635028221864702
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "quicktime",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 2384,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 1,
+        "valeur": 1.0,
+        "intervalle": [
+          0.20654931437723745,
+          1.0
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "quicktime",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 424,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "quicktime",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1206,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 88,
+        "valeur": 0.011363636363636364,
+        "intervalle": [
+          0.0020087853177044694,
+          0.061594938922985634
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 87,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.04228750694412034
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "quicktime",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 272,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 1,
+        "valeur": 1.0,
+        "intervalle": [
+          0.20654931437723745,
+          1.0
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "quicktime",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 69,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 22,
+        "valeur": 1.0,
+        "intervalle": [
+          0.8513451253913791,
+          1.0
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "revisionspdf",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1985,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 400,
+        "valeur": 0.0025,
+        "intervalle": [
+          0.0004414477868016362,
+          0.01402328507582339
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 54,
+        "effectif": 399,
+        "valeur": 0.13533834586466165,
+        "intervalle": [
+          0.10522998526438898,
+          0.17240146594747618
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "revisionspdf",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 398,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 26,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.1287289218592153
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 26,
+        "effectif": 26,
+        "valeur": 1.0,
+        "intervalle": [
+          0.8712710781407846,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "revisionspdf",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1178,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 116,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.032054506499638716
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 116,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.032054506499638716
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "revisionspdf",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 230,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 43,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.08200980322579117
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 43,
+        "effectif": 43,
+        "valeur": 1.0,
+        "intervalle": [
+          0.9179901967742088,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "revisionspdf",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 57,
+      "non_analysables": {
+        "nombre": 28,
+        "effectif": 34,
+        "valeur": 0.8235294117647058,
+        "intervalle": [
+          0.6648626260015724,
+          0.9165103095462768
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 6,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.3903342879021653
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "textepng",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 2216,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 169,
+        "valeur": 0.005917159763313609,
+        "intervalle": [
+          0.0010452887665312535,
+          0.03275134116560824
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 168,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.022354668349868052
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "textepng",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 220,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 204,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.018482639808683074
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 198,
+        "effectif": 204,
+        "valeur": 0.9705882352941176,
+        "intervalle": [
+          0.9373289911532412,
+          0.9864520537327042
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "textepng",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1045,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 249,
+        "valeur": 0.004016064257028112,
+        "intervalle": [
+          0.0007092860826813513,
+          0.022393961493645413
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 129,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.028917619956878256
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 118,
+        "effectif": 119,
+        "valeur": 0.9915966386554622,
+        "intervalle": [
+          0.9539321145669224,
+          0.9985150569599106
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "textepng",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 239,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 34,
+        "valeur": 0.029411764705882353,
+        "intervalle": [
+          0.0052109062762689395,
+          0.1491557329268593
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 33,
+        "effectif": 33,
+        "valeur": 1.0,
+        "intervalle": [
+          0.895730002457548,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "textepng",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 61,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 30,
+        "valeur": 0.7333333333333333,
+        "intervalle": [
+          0.555520383048111,
+          0.8581733668040368
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 4,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.4898908364545973
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 4,
+        "effectif": 4,
+        "valeur": 1.0,
+        "intervalle": [
+          0.5101091635454027,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "vorbis",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 2224,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 161,
+        "valeur": 0.006211180124223602,
+        "intervalle": [
+          0.00109726853276099,
+          0.03433956187680337
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 160,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.02344619517150519
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "vorbis",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 424,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "vorbis",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 1278,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 16,
+        "valeur": 0.0625,
+        "intervalle": [
+          0.01111934476464252,
+          0.28328737570298945
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 15,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.20388330103584862
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "vorbis",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 261,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 12,
+        "valeur": 0.08333333333333333,
+        "intervalle": [
+          0.014865094404917095,
+          0.35387991114111694
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 11,
+        "effectif": 11,
+        "valeur": 1.0,
+        "intervalle": [
+          0.7411670330319684,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "vorbis",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 64,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 27,
+        "valeur": 0.8148148148148148,
+        "intervalle": [
+          0.6330131638145156,
+          0.9181929285702346
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 5,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.43448246478317476
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "xmp",
+      "categorie": "authentique",
+      "effectif": 2385,
+      "non_applicables": 1179,
+      "non_analysables": {
+        "nombre": 1,
+        "effectif": 1206,
+        "valeur": 0.0008291873963515755,
+        "intervalle": [
+          0.0001463869348715158,
+          0.004681897612748592
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1205,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.003177802012549873
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "confusions": 0
+    },
+    {
+      "module": "xmp",
+      "categorie": "genere",
+      "effectif": 424,
+      "non_applicables": 78,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 346,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.010980570552282673
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 341,
+        "effectif": 346,
+        "valeur": 0.9855491329479769,
+        "intervalle": [
+          0.9666229779909234,
+          0.9938120748831605
+        ]
+      },
+      "confusions": 1
+    },
+    {
+      "module": "xmp",
+      "categorie": "transforme",
+      "effectif": 1294,
+      "non_applicables": 172,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 1122,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0034120779534251725
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 742,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.005150503200463199
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 374,
+        "effectif": 380,
+        "valeur": 0.9842105263157894,
+        "intervalle": [
+          0.9659851899844115,
+          0.9927439716091145
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "xmp",
+      "categorie": "retouche",
+      "effectif": 273,
+      "non_applicables": 92,
+      "non_analysables": {
+        "nombre": 0,
+        "effectif": 181,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.02078245240652716
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "faux_negatifs": {
+        "nombre": 181,
+        "effectif": 181,
+        "valeur": 1.0,
+        "intervalle": [
+          0.979217547593473,
+          1.0
+        ]
+      },
+      "confusions": 0
+    },
+    {
+      "module": "xmp",
+      "categorie": "malforme",
+      "effectif": 91,
+      "non_applicables": 27,
+      "non_analysables": {
+        "nombre": 22,
+        "effectif": 64,
+        "valeur": 0.34375,
+        "intervalle": [
+          0.23923142078443355,
+          0.46596359790081815
+        ]
+      },
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 33,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.10426999754245206
+        ]
+      },
+      "faux_negatifs": {
+        "nombre": 6,
+        "effectif": 6,
+        "valeur": 1.0,
+        "intervalle": [
+          0.6096657120978346,
+          1.0
+        ]
+      },
+      "confusions": 0
+    }
+  ],
+  "regles": [
+    {
+      "identifiant": "R-C2PA-001",
+      "version": "1",
+      "module": "c2pa",
+      "categorie": "preuve",
+      "direction": "origine_ia",
+      "niveau": null,
+      "evaluee": false,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1443,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0026550654857687445
+        ]
+      },
+      "niveau_permis": null,
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-C2PA-002",
+      "version": "1",
+      "module": "c2pa",
+      "categorie": "preuve",
+      "direction": "retouche",
+      "niveau": null,
+      "evaluee": false,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1443,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0026550654857687445
+        ]
+      },
+      "niveau_permis": null,
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-C2PA-003",
+      "version": "1",
+      "module": "c2pa",
+      "categorie": "preuve",
+      "direction": "authenticite",
+      "niveau": null,
+      "evaluee": false,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 598,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.006382841800598862
+        ]
+      },
+      "niveau_permis": null,
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-C2PA-004",
+      "version": "2",
+      "module": "c2pa",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1443,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0026550654857687445
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-C2PA-005",
+      "version": "2",
+      "module": "c2pa",
+      "categorie": "indice",
+      "direction": "retouche",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1443,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0026550654857687445
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-C2PA-006",
+      "version": "2",
+      "module": "c2pa",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1443,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0026550654857687445
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-DOUBLEJPEG-001",
+      "version": "2",
+      "module": "doublejpeg",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "faible",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 27,
+        "effectif": 608,
+        "valeur": 0.044407894736842105,
+        "intervalle": [
+          0.0306967858443384,
+          0.06383989189597326
+        ]
+      },
+      "niveau_permis": "faible",
+      "chemins": [
+        "authentiques/image/jpeg-0192.jpg",
+        "authentiques/image/jpeg-0285.jpg",
+        "authentiques/image/jpeg-0455.jpg",
+        "authentiques/image/jpeg-0579.jpg",
+        "authentiques/pdf/pdf-0021.pdf",
+        "authentiques/pdf/pdf-0074.pdf",
+        "authentiques/pdf/pdf-0090.pdf",
+        "authentiques/pdf/pdf-0122.pdf",
+        "authentiques/pdf/pdf-0138.pdf",
+        "authentiques/pdf/pdf-0146.pdf",
+        "authentiques/pdf/pdf-0192.pdf",
+        "authentiques/pdf/pdf-0209.pdf",
+        "authentiques/pdf/pdf-0251.pdf",
+        "authentiques/pdf/pdf-0278.pdf",
+        "authentiques/pdf/pdf-0311.pdf",
+        "authentiques/pdf/pdf-0312.pdf",
+        "authentiques/pdf/pdf-0332.pdf",
+        "authentiques/pdf/pdf-0381.pdf",
+        "authentiques/pdf/pdf-0405.pdf",
+        "authentiques/pdf/pdf-0431.pdf",
+        "authentiques/pdf/pdf-0444.pdf",
+        "authentiques/pdf/pdf-0492.pdf",
+        "authentiques/pdf/pdf-0527.pdf",
+        "authentiques/pdf/pdf-0546.pdf",
+        "authentiques/pdf/pdf-0552.pdf",
+        "authentiques/pdf/pdf-0558.pdf",
+        "authentiques/pdf/pdf-0591.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-DWTDCT-001",
+      "version": "2",
+      "module": "dwtdct",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 752,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.005082360561020009
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-DWTDCT-002",
+      "version": "2",
+      "module": "dwtdct",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 752,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.005082360561020009
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-DWTDCT-003",
+      "version": "2",
+      "module": "dwtdct",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 752,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.005082360561020009
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-EXIF-001",
+      "version": "2",
+      "module": "exif",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-EXIF-002",
+      "version": "2",
+      "module": "exif",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-EXIF-014",
+      "version": "2",
+      "module": "exif",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 2,
+        "effectif": 825,
+        "valeur": 0.0024242424242424242,
+        "intervalle": [
+          0.0006650666484476061,
+          0.008795679718959303
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [
+        "authentiques/image/png-0179.png",
+        "authentiques/image/png-0188.png"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-ID3-001",
+      "version": "2",
+      "module": "id3",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 359,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.010587155153602403
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-001",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 11,
+        "effectif": 825,
+        "valeur": 0.013333333333333334,
+        "intervalle": [
+          0.007461167952218484,
+          0.02371663878715758
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [
+        "authentiques/bureau/odt-0020.odt",
+        "authentiques/bureau/odt-0032.odt",
+        "authentiques/bureau/odt-0033.odt",
+        "authentiques/bureau/odt-0042.odt",
+        "authentiques/bureau/odt-0044.odt",
+        "authentiques/pdf/pdf-0209.pdf",
+        "authentiques/pdf/pdf-0342.pdf",
+        "authentiques/pdf/pdf-0419.pdf",
+        "authentiques/pdf/pdf-0509.pdf",
+        "authentiques/pdf/pdf-0513.pdf",
+        "authentiques/pdf/pdf-0558.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-002",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 2,
+        "effectif": 825,
+        "valeur": 0.0024242424242424242,
+        "intervalle": [
+          0.0006650666484476061,
+          0.008795679718959303
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [
+        "authentiques/pdf/pdf-0198.pdf",
+        "authentiques/pdf/pdf-0452.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-003",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-004",
+      "version": "3",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "faible",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 97,
+        "effectif": 825,
+        "valeur": 0.11757575757575757,
+        "intervalle": [
+          0.09734812498751211,
+          0.1413482586395692
+        ]
+      },
+      "niveau_permis": "faible",
+      "chemins": [
+        "authentiques/bureau/docx-0002.docx",
+        "authentiques/bureau/docx-0014.docx",
+        "authentiques/bureau/docx-0056.docx",
+        "authentiques/bureau/docx-0063.docx",
+        "authentiques/bureau/odt-0009.odt",
+        "authentiques/bureau/odt-0011.odt",
+        "authentiques/bureau/odt-0020.odt",
+        "authentiques/bureau/odt-0032.odt",
+        "authentiques/bureau/odt-0033.odt",
+        "authentiques/bureau/odt-0042.odt",
+        "authentiques/bureau/odt-0044.odt",
+        "authentiques/bureau/odt-0050.odt",
+        "authentiques/image/jpeg-0236.jpg",
+        "authentiques/image/jpeg-0320.jpg",
+        "authentiques/image/jpeg-0492.jpg",
+        "authentiques/pdf/pdf-0009.pdf",
+        "authentiques/pdf/pdf-0017.pdf",
+        "authentiques/pdf/pdf-0021.pdf",
+        "authentiques/pdf/pdf-0039.pdf",
+        "authentiques/pdf/pdf-0042.pdf",
+        "authentiques/pdf/pdf-0048.pdf",
+        "authentiques/pdf/pdf-0051.pdf",
+        "authentiques/pdf/pdf-0053.pdf",
+        "authentiques/pdf/pdf-0057.pdf",
+        "authentiques/pdf/pdf-0069.pdf",
+        "authentiques/pdf/pdf-0072.pdf",
+        "authentiques/pdf/pdf-0074.pdf",
+        "authentiques/pdf/pdf-0078.pdf",
+        "authentiques/pdf/pdf-0087.pdf",
+        "authentiques/pdf/pdf-0090.pdf",
+        "authentiques/pdf/pdf-0092.pdf",
+        "authentiques/pdf/pdf-0122.pdf",
+        "authentiques/pdf/pdf-0125.pdf",
+        "authentiques/pdf/pdf-0138.pdf",
+        "authentiques/pdf/pdf-0144.pdf",
+        "authentiques/pdf/pdf-0146.pdf",
+        "authentiques/pdf/pdf-0159.pdf",
+        "authentiques/pdf/pdf-0167.pdf",
+        "authentiques/pdf/pdf-0171.pdf",
+        "authentiques/pdf/pdf-0173.pdf",
+        "authentiques/pdf/pdf-0188.pdf",
+        "authentiques/pdf/pdf-0192.pdf",
+        "authentiques/pdf/pdf-0198.pdf",
+        "authentiques/pdf/pdf-0203.pdf",
+        "authentiques/pdf/pdf-0209.pdf",
+        "authentiques/pdf/pdf-0213.pdf",
+        "authentiques/pdf/pdf-0227.pdf",
+        "authentiques/pdf/pdf-0233.pdf",
+        "authentiques/pdf/pdf-0251.pdf",
+        "authentiques/pdf/pdf-0260.pdf",
+        "authentiques/pdf/pdf-0266.pdf",
+        "authentiques/pdf/pdf-0267.pdf",
+        "authentiques/pdf/pdf-0282.pdf",
+        "authentiques/pdf/pdf-0285.pdf",
+        "authentiques/pdf/pdf-0287.pdf",
+        "authentiques/pdf/pdf-0293.pdf",
+        "authentiques/pdf/pdf-0296.pdf",
+        "authentiques/pdf/pdf-0297.pdf",
+        "authentiques/pdf/pdf-0300.pdf",
+        "authentiques/pdf/pdf-0305.pdf",
+        "authentiques/pdf/pdf-0312.pdf",
+        "authentiques/pdf/pdf-0321.pdf",
+        "authentiques/pdf/pdf-0332.pdf",
+        "authentiques/pdf/pdf-0341.pdf",
+        "authentiques/pdf/pdf-0342.pdf",
+        "authentiques/pdf/pdf-0344.pdf",
+        "authentiques/pdf/pdf-0347.pdf",
+        "authentiques/pdf/pdf-0350.pdf",
+        "authentiques/pdf/pdf-0356.pdf",
+        "authentiques/pdf/pdf-0366.pdf",
+        "authentiques/pdf/pdf-0380.pdf",
+        "authentiques/pdf/pdf-0396.pdf",
+        "authentiques/pdf/pdf-0401.pdf",
+        "authentiques/pdf/pdf-0419.pdf",
+        "authentiques/pdf/pdf-0432.pdf",
+        "authentiques/pdf/pdf-0434.pdf",
+        "authentiques/pdf/pdf-0450.pdf",
+        "authentiques/pdf/pdf-0452.pdf",
+        "authentiques/pdf/pdf-0470.pdf",
+        "authentiques/pdf/pdf-0479.pdf",
+        "authentiques/pdf/pdf-0483.pdf",
+        "authentiques/pdf/pdf-0486.pdf",
+        "authentiques/pdf/pdf-0492.pdf",
+        "authentiques/pdf/pdf-0500.pdf",
+        "authentiques/pdf/pdf-0509.pdf",
+        "authentiques/pdf/pdf-0512.pdf",
+        "authentiques/pdf/pdf-0519.pdf",
+        "authentiques/pdf/pdf-0522.pdf",
+        "authentiques/pdf/pdf-0524.pdf",
+        "authentiques/pdf/pdf-0549.pdf",
+        "authentiques/pdf/pdf-0552.pdf",
+        "authentiques/pdf/pdf-0557.pdf",
+        "authentiques/pdf/pdf-0558.pdf",
+        "authentiques/pdf/pdf-0560.pdf",
+        "authentiques/pdf/pdf-0569.pdf",
+        "authentiques/pdf/pdf-0575.pdf",
+        "authentiques/pdf/pdf-0600.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-005",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-006",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-007",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-008",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 1,
+        "effectif": 825,
+        "valeur": 0.0012121212121212121,
+        "intervalle": [
+          0.00021400121164347544,
+          0.006833738447766862
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [
+        "authentiques/pdf/pdf-0206.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-009",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 4,
+        "effectif": 825,
+        "valeur": 0.0048484848484848485,
+        "intervalle": [
+          0.0018870481526336155,
+          0.01239971163076644
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [
+        "authentiques/pdf/pdf-0269.pdf",
+        "authentiques/pdf/pdf-0302.pdf",
+        "authentiques/pdf/pdf-0318.pdf",
+        "authentiques/pdf/pdf-0429.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-010",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 4,
+        "effectif": 825,
+        "valeur": 0.0048484848484848485,
+        "intervalle": [
+          0.0018870481526336155,
+          0.01239971163076644
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [
+        "authentiques/image/jpeg-0288.jpg",
+        "authentiques/image/jpeg-0449.jpg",
+        "authentiques/pdf/pdf-0093.pdf",
+        "authentiques/pdf/pdf-0359.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-011",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-012",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-013",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 1,
+        "effectif": 825,
+        "valeur": 0.0012121212121212121,
+        "intervalle": [
+          0.00021400121164347544,
+          0.006833738447766862
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [
+        "authentiques/image/jpeg-0455.jpg"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-014",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 4,
+        "effectif": 825,
+        "valeur": 0.0048484848484848485,
+        "intervalle": [
+          0.0018870481526336155,
+          0.01239971163076644
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [
+        "authentiques/bureau/odt-0009.odt",
+        "authentiques/image/jpeg-0108.jpg",
+        "authentiques/image/jpeg-0167.jpg",
+        "authentiques/pdf/pdf-0221.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-015",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 825,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.004634732951413764
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-016",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "faible",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 46,
+        "effectif": 825,
+        "valeur": 0.055757575757575756,
+        "intervalle": [
+          0.0420605132297561,
+          0.0735725282895
+        ]
+      },
+      "niveau_permis": "faible",
+      "chemins": [
+        "authentiques/bureau/docx-0002.docx",
+        "authentiques/bureau/docx-0003.docx",
+        "authentiques/bureau/docx-0005.docx",
+        "authentiques/bureau/docx-0008.docx",
+        "authentiques/bureau/docx-0009.docx",
+        "authentiques/bureau/docx-0011.docx",
+        "authentiques/bureau/docx-0012.docx",
+        "authentiques/bureau/docx-0014.docx",
+        "authentiques/bureau/docx-0015.docx",
+        "authentiques/bureau/docx-0017.docx",
+        "authentiques/bureau/docx-0018.docx",
+        "authentiques/bureau/docx-0020.docx",
+        "authentiques/bureau/docx-0024.docx",
+        "authentiques/bureau/docx-0026.docx",
+        "authentiques/bureau/docx-0027.docx",
+        "authentiques/bureau/docx-0029.docx",
+        "authentiques/bureau/docx-0030.docx",
+        "authentiques/bureau/docx-0032.docx",
+        "authentiques/bureau/docx-0033.docx",
+        "authentiques/bureau/docx-0035.docx",
+        "authentiques/bureau/docx-0036.docx",
+        "authentiques/bureau/docx-0039.docx",
+        "authentiques/bureau/docx-0041.docx",
+        "authentiques/bureau/docx-0042.docx",
+        "authentiques/bureau/docx-0044.docx",
+        "authentiques/bureau/docx-0045.docx",
+        "authentiques/bureau/docx-0047.docx",
+        "authentiques/bureau/docx-0048.docx",
+        "authentiques/bureau/docx-0050.docx",
+        "authentiques/bureau/docx-0051.docx",
+        "authentiques/bureau/docx-0053.docx",
+        "authentiques/bureau/docx-0056.docx",
+        "authentiques/bureau/docx-0057.docx",
+        "authentiques/bureau/docx-0059.docx",
+        "authentiques/bureau/docx-0060.docx",
+        "authentiques/bureau/docx-0066.docx",
+        "authentiques/bureau/docx-0068.docx",
+        "authentiques/bureau/docx-0071.docx",
+        "authentiques/bureau/docx-0075.docx",
+        "authentiques/bureau/docx-0080.docx",
+        "authentiques/bureau/odt-0009.odt",
+        "authentiques/image/jpeg-0110.jpg",
+        "authentiques/image/jpeg-0128.jpg",
+        "authentiques/image/jpeg-0275.jpg",
+        "authentiques/image/jpeg-0483.jpg",
+        "authentiques/image/jpeg-0537.jpg"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-017",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "authenticite",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 473,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00805605039082523
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-018",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "authenticite",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 473,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00805605039082523
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-019",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "authenticite",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 473,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00805605039082523
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-020",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "authenticite",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 473,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00805605039082523
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-021",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "authenticite",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 473,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00805605039082523
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IMAGE-022",
+      "version": "2",
+      "module": "image",
+      "categorie": "indice",
+      "direction": "authenticite",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 473,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00805605039082523
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-INFOPDF-001",
+      "version": "2",
+      "module": "infopdf",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 399,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00953590733173263
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-INFOPDF-002",
+      "version": "2",
+      "module": "infopdf",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 399,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00953590733173263
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-INFOWAV-001",
+      "version": "2",
+      "module": "infowav",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 133,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.02807233168807166
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IPTC-001",
+      "version": "2",
+      "module": "iptc",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 608,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0062785199749268725
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-IPTC-003",
+      "version": "2",
+      "module": "iptc",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 608,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.0062785199749268725
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-MATROSKA-001",
+      "version": "2",
+      "module": "matroska",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 400,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.009512294334296508
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-MATROSKA-002",
+      "version": "2",
+      "module": "matroska",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 400,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.009512294334296508
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-ODF-001",
+      "version": "2",
+      "module": "odf",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "faible",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 33,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.10426999754245206
+        ]
+      },
+      "niveau_permis": "faible",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-OOXML-001",
+      "version": "2",
+      "module": "ooxml",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "faible",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 53,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.06758198857654187
+        ]
+      },
+      "niveau_permis": "faible",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-PAGESPDF-001",
+      "version": "2",
+      "module": "pagespdf",
+      "categorie": "indice",
+      "direction": "retouche",
+      "niveau": "faible",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 23,
+        "effectif": 397,
+        "valeur": 0.05793450881612091,
+        "intervalle": [
+          0.0389117020538386,
+          0.08543037315797072
+        ]
+      },
+      "niveau_permis": "faible",
+      "chemins": [
+        "authentiques/pdf/pdf-0002.pdf",
+        "authentiques/pdf/pdf-0066.pdf",
+        "authentiques/pdf/pdf-0078.pdf",
+        "authentiques/pdf/pdf-0090.pdf",
+        "authentiques/pdf/pdf-0096.pdf",
+        "authentiques/pdf/pdf-0108.pdf",
+        "authentiques/pdf/pdf-0114.pdf",
+        "authentiques/pdf/pdf-0116.pdf",
+        "authentiques/pdf/pdf-0150.pdf",
+        "authentiques/pdf/pdf-0158.pdf",
+        "authentiques/pdf/pdf-0207.pdf",
+        "authentiques/pdf/pdf-0231.pdf",
+        "authentiques/pdf/pdf-0255.pdf",
+        "authentiques/pdf/pdf-0285.pdf",
+        "authentiques/pdf/pdf-0309.pdf",
+        "authentiques/pdf/pdf-0336.pdf",
+        "authentiques/pdf/pdf-0374.pdf",
+        "authentiques/pdf/pdf-0413.pdf",
+        "authentiques/pdf/pdf-0473.pdf",
+        "authentiques/pdf/pdf-0480.pdf",
+        "authentiques/pdf/pdf-0531.pdf",
+        "authentiques/pdf/pdf-0533.pdf",
+        "authentiques/pdf/pdf-0575.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-PAGESPDF-002",
+      "version": "2",
+      "module": "pagespdf",
+      "categorie": "indice",
+      "direction": "retouche",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 7,
+        "effectif": 397,
+        "valeur": 0.017632241813602016,
+        "intervalle": [
+          0.008566732828172252,
+          0.035943280864485797
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [
+        "authentiques/pdf/pdf-0098.pdf",
+        "authentiques/pdf/pdf-0170.pdf",
+        "authentiques/pdf/pdf-0255.pdf",
+        "authentiques/pdf/pdf-0291.pdf",
+        "authentiques/pdf/pdf-0446.pdf",
+        "authentiques/pdf/pdf-0455.pdf",
+        "authentiques/pdf/pdf-0533.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-PAGESPDF-003",
+      "version": "2",
+      "module": "pagespdf",
+      "categorie": "indice",
+      "direction": "retouche",
+      "niveau": "faible",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 27,
+        "effectif": 397,
+        "valeur": 0.06801007556675064,
+        "intervalle": [
+          0.047158329999376636,
+          0.09714176059222054
+        ]
+      },
+      "niveau_permis": "faible",
+      "chemins": [
+        "authentiques/pdf/pdf-0011.pdf",
+        "authentiques/pdf/pdf-0098.pdf",
+        "authentiques/pdf/pdf-0102.pdf",
+        "authentiques/pdf/pdf-0116.pdf",
+        "authentiques/pdf/pdf-0120.pdf",
+        "authentiques/pdf/pdf-0209.pdf",
+        "authentiques/pdf/pdf-0216.pdf",
+        "authentiques/pdf/pdf-0234.pdf",
+        "authentiques/pdf/pdf-0248.pdf",
+        "authentiques/pdf/pdf-0249.pdf",
+        "authentiques/pdf/pdf-0255.pdf",
+        "authentiques/pdf/pdf-0275.pdf",
+        "authentiques/pdf/pdf-0288.pdf",
+        "authentiques/pdf/pdf-0291.pdf",
+        "authentiques/pdf/pdf-0375.pdf",
+        "authentiques/pdf/pdf-0395.pdf",
+        "authentiques/pdf/pdf-0407.pdf",
+        "authentiques/pdf/pdf-0411.pdf",
+        "authentiques/pdf/pdf-0435.pdf",
+        "authentiques/pdf/pdf-0450.pdf",
+        "authentiques/pdf/pdf-0479.pdf",
+        "authentiques/pdf/pdf-0480.pdf",
+        "authentiques/pdf/pdf-0533.pdf",
+        "authentiques/pdf/pdf-0536.pdf",
+        "authentiques/pdf/pdf-0540.pdf",
+        "authentiques/pdf/pdf-0552.pdf",
+        "authentiques/pdf/pdf-0596.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-PAGESPDF-004",
+      "version": "2",
+      "module": "pagespdf",
+      "categorie": "indice",
+      "direction": "retouche",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 1,
+        "effectif": 397,
+        "valeur": 0.0025188916876574307,
+        "intervalle": [
+          0.0004447847034564885,
+          0.014128205919519833
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [
+        "authentiques/pdf/pdf-0497.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-QUICKTIME-001",
+      "version": "1",
+      "module": "quicktime",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "faible",
+      "evaluee": false,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "niveau_permis": null,
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-QUICKTIME-002",
+      "version": "1",
+      "module": "quicktime",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "faible",
+      "evaluee": false,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 0,
+        "valeur": null,
+        "intervalle": null
+      },
+      "niveau_permis": null,
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-REVISIONSPDF-002",
+      "version": "2",
+      "module": "revisionspdf",
+      "categorie": "indice",
+      "direction": "retouche",
+      "niveau": "faible",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 54,
+        "effectif": 399,
+        "valeur": 0.13533834586466165,
+        "intervalle": [
+          0.10522998526438898,
+          0.17240146594747618
+        ]
+      },
+      "niveau_permis": "faible",
+      "chemins": [
+        "authentiques/pdf/pdf-0018.pdf",
+        "authentiques/pdf/pdf-0047.pdf",
+        "authentiques/pdf/pdf-0063.pdf",
+        "authentiques/pdf/pdf-0083.pdf",
+        "authentiques/pdf/pdf-0093.pdf",
+        "authentiques/pdf/pdf-0123.pdf",
+        "authentiques/pdf/pdf-0126.pdf",
+        "authentiques/pdf/pdf-0168.pdf",
+        "authentiques/pdf/pdf-0177.pdf",
+        "authentiques/pdf/pdf-0197.pdf",
+        "authentiques/pdf/pdf-0206.pdf",
+        "authentiques/pdf/pdf-0218.pdf",
+        "authentiques/pdf/pdf-0234.pdf",
+        "authentiques/pdf/pdf-0237.pdf",
+        "authentiques/pdf/pdf-0245.pdf",
+        "authentiques/pdf/pdf-0267.pdf",
+        "authentiques/pdf/pdf-0270.pdf",
+        "authentiques/pdf/pdf-0273.pdf",
+        "authentiques/pdf/pdf-0275.pdf",
+        "authentiques/pdf/pdf-0276.pdf",
+        "authentiques/pdf/pdf-0281.pdf",
+        "authentiques/pdf/pdf-0288.pdf",
+        "authentiques/pdf/pdf-0290.pdf",
+        "authentiques/pdf/pdf-0324.pdf",
+        "authentiques/pdf/pdf-0327.pdf",
+        "authentiques/pdf/pdf-0329.pdf",
+        "authentiques/pdf/pdf-0348.pdf",
+        "authentiques/pdf/pdf-0357.pdf",
+        "authentiques/pdf/pdf-0359.pdf",
+        "authentiques/pdf/pdf-0365.pdf",
+        "authentiques/pdf/pdf-0380.pdf",
+        "authentiques/pdf/pdf-0383.pdf",
+        "authentiques/pdf/pdf-0404.pdf",
+        "authentiques/pdf/pdf-0417.pdf",
+        "authentiques/pdf/pdf-0426.pdf",
+        "authentiques/pdf/pdf-0435.pdf",
+        "authentiques/pdf/pdf-0440.pdf",
+        "authentiques/pdf/pdf-0450.pdf",
+        "authentiques/pdf/pdf-0453.pdf",
+        "authentiques/pdf/pdf-0455.pdf",
+        "authentiques/pdf/pdf-0459.pdf",
+        "authentiques/pdf/pdf-0462.pdf",
+        "authentiques/pdf/pdf-0471.pdf",
+        "authentiques/pdf/pdf-0482.pdf",
+        "authentiques/pdf/pdf-0488.pdf",
+        "authentiques/pdf/pdf-0507.pdf",
+        "authentiques/pdf/pdf-0524.pdf",
+        "authentiques/pdf/pdf-0549.pdf",
+        "authentiques/pdf/pdf-0552.pdf",
+        "authentiques/pdf/pdf-0567.pdf",
+        "authentiques/pdf/pdf-0579.pdf",
+        "authentiques/pdf/pdf-0582.pdf",
+        "authentiques/pdf/pdf-0590.pdf",
+        "authentiques/pdf/pdf-0599.pdf"
+      ],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-REVISIONSPDF-003",
+      "version": "2",
+      "module": "revisionspdf",
+      "categorie": "indice",
+      "direction": "retouche",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 399,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.00953590733173263
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-TEXTEPNG-001",
+      "version": "2",
+      "module": "textepng",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 168,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.022354668349868052
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-TEXTEPNG-002",
+      "version": "2",
+      "module": "textepng",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 168,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.022354668349868052
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-TEXTEPNG-003",
+      "version": "2",
+      "module": "textepng",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 168,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.022354668349868052
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-TEXTEPNG-004",
+      "version": "2",
+      "module": "textepng",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 168,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.022354668349868052
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-TEXTEPNG-005",
+      "version": "2",
+      "module": "textepng",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 168,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.022354668349868052
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-TEXTEPNG-007",
+      "version": "2",
+      "module": "textepng",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 168,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.022354668349868052
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-VORBIS-001",
+      "version": "2",
+      "module": "vorbis",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "modere",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 160,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.02344619517150519
+        ]
+      },
+      "niveau_permis": "modere",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-XMP-001",
+      "version": "2",
+      "module": "xmp",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1205,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.003177802012549873
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-XMP-002",
+      "version": "2",
+      "module": "xmp",
+      "categorie": "indice",
+      "direction": "retouche",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1205,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.003177802012549873
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-XMP-003",
+      "version": "2",
+      "module": "xmp",
+      "categorie": "indice",
+      "direction": "retouche",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1205,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.003177802012549873
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-XMP-004",
+      "version": "2",
+      "module": "xmp",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1205,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.003177802012549873
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-XMP-005",
+      "version": "2",
+      "module": "xmp",
+      "categorie": "indice",
+      "direction": "origine_ia",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 0,
+        "effectif": 1205,
+        "valeur": 0.0,
+        "intervalle": [
+          0.0,
+          0.003177802012549873
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [],
+      "ecart": null
+    },
+    {
+      "identifiant": "R-XMP-013",
+      "version": "2",
+      "module": "xmp",
+      "categorie": "indice",
+      "direction": "transformation",
+      "niveau": "fort",
+      "evaluee": true,
+      "faux_positifs": {
+        "nombre": 2,
+        "effectif": 1205,
+        "valeur": 0.0016597510373443983,
+        "intervalle": [
+          0.00045528166352687806,
+          0.006031473703338182
+        ]
+      },
+      "niveau_permis": "fort",
+      "chemins": [
+        "authentiques/image/png-0179.png",
+        "authentiques/image/png-0188.png"
+      ],
+      "ecart": null
+    }
+  ],
+  "par_fichier": {
+    "categories": {
+      "authentique": {
+        "nombre": 8,
+        "effectif": 2384,
+        "valeur": 0.003355704697986577,
+        "intervalle": [
+          0.0017013668977628434,
+          0.006608003369429609
+        ]
+      },
+      "transforme": {
+        "nombre": 1,
+        "effectif": 914,
+        "valeur": 0.0010940919037199124,
+        "intervalle": [
+          0.0001931602011707675,
+          0.006171183841644246
+        ]
+      }
+    },
+    "cible": 0.05,
+    "cible_atteinte": true
+  },
+  "ecarts": [
+    "authentiques/pdf/pdf-0371.pdf : arrêt brutal de l'analyse (ValueError)"
+  ]
+}

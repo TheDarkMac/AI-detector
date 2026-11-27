@@ -1,6 +1,6 @@
 # Vérification : banc d'évaluation et matrice
 
-> Statut : **v1.4** ; v1.0 mergée avec T17, v1.1 avec T18, v1.2 avec T90, v1.3 avec T92, v1.4 proposée dans la PR de T100. Document vivant : toute modification est inscrite à l'historique (§6).
+> Statut : **v1.5** ; v1.0 mergée avec T17, v1.1 avec T18, v1.2 avec T90, v1.3 avec T92, v1.4 avec T100, v1.5 proposée dans la PR de T101. Document vivant : toute modification est inscrite à l'historique (§6).
 
 Ce dossier tient la [matrice de vérification](matrice.md) : chaque exigence du cahier, de sécurité et chaque principe directeur, avec son état, ses méthodes de vérification et leur résultat ([ADR-0024](../decisions/ADR-0024-methode-de-verification.md)). Les taux d'erreur des techniques sont mesurés par le banc d'évaluation, paquet `banc/` du dépôt ([ADR-0099](../decisions/ADR-0099-banc-outil-du-depot.md)).
 
@@ -16,6 +16,8 @@ Ce dossier tient la [matrice de vérification](matrice.md) : chaque exigence du 
 | Corpus d'essai (démonstration, rien de publiable) | `banc/essai/` |
 | Corpus de référence : scripts de constitution, manifeste, effectifs, textes de l'assistant (ADR-0272 à ADR-0276) | `banc/reference/` |
 | Description du corpus de référence (livrable 5) | [`corpus-de-reference.md`](corpus-de-reference.md) |
+| Rapports d'évaluation publiés (livrables 4 et 5, ADR-0280) | [`evaluations/`](evaluations/README.md) |
+| Inscription des taux au catalogue (ADR-0278) et dans les fiches (ADR-0279) | `banc/inscription.py`, `banc/fiches.py` |
 
 ## 1. Tenir la matrice à jour
 
@@ -64,11 +66,17 @@ Si `unshare -rn` est refusé (Ubuntu 24.04 et suivantes), autoriser les espaces 
 
 Options : `--partie calibrage` (aucun taux publiable), `--catalogue DOSSIER` (catalogue candidat), `--desactiver MODULE`. Le banc écrit `evaluation.json` et `evaluation.md` dans `DOSSIER`, sans rien écraser ([ADR-0105](../decisions/ADR-0105-rapport-d-evaluation-et-corpus-d-essai.md)).
 
+Pour un grand corpus ([ADR-0277](../decisions/ADR-0277-banc-en-parallele-avec-reprise.md)) : `--processus N` analyse jusqu'à N fichiers à la fois (par défaut 1 ; un de moins que les processeurs libres, chaque processus de travail pouvant prendre 2 Gio) ; `--reprise FICHIER` note chaque résultat dans un journal et, relancé avec le même journal, ne réanalyse que les fichiers qui n'y sont pas. Un journal d'une autre évaluation (corpus, partie, code de l'outil, catalogue ou modules différents) est refusé. Le code de l'outil ne doit pas changer pendant une passe. Le corpus de référence s'évalue ainsi, détaché de la session pour survivre à sa fermeture :
+
+```bash
+setsid nohup unshare -rn uv run --locked python -m banc banc/reference/corpus.toml --sortie DOSSIER --processus 3 --reprise JOURNAL > JOURNAL.log 2>&1 &
+```
+
 | Code | Sens |
 | --- | --- |
 | 0 | Évaluation menée, aucun écart |
 | 1 | Évaluation menée, au moins un écart : arrêt brutal, deux analyses différentes d'un même fichier, niveau du catalogue non permis par la mesure, preuve fautive, cible par fichier non atteinte ou non mesurable |
-| 2 | Rien n'est évalué : réseau présent, corpus invalide ou modifié, dossier inutilisable, catalogue invalide, module inconnu |
+| 2 | Rien n'est évalué : réseau présent, corpus invalide ou modifié, dossier inutilisable, catalogue invalide, module inconnu, journal de reprise d'une autre évaluation ou illisible |
 | 3 | Tentative d'accès au réseau pendant l'évaluation : aucun rapport écrit |
 
 Sur le corpus d'essai, le code attendu est 1 : quatre authentiques ne suffisent pas à établir la cible par fichier.
@@ -78,10 +86,12 @@ Sur le corpus d'essai, le code attendu est 1 : quatre authentiques ne suffisent 
 Définitions : [ADR-0104](../decisions/ADR-0104-definition-des-mesures.md) ; bornes : [ADR-0101](../decisions/ADR-0101-bornes-des-niveaux-et-cible.md).
 
 - Par technique et par catégorie : part non analysable (sur les fichiers où la technique s'applique), faux positifs (sur les authentiques analysés), faux négatifs (sur les générés ou retouchés analysés), confusions entre génération et retouche.
-- Par règle de preuve ou d'indice : taux de faux positifs et niveau qu'il permet ; à recopier dans l'`evaluation` de la règle au catalogue (taux, effectif, borne supérieure).
+- Par règle de preuve ou d'indice : taux de faux positifs et niveau qu'il permet ; inscrits dans l'`evaluation` de chaque indice au catalogue par `python -m banc.inscription EVALUATION.json`, qui règle aussi son niveau ([ADR-0278](../decisions/ADR-0278-evaluation-et-niveau-des-indices-au-catalogue.md)).
 - Taux par fichier : sur les authentiques, preuves et indices modérés ou forts ; cible : borne supérieure au plus 5 %.
 
 Chaque taux est donné avec son effectif et l'intervalle de Wilson à 95 % : « 2/40 : 5,0 % [1,4 % ; 16,5 %] ».
+
+Les rapports publiés sont dans [`evaluations/`](evaluations/README.md), tels que le banc les a écrits ([ADR-0280](../decisions/ADR-0280-publication-des-rapports-et-ecarts.md)) ; `python -m banc.fiches --taux EVALUATION.json` écrit les taux de chaque technique dans la rubrique « Taux d'erreur » de sa fiche ([ADR-0279](../decisions/ADR-0279-taux-ecrits-dans-les-fiches.md)).
 
 ## 5. Reproductibilité
 
@@ -102,3 +112,4 @@ Code 0 : aucun écart de résultat ; 1 : résultats différents ; 2 : rapport il
 | 2026-11-25 | 1.2 | Grille WCAG 2.2 AA de l'interface ajoutée au tableau des éléments ; renvoi de l'historique corrigé (§6, non §5) | T90 |
 | 2026-11-25 | 1.3 | Analyse des traitements au regard du RGPD ajoutée au tableau des éléments | T92 |
 | 2026-11-25 | 1.4 | Corpus de référence et sa description ajoutés au tableau des éléments ; statut mis à jour (il annonçait la v1.2) | T100 |
+| 2026-11-26 | 1.5 | Banc en parallèle avec reprise (§3) ; inscription des taux au catalogue et dans les fiches, rapports publiés (§4) ; tableau des éléments | T101 |

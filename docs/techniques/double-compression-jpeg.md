@@ -77,11 +77,29 @@ Le module n'émet aucun constat. La règle « moteur » du catalogue qui lit ses
 | --- | --- | --- |
 | `R-DOUBLEJPEG-001` Luminance d'un JPEG quantifiée deux fois | `doublejpeg.traces`, `doublejpeg.frequences_examinees` | au moins 4 traces |
 
-Indice faible vers la transformation, fondé sur une mesure ; le résumé recommande alors d'obtenir l'original ([ADR-0156](../decisions/ADR-0156-recommandation-d-obtenir-l-original.md)).
+Indice vers la transformation, fondé sur une mesure, de niveau « faible » d'après son taux de faux positifs (« Taux d'erreur ») ; le résumé recommande alors d'obtenir l'original ([ADR-0156](../decisions/ADR-0156-recommandation-d-obtenir-l-original.md)).
 
 ## Taux d'erreur
 
-Non mesuré sur un corpus (T100) : le rapport des écarts (4) et le seuil de la règle (4 traces sur 9) sont fixés à la main sur les essais de T41, consignés au [journal](../journal/T41-double-compression.md) et dans le calibrage de la règle. Sur ces essais : aucune image compressée une seule fois ne dépasse 2 traces (images de synthèse et aplats compris) ; 22 des 24 doubles compressions à qualité croissante d'images sans perte en portent 4 ou plus, et la qualité antérieure de libjpeg y est retrouvée quand elle est observée ; une photographie de qualité 80 réenregistrée à 90 ou 95 porte 7 ou 9 traces et la qualité 80, réenregistrée à 85, 3 traces seulement. Les tests (`tests/test_double_compression.py`) vérifient le déclenchement sur des échantillons écrits par cjpeg de libjpeg-turbo, livrés avec les tests.
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `doublejpeg` 0.1.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 1776 | 1/609 : 0,2 % [0,0 % ; 0,9 %] | 0/608 : 0,0 % [0,0 % ; 0,6 %] | — | 0 |
+| Générés | 424 | 330 | 0/94 : 0,0 % [0,0 % ; 3,9 %] | — | 94/94 : 100,0 % [96,1 % ; 100,0 %] | 0 |
+| Transformés | 1294 | 781 | 0/513 : 0,0 % [0,0 % ; 0,7 %] | 0/335 : 0,0 % [0,0 % ; 1,1 %] | 178/178 : 100,0 % [97,9 % ; 100,0 %] | 0 |
+| Retouchés | 273 | 162 | 0/111 : 0,0 % [0,0 % ; 3,3 %] | — | 111/111 : 100,0 % [96,7 % ; 100,0 %] | 0 |
+| Malformés | 91 | 46 | 33/45 : 73,3 % [59,0 % ; 84,0 %] | 0/12 : 0,0 % [0,0 % ; 24,2 %] | — | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-DOUBLEJPEG-001 v2 | indice | transformation | 27/608 : 4,4 % [3,1 % ; 6,4 %] | faible | faible |
+
+<!-- Fin des taux mesurés. -->
+
+Sur le corpus de référence, la règle se déclenche sur 27 des 608 JPEG authentiques analysés (tableau ci-dessus) : une photographie ordinaire de Wikimedia Commons peut avoir été enregistrée deux fois en JPEG (par l'appareil, puis par un logiciel), ce que la règle constaterait à bon droit ; le banc la compte pourtant comme faux positif, faute de connaître son histoire. Son niveau reste « faible ». Le rapport des écarts (4) et le seuil de la règle (4 traces sur 9) ont été fixés à la main, avant toute mesure, sur les essais de T41, consignés au [journal](../journal/T41-double-compression.md) et dans le calibrage de la règle. Sur ces essais : aucune image compressée une seule fois ne dépasse 2 traces (images de synthèse et aplats compris) ; 22 des 24 doubles compressions à qualité croissante d'images sans perte en portent 4 ou plus, et la qualité antérieure de libjpeg y est retrouvée quand elle est observée ; une photographie de qualité 80 réenregistrée à 90 ou 95 porte 7 ou 9 traces et la qualité 80, réenregistrée à 85, 3 traces seulement. Les tests (`tests/test_double_compression.py`) vérifient le déclenchement sur des échantillons écrits par cjpeg de libjpeg-turbo, livrés avec les tests.
 
 ## Limites connues
 

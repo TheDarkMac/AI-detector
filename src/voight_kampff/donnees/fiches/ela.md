@@ -80,6 +80,22 @@ Rien : le module n'émet aucun constat et aucune règle du catalogue ne lit ses 
 
 ## Taux d'erreur
 
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `ela` 0.1.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 1776 | 1/609 : 0,2 % [0,0 % ; 0,9 %] | 0/608 : 0,0 % [0,0 % ; 0,6 %] | — | 0 |
+| Générés | 424 | 330 | 0/94 : 0,0 % [0,0 % ; 3,9 %] | — | 94/94 : 100,0 % [96,1 % ; 100,0 %] | 0 |
+| Transformés | 1294 | 781 | 0/513 : 0,0 % [0,0 % ; 0,7 %] | 0/335 : 0,0 % [0,0 % ; 1,1 %] | 178/178 : 100,0 % [97,9 % ; 100,0 %] | 0 |
+| Retouchés | 273 | 162 | 0/111 : 0,0 % [0,0 % ; 3,3 %] | — | 111/111 : 100,0 % [96,7 % ; 100,0 %] | 0 |
+| Malformés | 91 | 46 | 36/45 : 80,0 % [66,2 % ; 89,1 %] | 0/9 : 0,0 % [0,0 % ; 29,9 %] | — | 0 |
+
+Aucune règle de preuve ou d'indice : les règles du module sont des informations neutres, sans taux.
+
+<!-- Fin des taux mesurés. -->
+
 Sans objet au sens du §8 : aucun constat, donc ni faux positif ni faux négatif à compter. Ce qui est mesurable, et mesuré sur les essais de T42 ([journal](../journal/T42-ela.md)) : sur une image de synthèse avec bruit de 1 600 × 1 200 pixels, compressée à 60, où un carré de 300 × 300 pixels non compressé est collé, puis enregistrée à 92, l'écart moyen est de 1,07 niveau par pixel dans le carré contre 0,11 ailleurs (valeurs 143 et 13 sur la carte) ; la même image compressée une seule fois à 92 donne 1,04 partout, carré compris, qui ne ressort pas ; réenregistrée à 85, 0,35 partout ; l'image au carré collé, réenregistrée à 92, garde son carré (1,07 contre 0,15). La lecture d'une carte par des personnes n'est pas mesurée ; elle relève de l'étude d'usage (T104, hors V1).
 
 ## Limites connues

@@ -122,7 +122,23 @@ Toutes en information neutre, direction « rien de particulier », fondement « 
 
 ## Taux d'erreur
 
-Sans objet pour une information neutre qui relève des caractères. Les relevés sont vérifiés sur des textes construits par `tests/test_caracteres.py` (chaque famille, chaque emploi ordinaire, enveloppes écrites selon l'annexe A.7). La part de textes ordinaires qui déclenchent chaque règle se mesurera sur le corpus de référence (T100).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `caracteres` 0.3.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 1438 | 7/947 : 0,7 % [0,4 % ; 1,5 %] | 0/940 : 0,0 % [0,0 % ; 0,4 %] | — | 0 |
+| Générés | 424 | 320 | 0/104 : 0,0 % [0,0 % ; 3,6 %] | — | 104/104 : 100,0 % [96,4 % ; 100,0 %] | 0 |
+| Transformés | 1294 | 1050 | 0/244 : 0,0 % [0,0 % ; 1,5 %] | 0/244 : 0,0 % [0,0 % ; 1,5 %] | — | 0 |
+| Retouchés | 273 | 149 | 0/124 : 0,0 % [0,0 % ; 3,0 %] | — | 124/124 : 100,0 % [97,0 % ; 100,0 %] | 0 |
+| Malformés | 91 | 44 | 28/47 : 59,6 % [45,3 % ; 72,4 %] | 0/18 : 0,0 % [0,0 % ; 17,6 %] | — | 0 |
+
+Aucune règle de preuve ou d'indice : les règles du module sont des informations neutres, sans taux.
+
+<!-- Fin des taux mesurés. -->
+
+Sans objet pour une information neutre qui relève des caractères. Les relevés sont vérifiés sur des textes construits par `tests/test_caracteres.py` (chaque famille, chaque emploi ordinaire, enveloppes écrites selon l'annexe A.7). La part de textes ordinaires qui déclenchent chaque règle n'est pas mesurée par le banc, qui ne compte que les preuves et les indices ([ADR-0104](../decisions/ADR-0104-definition-des-mesures.md)).
 
 Sur les échantillons `tests/donnees/caracteres/texte.odt` et `texte.docx`, écrits et relus par LibreOffice 25.2.3.2 (`generer_bureau.py`, `oracle.json`), tout le texte que relit LibreOffice (paragraphes, note, en-tête, commentaire, suppression) se retrouve dans le texte lu, et chaque caractère semé est relevé à sa place.
 
