@@ -32,6 +32,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : « Rapport d'évaluatio
 12. Seconde passe lancée le 2026-11-26 vers 21:25 avec le catalogue 0.21.0 (commit `2113d42`), finie le 2026-11-27 à 04:11. Pendant la passe : le banc ne contrôle plus le niveau d'un indice que sur un corpus de référence (ADR-0278) ; tests adaptés (`niveau_mesure` dans `tests/catalogues.py`) ; ERR-0014 et un test qui relie la description du corpus au manifeste ; textes rédigés des fiches, sans « non évalué » ni « indice faible » ; matrice (NF-09 « réalisée »), découpage v0.48, guides.
 13. Seconde passe : mêmes taux pour chaque règle ; mêmes faux positifs, faux négatifs et confusions pour chaque technique ; `pdf-0203.pdf` interrompu à la première passe seulement, ce qui change d'un fichier les parts non applicables et non analysables des authentiques ; taux par fichier 8/2 384, 0,3 % [0,2 % ; 0,7 %], cible atteinte ; même écart unique. Rapports copiés dans `docs/verification/evaluations/`, tels quels ; `python -m banc.fiches --taux` sur le rapport de la seconde passe ; [page des rapports](../verification/evaluations/README.md) ; description du corpus v1.1 ; `CONTRIBUTING.md`.
 14. Suite complète sous coverage, en 16 minutes 22 : 3 580 tests verts, 4 ignorés (lanceur de l'environnement virtuel, cjpeg de mozjpeg absent), aucun échec ; couverture à 100 % sauf `banc/fiches.py` et `banc/inscription.py` : leurs tests copiaient les fiches et le catalogue des sources, qui portent désormais des blocs de taux et des évaluations, et ne passaient plus par l'ajout d'un premier bloc ni d'une première évaluation. Ces tests partent maintenant d'une copie ramenée à l'état d'avant T101 ; les deux fichiers sont de nouveau couverts à 100 % (tests de publication relancés). Ruff, mypy et markdownlint sans erreur.
+15. PR [#50](https://github.com/TheDarkMac/AI-detector/pull/50) ouverte vers `detector` (commits `d0e5ba7`, `95c25d1`, `2113d42`, `9abb293`, `37f8b53`, `bc206f9`, `1d04f52`, `f593408`, `4a7565a`).
 
 ## Problèmes rencontrés
 
@@ -48,6 +49,7 @@ Repris du [découpage](../00-plan/decoupage-taches.md) : « Rapport d'évaluatio
 | Faux positifs de techniques différents d'une passe à l'autre attendus par un test | Une analyse interrompue au délai, en temps écoulé, peut ne l'être qu'à une passe | Test restreint aux faux positifs, faux négatifs et confusions |
 | Test de l'écriture des fiches en échec après la publication | Il comparait à la fiche source, sans bloc jusque-là | Comparaison sans le bloc |
 | Couverture du banc sous 100 % | Tests partis du catalogue et des fiches des sources, déjà inscrits | Copies ramenées à l'état d'avant T101 |
+| Correction du journal de T100 absente du commit de documentation | Une remise (`git stash`) lancée par erreur pendant la préparation des commits l'avait retirée de l'arbre de travail | Remise relue, correction rétablie et commitée à part (`4a7565a`), remise supprimée |
 
 ## Écarts par rapport au découpage
 
