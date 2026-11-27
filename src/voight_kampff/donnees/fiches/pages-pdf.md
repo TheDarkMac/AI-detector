@@ -83,16 +83,37 @@ Le module n'émet aucun constat ; quatre règles « moteur » du catalogue lisen
 
 | Règle | Condition | Constat |
 | --- | --- | --- |
-| R-PAGESPDF-001 | `pagespdf.superpositions` ≥ 1 | Indice faible vers la retouche |
-| R-PAGESPDF-002 | `pagespdf.caches` ≥ 1 | Indice faible vers la retouche |
-| R-PAGESPDF-003 | `pagespdf.familles_melangees` ≥ 1 | Indice faible vers la retouche |
-| R-PAGESPDF-004 | `pagespdf.codes_hors_plage` ≥ 1 | Indice faible vers la retouche |
+| R-PAGESPDF-001 | `pagespdf.superpositions` ≥ 1 | Indice vers la retouche |
+| R-PAGESPDF-002 | `pagespdf.caches` ≥ 1 | Indice vers la retouche |
+| R-PAGESPDF-003 | `pagespdf.familles_melangees` ≥ 1 | Indice vers la retouche |
+| R-PAGESPDF-004 | `pagespdf.codes_hors_plage` ≥ 1 | Indice vers la retouche |
 
 Chaque phrase nomme la première page concernée.
 
 ## Taux d'erreur
 
-Non mesurés : le corpus de référence n'existe pas encore (T100). Les boîtes ont été comparées à celles de Poppler et les relevés vérifiés sur les huit échantillons ci-dessus et sur des documents synthétiques des tests ; la part de documents ordinaires qui déclenchent chaque règle reste à mesurer. Le niveau des indices reste « faible » ([ADR-0101](../decisions/ADR-0101-bornes-des-niveaux-et-cible.md)).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `pagespdf` 0.1.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 1985 | 3/400 : 0,8 % [0,3 % ; 2,2 %] | 50/397 : 12,6 % [9,7 % ; 16,2 %] | — | 0 |
+| Générés | 424 | 398 | 0/26 : 0,0 % [0,0 % ; 12,9 %] | — | 26/26 : 100,0 % [87,1 % ; 100,0 %] | 0 |
+| Transformés | 1294 | 1178 | 0/116 : 0,0 % [0,0 % ; 3,2 %] | 15/116 : 12,9 % [8,0 % ; 20,2 %] | — | 0 |
+| Retouchés | 273 | 230 | 0/43 : 0,0 % [0,0 % ; 8,2 %] | — | 34/43 : 79,1 % [64,8 % ; 88,6 %] | 0 |
+| Malformés | 91 | 57 | 28/34 : 82,4 % [66,5 % ; 91,7 %] | 1/6 : 16,7 % [3,0 % ; 56,4 %] | — | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-PAGESPDF-001 v2 | indice | retouche | 23/397 : 5,8 % [3,9 % ; 8,5 %] | faible | faible |
+| R-PAGESPDF-002 v2 | indice | retouche | 7/397 : 1,8 % [0,9 % ; 3,6 %] | modere | modere |
+| R-PAGESPDF-003 v2 | indice | retouche | 27/397 : 6,8 % [4,7 % ; 9,7 %] | faible | faible |
+| R-PAGESPDF-004 v2 | indice | retouche | 1/397 : 0,3 % [0,0 % ; 1,4 %] | modere | modere |
+
+<!-- Fin des taux mesurés. -->
+
+Sur le corpus de référence (tableau ci-dessus), R-PAGESPDF-001 et R-PAGESPDF-003 se déclenchent sur 23 et 27 des 397 PDF authentiques analysés et restent « faible » ; R-PAGESPDF-002 et R-PAGESPDF-004 passent à « modéré » ([ADR-0101](../decisions/ADR-0101-bornes-des-niveaux-et-cible.md)). Ces PDF sont des documents ordinaires de Wikimedia Commons : un faux positif y est une mise en page qui ressemble à une retouche, non une retouche dont l'absence serait prouvée. Les boîtes ont été comparées à celles de Poppler et les relevés vérifiés sur les huit échantillons ci-dessus et sur des documents synthétiques des tests.
 
 ## Limites connues
 

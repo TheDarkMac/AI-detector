@@ -126,7 +126,10 @@ def test_generation_declaree_signataire_hors_liste(tmp_path: Path) -> None:
         Fondement.DECLARATION,
     )
     assert indice.graduation is not None
-    assert indice.graduation.niveau == "faible"
+    # Niveau et évaluation de la règle livrée, mesurés sur le corpus de référence (T101).
+    regle = next(r for r in analyse.regles if r.identifiant == "R-C2PA-004")
+    assert regle.niveau is not None
+    assert (indice.graduation.niveau, indice.graduation.evaluee) == (regle.niveau, True)
     assert analyse.confiance.nom == "C2PA Trust List"
 
 

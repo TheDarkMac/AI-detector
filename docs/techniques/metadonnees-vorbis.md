@@ -62,11 +62,11 @@ Un champ hors de ces listes n'est pas marqué ; `ORGANIZATION`, qui nomme un org
 | Retouche | Rien |
 | Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `ENCODER` |
 
-Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. La chaîne du fournisseur est écrite par la bibliothèque d'encodage, mais peut être réécrite (cas d'abus C-02).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations. La chaîne du fournisseur est écrite par la bibliothèque d'encodage, mais peut être réécrite (cas d'abus C-02).
 
 ## Ce qui déclenche un constat
 
-Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices fondés sur une déclaration du fichier, chacun au niveau que permet sa mesure (« Taux d'erreur ») :
 
 | Règle | Observation | Test | Direction |
 | --- | --- | --- | --- |
@@ -82,7 +82,25 @@ Une absence de commentaires est l'observation `vorbis.present` à faux ; la règ
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un FLAC, un Ogg Vorbis et un Ogg Opus écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `vorbis` 0.3.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 2224 | 1/161 : 0,6 % [0,1 % ; 3,4 %] | 0/160 : 0,0 % [0,0 % ; 2,3 %] | — | 0 |
+| Générés | 424 | 424 | — | — | — | 0 |
+| Transformés | 1294 | 1278 | 1/16 : 6,2 % [1,1 % ; 28,3 %] | 0/15 : 0,0 % [0,0 % ; 20,4 %] | — | 0 |
+| Retouchés | 273 | 261 | 1/12 : 8,3 % [1,5 % ; 35,4 %] | — | 11/11 : 100,0 % [74,1 % ; 100,0 %] | 0 |
+| Malformés | 91 | 64 | 22/27 : 81,5 % [63,3 % ; 91,8 %] | 0/5 : 0,0 % [0,0 % ; 43,4 %] | — | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-VORBIS-001 v2 | indice | origine_ia | 0/160 : 0,0 % [0,0 % ; 2,3 %] | modere | modere |
+
+<!-- Fin des taux mesurés. -->
+
+Le niveau de chaque indice est celui que permet son taux de faux positifs, mesuré ci-dessus (ADR-0018, [ADR-0278](../decisions/ADR-0278-evaluation-et-niveau-des-indices-au-catalogue.md)). Le déclenchement des règles est vérifié sur des échantillons construits (`tests/test_signatures.py`). Fidélité de l'extraction vérifiée contre exiftool sur un FLAC, un Ogg Vorbis et un Ogg Opus écrits par ffmpeg ([ADR-0135](../decisions/ADR-0135-oracle-des-balises-par-ffmpeg.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`).
 
 ## Limites connues
 

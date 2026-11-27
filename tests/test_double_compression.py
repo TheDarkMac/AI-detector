@@ -16,6 +16,7 @@ from typing import Any
 
 import numpy as np
 import pytest
+from catalogues import niveau_mesure
 from encodeur_jpeg import (
     ALTERNATIFS,
     CONTINUS,
@@ -45,7 +46,6 @@ from voight_kampff.rapport.modele import (
     Categorie,
     Direction,
     Fondement,
-    Niveau,
     RaisonNonMenee,
 )
 
@@ -750,7 +750,7 @@ def test_regle_de_t41() -> None:
         Direction.TRANSFORMATION,
         Fondement.MESURE,
     )
-    assert (regle.niveau, regle.evaluation) == (Niveau.FAIBLE, None)
+    assert niveau_mesure(regle)  # niveau permis par sa mesure (T101, ADR-0278)
     assert regle.calibrage is not None
     [seuil] = [c.seuil for c in regle.conditions if c.seuil is not None]
     assert (seuil.operateur, seuil.valeur) == (">=", 4)

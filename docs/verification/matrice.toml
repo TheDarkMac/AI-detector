@@ -128,7 +128,7 @@ id = "F-12"
 etat = "realisee"
 taches = ["T22"]
 methodes = ["test"]
-note = "Catalogue 0.2.0 : nom d'un générateur dans seize champs logiciels des douze modules de métadonnées (ADR-0144) ; paramètres d'AUTOMATIC1111, graphe de ComfyUI, métadonnées d'InvokeAI (ADR-0145). Indices faibles non évalués, faute de corpus de référence (T100)."
+note = "Catalogue 0.2.0 : nom d'un générateur dans seize champs logiciels des douze modules de métadonnées (ADR-0144) ; paramètres d'AUTOMATIC1111, graphe de ComfyUI, métadonnées d'InvokeAI (ADR-0145). Indices évalués sur le corpus de référence 1.0.0, à leur niveau mesuré (T101, ADR-0278)."
 
 [[exigence]]
 id = "F-13"
@@ -201,14 +201,14 @@ id = "F-30"
 etat = "realisee"
 taches = ["T24", "T40"]
 methodes = ["test"]
-note = "Tables de libjpeg reconnues, qualité de 1 à 100 (T24, ADR-0153, ADR-0154) ; libjpeg à deux qualités, mozjpeg (jeux 2 à 8) et encodeur MJPEG de ffmpeg, empreinte des tables pour nommer des tables fixes au catalogue (T40, ADR-0180 à ADR-0183). Complément de T40 : tables de Photoshop (niveaux 3, 5 à 12) et d'appareils (Apple, Canon, Kodak, Olympus, Panasonic, Sony) relevées sur 1 093 originaux de Wikimedia Commons, nommées par leur empreinte (ADR-0191 à ADR-0196). Taux d'erreur à mesurer sur le corpus (T100)."
+note = "Tables de libjpeg reconnues, qualité de 1 à 100 (T24, ADR-0153, ADR-0154) ; libjpeg à deux qualités, mozjpeg (jeux 2 à 8) et encodeur MJPEG de ffmpeg, empreinte des tables pour nommer des tables fixes au catalogue (T40, ADR-0180 à ADR-0183). Complément de T40 : tables de Photoshop (niveaux 3, 5 à 12) et d'appareils (Apple, Canon, Kodak, Olympus, Panasonic, Sony) relevées sur 1 093 originaux de Wikimedia Commons, nommées par leur empreinte (ADR-0191 à ADR-0196). Taux d'erreur mesurés sur le corpus de référence 1.0.0 (T101, fiche `structure-image`)."
 
 [[exigence]]
 id = "F-31"
 etat = "realisee"
 taches = ["T41"]
 methodes = ["test"]
-note = "Double compression alignée : premier pas de quantification estimé par calibrage, fréquence par fréquence, sur la luminance (Lukáš et Fridrich 2003, §4.1) ; décodage entropique du projet, séquentiel et progressif ; indice faible vers la transformation, seuils fixés à la main (ADR-0185 à ADR-0190). Double compression non alignée (recadrage) non cherchée ; taux d'erreur à mesurer (T100)."
+note = "Double compression alignée : premier pas de quantification estimé par calibrage, fréquence par fréquence, sur la luminance (Lukáš et Fridrich 2003, §4.1) ; décodage entropique du projet, séquentiel et progressif ; indice vers la transformation, seuils fixés à la main (ADR-0185 à ADR-0190), niveau « faible » d'après sa mesure (27 faux positifs sur 608 JPEG authentiques, T101). Double compression non alignée (recadrage) non cherchée."
 
 [[exigence]]
 id = "F-32"
@@ -471,11 +471,13 @@ methodes = ["test"]
 
 [[exigence]]
 id = "NF-09"
-etat = "partielle"
-taches = ["T17", "T20"]
+etat = "realisee"
+taches = ["T17", "T20", "T101"]
 methodes = ["test", "inspection"]
 justification = "Les fiches techniques se relisent ; les taux qu'elles publient sont mesurés par le banc, testé."
-note = "Banc d'évaluation livré (T17) ; fiches des quatre modules de métadonnées et gabarit (T20, docs/techniques/), concordance avec les manifestes testée ; chaque fiche arrive avec sa technique."
+preuve = ["docs/techniques/", "docs/verification/evaluations/README.md"]
+resultat = "Rubrique « Taux d'erreur » des 25 fiches écrite par le banc depuis le rapport publié de la seconde passe de T101, accord vérifié par tests/test_taux_publies.py ; texte rédigé des rubriques à relire par TheDarkMac pendant la revue de la PR de T101."
+note = "Banc d'évaluation livré (T17) ; fiches des quatre modules de métadonnées et gabarit (T20, docs/techniques/), concordance avec les manifestes testée ; chaque fiche arrive avec sa technique ; taux mesurés sur le corpus de référence 1.0.0 (T101, ADR-0279)."
 
 [[exigence]]
 id = "NF-10"

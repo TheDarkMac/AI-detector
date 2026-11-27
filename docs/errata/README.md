@@ -26,3 +26,4 @@ Toute erreur constatée — d'analyse, de documentation, de décision ou d'exéc
 | [ERR-0011](ERR-0011-dwtdct-sans-dct.md) | La méthode dwtDct décrite avec une DCT qu'elle n'emploie pas | `catalogue/inventaire-des-marquages.md`, `decisions/ADR-0174-…`, `M-DWTDCT` | T32 | 2026-11-16 |
 | [ERR-0012](ERR-0012-encodage-xml-que-expat-ne-lit-pas.md) | Encodage déclaré qu'expat ne lit pas : modules `xmp`, `ooxml` et `odf` en erreur | `modules/_lecture/arbre.py` ; `xmp` (0.7.0), `ooxml` et `odf` (0.3.0) | T52 (complément bureautique) | 2026-11-17 |
 | [ERR-0013](ERR-0013-sortie-redirigee-en-cp1252.md) | Sortie de `vk` redirigée sous Windows : écrite en cp1252, arrêtée par la neutralisation | `cli.py`, application d'ADR-0096 | T80 | 2026-11-17 |
+| [ERR-0014](ERR-0014-total-des-parties-du-corpus.md) | Description du corpus de référence : total des parties faux | `verification/corpus-de-reference.md` | T101 | 2026-11-26 |

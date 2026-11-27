@@ -71,11 +71,11 @@ Aucune étiquette n'est marquée `lieu` : la zone nommée du répertoire GPS (`G
 | Retouche | Rien |
 | Génération | Ce que le fichier en déclare, sans vérification : nom d'un générateur dans `Software`, paramètres d'AUTOMATIC1111 dans `UserComment` |
 
-Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice faible ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations.
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas la génération d'une transformation banale par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent ce que le fichier déclare, en indice ([ADR-0142](../decisions/ADR-0142-constats-d-une-declaration-du-fichier.md)). Une transformation banale n'écrit pas ces champs, mais peut les conserver ou les effacer ; la mesure sur le corpus (T100) dira ce que valent ces déclarations.
 
 ## Ce qui déclenche un constat
 
-Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur une déclaration du fichier :
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices fondés sur une déclaration du fichier, chacun au niveau que permet sa mesure (« Taux d'erreur ») :
 
 | Règle | Observation | Test | Direction |
 | --- | --- | --- | --- |
@@ -100,7 +100,7 @@ Règles de T23, des informations neutres fondées sur une déclaration du fichie
 
 Une absence d'EXIF est l'observation `exif.present` à faux ; la règle `R-EXIF-013` en fait une information neutre, jamais un indice (F-14).
 
-Règle de T24, un indice faible vers la transformation fondé sur une déclaration du fichier ([ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md), [ADR-0155](../decisions/ADR-0155-nature-d-un-indice-de-transfert.md)) :
+Règle de T24, un indice vers la transformation, au niveau que permet sa mesure, fondé sur une déclaration du fichier ([ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md), [ADR-0155](../decisions/ADR-0155-nature-d-un-indice-de-transfert.md)) :
 
 | Règle | Observation | Test | Direction |
 | --- | --- | --- | --- |
@@ -108,7 +108,27 @@ Règle de T24, un indice faible vers la transformation fondé sur une déclarati
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_signatures.py`). La fidélité de l'extraction est vérifiée contre exiftool sur des échantillons des quatre formats ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`). La règle de T24 est un indice faible, non évalué ; son déclenchement est vérifié sur des échantillons construits (`tests/test_transfert.py`).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `exif` 0.4.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 1559 | 1/826 : 0,1 % [0,0 % ; 0,7 %] | 0/825 : 0,0 % [0,0 % ; 0,5 %] | — | 0 |
+| Générés | 424 | 104 | 0/320 : 0,0 % [0,0 % ; 1,2 %] | — | 320/320 : 100,0 % [98,8 % ; 100,0 %] | 0 |
+| Transformés | 1294 | 343 | 0/951 : 0,0 % [0,0 % ; 0,4 %] | 0/571 : 0,0 % [0,0 % ; 0,7 %] | 380/380 : 100,0 % [99,0 % ; 100,0 %] | 0 |
+| Retouchés | 273 | 120 | 0/153 : 0,0 % [0,0 % ; 2,4 %] | — | 153/153 : 100,0 % [97,6 % ; 100,0 %] | 0 |
+| Malformés | 91 | 39 | 22/52 : 42,3 % [29,9 % ; 55,8 %] | 0/23 : 0,0 % [0,0 % ; 14,3 %] | 6/6 : 100,0 % [61,0 % ; 100,0 %] | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-EXIF-001 v2 | indice | origine_ia | 0/825 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-EXIF-002 v2 | indice | origine_ia | 0/825 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-EXIF-014 v2 | indice | transformation | 2/825 : 0,2 % [0,1 % ; 0,9 %] | fort | fort |
+
+<!-- Fin des taux mesurés. -->
+
+Le niveau de chaque indice est celui que permet son taux de faux positifs, mesuré ci-dessus (ADR-0018, [ADR-0278](../decisions/ADR-0278-evaluation-et-niveau-des-indices-au-catalogue.md)). Le déclenchement des règles est vérifié sur des échantillons construits (`tests/test_signatures.py`). La fidélité de l'extraction est vérifiée contre exiftool sur des échantillons des quatre formats ([ADR-0122](../decisions/ADR-0122-oracle-exiftool.md)). Les règles de T23 sont des informations neutres, sans niveau ; leur déclenchement est vérifié sur des échantillons construits (`tests/test_incoherences.py`). La règle de T24 est un indice, au niveau que permet sa mesure ; son déclenchement est vérifié sur des échantillons construits (`tests/test_transfert.py`).
 
 ## Limites connues
 

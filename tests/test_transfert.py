@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from catalogues import niveau_mesure
 from echantillons import bloc_png
 from metadonnees import (
     CHROMINANCE,
@@ -53,7 +54,7 @@ from voight_kampff.analyse import analyser
 from voight_kampff.cli import resume
 from voight_kampff.modules import image
 from voight_kampff.rapport._presentation import texte as texte_du_rapport
-from voight_kampff.rapport.modele import Categorie, Direction, Fondement, Niveau
+from voight_kampff.rapport.modele import Categorie, Direction, Fondement
 
 pytestmark = pytest.mark.exigence("F-06")
 
@@ -143,12 +144,12 @@ def test_chaque_regle_de_t24_est_eprouvee() -> None:
 
 @pytest.mark.exigence("ES-20")
 def test_regles_de_t24_indices_faibles_de_transformation() -> None:
-    # ADR-0155 : indice faible non évalué ; déclaration pour une signature, lecture de la
-    # structure pour le module image.
+    # ADR-0155, ADR-0278 : indice au niveau de sa mesure ; déclaration pour une signature,
+    # lecture de la structure pour le module image.
     for regle in REGLES_T24:
         assert regle.application is Application.MOTEUR
         assert regle.categorie is Categorie.INDICE
-        assert (regle.niveau, regle.evaluation) == (Niveau.FAIBLE, None)
+        assert niveau_mesure(regle)  # niveau permis par sa mesure (T101, ADR-0278)
         attendu = (
             Fondement.DECLARATION
             if regle.identifiant in SIGNATURES

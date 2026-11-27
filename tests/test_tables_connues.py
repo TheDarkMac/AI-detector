@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from catalogues import niveau_mesure
 from metadonnees import (
     CHROMINANCE,
     LUMINANCE,
@@ -37,7 +38,7 @@ from voight_kampff.analyse import analyser
 from voight_kampff.cli import resume
 from voight_kampff.modules import image
 from voight_kampff.rapport._presentation import texte as texte_du_rapport
-from voight_kampff.rapport.modele import Categorie, Direction, Fondement, Niveau
+from voight_kampff.rapport.modele import Categorie, Direction, Fondement
 
 pytestmark = pytest.mark.exigence("F-30")
 
@@ -117,7 +118,7 @@ def test_regles_de_t40_comme_r_image_004() -> None:
         assert regle.application is Application.MOTEUR
         assert regle.categorie is Categorie.INDICE
         assert regle.direction is Direction.TRANSFORMATION
-        assert (regle.niveau, regle.evaluation) == (Niveau.FAIBLE, None)
+        assert niveau_mesure(regle)  # niveau permis par sa mesure (T101, ADR-0278)
         assert regle.fondement is Fondement.VERIFICATION_DETERMINISTE
         premiere = regle.conditions[0]
         assert (premiere.observation, premiere.egal) == ("image.metadonnees", 0)

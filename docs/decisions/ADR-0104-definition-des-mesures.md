@@ -66,3 +66,4 @@ Chaque taux est publié avec son effectif et l'intervalle de Wilson à 95 % (ADR
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T17 : statut « Accepté » |
+| 2026-11-27 | Précisé en T101 : le niveau d'un indice n'est contrôlé que sur un corpus de référence (ADR-0278) |

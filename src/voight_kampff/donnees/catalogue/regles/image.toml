@@ -8,7 +8,7 @@
 
 [[regle]]
 identifiant = "R-IMAGE-001"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG sans métadonnées au côté long d'une messagerie, en paysage"
 description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont l'en-tête de l'image donne une largeur parmi 960, 1 080, 1 280, 1 600, 2 048 et 2 560 pixels, plus grande que la hauteur : côtés longs auxquels des plateformes ramènent les images qu'elles reçoivent, d'après Giudice et al. 2016 (arXiv:1610.06347, tableau III : Facebook 960 et 2 048, Instagram 1 080, Tumblr 1 280, WhatsApp et Tinypic 1 600, Twitter et Google+ 2 048, Telegram 2 560) et Bertini et al. 2020 (arXiv:2006.03903, tableau 1 : Instagram 1 080, Telegram, Tumblr, Viber et WeChat 1 280, WhatsApp 1 600, Facebook, Flickr, Google+, LinkedIn, Pinterest et Twitter 2 048, VK 2 560) (F-06, A-32, ADR-0153)."
@@ -17,7 +17,7 @@ phrase = { fr = "L'image JPEG mesure {largeur} × {hauteur} pixels et ne porte a
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Tailles relevées par des études de 2016 et 2020 : les plateformes les changent sans prévenir (Giudice et al. ont vu celle de Twitter passer de 1 024 à 2 048 pendant leurs essais) ; une plateforme absente de la liste, ou une image déjà plus petite que le seuil, n'est pas vue.",
   "Ces côtés sont aussi des tailles d'écran, d'export et de génération courantes : un JPEG enregistré à cette taille par un logiciel qui n'écrit aucune métadonnée donne le même constat.",
@@ -25,6 +25,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.013333333333333334
+effectif = 825
+borne_superieure = 0.02371663878715758
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.metadonnees"
@@ -45,7 +52,7 @@ comparer = { observation = "image.hauteur", operateur = ">", parametre = "hauteu
 
 [[regle]]
 identifiant = "R-IMAGE-002"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG sans métadonnées au côté long d'une messagerie, en portrait"
 description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont l'en-tête de l'image donne une hauteur parmi 960, 1 080, 1 280, 1 600, 2 048 et 2 560 pixels, plus grande que la largeur : côtés longs auxquels des plateformes ramènent les images qu'elles reçoivent, d'après Giudice et al. 2016 (arXiv:1610.06347, tableau III : Facebook 960 et 2 048, Instagram 1 080, Tumblr 1 280, WhatsApp et Tinypic 1 600, Twitter et Google+ 2 048, Telegram 2 560) et Bertini et al. 2020 (arXiv:2006.03903, tableau 1 : Instagram 1 080, Telegram, Tumblr, Viber et WeChat 1 280, WhatsApp 1 600, Facebook, Flickr, Google+, LinkedIn, Pinterest et Twitter 2 048, VK 2 560) (F-06, A-32, ADR-0153)."
@@ -54,7 +61,7 @@ phrase = { fr = "L'image JPEG mesure {largeur} × {hauteur} pixels et ne porte a
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Tailles relevées par des études de 2016 et 2020 : les plateformes les changent sans prévenir (Giudice et al. ont vu celle de Twitter passer de 1 024 à 2 048 pendant leurs essais) ; une plateforme absente de la liste, ou une image déjà plus petite que le seuil, n'est pas vue.",
   "Ces côtés sont aussi des tailles d'écran, d'export et de génération courantes : un JPEG enregistré à cette taille par un logiciel qui n'écrit aucune métadonnée donne le même constat.",
@@ -62,6 +69,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0024242424242424242
+effectif = 825
+borne_superieure = 0.008795679718959303
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.metadonnees"
@@ -82,7 +96,7 @@ comparer = { observation = "image.largeur", operateur = ">", parametre = "largeu
 
 [[regle]]
 identifiant = "R-IMAGE-003"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG sans métadonnées au côté d'une messagerie, carré"
 description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont l'en-tête de l'image donne une largeur parmi 960, 1 080, 1 280, 1 600, 2 048 et 2 560 pixels, égale à la hauteur : côtés longs auxquels des plateformes ramènent les images qu'elles reçoivent, d'après Giudice et al. 2016 (arXiv:1610.06347, tableau III : Facebook 960 et 2 048, Instagram 1 080, Tumblr 1 280, WhatsApp et Tinypic 1 600, Twitter et Google+ 2 048, Telegram 2 560) et Bertini et al. 2020 (arXiv:2006.03903, tableau 1 : Instagram 1 080, Telegram, Tumblr, Viber et WeChat 1 280, WhatsApp 1 600, Facebook, Flickr, Google+, LinkedIn, Pinterest et Twitter 2 048, VK 2 560) (F-06, A-32, ADR-0153)."
@@ -91,7 +105,7 @@ phrase = { fr = "L'image JPEG mesure {largeur} × {hauteur} pixels et ne porte a
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Tailles relevées par des études de 2016 et 2020 : les plateformes les changent sans prévenir (Giudice et al. ont vu celle de Twitter passer de 1 024 à 2 048 pendant leurs essais) ; une plateforme absente de la liste, ou une image déjà plus petite que le seuil, n'est pas vue.",
   "Ces côtés sont aussi des tailles d'écran, d'export et de génération courantes : un JPEG enregistré à cette taille par un logiciel qui n'écrit aucune métadonnée donne le même constat.",
@@ -99,6 +113,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 825
+borne_superieure = 0.004634732951413764
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.metadonnees"
@@ -122,7 +143,7 @@ comparer = { observation = "image.hauteur", operateur = "=", parametre = "hauteu
 
 [[regle]]
 identifiant = "R-IMAGE-004"
-version = "2"
+version = "3"
 module = "image"
 titre = "JPEG sans métadonnées encodé aux tables de libjpeg"
 description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont les tables de quantification sont exactement celles qu'écrit la bibliothèque libjpeg de l'IJG à une qualité de 1 à 100 (annexe K de T.81, mise à l'échelle de jcparam.c) : profil d'une image réencodée par un logiciel courant, ce que font les messageries et les réseaux sociaux qui recompressent toujours les images reçues (Giudice et al. 2016, tableau III) (F-06, F-30, ADR-0153)."
@@ -140,6 +161,13 @@ limites = [
 ]
 application = "moteur"
 
+[regle.evaluation]
+taux_faux_positifs = 0.11757575757575757
+effectif = 825
+borne_superieure = 0.1413482586395692
+corpus = "reference-1.0.0"
+date = "2026-11-26"
+
 [[regle.condition]]
 observation = "image.metadonnees"
 egal = 0
@@ -156,7 +184,7 @@ parametre = "qualite"
 
 [[regle]]
 identifiant = "R-IMAGE-005"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG sans métadonnées encodé aux tables de libjpeg à deux qualités"
 description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont la table de luminance est exactement celle qu'écrit la bibliothèque libjpeg de l'IJG à une qualité, et la table de chrominance celle qu'elle écrit à une autre qualité : réglage d'un encodeur qui fixe les deux qualités à part (cjpeg -quality 90,70, q_scale_factor de l'interface de libjpeg 7 et suivantes ; rdswitch.c et jcparam.c de libjpeg-turbo) (F-06, F-30, ADR-0180)."
@@ -165,7 +193,7 @@ phrase = { fr = "L'image JPEG est encodée avec les tables de quantification de 
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "La règle ne mesure pas une double compression (T41) : un fichier encodé une seule fois par un logiciel ou un générateur qui emploie libjpeg ainsi réglée, sans écrire de métadonnées, donne le même constat.",
   "En huit bits, les qualités 1 à 3 de la chrominance donnent la même table : la règle ne relève pas alors deux qualités ; seules les tables 0 et 1 sont lues, et seules des qualités entières de 1 à 100 sont reconnues.",
@@ -173,6 +201,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 825
+borne_superieure = 0.004634732951413764
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.metadonnees"
@@ -190,7 +225,7 @@ parametre = "chrominance"
 
 [[regle]]
 identifiant = "R-IMAGE-006"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG sans métadonnées encodé aux tables de mozjpeg"
 description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont les tables de quantification sont exactement celles qu'écrit l'encodeur mozjpeg avec l'un de ses jeux 2 à 8 à une qualité de 1 à 100 (std_luminance_quant_tbl et std_chrominance_quant_tbl de jcparam.c, mozjpeg 4.1.1 ; le jeu 3, table de N. Robidoux, est celui du profil par défaut) : profil d'une image réencodée par un logiciel qui emploie mozjpeg (F-06, F-30, ADR-0180)."
@@ -199,7 +234,7 @@ phrase = { fr = "L'image JPEG est encodée avec le jeu de tables {jeu} de l'enco
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "La règle ne mesure pas une double compression (T41) : un fichier encodé une seule fois par un logiciel ou un générateur qui emploie mozjpeg sans écrire de métadonnées donne le même constat.",
   "Le jeu 0 de mozjpeg est celui de libjpeg (R-IMAGE-004) ; le jeu 1, plat, n'est pas reconnu, parce que plusieurs qualités y donnent la même table ; une qualité fractionnaire (cjpeg de mozjpeg l'accepte) ou des qualités différentes pour la luminance et la chrominance ne sont pas reconnues.",
@@ -207,6 +242,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 825
+borne_superieure = 0.004634732951413764
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.metadonnees"
@@ -224,7 +266,7 @@ parametre = "qualite"
 
 [[regle]]
 identifiant = "R-IMAGE-007"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG sans métadonnées encodé par ffmpeg"
 description = "JPEG sans aucun bloc de métadonnées lu par le projet (règles d'absence R-EXIF-013, R-XMP-012 et R-IPTC-002, A-34), dont la table de quantification est exactement celle qu'écrit l'encodeur MJPEG de ffmpeg à un qscale de 1 à 31 : matrice intra par défaut de MPEG-1 multipliée par le qscale puis divisée par 8, coefficient continu à 8 (encode_picture de mpegvideo_enc.c et ff_mpeg1_default_intra_matrix de mpeg12data.c, FFmpeg 7.1). ffmpeg écrit un JPEG par cet encodeur, par exemple pour extraire une image d'une vidéo (F-06, F-30, ADR-0180)."
@@ -233,7 +275,7 @@ phrase = { fr = "L'image JPEG est encodée avec les tables de quantification de 
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "La règle ne mesure pas une double compression (T41) : une image encodée une seule fois par ffmpeg depuis une source sans perte, une capture d'écran ou un rendu par exemple, donne le même constat.",
   "Seuls les réglages par défaut de la matrice sont reconnus : un qscale au-delà de 31 (qmax relevé), une matrice fournie (intra_matrix, chroma_intra_matrix) ou une autre précision du coefficient continu (dc) ne le sont pas.",
@@ -241,6 +283,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 825
+borne_superieure = 0.004634732951413764
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.metadonnees"
@@ -259,7 +308,7 @@ parametre = "qscale"
 
 [[regle]]
 identifiant = "R-IMAGE-008"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 3"
 description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 3 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 6 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 1 jeu de tables. Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
@@ -268,7 +317,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
   "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
@@ -276,6 +325,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0012121212121212121
+effectif = 825
+borne_superieure = 0.006833738447766862
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -285,7 +341,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-009"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 5"
 description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 5 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 23 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 3 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé), et selon la couleur (images en couleur ou en niveaux de gris). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
@@ -294,7 +350,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
   "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
@@ -302,6 +358,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0048484848484848485
+effectif = 825
+borne_superieure = 0.01239971163076644
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -313,7 +376,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-010"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 6"
 description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 6 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 17 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 2 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
@@ -322,7 +385,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
   "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
@@ -330,6 +393,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0048484848484848485
+effectif = 825
+borne_superieure = 0.01239971163076644
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -340,7 +410,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-011"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 7"
 description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 7 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 13 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 3 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé), et selon la couleur (images en couleur ou en niveaux de gris). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
@@ -349,7 +419,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
   "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
@@ -357,6 +427,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 825
+borne_superieure = 0.004634732951413764
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -368,7 +445,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-012"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 8"
 description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 8 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 111 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 2 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
@@ -377,7 +454,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
   "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
@@ -385,6 +462,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 825
+borne_superieure = 0.004634732951413764
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -395,7 +479,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-013"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 9"
 description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 9 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 43 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 2 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
@@ -404,7 +488,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
   "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
@@ -412,6 +496,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0012121212121212121
+effectif = 825
+borne_superieure = 0.006833738447766862
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -422,7 +513,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-014"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 10"
 description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 10 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 124 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 2 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
@@ -431,7 +522,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
   "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
@@ -439,6 +530,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0048484848484848485
+effectif = 825
+borne_superieure = 0.01239971163076644
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -449,7 +547,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-015"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 11"
 description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 11 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 61 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 2 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
@@ -458,7 +556,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification qu'
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Les tables sont celles du dernier enregistrement : la règle ne dit ni ce que le fichier a subi avant, ni s'il a été retouché dans Photoshop ou seulement réenregistré.",
   "Photoshop Elements et Lightroom écrivent les mêmes tables ; GIMP peut reprendre les tables d'un fichier qu'il réenregistre ; un fichier qui garde ces tables sans être réencodé (rotation sans perte) donne le même constat. Des tables se recopient aussi à dessein.",
@@ -466,6 +564,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 825
+borne_superieure = 0.004634732951413764
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -476,7 +581,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-016"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'Adobe Photoshop, qualité 12"
 description = "JPEG dont les tables de quantification sont exactement l'un des jeux qu'écrit Adobe Photoshop à la qualité 12 (échelle de 0 à 12 de son enregistrement JPEG, ressource 0x0406), relevés sur 482 fichiers de Wikimedia Commons enregistrés par Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0195) : 4 jeux de tables, selon la taille de l'image (côté long d'au plus 1 296 ou d'au moins 1 305 pixels sur le relevé), et selon la couleur (images en couleur ou en niveaux de gris). Profil d'un fichier enregistré en dernier par Photoshop (F-30, ADR-0191)."
@@ -494,6 +599,13 @@ limites = [
 ]
 application = "moteur"
 
+[regle.evaluation]
+taux_faux_positifs = 0.055757575757575756
+effectif = 825
+borne_superieure = 0.0735725282895
+corpus = "reference-1.0.0"
+date = "2026-11-26"
+
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
 parmi = [
@@ -505,7 +617,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-017"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'appareils Apple"
 description = "JPEG dont les tables de quantification sont exactement l'un des 2 jeux relevés sur 9 photos originales d'appareils Apple (modèles iPhone, iPhone 4) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
@@ -514,7 +626,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification rel
 categorie = "indice"
 direction = "authenticite"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein.",
   "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
@@ -522,6 +634,13 @@ limites = [
   "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 473
+borne_superieure = 0.00805605039082523
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -532,7 +651,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-018"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'appareils Canon"
 description = "JPEG dont les tables de quantification sont exactement l'un des 8 jeux relevés sur 174 photos originales d'appareils Canon (modèles DIGITAL IXUS 50, DIGITAL IXUS 500, DIGITAL IXUS 70, DIGITAL IXUS 750, DIGITAL IXUS 80 IS, DIGITAL IXUS 800 IS, DIGITAL IXUS 850 IS, DIGITAL IXUS 870 IS, DIGITAL IXUS 900Ti, EOS 300D DIGITAL, EOS 400D DIGITAL, EOS 40D, EOS 450D, EOS 500D, EOS 7D, EOS DIGITAL REBEL, EOS DIGITAL REBEL XS, EOS DIGITAL REBEL XSi, EOS Kiss Digital, EOS REBEL T1i, EOS REBEL T2i, IXY DIGITAL 50, IXY DIGITAL 600, PowerShot A1200, PowerShot A400, PowerShot A430, PowerShot A460, PowerShot A470, PowerShot A510, PowerShot A520, PowerShot A530, PowerShot A540, PowerShot A560, PowerShot A570 IS, PowerShot A590 IS, PowerShot A610, PowerShot A620, PowerShot A650 IS, PowerShot A710 IS, PowerShot A720 IS, PowerShot A75, PowerShot A80, PowerShot A95, PowerShot G10, PowerShot G12, PowerShot G9, PowerShot S2 IS, PowerShot S3 IS, PowerShot SD1000, PowerShot SD1300 IS, PowerShot SD550, PowerShot SD600, PowerShot SD780 IS, PowerShot SD800 IS, PowerShot SX10 IS, PowerShot SX110 IS, PowerShot SX120 IS) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
@@ -541,7 +660,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification rel
 categorie = "indice"
 direction = "authenticite"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein. Sur le relevé, des fichiers enregistrés par Adobe Photoshop Album, GIMP, Galerie de photos Windows, Picasa, Visionneuse de photos Windows portent ces tables.",
   "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
@@ -549,6 +668,13 @@ limites = [
   "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 473
+borne_superieure = 0.00805605039082523
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -565,7 +691,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-019"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'appareils Kodak"
 description = "JPEG dont les tables de quantification sont exactement le jeu relevé sur 10 photos originales d'appareils Kodak (modèles C875 ZOOM DIGITAL CAMERA, CX7330 ZOOM DIGITAL CAMERA, DX3900 ZOOM DIGITAL CAMERA, Z740 ZOOM DIGITAL CAMERA) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
@@ -574,7 +700,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification rel
 categorie = "indice"
 direction = "authenticite"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein.",
   "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
@@ -582,6 +708,13 @@ limites = [
   "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 473
+borne_superieure = 0.00805605039082523
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -591,7 +724,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-020"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'appareils Olympus"
 description = "JPEG dont les tables de quantification sont exactement le jeu relevé sur 4 photos originales d'appareils Olympus (modèles C300Z,D550Z, C70Z,C7000Z, C740UZ) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
@@ -600,7 +733,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification rel
 categorie = "indice"
 direction = "authenticite"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein.",
   "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
@@ -608,6 +741,13 @@ limites = [
   "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 473
+borne_superieure = 0.00805605039082523
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -617,7 +757,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-021"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'appareils Panasonic"
 description = "JPEG dont les tables de quantification sont exactement l'un des 3 jeux relevés sur 12 photos originales d'appareils Panasonic (modèles DMC-FS3, DMC-FX35, DMC-FZ28, DMC-LZ7, DMC-TZ5, DMC-TZ6, DMC-TZ7) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
@@ -626,7 +766,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification rel
 categorie = "indice"
 direction = "authenticite"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein. Sur le relevé, des fichiers enregistrés par GIMP portent ces tables.",
   "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
@@ -634,6 +774,13 @@ limites = [
   "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 473
+borne_superieure = 0.00805605039082523
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"
@@ -645,7 +792,7 @@ parmi = [
 
 [[regle]]
 identifiant = "R-IMAGE-022"
-version = "1"
+version = "2"
 module = "image"
 titre = "JPEG aux tables de quantification d'appareils Sony"
 description = "JPEG dont les tables de quantification sont exactement le jeu relevé sur 4 photos originales d'appareils Sony (modèles DSLR-A100, DSLR-A200, DSLR-A350) versées sur Wikimedia Commons, chaque jeu par au moins 2 comptes et sur la seule marque, jamais sur un fichier de Photoshop (relevé du complément de T40, banc/releves/tables-T40c, ADR-0193, ADR-0194). Profil d'une image dont la dernière compression est celle d'un appareil de cette marque (F-30, ADR-0191)."
@@ -654,7 +801,7 @@ phrase = { fr = "L'image JPEG est encodée avec des tables de quantification rel
 categorie = "indice"
 direction = "authenticite"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Des tables d'appareil se recopient : un logiciel qui garde les tables de l'original (rotation sans perte, GIMP avec la qualité de l'original) donne le même constat, et un fichier peut recevoir ces tables à dessein. Sur le relevé, des fichiers enregistrés par GIMP portent ces tables.",
   "Les tables sont communes à des familles d'appareils de la marque : la règle ne nomme pas le modèle et ne compare pas les tables avec l'appareil déclaré dans l'EXIF.",
@@ -662,6 +809,13 @@ limites = [
   "Le constat dit seulement que la dernière compression est celle d'un appareil : il ne dit rien de ce que montre l'image (une scène mise en scène, un écran photographié) ni d'une modification faite sans réencodage.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 473
+borne_superieure = 0.00805605039082523
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "image.jpeg.empreinte_tables"

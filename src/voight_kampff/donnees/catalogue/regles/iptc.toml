@@ -2,7 +2,7 @@
 
 [[regle]]
 identifiant = "R-IPTC-001"
-version = "1"
+version = "2"
 module = "iptc"
 titre = "Générateur nommé par le programme d'origine IPTC"
 description = "Le jeu IPTC-IIM OriginatingProgram (2:65) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
@@ -11,13 +11,20 @@ phrase = { fr = "Le jeu IPTC OriginatingProgram, qui nomme le programme d'origin
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Déclaration du fichier : quiconque peut écrire ou effacer ce jeu ; son absence ne dit rien (F-14).",
   "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
   "Le constat dit ce que le champ nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 608
+borne_superieure = 0.0062785199749268725
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "iptc.OriginatingProgram"
@@ -53,7 +60,7 @@ egal = false
 
 [[regle]]
 identifiant = "R-IPTC-003"
-version = "1"
+version = "2"
 module = "iptc"
 titre = "Marque de Facebook dans les instructions IPTC (SpecialInstructions)"
 description = "Le jeu IPTC-IIM SpecialInstructions (2:40) commence par FBMD : d'après les essais du groupe de travail de l'IPTC (printemps 2019, publiés le 22 juillet 2019), Facebook remplace la valeur de ce champ par une valeur qui commence par FBMD dans les images qu'il diffuse (F-06, ADR-0153)."
@@ -62,7 +69,7 @@ phrase = { fr = "Le jeu IPTC SpecialInstructions commence par « FBMD », la mar
 categorie = "indice"
 direction = "transformation"
 fondement = "declaration"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Déclaration du fichier : quiconque peut écrire, recopier ou effacer ce jeu ; son absence ne dit rien (F-14).",
   "Pratique observée par l'IPTC en 2019 : Facebook peut l'avoir changée depuis ; les autres plateformes, du même groupe ou non, ne sont pas couvertes par la source.",
@@ -70,6 +77,13 @@ limites = [
   "Le constat dit qu'une étape de transformation a eu lieu, pas ce qu'était le fichier avant : l'image transmise ou capturée peut être générée, retouchée ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 608
+borne_superieure = 0.0062785199749268725
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "iptc.SpecialInstructions"

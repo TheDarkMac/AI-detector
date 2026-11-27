@@ -31,7 +31,7 @@ parametre = "versions"
 
 [[regle]]
 identifiant = "R-REVISIONSPDF-002"
-version = "1"
+version = "2"
 module = "revisionspdf"
 titre = "Version postérieure qui change des objets non reconnus"
 description = "Au moins une version postérieure à la première ajoute, remplace ou supprime un objet que le module ne range ni parmi les signatures (dictionnaires de signature, champs et apparences de signature, DSS), ni parmi les formulaires (champs, widgets, leurs apparences), ni parmi les annotations, ni parmi les métadonnées (dictionnaire Info, flux XMP) : par exemple un flux de contenu, une page, une police ou une image désignée par une page, ou une clé du catalogue hors AcroForm, DSS, Perms, Metadata, Version et Extensions (ADR-0208)."
@@ -45,9 +45,16 @@ limites = [
   "Beaucoup de logiciels enregistrent en mise à jour incrémentale toute modification faite par l'auteur lui-même (Acrobat, certains éditeurs) : le constat dit que le contenu a changé après la première version, pas qui l'a changé ni dans quelle intention.",
   "Le classement suit le type des objets et ce qui les désigne, pas ce qu'ils affichent : une apparence de formulaire ou d'annotation peut recouvrir le contenu sans être relevée ici (attaques « par ombre », Mainka, Mladenov et Rohlmann, NDSS 2021).",
   "Un objet ajouté que rien ne désigne depuis le catalogue ou le dictionnaire Info compte comme structure ; un objet qui ne se lit pas (flux d'objets chiffré, structure illisible) n'est pas rangé et ne compte pas ici.",
-  "Pas mesurée sur le corpus de référence (T100) : la part de documents ordinaires qui la déclenchent n'est pas connue.",
+  "Mesurée sur la partie évaluation du corpus de référence 1.0.0 (T101) : déclenchée sur 54 des 399 PDF authentiques analysés (13,5 %), d'où le niveau « faible » : des documents ordinaires, mis à jour après leur première version, la portent.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.13533834586466165
+effectif = 399
+borne_superieure = 0.17240146594747618
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [regle.calibrage]
 methode = "manuelle"
@@ -60,7 +67,7 @@ parametre = "non_reconnues"
 
 [[regle]]
 identifiant = "R-REVISIONSPDF-003"
-version = "1"
+version = "2"
 module = "revisionspdf"
 titre = "Objets non reconnus changés après une signature"
 description = "Une signature du formulaire couvre exactement une version : sa plage signée (/ByteRange) part du début du fichier, ne laisse de côté qu'une chaîne hexadécimale et finit à la fin de cette version (ADR-0209). Au moins une version postérieure à la dernière version ainsi signée change des objets non reconnus au sens de R-REVISIONSPDF-002 : ce qu'affiche un lecteur n'est plus ce qui a été signé."
@@ -69,13 +76,20 @@ phrase = { fr = "Après la version {signee}, couverte par une signature, {apres}
 categorie = "indice"
 direction = "retouche"
 fondement = "verification_deterministe"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "La signature n'est pas vérifiée cryptographiquement (ADR-0209) : le constat porte sur la structure du fichier, pas sur la validité de la signature ni sur l'identité du signataire.",
   "Les droits accordés par une signature de certification (DocMDP, observés à part) ne sont pas comparés aux changements : un remplissage de formulaire interdit par le signataire n'est pas relevé ici.",
   "Mêmes limites de classement que R-REVISIONSPDF-002 : une modification maquillée en apparence d'annotation ou de formulaire n'est pas vue, et un ajout légitime d'un type que l'outil ne connaît pas la déclenche.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 399
+borne_superieure = 0.00953590733173263
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [regle.calibrage]
 methode = "manuelle"

@@ -126,6 +126,50 @@ def test_effectifs_accordes_au_manifeste(corpus: Corpus, fichiers: list[dict[str
     assert par_categorie == Counter(fichier["categorie"] for fichier in fichiers)
 
 
+DESCRIPTION = (
+    Path(__file__).resolve().parents[1] / "docs" / "verification" / "corpus-de-reference.md"
+)
+NOMS = {
+    "Authentiques": Categorie.AUTHENTIQUE,
+    "Générés": Categorie.GENERE,
+    "Transformés": Categorie.TRANSFORME,
+    "Retouchés": Categorie.RETOUCHE,
+    "Malformés": Categorie.MALFORME,
+}
+
+
+def _nombre(cellule: str) -> int:
+    return int(cellule.strip(" *").replace("\u00a0", "").replace(" ", ""))
+
+
+def test_description_accordee_au_manifeste(corpus: Corpus) -> None:
+    """Le tableau « par catégorie et partie » de la description, total compris (ERR-0014)."""
+    texte = DESCRIPTION.read_text(encoding="utf-8")
+    tableau = texte.split("Par catégorie et partie :", 1)[1].split("\n\n", 2)[1]
+    lignes = [ligne.strip("|").split("|") for ligne in tableau.splitlines()[2:]]
+    compte = Counter((e.categorie, e.partie) for e in corpus.entrees)
+    parties = Counter(e.partie for e in corpus.entrees)
+    vues = set()
+    for nom, evaluation, calibrage, total in lignes:
+        nom = nom.strip(" *")
+        if nom == "Total":
+            attendu = (parties[Partie.EVALUATION], parties[Partie.CALIBRAGE], len(corpus.entrees))
+        else:
+            categorie = NOMS[nom]
+            attendu = (
+                compte[categorie, Partie.EVALUATION],
+                compte[categorie, Partie.CALIBRAGE],
+                compte[categorie, Partie.EVALUATION] + compte[categorie, Partie.CALIBRAGE],
+            )
+        assert (_nombre(evaluation), _nombre(calibrage), _nombre(total)) == attendu, nom
+        vues.add(nom)
+    assert vues == {*NOMS, "Total"}
+    evaluation, calibrage = (
+        f"{parties[p]:,}".replace(",", " ") for p in (Partie.EVALUATION, Partie.CALIBRAGE)
+    )
+    assert f"**{evaluation} en évaluation**, {calibrage} en calibrage" in texte
+
+
 def test_textes_de_l_assistant_tels_quels(corpus: Corpus) -> None:
     """Les textes générés en texte brut sont les octets de ``textes-ia/``, au dépôt."""
     textes = sorted((DOSSIER / "textes-ia").glob("ia-*.txt"))

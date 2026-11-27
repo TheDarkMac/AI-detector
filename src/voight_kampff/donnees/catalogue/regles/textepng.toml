@@ -8,7 +8,7 @@
 
 [[regle]]
 identifiant = "R-TEXTEPNG-001"
-version = "1"
+version = "2"
 module = "textepng"
 titre = "Paramètres de génération au format d'AUTOMATIC1111"
 description = "Le bloc texte de mot-clé parameters porte des paramètres de génération au format qu'écrit l'interface stable-diffusion-webui d'AUTOMATIC1111 (modules/images.py et modules/processing.py) : la requête, puis une ligne « Steps: …, Sampler: … »."
@@ -17,7 +17,7 @@ phrase = { fr = "Le bloc texte « parameters » du PNG porte des paramètres de 
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Déclaration du fichier : quiconque peut écrire ou effacer ce bloc ; une conversion ou une plateforme de partage l'efface souvent ; son absence ne dit rien (F-14).",
   "Le constat dit le format des paramètres, pas l'outil : d'autres interfaces peuvent écrire le même format.",
@@ -25,13 +25,20 @@ limites = [
 ]
 application = "moteur"
 
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 168
+borne_superieure = 0.022354668349868052
+corpus = "reference-1.0.0"
+date = "2026-11-26"
+
 [[regle.condition]]
 observation = "textepng.parameters"
 motif = 'Steps: [0-9]+, Sampler:'
 
 [[regle]]
 identifiant = "R-TEXTEPNG-002"
-version = "1"
+version = "2"
 module = "textepng"
 titre = "Graphe de génération de ComfyUI"
 description = "Le bloc texte de mot-clé prompt porte le graphe de génération que ComfyUI enregistre avec chaque image (nodes.py, SaveImage) : un objet JSON dont chaque nœud nomme sa classe par la clé class_type (execution.py)."
@@ -40,7 +47,7 @@ phrase = { fr = "Le bloc texte « prompt » du PNG porte un graphe de générati
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Déclaration du fichier : quiconque peut écrire ou effacer ce bloc ; une conversion ou une plateforme de partage l'efface souvent ; son absence ne dit rien (F-14).",
   "Le constat dit le format du graphe, pas l'outil : un autre logiciel peut écrire le même format.",
@@ -48,13 +55,20 @@ limites = [
 ]
 application = "moteur"
 
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 168
+borne_superieure = 0.022354668349868052
+corpus = "reference-1.0.0"
+date = "2026-11-26"
+
 [[regle.condition]]
 observation = "textepng.prompt"
 motif = '"class_type"\s*:'
 
 [[regle]]
 identifiant = "R-TEXTEPNG-003"
-version = "1"
+version = "2"
 module = "textepng"
 titre = "Métadonnées de génération d'InvokeAI"
 description = "Le PNG porte un bloc texte de mot-clé invokeai_metadata, que l'application InvokeAI écrit avec chaque image qu'elle enregistre (invokeai/app/services/image_files/image_files_disk.py)."
@@ -63,12 +77,19 @@ phrase = { fr = "Le PNG porte un bloc texte « invokeai_metadata », où l'appli
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Déclaration du fichier : quiconque peut écrire ou effacer ce bloc ; une conversion ou une plateforme de partage l'efface souvent ; son absence ne dit rien (F-14).",
   "Le contenu du bloc n'est pas examiné : sa seule présence fait le constat.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 168
+borne_superieure = 0.022354668349868052
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "textepng.invokeai-metadata"
@@ -76,7 +97,7 @@ presente = true
 
 [[regle]]
 identifiant = "R-TEXTEPNG-004"
-version = "1"
+version = "2"
 module = "textepng"
 titre = "Métadonnées de génération d'InvokeAI 2"
 description = "Le PNG porte un bloc texte de mot-clé sd-metadata, qu'écrivaient les versions 2 d'InvokeAI (ldm/invoke/pngwriter.py de la version 2.3.5)."
@@ -85,12 +106,19 @@ phrase = { fr = "Le PNG porte un bloc texte « sd-metadata », où les versions 
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Déclaration du fichier : quiconque peut écrire ou effacer ce bloc ; une conversion ou une plateforme de partage l'efface souvent ; son absence ne dit rien (F-14).",
   "Le contenu du bloc n'est pas examiné : sa seule présence fait le constat ; un autre outil peut employer le même mot-clé.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 168
+borne_superieure = 0.022354668349868052
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "textepng.sd-metadata"
@@ -98,7 +126,7 @@ presente = true
 
 [[regle]]
 identifiant = "R-TEXTEPNG-005"
-version = "1"
+version = "2"
 module = "textepng"
 titre = "Générateur nommé par le bloc texte Software"
 description = "Le bloc texte de mot-clé Software (mot-clé prédéfini par la norme PNG) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
@@ -107,13 +135,20 @@ phrase = { fr = "Le bloc texte « Software » du PNG, qui nomme le logiciel de c
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Déclaration du fichier : quiconque peut écrire ou effacer ce bloc ; son absence ne dit rien (F-14).",
   "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
   "Le constat dit ce que le bloc nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 168
+borne_superieure = 0.022354668349868052
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "textepng.Software"
@@ -149,7 +184,7 @@ egal = false
 
 [[regle]]
 identifiant = "R-TEXTEPNG-007"
-version = "1"
+version = "2"
 module = "textepng"
 titre = "Capture d'écran de gnome-screenshot (bloc texte Software)"
 description = "Le bloc texte de mot-clé Software vaut gnome-screenshot, la valeur que l'outil de capture d'écran de GNOME écrit dans les PNG qu'il enregistre (src/screenshot-application.c, option tEXt::Software) (F-06, ADR-0153)."
@@ -158,13 +193,20 @@ phrase = { fr = "Le bloc texte « Software » du PNG vaut « gnome-screenshot »
 categorie = "indice"
 direction = "transformation"
 fondement = "declaration"
-niveau = "faible"
+niveau = "modere"
 limites = [
   "Déclaration du fichier : quiconque peut écrire, recopier ou effacer ce bloc ; son absence ne dit rien (F-14).",
   "Seul gnome-screenshot est reconnu ; les autres outils de capture, dont celui intégré à GNOME Shell, ne sont pas vus.",
   "Une capture d'écran reproduit ce qu'affichait l'écran : elle ne dit rien du fichier affiché, qui peut être généré, retouché ou authentique.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 168
+borne_superieure = 0.022354668349868052
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "textepng.Software"

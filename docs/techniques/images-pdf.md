@@ -95,7 +95,23 @@ Le module n'émet aucun constat ; quatre règles « moteur » du catalogue lisen
 
 ## Taux d'erreur
 
-Sans objet pour une information neutre qui compte ce que le document déclare. Les relevés et les plages ont été vérifiés sur les échantillons ci-dessus, contre Poppler, et sur des documents synthétiques des tests. Les constats des modules d'image sur une partie extraite gardent les taux de leurs règles. La part de documents ordinaires dont des images ne sont pas analysées se mesurera sur le corpus de référence (T100).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `imagespdf` 0.1.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 1985 | 3/400 : 0,8 % [0,3 % ; 2,2 %] | 0/397 : 0,0 % [0,0 % ; 1,0 %] | — | 0 |
+| Générés | 424 | 398 | 0/26 : 0,0 % [0,0 % ; 12,9 %] | — | 26/26 : 100,0 % [87,1 % ; 100,0 %] | 0 |
+| Transformés | 1294 | 1178 | 0/116 : 0,0 % [0,0 % ; 3,2 %] | 0/116 : 0,0 % [0,0 % ; 3,2 %] | — | 0 |
+| Retouchés | 273 | 230 | 0/43 : 0,0 % [0,0 % ; 8,2 %] | — | 43/43 : 100,0 % [91,8 % ; 100,0 %] | 0 |
+| Malformés | 91 | 57 | 28/34 : 82,4 % [66,5 % ; 91,7 %] | 0/6 : 0,0 % [0,0 % ; 39,0 %] | — | 0 |
+
+Aucune règle de preuve ou d'indice : les règles du module sont des informations neutres, sans taux.
+
+<!-- Fin des taux mesurés. -->
+
+Sans objet pour une information neutre qui compte ce que le document déclare. Les relevés et les plages ont été vérifiés sur les échantillons ci-dessus, contre Poppler, et sur des documents synthétiques des tests. Les constats des modules d'image sur une partie extraite gardent les taux de leurs règles. La part de documents dont l'extraction n'a pas pu être menée est la colonne « Non analysables » ci-dessus ; celle des documents dont une partie seulement des images est analysée n'est pas comptée par le banc.
 
 ## Limites connues
 

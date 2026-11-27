@@ -70,7 +70,7 @@ application = "module"
 
 [[regle]]
 identifiant = "R-C2PA-004"
-version = "1"
+version = "2"
 module = "c2pa"
 titre = "Création par IA générative déclarée, signature non reconnue (C2PA)"
 description = "Le manifeste C2PA actif déclare la source numérique trainedAlgorithmicMedia de l'IPTC, mais sa signature est hors de la liste de confiance ou la vérification échoue : la déclaration vaut celle d'une métadonnée non signée (ADR-0021, ES-20)."
@@ -79,7 +79,7 @@ phrase = { fr = "Le manifeste C2PA déclare « {source} » : selon le vocabulair
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "fort"
 parametres = ["source"]
 limites = [
   "N'importe qui peut obtenir un certificat hors de la liste et signer un manifeste : la déclaration se forge comme une métadonnée (cas d'abus C-02).",
@@ -87,9 +87,16 @@ limites = [
 ]
 application = "module"
 
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 1443
+borne_superieure = 0.0026550654857687445
+corpus = "reference-1.0.0"
+date = "2026-11-26"
+
 [[regle]]
 identifiant = "R-C2PA-005"
-version = "1"
+version = "2"
 module = "c2pa"
 titre = "Retouche par IA générative déclarée, signature non reconnue (C2PA)"
 description = "Le manifeste C2PA actif déclare la source numérique compositeWithTrainedAlgorithmicMedia ou compositeSynthetic de l'IPTC, mais sa signature est hors de la liste de confiance ou la vérification échoue (ADR-0021, ES-20)."
@@ -98,7 +105,7 @@ phrase = { fr = "Le manifeste C2PA déclare « {source} » : selon le vocabulair
 categorie = "indice"
 direction = "retouche"
 fondement = "declaration"
-niveau = "faible"
+niveau = "fort"
 parametres = ["source"]
 limites = [
   "N'importe qui peut obtenir un certificat hors de la liste et signer un manifeste : la déclaration se forge comme une métadonnée (cas d'abus C-02).",
@@ -106,24 +113,38 @@ limites = [
 ]
 application = "module"
 
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 1443
+borne_superieure = 0.0026550654857687445
+corpus = "reference-1.0.0"
+date = "2026-11-26"
+
 [[regle]]
 identifiant = "R-C2PA-006"
-version = "1"
+version = "2"
 module = "c2pa"
 titre = "Contenu ou manifeste changé depuis la signature (C2PA)"
-description = "La vérification du manifeste C2PA actif échoue sur une empreinte : celle du contenu signé (assertion.dataHash, bmffHash, boxesHash ou collectionHash), celle d'une assertion (assertion.hashedURI) ou la signature de la revendication (claimSignature.mismatch). Indice faible, non évalué, vers la transformation (ADR-0167)."
+description = "La vérification du manifeste C2PA actif échoue sur une empreinte : celle du contenu signé (assertion.dataHash, bmffHash, boxesHash ou collectionHash), celle d'une assertion (assertion.hashedURI) ou la signature de la revendication (claimSignature.mismatch). Indice vers la transformation (ADR-0167), au niveau que permet sa mesure (T101)."
 gabarit = "c2pa.contenu-change"
 phrase = { fr = "Le contenu ou le manifeste C2PA ne correspond plus à ce qui a été signé (codes « {codes} ») : l'un d'eux a changé depuis la signature." }
 categorie = "indice"
 direction = "transformation"
 fondement = "verification_cryptographique"
-niveau = "faible"
+niveau = "fort"
 parametres = ["codes"]
 limites = [
   "L'écart d'empreinte est établi, sa cause ne l'est pas : retouche, conversion par un outil qui garde le manifeste sans le mettre à jour, défaut d'un logiciel, ou manifeste recopié sur un autre contenu.",
   "Le changement n'est ni décrit ni localisé.",
 ]
 application = "module"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 1443
+borne_superieure = 0.0026550654857687445
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle]]
 identifiant = "R-C2PA-007"

@@ -16,6 +16,7 @@ from typing import Any
 
 import pytest
 from bureautique import app, docx_, meta, odt_
+from catalogues import niveau_mesure
 from echantillons import boite
 from medias import (
     bloc_flac,
@@ -64,7 +65,7 @@ from voight_kampff._travail import garde
 from voight_kampff._travail.contexte import Contexte
 from voight_kampff._travail.fichier import Fichier
 from voight_kampff.analyse import analyser
-from voight_kampff.rapport.modele import Categorie, Direction, Fondement, Niveau, Partie, Plage
+from voight_kampff.rapport.modele import Categorie, Direction, Fondement, Partie, Plage
 
 pytestmark = pytest.mark.exigence("F-12")
 
@@ -324,12 +325,12 @@ def test_chaque_regle_de_t22_est_eprouvee() -> None:
 
 @pytest.mark.exigence("ES-20", "F-14")
 def test_regles_de_t22_indices_faibles_de_declaration() -> None:
-    # ADR-0142 : une déclaration du fichier n'est qu'un indice, faible tant qu'il n'est pas évalué.
+    # ADR-0142 : une déclaration du fichier n'est qu'un indice, au niveau que permet sa mesure.
     for regle in REGLES_T22:
         assert regle.application is Application.MOTEUR
         assert regle.categorie is Categorie.INDICE
         assert regle.fondement is Fondement.DECLARATION
-        assert (regle.niveau, regle.evaluation) == (Niveau.FAIBLE, None)
+        assert niveau_mesure(regle)  # niveau permis par sa mesure (T101, ADR-0278)
 
 
 def test_une_seule_liste_de_generateurs() -> None:

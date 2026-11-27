@@ -2,7 +2,7 @@
 
 [[regle]]
 identifiant = "R-INFOPDF-001"
-version = "1"
+version = "2"
 module = "infopdf"
 titre = "Générateur nommé par le logiciel d'origine du PDF"
 description = "L'entrée Creator du dictionnaire d'information (logiciel d'origine du document) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
@@ -11,13 +11,20 @@ phrase = { fr = "L'entrée Creator du dictionnaire d'information du PDF, qui nom
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Déclaration du fichier : quiconque peut écrire ou effacer cette entrée ; son absence ne dit rien (F-14).",
   "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
   "Le constat dit ce que le champ nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 399
+borne_superieure = 0.00953590733173263
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "infopdf.Creator"
@@ -26,7 +33,7 @@ parametre = "logiciel"
 
 [[regle]]
 identifiant = "R-INFOPDF-002"
-version = "1"
+version = "2"
 module = "infopdf"
 titre = "Générateur nommé par le logiciel de conversion du PDF"
 description = "L'entrée Producer du dictionnaire d'information (logiciel qui a écrit le PDF) nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
@@ -35,13 +42,20 @@ phrase = { fr = "L'entrée Producer du dictionnaire d'information du PDF, qui no
 categorie = "indice"
 direction = "origine_ia"
 fondement = "declaration"
-niveau = "faible"
+niveau = "fort"
 limites = [
   "Déclaration du fichier : quiconque peut écrire ou effacer cette entrée ; son absence ne dit rien (F-14).",
   "Seuls les noms de la liste sont reconnus, entiers et sans faute ; un générateur qui n'écrit pas son nom, ou l'écrit autrement, n'est pas vu.",
   "Le constat dit ce que le champ nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 399
+borne_superieure = 0.00953590733173263
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "infopdf.Producer"

@@ -43,7 +43,7 @@ Règles du catalogue appliquées, ou « aucun constat ».
 
 ## Taux d'erreur
 
-Mesures du banc d'évaluation par catégorie de corpus (§8, ADR-0104), ou pourquoi elles sont sans objet.
+Mesures du banc d'évaluation par catégorie de corpus (§8, ADR-0104) : un bloc écrit par `python -m banc.fiches --taux EVALUATION.json` entre deux marqueurs, jamais à la main (ADR-0279) ; puis, rédigé, comment les lire pour cette technique, ou pourquoi elles sont sans objet, et ce que les essais antérieurs ont vérifié.
 
 ## Limites connues
 

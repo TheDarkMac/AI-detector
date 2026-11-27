@@ -62,16 +62,16 @@ Aucune.
 
 | Hypothèse | Ce que la technique en dit |
 | --- | --- |
-| Capture brute | Un profil : les tables d'un appareil relevé disent que la dernière compression est celle d'un appareil de cette marque (indice faible vers l'authenticité) ; un appareil peut aussi employer les tables de libjpeg, ou ne pas être reconnu |
+| Capture brute | Un profil : les tables d'un appareil relevé disent que la dernière compression est celle d'un appareil de cette marque (indice vers l'authenticité) ; un appareil peut aussi employer les tables de libjpeg, ou ne pas être reconnu |
 | Transformation banale (recompression, redimensionnement) | Un profil, sans mesure : JPEG sans métadonnées à un côté long que des plateformes imposent, ou encodé aux tables d'un encodeur connu (libjpeg, mozjpeg, ffmpeg) ; JPEG aux tables de Photoshop |
 | Retouche | Rien d'établi : des tables de Photoshop disent un enregistrement par Photoshop, pas une retouche |
 | Génération | Rien : un générateur peut écrire un JPEG sans métadonnées, à ces tailles et à ces tables |
 
-Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas une transformation d'un premier encodage par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent un profil, en indice faible vers la transformation ([ADR-0155](../decisions/ADR-0155-nature-d-un-indice-de-transfert.md)), ou vers l'authenticité pour les tables d'appareils ([ADR-0191](../decisions/ADR-0191-constats-des-tables-relevees.md)).
+Le module n'émet aucun constat : il extrait. Les règles du catalogue qui lisent ses observations ne distinguent pas une transformation d'un premier encodage par une mesure ([ADR-0022](../decisions/ADR-0022-hypotheses-distinguees.md)) : elles rapportent un profil, en indice vers la transformation ([ADR-0155](../decisions/ADR-0155-nature-d-un-indice-de-transfert.md)), ou vers l'authenticité pour les tables d'appareils ([ADR-0191](../decisions/ADR-0191-constats-des-tables-relevees.md)).
 
 ## Ce qui déclenche un constat
 
-Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices faibles fondés sur la lecture de la structure, vers la transformation sauf les tables d'appareils, vers l'authenticité (T24, [ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md) ; T40, [ADR-0182](../decisions/ADR-0182-regles-des-tables-connues.md) ; complément de T40, [ADR-0191](../decisions/ADR-0191-constats-des-tables-relevees.md), [ADR-0192](../decisions/ADR-0192-metadonnees-non-exigees.md)) :
+Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisent ses observations ([guide du catalogue](../catalogue/README.md)), toutes des indices fondés sur la lecture de la structure, chacun au niveau que permet sa mesure (« Taux d'erreur »), vers la transformation sauf les tables d'appareils, vers l'authenticité (T24, [ADR-0153](../decisions/ADR-0153-indices-de-transfert-retenus.md) ; T40, [ADR-0182](../decisions/ADR-0182-regles-des-tables-connues.md) ; complément de T40, [ADR-0191](../decisions/ADR-0191-constats-des-tables-relevees.md), [ADR-0192](../decisions/ADR-0192-metadonnees-non-exigees.md)) :
 
 | Règle | Observations | Test |
 | --- | --- | --- |
@@ -89,7 +89,46 @@ Les tailles viennent de deux études, citées dans chaque règle : Giudice et al
 
 ## Taux d'erreur
 
-Règles du catalogue non évaluées : aucun corpus de référence ne les a mesurées (T100), leur niveau reste « faible » (ADR-0018). Leur déclenchement est vérifié sur des échantillons construits (`tests/test_transfert.py`) ; la qualité libjpeg, sur des JPEG d'ImageMagick et de ffmpeg (`tests/test_transfert.py`, ignoré si `magick` ou `ffmpeg` manque). Tables connues de T40 (`tests/test_tables_connues.py`) : chaque couple (jeu, qualité) de mozjpeg, chaque qscale de ffmpeg et chaque qualité de chrominance reconnus sur des tables construites ; oracles cjpeg de libjpeg-turbo (une et deux qualités, huit et seize bits), ffmpeg (qscale 2, 5, 31) et cjpeg de mozjpeg (jeux 2, 3, 6), chacun ignoré si l'outil manque. Le cjpeg de mozjpeg n'était pas installé sur le poste de T40 : les tables de mozjpeg n'y ont été vérifiées que contre le texte de `jcparam.c`. Tables relevées (`tests/test_tables_relevees.py`) : l'empreinte de chacune est recalculée à partir de ses valeurs en clair, chaque règle est déclenchée par un JPEG construit avec ses tables, avec et sans EXIF, et chaque fichier source est compté et cité avec une licence libre. Sur le relevé, aucune empreinte de Photoshop n'est commune à deux niveaux, et aucune empreinte d'appareil retenue n'est vue sur un fichier de Photoshop ni sur une autre marque ; les collisions avec d'autres logiciels sont nommées dans chaque règle (GIMP, Picasa, galerie et visionneuse de photos de Windows, Photoshop Album, Photoshop Elements, Lightroom).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `image` 0.3.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 1559 | 1/826 : 0,1 % [0,0 % ; 0,7 %] | 0/825 : 0,0 % [0,0 % ; 0,5 %] | — | 0 |
+| Générés | 424 | 104 | 0/320 : 0,0 % [0,0 % ; 1,2 %] | — | 320/320 : 100,0 % [98,8 % ; 100,0 %] | 0 |
+| Transformés | 1294 | 518 | 0/776 : 0,0 % [0,0 % ; 0,5 %] | 0/472 : 0,0 % [0,0 % ; 0,8 %] | 304/304 : 100,0 % [98,8 % ; 100,0 %] | 0 |
+| Retouchés | 273 | 120 | 0/153 : 0,0 % [0,0 % ; 2,4 %] | — | 153/153 : 100,0 % [97,6 % ; 100,0 %] | 0 |
+| Malformés | 91 | 39 | 28/52 : 53,8 % [40,5 % ; 66,7 %] | 0/19 : 0,0 % [0,0 % ; 16,8 %] | 4/4 : 100,0 % [51,0 % ; 100,0 %] | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-IMAGE-001 v2 | indice | transformation | 11/825 : 1,3 % [0,7 % ; 2,4 %] | modere | modere |
+| R-IMAGE-002 v2 | indice | transformation | 2/825 : 0,2 % [0,1 % ; 0,9 %] | fort | fort |
+| R-IMAGE-003 v2 | indice | transformation | 0/825 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-IMAGE-004 v3 | indice | transformation | 97/825 : 11,8 % [9,7 % ; 14,1 %] | faible | faible |
+| R-IMAGE-005 v2 | indice | transformation | 0/825 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-IMAGE-006 v2 | indice | transformation | 0/825 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-IMAGE-007 v2 | indice | transformation | 0/825 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-IMAGE-008 v2 | indice | transformation | 1/825 : 0,1 % [0,0 % ; 0,7 %] | fort | fort |
+| R-IMAGE-009 v2 | indice | transformation | 4/825 : 0,5 % [0,2 % ; 1,2 %] | modere | modere |
+| R-IMAGE-010 v2 | indice | transformation | 4/825 : 0,5 % [0,2 % ; 1,2 %] | modere | modere |
+| R-IMAGE-011 v2 | indice | transformation | 0/825 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-IMAGE-012 v2 | indice | transformation | 0/825 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-IMAGE-013 v2 | indice | transformation | 1/825 : 0,1 % [0,0 % ; 0,7 %] | fort | fort |
+| R-IMAGE-014 v2 | indice | transformation | 4/825 : 0,5 % [0,2 % ; 1,2 %] | modere | modere |
+| R-IMAGE-015 v2 | indice | transformation | 0/825 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-IMAGE-016 v2 | indice | transformation | 46/825 : 5,6 % [4,2 % ; 7,4 %] | faible | faible |
+| R-IMAGE-017 v2 | indice | authenticite | 0/473 : 0,0 % [0,0 % ; 0,8 %] | fort | fort |
+| R-IMAGE-018 v2 | indice | authenticite | 0/473 : 0,0 % [0,0 % ; 0,8 %] | fort | fort |
+| R-IMAGE-019 v2 | indice | authenticite | 0/473 : 0,0 % [0,0 % ; 0,8 %] | fort | fort |
+| R-IMAGE-020 v2 | indice | authenticite | 0/473 : 0,0 % [0,0 % ; 0,8 %] | fort | fort |
+| R-IMAGE-021 v2 | indice | authenticite | 0/473 : 0,0 % [0,0 % ; 0,8 %] | fort | fort |
+| R-IMAGE-022 v2 | indice | authenticite | 0/473 : 0,0 % [0,0 % ; 0,8 %] | fort | fort |
+
+<!-- Fin des taux mesurés. -->
+
+Le niveau de chaque indice est celui que permet son taux de faux positifs, mesuré ci-dessus (ADR-0018, [ADR-0278](../decisions/ADR-0278-evaluation-et-niveau-des-indices-au-catalogue.md)). Le déclenchement des règles est vérifié sur des échantillons construits (`tests/test_transfert.py`) ; la qualité libjpeg, sur des JPEG d'ImageMagick et de ffmpeg (`tests/test_transfert.py`, ignoré si `magick` ou `ffmpeg` manque). Tables connues de T40 (`tests/test_tables_connues.py`) : chaque couple (jeu, qualité) de mozjpeg, chaque qscale de ffmpeg et chaque qualité de chrominance reconnus sur des tables construites ; oracles cjpeg de libjpeg-turbo (une et deux qualités, huit et seize bits), ffmpeg (qscale 2, 5, 31) et cjpeg de mozjpeg (jeux 2, 3, 6), chacun ignoré si l'outil manque. Le cjpeg de mozjpeg n'était pas installé sur le poste de T40 : les tables de mozjpeg n'y ont été vérifiées que contre le texte de `jcparam.c`. Tables relevées (`tests/test_tables_relevees.py`) : l'empreinte de chacune est recalculée à partir de ses valeurs en clair, chaque règle est déclenchée par un JPEG construit avec ses tables, avec et sans EXIF, et chaque fichier source est compté et cité avec une licence libre. Sur le relevé, aucune empreinte de Photoshop n'est commune à deux niveaux, et aucune empreinte d'appareil retenue n'est vue sur un fichier de Photoshop ni sur une autre marque ; les collisions avec d'autres logiciels sont nommées dans chaque règle (GIMP, Picasa, galerie et visionneuse de photos de Windows, Photoshop Album, Photoshop Elements, Lightroom).
 
 ## Limites connues
 

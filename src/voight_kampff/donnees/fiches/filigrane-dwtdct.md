@@ -90,7 +90,7 @@ Aucune.
 | Retouche | Rien de propre : une retouche locale d'une image marquée laisse le reste du message lisible ; une retouche qui recadre l'efface |
 | Génération | Un message retrouvé dit que l'image est passée par l'un de ces codes de référence, ou que quelqu'un y a posé le même message : il est public et fixe. Son absence ne dit rien : la plupart des interfaces ne le posent pas, et les transformations l'effacent |
 
-Lecture d'ADR-0022 ([ADR-0206](../decisions/ADR-0206-constat-et-versions-de-t32.md), comme ADR-0142 pour une déclaration) : la technique ne reconnaît pas une image générée à son signal, elle lit un marquage que seuls des codes de génération posent ; la mesure sur la partie évaluation du corpus reste à faire (T100), et le niveau reste « faible ».
+Lecture d'ADR-0022 ([ADR-0206](../decisions/ADR-0206-constat-et-versions-de-t32.md), comme ADR-0142 pour une déclaration) : la technique ne reconnaît pas une image générée à son signal, elle lit un marquage que seuls des codes de génération posent ; le taux de faux positifs mesuré sur la partie évaluation du corpus de référence (T101) leur permet le niveau « fort », qui ne dit rien de leur capacité à trouver une image générée.
 
 ## Ce qui déclenche un constat
 
@@ -102,11 +102,31 @@ Le module n'émet aucun constat. Les règles « moteur » du catalogue qui lisen
 | `R-DWTDCT-002` Filigrane dwtDct de SDXL | `dwtdct.concordants_sdxl` | au moins 42 sur 48 | au plus 3,6 × 10^-7 (deux ordres) |
 | `R-DWTDCT-003` Filigrane dwtDct de FLUX.1 | `dwtdct.concordants_flux` | au moins 39 sur 46 | 9,7 × 10^-7 |
 
-Indices faibles vers l'origine IA, fondés sur une mesure. La probabilité est celle de la loi hypergéométrique, sous l'hypothèse qu'une image non marquée ordonne ses scores sans rapport avec le message ([ADR-0204](../decisions/ADR-0204-seuils-et-releve.md)).
+Indices vers l'origine IA, fondés sur une mesure, au niveau que permet leur taux de faux positifs (« Taux d'erreur »). La probabilité est celle de la loi hypergéométrique, sous l'hypothèse qu'une image non marquée ordonne ses scores sans rapport avec le message ([ADR-0204](../decisions/ADR-0204-seuils-et-releve.md)).
 
 ## Taux d'erreur
 
-Non mesuré sur le corpus de référence (T100) : seuils fixés par la loi hypergéométrique ([ADR-0204](../decisions/ADR-0204-seuils-et-releve.md)), vérifiés sur un relevé de Wikimedia Commons fait le 2026-11-16 (`banc/releves/dwtdct-T32/`) :
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `dwtdct` 0.1.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 1559 | 74/826 : 9,0 % [7,2 % ; 11,1 %] | 0/752 : 0,0 % [0,0 % ; 0,5 %] | — | 0 |
+| Générés | 424 | 104 | 24/320 : 7,5 % [5,1 % ; 10,9 %] | — | 295/296 : 99,7 % [98,1 % ; 99,9 %] | 0 |
+| Transformés | 1294 | 343 | 195/951 : 20,5 % [18,1 % ; 23,2 %] | 0/459 : 0,0 % [0,0 % ; 0,8 %] | 295/297 : 99,3 % [97,6 % ; 99,8 %] | 0 |
+| Retouchés | 273 | 120 | 15/153 : 9,8 % [6,0 % ; 15,5 %] | — | 138/138 : 100,0 % [97,3 % ; 100,0 %] | 0 |
+| Malformés | 91 | 39 | 44/52 : 84,6 % [72,5 % ; 92,0 %] | 0/8 : 0,0 % [0,0 % ; 32,4 %] | — | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-DWTDCT-001 v2 | indice | origine_ia | 0/752 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-DWTDCT-002 v2 | indice | origine_ia | 0/752 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+| R-DWTDCT-003 v2 | indice | origine_ia | 0/752 : 0,0 % [0,0 % ; 0,5 %] | fort | fort |
+
+<!-- Fin des taux mesurés. -->
+
+Sur le corpus de référence, aucun constat sur les images authentiques, et un seul sur les images déclarées générées (tableau ci-dessus) : les trois règles passent à « fort » par leur taux de faux positifs, ce qui ne dit rien de leur capacité à trouver une image générée. Seuils fixés par la loi hypergéométrique ([ADR-0204](../decisions/ADR-0204-seuils-et-releve.md)), vérifiés sur un relevé de Wikimedia Commons fait le 2026-11-16 (`banc/releves/dwtdct-T32/`) :
 
 | Fichiers | Lus | Constats | Plus grand nombre de bits concordants (SD 1 / SDXL / FLUX.1) |
 | --- | --- | --- | --- |

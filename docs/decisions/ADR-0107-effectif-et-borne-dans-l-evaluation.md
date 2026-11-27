@@ -54,3 +54,4 @@ Option A :
 | --- | --- |
 | 2026-10-28 | Création, statut « Proposé » |
 | 2026-10-28 | Validé par TheDarkMac pendant la revue de la PR de T17 : statut « Accepté » |
+| 2026-11-27 | Précisé en T101 : les trois valeurs sont écrites au catalogue par `python -m banc.inscription`, qui règle aussi le niveau (ADR-0278) |

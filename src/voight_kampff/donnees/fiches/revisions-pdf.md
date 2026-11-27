@@ -95,12 +95,31 @@ Le module n'émet aucun constat ; trois règles « moteur » du catalogue lisent
 | Règle | Condition | Constat |
 | --- | --- | --- |
 | R-REVISIONSPDF-001 | `revisionspdf.versions` ≥ 2 | Information neutre |
-| R-REVISIONSPDF-002 | `revisionspdf.versions_non_reconnues` ≥ 1 | Indice faible vers la retouche |
-| R-REVISIONSPDF-003 | `revisionspdf.derniere_version_signee` présente et `revisionspdf.non_reconnues_apres_signature` ≥ 1 | Indice faible vers la retouche |
+| R-REVISIONSPDF-002 | `revisionspdf.versions_non_reconnues` ≥ 1 | Indice vers la retouche |
+| R-REVISIONSPDF-003 | `revisionspdf.derniere_version_signee` présente et `revisionspdf.non_reconnues_apres_signature` ≥ 1 | Indice vers la retouche |
 
 ## Taux d'erreur
 
-Non mesurés : le corpus de référence n'existe pas encore (T100). Le classement a été vérifié sur les huit échantillons ci-dessus et sur des documents synthétiques des tests ; la part de documents ordinaires qui déclenchent R-REVISIONSPDF-002 reste à mesurer. Le niveau des indices reste « faible » ([ADR-0101](../decisions/ADR-0101-bornes-des-niveaux-et-cible.md)).
+<!-- Taux mesurés : écrits par « python -m banc.fiches --taux », pas à la main. -->
+
+Mesurés le 2026-11-27 par le banc, sur la partie évaluation du corpus reference 1.0.0 ([rapport](../verification/evaluations/reference-1.0.0-catalogue-0.21.0/evaluation.md)) : module `revisionspdf` 0.2.0, outil 0.1.0.dev0, catalogue 0.21.0. Chaque taux est donné avec son effectif et son intervalle de Wilson à 95 % ; un tiret marque un taux sans effectif. Les définitions sont celles d'[ADR-0104](../decisions/ADR-0104-definition-des-mesures.md).
+
+| Catégorie | Fichiers | Non applicables | Non analysables | Faux positifs | Faux négatifs | Confusions |
+| --- | --- | --- | --- | --- | --- | --- |
+| Authentiques | 2385 | 1985 | 1/400 : 0,2 % [0,0 % ; 1,4 %] | 54/399 : 13,5 % [10,5 % ; 17,2 %] | — | 0 |
+| Générés | 424 | 398 | 0/26 : 0,0 % [0,0 % ; 12,9 %] | — | 26/26 : 100,0 % [87,1 % ; 100,0 %] | 0 |
+| Transformés | 1294 | 1178 | 0/116 : 0,0 % [0,0 % ; 3,2 %] | 0/116 : 0,0 % [0,0 % ; 3,2 %] | — | 0 |
+| Retouchés | 273 | 230 | 0/43 : 0,0 % [0,0 % ; 8,2 %] | — | 43/43 : 100,0 % [91,8 % ; 100,0 %] | 0 |
+| Malformés | 91 | 57 | 28/34 : 82,4 % [66,5 % ; 91,7 %] | 0/6 : 0,0 % [0,0 % ; 39,0 %] | — | 0 |
+
+| Règle | Catégorie | Direction | Faux positifs | Niveau permis | Niveau |
+| --- | --- | --- | --- | --- | --- |
+| R-REVISIONSPDF-002 v2 | indice | retouche | 54/399 : 13,5 % [10,5 % ; 17,2 %] | faible | faible |
+| R-REVISIONSPDF-003 v2 | indice | retouche | 0/399 : 0,0 % [0,0 % ; 1,0 %] | fort | fort |
+
+<!-- Fin des taux mesurés. -->
+
+Sur le corpus de référence (tableau ci-dessus), R-REVISIONSPDF-002 se déclenche sur 54 des 399 PDF authentiques analysés : beaucoup de documents ordinaires sont mis à jour après leur première version, et la règle reste « faible » ; R-REVISIONSPDF-003 passe à « fort » ([ADR-0101](../decisions/ADR-0101-bornes-des-niveaux-et-cible.md)). Le classement a été vérifié sur les huit échantillons ci-dessus et sur des documents synthétiques des tests.
 
 ## Limites connues
 

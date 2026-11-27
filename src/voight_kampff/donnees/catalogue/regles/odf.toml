@@ -2,7 +2,7 @@
 
 [[regle]]
 identifiant = "R-ODF-001"
-version = "1"
+version = "2"
 module = "odf"
 titre = "Générateur nommé par le générateur d'un ODT"
 description = "L'élément meta:generator de meta.xml nomme un logiciel de génération par IA de la liste du catalogue (ADR-0144) : Midjourney, DALL·E, Stable Diffusion, Adobe Firefly, ComfyUI, InvokeAI, NovelAI, AUTOMATIC1111, Fooocus, Leonardo.Ai, Ideogram, Craiyon, DreamStudio, ChatGPT, Suno, Udio, ElevenLabs."
@@ -18,6 +18,13 @@ limites = [
   "Le constat dit ce que le champ nomme, pas ce que le logiciel a fait : un générateur peut aussi avoir servi à retoucher ou à convertir le fichier.",
 ]
 application = "moteur"
+
+[regle.evaluation]
+taux_faux_positifs = 0.0
+effectif = 33
+borne_superieure = 0.10426999754245206
+corpus = "reference-1.0.0"
+date = "2026-11-26"
 
 [[regle.condition]]
 observation = "odf.meta:generator"
