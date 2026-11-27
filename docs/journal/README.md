@@ -60,3 +60,4 @@ Une entrée par tâche du [découpage](../00-plan/decoupage-taches.md), rédigé
 | [T92](T92-affichage-de-la-conservation.md) | Affichage de la conservation des données | `tache/T92-affichage-de-la-conservation` | [#47](https://github.com/TheDarkMac/AI-detector/pull/47) |
 | [T95](T95-publication-du-catalogue-et-des-fiches.md) | Publication du catalogue et des fiches | `tache/T95-publication-du-catalogue-et-des-fiches` | [#48](https://github.com/TheDarkMac/AI-detector/pull/48) |
 | [T100](T100-constitution-du-corpus.md) | Constitution du corpus de référence | `tache/T100-constitution-du-corpus` | [#49](https://github.com/TheDarkMac/AI-detector/pull/49) |
+| [T101](T101-rapport-d-evaluation.md) | Rapport d'évaluation : taux par technique et catégorie | `tache/T101-rapport-d-evaluation` | à venir |
